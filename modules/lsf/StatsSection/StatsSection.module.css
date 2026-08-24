@@ -1,0 +1,69 @@
+/* modules/lsf/StatsSection/StatsSection.module.css */
+
+.stats {
+  padding: 4rem 24px;
+  background: linear-gradient(135deg, var(--primary, #800020), var(--secondary, #4a0012));
+}
+
+@media (min-width: 1200px) {
+  .stats {
+    padding: 4rem 0;
+  }
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.statsItem {
+  text-align: center;
+  color: #ffffff;
+}
+
+.statsValue {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-edameh, sans-serif);
+  color: #ffffff;
+}
+
+.statsLabel {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.125rem;
+  font-family: var(--font-iran, sans-serif);
+}
+
+@media (max-width: 1024px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .stats {
+    padding: 2rem 16px;
+  }
+  
+  .statsGrid {
+    gap: 1.5rem;
+  }
+  
+  .statsValue {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .statsValue {
+    font-size: 1.5rem;
+  }
+  
+  .statsLabel {
+    font-size: 0.875rem;
+  }
+}

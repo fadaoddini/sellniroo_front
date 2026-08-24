@@ -1,0 +1,836 @@
+/* ============================================
+   STORY SECTION
+   ============================================ */
+.storySection {
+  padding: 3rem 0 2rem;
+  direction: rtl;
+  position: relative;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.headerLeft {
+  flex: 1;
+  min-width: 200px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.3rem 1rem;
+  background: rgba(128, 0, 32, 0.08);
+  color: var(--white);
+  border: 1px solid rgba(128, 0, 32, 0.25);
+  border-radius: 50px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.3px;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--white);
+  font-family: var(--font-edameh);
+  margin-bottom: 0.25rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f97316 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.5rem 1.1rem;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+.addBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(128, 0, 32, 0.4);
+}
+.addBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ============================================
+   ADD FORM
+   ============================================ */
+.addForm {
+  background: var(--macos-card);
+  border: 2px dashed var(--primary);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--macos-shadow);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.addForm h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+  margin-bottom: 1rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.formFieldFull {
+  grid-column: 1 / -1;
+}
+
+.formField label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.formField input,
+.formField textarea {
+  padding: 0.55rem 0.85rem;
+  border: 1.5px solid var(--macos-border);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.6);
+  width: 100%;
+}
+
+.formField input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(128, 0, 32, 0.08);
+  background: white;
+}
+
+.formActions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.saveBtn,
+.cancelBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.saveBtn {
+  background: var(--macos-green);
+  color: white;
+}
+.saveBtn:hover:not(:disabled) {
+  background: #2db84d;
+  transform: translateY(-2px);
+}
+.cancelBtn {
+  background: var(--macos-red);
+  color: white;
+}
+.cancelBtn:hover:not(:disabled) {
+  background: #e0352b;
+  transform: translateY(-2px);
+}
+.saveBtn:disabled,
+.cancelBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   STORY RINGS (CAROUSEL)
+   ============================================ */
+.storyRingsWrapper {
+  position: relative;
+  margin: 0 -1.5rem;
+  padding: 0.5rem 0;
+}
+
+.storyRingsWrapper::before,
+.storyRingsWrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.storyRingsWrapper::before {
+  right: 0;
+  background: linear-gradient(to left, var(--black), transparent);
+}
+
+.storyRingsWrapper::after {
+  left: 0;
+  background: linear-gradient(to right, var(--black), transparent);
+}
+
+.storyRings {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 0.75rem 1.5rem 1.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) transparent;
+}
+
+.storyRings::-webkit-scrollbar {
+  height: 4px;
+}
+.storyRings::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+.storyRings::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: 4px;
+}
+
+/* ============================================
+   STORY RING (CIRCLE)
+   ============================================ */
+.storyRing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.storyRing:hover {
+  transform: translateY(-3px);
+}
+
+.storyRing:hover .storyRingInner {
+  box-shadow: 0 8px 24px rgba(128, 0, 32, 0.4);
+}
+
+/* حلقه گرادینت برای استوری‌های دیده نشده */
+.storyRing:not(.viewed) .storyRingInner {
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    #f97316 35%,
+    var(--secondary) 70%,
+    var(--secondary-light) 100%
+  );
+  position: relative;
+}
+
+.storyRing:not(.viewed) .storyRingInner::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--black);
+  z-index: 0;
+}
+
+/* حلقه خاکستری برای استوری‌های دیده شده */
+.storyRing.viewed .storyRingInner {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.storyRingInner {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.storyRingInner.imageError::before {
+  content: '📷';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--macos-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  z-index: 0;
+}
+
+.storyRingImage {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  position: relative;
+  z-index: 1;
+}
+
+.storyRingTitle {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-iran);
+  max-width: 80px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+/* ============================================
+   EMPTY & LOADING
+   ============================================ */
+.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  gap: 0.75rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.spinner {
+  color: var(--primary);
+}
+
+/* ============================================
+   VIEWER BACKDROP & MODAL
+   ============================================ */
+.viewerBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease-out;
+  direction: rtl;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.viewer {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 9 / 16;
+  max-height: 90vh;
+  background: var(--black);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.6);
+  animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ============================================
+   PROGRESS BARS
+   ============================================ */
+.progressBars {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  gap: 4px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.progressBar {
+  flex: 1;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #fff 0%, rgba(255, 255, 255, 0.95) 100%);
+  border-radius: 3px;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+/* ============================================
+   VIEWER HEADER
+   ============================================ */
+.viewerHeader {
+  position: absolute;
+  top: 24px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  z-index: 9;
+  gap: 0.5rem;
+}
+
+.viewerUser {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: white;
+  flex: 1;
+  min-width: 0;
+}
+
+.viewerAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  flex-shrink: 0;
+  background: var(--primary);
+}
+.viewerAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.viewerUserInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.viewerUsername {
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-iran-bold);
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.viewerTime {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-iran);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.viewerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.viewerActionBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.viewerActionBtn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+.deleteBtn:hover {
+  background: var(--macos-red) !important;
+}
+
+/* ============================================
+   VIEWER CONTENT
+   ============================================ */
+.viewerContent {
+  position: relative;
+  flex: 1;
+  background: var(--black);
+  overflow: hidden;
+}
+
+.viewerImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  animation: imageFade 0.4s ease-out;
+}
+
+@keyframes imageFade {
+  from {
+    opacity: 0.3;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.viewerGradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.3) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tapZone {
+  position: absolute;
+  top: 60px;
+  bottom: 0;
+  width: 30%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+  padding: 0;
+}
+
+.tapLeft {
+  left: 0;
+}
+
+.tapRight {
+  right: 0;
+}
+
+.viewerLinkBtn {
+  position: absolute;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.65rem 1.5rem;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  z-index: 5;
+  box-shadow: 0 6px 24px rgba(128, 0, 32, 0.5);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  animation: bounceIn 0.5s 0.3s both;
+}
+
+@keyframes bounceIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.viewerLinkBtn:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 10px 32px rgba(128, 0, 32, 0.6);
+}
+
+.pauseIndicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  z-index: 4;
+  animation: popIn 0.2s ease-out;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* ============================================
+   VIEWER FOOTER
+   ============================================ */
+.viewerFooter {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.85rem 1rem;
+  z-index: 6;
+}
+
+.viewerMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.72rem;
+  font-family: var(--font-iran);
+}
+
+.viewerMeta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.25rem 0.6rem;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .storySection {
+    padding: 2rem 0 1.5rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .addBtn {
+    align-self: flex-start;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .addForm {
+    padding: 1rem;
+  }
+
+  .storyRingInner {
+    width: 68px;
+    height: 68px;
+  }
+
+  .viewer {
+    max-width: 100%;
+    border-radius: 0;
+    max-height: 100vh;
+    height: 100vh;
+  }
+
+  .viewerBackdrop {
+    padding: 0;
+  }
+
+  .tapZone {
+    top: 70px;
+    width: 35%;
+  }
+}
+
+@media (max-width: 480px) {
+  .storyRingInner {
+    width: 64px;
+    height: 64px;
+  }
+
+  .storyRingTitle {
+    font-size: 0.65rem;
+    max-width: 70px;
+  }
+
+  .storyRings {
+    gap: 0.75rem;
+    padding: 0.75rem 1rem 1rem;
+  }
+}
+
+/* ============================================
+   RTL/LTR SUPPORT
+   ============================================ */
+[dir="ltr"] .storySection {
+  direction: ltr;
+}
+
+[dir="ltr"] .storyRingsWrapper::before {
+  right: 0;
+  background: linear-gradient(to left, var(--black), transparent);
+}
+[dir="ltr"] .storyRingsWrapper::after {
+  left: 0;
+  background: linear-gradient(to right, var(--black), transparent);
+}
+
+[dir="ltr"] .viewerBackdrop {
+  direction: ltr;
+}
+
+[dir="ltr"] .progressFill {
+  background: linear-gradient(270deg, #fff 0%, rgba(255, 255, 255, 0.95) 100%);
+}
+
+[dir="ltr"] .viewerLinkBtn {
+  transform: translateX(50%);
+}
+[dir="ltr"] .viewerLinkBtn:hover {
+  transform: translateX(50%) translateY(-2px);
+}
+
+/* Disable scroll when modal is open */
+body:has(.viewerBackdrop) {
+  overflow: hidden;
+}

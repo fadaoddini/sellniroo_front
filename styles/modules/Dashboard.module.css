@@ -1,0 +1,473 @@
+/* styles/modules/Dashboard.module.css */
+
+
+/* ============================================
+   Container
+   ============================================ */
+.dashboardContainer {
+  padding: 2rem 0;
+  background: var(--macos-bg);
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ============================================
+   Header
+   ============================================ */
+.dashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pageTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pageTitle .titleIcon {
+  color: var(--primary);
+  width: 28px;
+  height: 28px;
+}
+
+.pageDesc {
+  color: var(--macos-text-secondary);
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   User Info Bar
+   ============================================ */
+.userInfoBar {
+  background: var(--macos-card);
+  backdrop-filter: var(--macos-blur);
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--macos-border);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  box-shadow: var(--macos-shadow);
+}
+
+.userInfoBar svg {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.userInfoText {
+  font-family: var(--font-iran);
+  font-size: 0.85rem;
+  color: var(--macos-text);
+}
+
+.userInfoText .highlight {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ============================================
+   Quick Actions Grid
+   ============================================ */
+.quickActionsSection {
+  margin-bottom: 1rem;
+}
+
+.sectionTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--macos-text);
+  margin-bottom: 0.75rem;
+  font-family: var(--font-edameh);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sectionTitle svg {
+  color: var(--primary);
+}
+
+.actionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.actionCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1rem;
+  background: var(--macos-card);
+  backdrop-filter: var(--macos-blur);
+  border: 1px solid var(--macos-border);
+  border-radius: 14px;
+  text-decoration: none;
+  color: var(--macos-text);
+  font-family: var(--font-iran);
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: var(--macos-shadow);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.actionCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 50%, rgba(128, 0, 32, 0.03));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.actionCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--macos-shadow-hover);
+  border-color: var(--primary);
+}
+
+.actionCard:hover::before {
+  opacity: 1;
+}
+
+.actionCard:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.actionIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.actionCard:hover .actionIcon {
+  transform: scale(1.05) rotate(-2deg);
+}
+
+.actionIcon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.actionLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  text-align: center;
+  color: var(--macos-text);
+}
+
+.actionBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.6rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   Stats Cards
+   ============================================ */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--macos-card);
+  backdrop-filter: var(--macos-blur);
+  border-radius: 14px;
+  border: 1px solid var(--macos-border);
+  box-shadow: var(--macos-shadow);
+  transition: all 0.3s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--macos-shadow-hover);
+}
+
+.statIconWrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.statIconWrapper svg {
+  width: 20px;
+  height: 20px;
+}
+
+.statInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.statValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+}
+
+.statLabel {
+  font-size: 0.7rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.statChange {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.65rem;
+  font-weight: 500;
+  margin-top: 2px;
+  font-family: var(--font-iran);
+}
+
+.statChange.positive {
+  color: #2e7d32;
+}
+
+.statChange.negative {
+  color: #c62828;
+}
+
+/* ============================================
+   Footer
+   ============================================ */
+.dashboardFooter {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--macos-text-secondary);
+  font-size: 0.75rem;
+  font-family: var(--font-iran);
+  border-top: 1px solid var(--macos-border);
+  margin-top: 0.5rem;
+}
+
+/* ============================================
+   Loading & Error States
+   ============================================ */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+}
+
+.spinner {
+  animation: spin 0.8s linear infinite;
+  color: var(--primary);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loadingContainer p {
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 0.75rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.accessDeniedIcon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #fce4ec;
+  color: #c62828;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.errorContainer h3 {
+  font-size: 1.25rem;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+  margin: 0;
+}
+
+.errorContainer p {
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  max-width: 400px;
+  margin: 0 0 1rem;
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.primaryBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(128, 0, 32, 0.3);
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 1024px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboardContainer {
+    padding: 1rem 0;
+  }
+  
+  .container {
+    padding: 0 0.75rem;
+  }
+  
+  .dashboardHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .pageTitle {
+    font-size: 1.25rem;
+  }
+  
+  .actionsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .statsGrid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .actionCard {
+    padding: 1rem 0.75rem;
+  }
+  
+  .actionIcon {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .actionIcon svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .actionsGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  
+  .actionCard {
+    padding: 0.75rem 0.5rem;
+    border-radius: 10px;
+  }
+  
+  .actionIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+  
+  .actionIcon svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .actionLabel {
+    font-size: 0.7rem;
+  }
+  
+  .userInfoBar {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+  }
+  
+  .statCard {
+    padding: 0.75rem 1rem;
+  }
+  
+  .statValue {
+    font-size: 1rem;
+  }
+}

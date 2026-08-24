@@ -1,0 +1,107 @@
+.certificates {
+  padding: 4rem 0;
+  background: white;
+}
+
+.certificatesContent {
+  background: linear-gradient(135deg, rgba(128, 0, 32, 0.04), rgba(45, 74, 62, 0.04));
+  border-radius: 24px;
+  padding: 3rem;
+
+}
+
+.certificatesText {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.certificatesText h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+  margin-bottom: 0.5rem;
+}
+
+.certificatesText p {
+  color: var(--macos-text-secondary);
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+}
+
+.certificatesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.certificateItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--macos-border);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.certificateItem:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--macos-shadow-hover);
+}
+
+.certificateItem svg {
+  color: var(--primary);
+}
+
+.certificateItem span {
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  color: var(--macos-text);
+}
+
+@media (max-width: 1024px) {
+  .certificatesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .certificates {
+    padding: 2rem 0;
+  }
+  
+  .certificatesContent {
+    padding: 2rem;
+  }
+  
+  .certificatesText h2 {
+    font-size: 1.5rem;
+  }
+  
+  .certificatesGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .certificatesContent {
+    padding: 1.5rem;
+  }
+  
+  .certificatesText h2 {
+    font-size: 1.2rem;
+  }
+  
+  .certificatesGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .certificateItem {
+    padding: 1rem;
+  }
+}

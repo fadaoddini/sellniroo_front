@@ -1,0 +1,549 @@
+@font-face {
+  font-family: 'edameh';
+  src: url('/font/edameh.ttf') format('truetype');
+
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'iran_extra';
+  src: url('/font/iran_extra.ttf') format('truetype');
+
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'iran_bold';
+  src: url('/font/iran_bold.ttf') format('truetype');
+  font-display: swap;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'iran';
+  src: url('/font/iran.ttf') format('truetype');
+
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'iran_thin';
+  src: url('/font/iran_thin.ttf') format('truetype');
+
+  font-display: block;
+}
+
+/* ==================== */
+/* متغیرهای فونت */
+/* ==================== */
+
+:root {
+
+   --hex-width: 220px;
+  --hex-gap: 16px;
+  --sqrt3: 1.73205;
+  --hex-height: calc(var(--hex-width) * 2 / var(--sqrt3));
+  --hex-margin-x: calc(var(--hex-gap) / 2);
+  --hex-margin-y: calc(
+    (var(--sqrt3) / 4 * var(--hex-gap)) - (0.125 * var(--hex-height))
+  );
+
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+
+  --accent: #f97316;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6b7280;
+
+
+
+  /* فونت‌ها */
+  --font-iran: 'iran', Tahoma, Arial, sans-serif;
+  --font-iran-bold: 'iran_bold', Tahoma, Arial, sans-serif;
+  --font-iran-extra: 'iran_extra', Tahoma, Arial, sans-serif;
+  --font-iran-thin: 'iran_thin', Tahoma, Arial, sans-serif;
+  --font-edameh: 'edameh', Tahoma, Arial, sans-serif;
+
+  /* ============================================
+     رنگ‌های اصلی پروژه (زرشکی و سبز پرکلاغی)
+     ============================================ */
+  --primary: #800020;
+  --primary-dark: #5c0018;
+  --primary-light: #a8324a;
+  --secondary: #2d4a3e;
+  --secondary-light: #4a6b5c;
+  --secondary-dark: #1a2f26;
+
+  /* ============================================
+     رنگ‌های مکمل MacOS
+     ============================================ */
+  --macos-bg: #f5f5f7;
+  --macos-card: rgb(255, 255, 255);
+  --macos-border: rgba(0, 0, 0, 0.08);
+  --macos-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --macos-shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.12);
+  --macos-blue: #007aff;
+  --macos-blue-hover: #0066d9;
+  --macos-green: #34c759;
+  --macos-red: #ff3b30;
+  --macos-orange: #ff9500;
+  --macos-gray: #8e8e93;
+  --macos-text: #1c1c1e;
+  --macos-text-secondary: #d4d4d4;
+  --macos-glass: rgba(255, 255, 255, 0.72);
+  --macos-blur: blur(20px);
+  --white: #fff;
+  --black: #000;
+}
+
+/* ============================================
+   RESET & BASE
+   ============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+    background: radial-gradient(circle at 50% 50%, #16181f 0%, #08090b 100%);
+
+  color: var(--macos-text);
+  direction: rtl;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+table {
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--macos-gray);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #6c6c70;
+}
+
+/* ============================================
+   GLASSMORPHISM
+   ============================================ */
+.glass {
+  background: var(--macos-glass);
+  backdrop-filter: var(--macos-blur);
+  -webkit-backdrop-filter: var(--macos-blur);
+  border: 1px solid var(--macos-border);
+}
+
+/* ============================================
+   CONTAINER
+   ============================================ */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   BUTTONS - MacOS Style
+   ============================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary {
+  background: var(--macos-blue);
+  color: white;
+}
+.btn-primary:hover {
+  background: var(--macos-blue-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+}
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+.btn-secondary {
+  background: #e5e5ea;
+  color: var(--macos-text);
+}
+.btn-secondary:hover {
+  background: #d1d1d6;
+}
+
+.btn-success {
+  background: var(--macos-green);
+  color: white;
+}
+.btn-success:hover {
+  background: #2db84d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(52, 199, 89, 0.3);
+}
+
+.btn-danger {
+  background: var(--macos-red);
+  color: white;
+}
+.btn-danger:hover {
+  background: #e0352b;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--macos-blue);
+}
+.btn-ghost:hover {
+  background: rgba(0, 122, 255, 0.08);
+}
+
+.btn-sm {
+  padding: 6px 16px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+.btn-lg {
+  padding: 14px 32px;
+  font-size: 17px;
+  border-radius: 12px;
+}
+.btn-block {
+  width: 100%;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ============================================
+   CARDS - MacOS Style
+   ============================================ */
+.card {
+  background: var(--macos-card);
+  backdrop-filter: var(--macos-blur);
+  -webkit-backdrop-filter: var(--macos-blur);
+  border: 1px solid var(--macos-border);
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: var(--macos-shadow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card:hover {
+  box-shadow: var(--macos-shadow-hover);
+}
+
+/* ============================================
+   FORM - MacOS Style
+   ============================================ */
+.form-group {
+  margin-bottom: 18px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--macos-text-secondary);
+  letter-spacing: 0.3px;
+  font-family: var(--font-iran);
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1.5px solid var(--macos-border);
+  border-radius: 10px;
+  font-size: 15px;
+  color: var(--macos-text);
+  transition: all 0.2s ease;
+  outline: none;
+  font-family: var(--font-iran);
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--macos-blue);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.12);
+}
+.form-group input::placeholder {
+  color: var(--macos-gray);
+}
+.form-group .error {
+  color: var(--macos-red);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+/* ============================================
+   GRID
+   ============================================ */
+.grid {
+  display: grid;
+  gap: 24px;
+}
+.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-left { text-align: left; }
+.text-muted { color: var(--macos-text-secondary); }
+
+.flex { display: flex; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.gap-1 { gap: 8px; }
+.gap-2 { gap: 16px; }
+.gap-3 { gap: 24px; }
+.gap-4 { gap: 32px; }
+
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+.mt-3 { margin-top: 24px; }
+.mt-4 { margin-top: 32px; }
+.mb-1 { margin-bottom: 8px; }
+.mb-2 { margin-bottom: 16px; }
+.mb-3 { margin-bottom: 24px; }
+.mb-4 { margin-bottom: 32px; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+
+
+
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================
+   REMOVE OUTLINES ONLY (NOT USER-SELECT)
+   ============================================ */
+
+/* حذف فوکوس آبی در همه مرورگرها */
+*:focus,
+*:focus-visible,
+*:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* حذف هایلایت آبی در موبایل - بدون مسدود کردن کلیک */
+* {
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* حذف فوکوس برای دکمه‌ها و لینک‌ها */
+button:focus,
+button:focus-visible,
+a:focus,
+a:focus-visible,
+input:focus,
+input:focus-visible,
+select:focus,
+select:focus-visible,
+textarea:focus,
+textarea:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* ============================================
+   END REMOVE OUTLINES
+   ============================================ */
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .grid-4 { grid-template-columns: 1fr; }
+  .container { padding: 0 16px; }
+}
+
+/* ============================================
+   DIRECTION CLASSES
+   ============================================ */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="ltr"] {
+  text-align: left;
+}
+
+[dir="rtl"] .container {
+  direction: rtl;
+}
+
+[dir="ltr"] .container {
+  direction: ltr;
+}
+
+/* تنظیمات برای حالت انگلیسی */
+[dir="ltr"] .heroBadge,
+[dir="ltr"] .heroTitle,
+[dir="ltr"] .heroSubtitle,
+[dir="ltr"] .heroDesc,
+[dir="ltr"] .sectionTitle,
+[dir="ltr"] .sectionDesc,
+[dir="ltr"] .featureTitle,
+[dir="ltr"] .featureDesc,
+[dir="ltr"] .serviceTitle,
+[dir="ltr"] .serviceDesc,
+[dir="ltr"] .advantageTitle,
+[dir="ltr"] .advantageDesc,
+[dir="ltr"] .sliderTitle h3,
+[dir="ltr"] .sliderTitle p,
+[dir="ltr"] .beforeLabel,
+[dir="ltr"] .afterLabel,
+[dir="ltr"] .ctaText h2,
+[dir="ltr"] .ctaText p {
+  text-align: left !important;
+}
+
+[dir="rtl"] .heroBadge,
+[dir="rtl"] .heroTitle,
+[dir="rtl"] .heroSubtitle,
+[dir="rtl"] .heroDesc,
+[dir="rtl"] .sectionTitle,
+[dir="rtl"] .sectionDesc,
+[dir="rtl"] .featureTitle,
+[dir="rtl"] .featureDesc,
+[dir="rtl"] .serviceTitle,
+[dir="rtl"] .serviceDesc,
+[dir="rtl"] .advantageTitle,
+[dir="rtl"] .advantageDesc,
+[dir="rtl"] .sliderTitle h3,
+[dir="rtl"] .sliderTitle p,
+[dir="rtl"] .beforeLabel,
+[dir="rtl"] .afterLabel,
+[dir="rtl"] .ctaText h2,
+[dir="rtl"] .ctaText p {
+  text-align: right !important;
+}
+
+/* تنظیمات منو برای حالت انگلیسی */
+[dir="ltr"] .navList {
+  flex-direction: row-reverse;
+}
+
+[dir="ltr"] .headerRight {
+  flex-direction: row-reverse;
+}
+
+[dir="ltr"] .langDropdown {
+  right: auto;
+  left: 0;
+}
+
+[dir="ltr"] .profileDropdown {
+  right: auto;
+  left: 0;
+}
+
+[dir="ltr"] .mobileNavLink {
+  flex-direction: row-reverse;
+}
+
+/* تنظیمات دکمه‌ها برای حالت انگلیسی */
+[dir="ltr"] .primaryBtn svg,
+[dir="ltr"] .secondaryBtn svg {
+  margin-left: 0;
+  margin-right: 8px;
+}
+
+[dir="rtl"] .primaryBtn svg,
+[dir="rtl"] .secondaryBtn svg {
+  margin-right: 0;
+  margin-left: 8px;
+}
+
+/* تنظیمات اسلایدر برای حالت انگلیسی */
+[dir="ltr"] .beforeLabel {
+  order: 2;
+}
+
+[dir="ltr"] .afterLabel {
+  order: 0;
+}
+
+[dir="ltr"] .sliderLabels {
+  flex-direction: row-reverse;
+}
+
+/* تنظیمات گرید برای حالت انگلیسی */
+[dir="ltr"] .featuresGrid,
+[dir="ltr"] .servicesGrid,
+[dir="ltr"] .advantagesGrid,
+[dir="ltr"] .certificatesGrid,
+[dir="ltr"] .statsGrid {
+  direction: ltr;
+}
+
+[dir="rtl"] .featuresGrid,
+[dir="rtl"] .servicesGrid,
+[dir="rtl"] .advantagesGrid,
+[dir="rtl"] .certificatesGrid,
+[dir="rtl"] .statsGrid {
+  direction: rtl;
+}
+*:focus-visible {
+  outline: 2px solid #800020 !important;
+  outline-offset: 2px !important;
+}

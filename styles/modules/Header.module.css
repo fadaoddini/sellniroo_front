@@ -1,0 +1,446 @@
+/* ============================================
+   هدر اصلی
+   ============================================ */
+.header {
+  background: #000;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--macos-border);
+  position: sticky;
+  top: 30px;
+  z-index: 1000;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 1.5rem;
+  height: 50px;
+}
+
+/* ============================================
+   لوگو
+   ============================================ */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+}
+
+.logoText {
+  color: var(--white);
+  font-family: var(--font-edameh);
+  font-weight: bolder;
+}
+
+.logoHighlight {
+  color: var(--primary-light);
+  font-family: var(--font-edameh);
+}
+
+/* ============================================
+   منوی دسکتاپ
+   ============================================ */
+.desktopNav {
+  flex: 1;
+  display: flex;
+  justify-content: right;
+  margin: 0 1rem;
+}
+
+.navList {
+  display: flex;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--macos-text-secondary);
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.navLink:hover {
+  background: rgba(128, 0, 32, 0.06);
+  color: var(--white);
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 2px;
+}
+
+.navLink:hover::after {
+  width: 60%;
+}
+
+.dropdownWrapper {
+  position: relative;
+}
+
+.dropdownTrigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dropdownArrow {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rotated {
+  transform: rotate(180deg);
+}
+
+.dropdownOpen {
+  background: rgba(128, 0, 32, 0.06);
+  color: var(--primary);
+}
+
+/* ============================================
+   نوار افقی زیرمنو (Mega Menu)
+   ============================================ */
+.megaMenu {
+  position: absolute;
+  top: 80px;
+  left: 0;
+  right: 0;
+  background: var(--primary-dark);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--macos-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+  z-index: 9999;
+  animation: slideDown 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0.3rem 0;
+}
+
+.megaMenuContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.megaMenuContent {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.megaMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.3rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 100px;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.megaMenuItem:hover {
+  background: #ffffff35;
+  color: var(--white);
+}
+
+.megaMenuItemIcon {
+  display: flex;
+  align-items: center;
+  width: 16px;
+  justify-content: center;
+  color: var(--white);
+  transition: all 0.25s ease;
+}
+
+.megaMenuItem:hover .megaMenuItemIcon {
+  color: var(--white);
+}
+
+.megaMenuItemLabel {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--white);
+  transition: all 0.25s ease;
+}
+
+.megaMenuItem:hover .megaMenuItemLabel {
+  color: var(--white);
+}
+
+/* ============================================
+   بخش راست هدر
+   ============================================ */
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ============================================
+   دکمه منوی موبایل
+   ============================================ */
+.menuToggle {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem;
+  color: var(--macos-text);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menuToggle:hover {
+  color: var(--primary);
+}
+
+/* ============================================
+   منوی موبایل
+   ============================================ */
+.mobileMenu {
+  position: fixed;
+  top: 80px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 999;
+  animation: fadeInUp 0.3s ease-out;
+  padding: 2rem 1.5rem;
+  overflow-y: auto;
+}
+
+.mobileNavList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 70px 0;
+  padding: 0;
+}
+
+.mobileNavLink {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--macos-text-secondary);
+  font-size: 1.1rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobileNavLink:hover {
+  background: rgba(128, 0, 32, 0.06);
+  color: var(--primary);
+}
+
+.mobileDivider {
+  padding: 0.5rem 0 0.25rem;
+  margin-top: 0.25rem;
+  border-top: 1px solid var(--macos-border);
+}
+
+.mobileDividerText {
+  display: block;
+  padding: 0.3rem 1.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  letter-spacing: 0.5px;
+  opacity: 0.6;
+}
+
+/* ============================================
+   Floating Action Button
+   ============================================ */
+.fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(45, 74, 62, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.fab:hover {
+  transform: scale(1.1) rotate(-10deg);
+  box-shadow: 0 8px 30px rgba(45, 74, 62, 0.5);
+}
+
+.fabTooltip {
+  position: absolute;
+  right: calc(100% + 12px);
+  background: var(--macos-text);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fab:hover .fabTooltip {
+  opacity: 1;
+  right: calc(100% + 20px);
+}
+
+/* ============================================
+   انیمیشن‌ها
+   ============================================ */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   ریسپانسیو
+   ============================================ */
+@media (max-width: 1024px) {
+  .desktopNav {
+    display: none;
+  }
+  
+  .menuToggle {
+    display: block;
+  }
+  
+  .megaMenu {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    top: 36px;
+  }
+  
+  .headerContainer {
+    height: 60px;
+    padding: 0 1rem;
+  }
+  
+  .logoText {
+    font-size: 1.2rem;
+  }
+  
+  .fab {
+    width: 50px;
+    height: 50px;
+    bottom: 1.5rem;
+    right: 1.5rem;
+  }
+  
+  .fabTooltip {
+    display: none;
+  }
+  
+  .mobileMenu {
+    top: 60px;
+    padding: 1rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    top: 32px;
+  }
+  
+  .mobileMenu {
+    padding: 0.8rem;
+  }
+  
+  .mobileNavLink {
+    padding: 0.7rem 1rem;
+    font-size: 0.8rem;
+  }
+  
+  .mobileDividerText {
+    font-size: 0.6rem;
+    padding: 0.2rem 1rem;
+  }
+}
+
+.logo a {
+  display: flex;
+  align-items: center;
+}
+
+.logoImage {
+  width: auto;
+  height: 42px;
+  object-fit: contain;
+  transition: all .3s ease;
+}
+
+.logoImage:hover {
+  transform: scale(1.03);
+}

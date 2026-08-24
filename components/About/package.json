@@ -1,0 +1,9 @@
+{
+  "name": "@components/about",
+  "version": "1.0.0",
+  "main": "index.jsx",
+  "private": true,
+  "dependencies": {
+    "react": "^18.0.0"
+  }
+}

@@ -1,0 +1,495 @@
+/* app/sales/styles/StatusChangeModal.module.css */
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal {
+  background: linear-gradient(135deg, #1a1c24, #0a0b0f);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 92%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease-out;
+  font-family: var(--font-iran);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.modal::-webkit-scrollbar {
+  width: 4px;
+}
+
+.modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal::-webkit-scrollbar-thumb {
+  background: rgba(139, 154, 255, 0.3);
+  border-radius: 10px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  font-family: var(--font-edameh);
+}
+
+.closeBtn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.3);
+  padding: 0.25rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.closeBtn:hover:not(:disabled) {
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.closeBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.itemInfo {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.infoRow:not(:last-child) {
+  margin-bottom: 0.25rem;
+}
+
+.infoLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.3);
+  min-width: 60px;
+}
+
+.infoValue {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+.currentStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.1rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.65rem;
+  font-weight: 500;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dateSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.formGroup label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.formGroup input,
+.formGroup textarea {
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-family: var(--font-iran);
+  transition: all 0.2s ease;
+  outline: none;
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.formGroup input::placeholder,
+.formGroup textarea::placeholder {
+  color: rgba(255, 255, 255, 0.15);
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  border-color: rgba(139, 154, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 4px rgba(139, 154, 255, 0.05);
+}
+
+.formGroup textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: 0.5rem;
+}
+
+.cancelBtn {
+  padding: 0.4rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-family: var(--font-iran);
+  color: rgba(255, 255, 255, 0.3);
+  transition: all 0.2s ease;
+}
+
+.cancelBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.cancelBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.confirmBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-family: var(--font-iran);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.confirmBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.confirmBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.spinner {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .modal {
+    padding: 1.5rem;
+  }
+
+  .dateSection {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .cancelBtn,
+  .confirmBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal {
+    padding: 1rem;
+  }
+  
+  .header h2 {
+    font-size: 0.9rem;
+  }
+  
+  .iconWrapper {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+
+/* ============================================
+   SUPPORT FOR PERSIAN DATE PICKER
+   ============================================ */
+
+/* استایل‌های PersianDatePicker در حالت مودال */
+.dateSection .formGroup :global(.pickerWrapper) {
+  width: 100%;
+}
+
+.dateSection .formGroup :global(.pickerInput) {
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 36px;
+}
+
+.dateSection .formGroup :global(.pickerInput:hover) {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dateSection .formGroup :global(.pickerInput:focus-within) {
+  border-color: rgba(139, 154, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 4px rgba(139, 154, 255, 0.05);
+}
+
+.dateSection .formGroup :global(.calendarIcon) {
+  color: rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.dateSection .formGroup :global(.selectedDate) {
+  color: rgba(255, 255, 255, 0.7);
+  flex: 1;
+}
+
+.dateSection .formGroup :global(.placeholder) {
+  color: rgba(255, 255, 255, 0.2);
+  flex: 1;
+}
+
+.dateSection .formGroup :global(.clearBtn) {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.2);
+  padding: 0.1rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dateSection .formGroup :global(.clearBtn:hover) {
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Dropdown استایل */
+.dateSection .formGroup :global(.pickerDropdown) {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #1a1c24, #0a0b0f);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 0.75rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  z-index: 10001;
+  min-width: 280px;
+}
+
+.dateSection .formGroup :global(.pickerHeader) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  direction: ltr;
+}
+
+.dateSection .formGroup :global(.monthYear) {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--font-iran);
+}
+
+.dateSection .formGroup :global(.navBtn) {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dateSection .formGroup :global(.navBtn:hover) {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.dateSection .formGroup :global(.weekDays) {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 0.25rem;
+}
+
+.dateSection .formGroup :global(.weekDay) {
+  text-align: center;
+  font-size: 0.55rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.2);
+  padding: 0.2rem 0;
+}
+
+.dateSection .formGroup :global(.daysGrid) {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.dateSection .formGroup :global(.dayBtn) {
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 0.25rem 0;
+  font-size: 0.65rem;
+  font-family: var(--font-iran);
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.dateSection .formGroup :global(.dayBtn:hover) {
+  background: rgba(139, 154, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.dateSection .formGroup :global(.dayBtn.today) {
+  color: #8b9aff;
+  font-weight: 600;
+}
+
+.dateSection .formGroup :global(.dayBtn.selected) {
+  background: rgba(139, 154, 255, 0.2);
+  color: #8b9aff;
+  font-weight: 600;
+}
+
+.dateSection .formGroup :global(.emptyDay) {
+  padding: 0.25rem 0;
+}
+
+/* RTL برای PersianDatePicker */
+[dir="rtl"] .dateSection .formGroup :global(.pickerHeader) {
+  direction: rtl;
+}
+
+[dir="rtl"] .dateSection .formGroup :global(.navBtn svg) {
+  transform: scaleX(-1);
+}

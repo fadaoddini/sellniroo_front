@@ -1,0 +1,442 @@
+/* ============================================
+   STATS - HEXAGON STYLE (جایگزین کارت‌ها)
+   ============================================ */
+
+/* کانتینر اصلی استتس - همون grid قبلی */
+.statsScroll {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(90px, 12vw, 140px), 1fr));
+  gap: clamp(1.5rem, 2.5vw, 3rem);
+  padding: 0.5rem 0.25rem 1rem;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+}
+
+/* ============================================
+   هر آیتم استتس به شکل شش ضلعی
+   ============================================ */
+.statCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0;
+  background: transparent;
+  backdrop-filter: none;
+  border: none;
+  border-radius: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  outline: none;
+  min-height: auto;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  /* نسبت 1:1 برای شش ضلعی */
+}
+
+.statCard:hover {
+  transform: scale(1.06);
+}
+
+.statCard:active {
+  transform: scale(0.94);
+}
+
+.statCard:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 6px;
+}
+
+/* ============================================
+   شش ضلعی اصلی
+   ============================================ */
+.statHexagon {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(8px, 1.2vw, 16px);
+  overflow: hidden;
+}
+
+/* ============================================
+   بردر دورانی - فقط برای آیتم فعال
+   ============================================ */
+.statCard.active .statHexagon::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  z-index: 0;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  background: conic-gradient(
+    from 0deg,
+    #000000 0deg,
+    #1a0000 30deg,
+    #2e0000 60deg,
+    #4f0000 90deg,
+    #630000 120deg,
+    #800000 150deg,
+    #9f0000 180deg,
+    #af0000 210deg,
+    #cc0000 240deg,
+    #ff4444 270deg,
+    #ff0000 300deg,
+    #ff3333 330deg,
+    #da3c3c 360deg
+  );
+  animation: spinBorder 2.5s linear infinite;
+  will-change: transform;
+}
+
+/* لایه داخلی برای پنهان کردن وسط بردر */
+.statCard.active .statHexagon::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  z-index: 0;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+/* ============================================
+   محتوای داخلی شش ضلعی (لایه رویی)
+   ============================================ */
+.statHexagonContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2px, 0.4vw, 6px);
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ============================================
+   آیکون داخل شش ضلعی
+   ============================================ */
+.statHexagonIcon {
+  color: rgba(255, 255, 255, 0.9);
+  transition: all 0.4s ease;
+  width: clamp(28px, 3.5vw, 40px);
+  height: clamp(28px, 3.5vw, 40px);
+  flex-shrink: 0;
+}
+
+.statCard.active .statHexagonIcon {
+  color: #ff4444;
+  filter: drop-shadow(0 0 20px rgba(255, 68, 68, 0.3));
+}
+
+.statCard:hover .statHexagonIcon {
+  transform: scale(1.1);
+}
+
+/* ============================================
+   مقدار (value) داخل شش ضلعی
+   ============================================ */
+.statHexagonValue {
+  font-size: clamp(1.1rem, 2vw, 1.6rem);
+  font-weight: 800;
+  font-family: var(--font-edameh);
+  color: var(--white);
+  line-height: 1.1;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+.statCard.active .statHexagonValue {
+  color: #ffffff;
+  text-shadow: 0 0 30px rgba(255, 68, 68, 0.4);
+}
+
+/* ============================================
+   برچسب (label) داخل شش ضلعی
+   ============================================ */
+.statHexagonLabel {
+  font-size: clamp(0.5rem, 0.7vw, 0.7rem);
+  font-weight: 500;
+  font-family: var(--font-iran);
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.3;
+  max-width: 90%;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+}
+
+.statCard.active .statHexagonLabel {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* ============================================
+   نشانگر فعال (نوار کوچک پایین)
+   ============================================ */
+.statActiveIndicator {
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(20px, 3vw, 40px);
+  height: 3px;
+  background: linear-gradient(90deg, #cc0033, #ff4444);
+  border-radius: 2px;
+  animation: slideIn 0.3s ease;
+  z-index: 5;
+}
+
+/* ============================================
+   انیمیشن چرخش بردر
+   ============================================ */
+@keyframes spinBorder {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    width: 0;
+  }
+  to {
+    width: clamp(20px, 3vw, 40px);
+  }
+}
+
+/* ============================================
+   دکمه‌های اکشن (ویرایش/حذف) روی شش ضلعی
+   ============================================ */
+.statActions {
+  position: absolute;
+  top: clamp(-6px, -0.5vw, -4px);
+  right: clamp(-6px, -0.5vw, -4px);
+  display: flex;
+  gap: clamp(2px, 0.3vw, 6px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.statCard:hover .statActions {
+  opacity: 1;
+}
+
+/* در موبایل همیشه نمایش داده شوند */
+@media (max-width: 768px) {
+  .statActions {
+    opacity: 1;
+    top: clamp(-4px, -0.5vw, -2px);
+    right: clamp(-4px, -0.5vw, -2px);
+  }
+}
+
+.editStatBtn,
+.deleteStatBtn {
+  width: clamp(22px, 2.5vw, 30px);
+  height: clamp(22px, 2.5vw, 30px);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.editStatBtn {
+  color: #4fc3f7;
+}
+
+.editStatBtn:hover {
+  background: #4fc3f7;
+  color: #000;
+  transform: scale(1.15);
+}
+
+.deleteStatBtn {
+  color: #ff6b6b;
+}
+
+.deleteStatBtn:hover {
+  background: #ff6b6b;
+  color: #000;
+  transform: scale(1.15);
+}
+
+.editStatBtn svg,
+.deleteStatBtn svg {
+  width: clamp(12px, 1.2vw, 16px);
+  height: clamp(12px, 1.2vw, 16px);
+}
+
+/* ============================================
+   حالت ویرایش داخل شش ضلعی
+   ============================================ */
+.editStatForm {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(3px, 0.4vw, 6px);
+  width: 100%;
+  padding: clamp(4px, 0.5vw, 8px);
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.editStatForm input {
+  padding: clamp(3px, 0.3vw, 6px) clamp(6px, 0.6vw, 10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  font-size: clamp(0.55rem, 0.7vw, 0.75rem);
+  font-family: var(--font-iran);
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--white);
+}
+
+.editStatForm input:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.editStatForm input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.editStatForm .editActions {
+  display: flex;
+  gap: clamp(3px, 0.3vw, 6px);
+  justify-content: center;
+  margin-top: clamp(3px, 0.3vw, 6px);
+}
+
+.editStatForm .saveBtn,
+.editStatForm .cancelBtn {
+  padding: clamp(3px, 0.3vw, 6px) clamp(8px, 0.8vw, 14px);
+  font-size: clamp(0.5rem, 0.6vw, 0.7rem);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: var(--font-iran);
+}
+
+.editStatForm .saveBtn {
+  background: var(--macos-green);
+  color: white;
+}
+
+.editStatForm .saveBtn:hover {
+  background: #2db84d;
+}
+
+.editStatForm .cancelBtn {
+  background: var(--macos-red);
+  color: white;
+}
+
+.editStatForm .cancelBtn:hover {
+  background: #e0352b;
+}
+
+/* ============================================
+   ریسپانسیو برای شش ضلعی‌ها
+   ============================================ */
+
+@media (max-width: 768px) {
+  .statsScroll {
+    grid-template-columns: repeat(auto-fill, minmax(clamp(75px, 16vw, 110px), 1fr));
+    gap: clamp(1.2rem, 2vw, 2rem);
+  }
+  
+  .statHexagonValue {
+    font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+  }
+  
+  .statHexagonLabel {
+    font-size: clamp(0.45rem, 1.2vw, 0.6rem);
+  }
+  
+  .statHexagonIcon {
+    width: clamp(22px, 4vw, 30px);
+    height: clamp(22px, 4vw, 30px);
+  }
+}
+
+@media (max-width: 480px) {
+  .statsScroll {
+    grid-template-columns: repeat(auto-fill, minmax(clamp(65px, 20vw, 85px), 1fr));
+    gap: clamp(1rem, 1.5vw, 1.5rem);
+  }
+  
+  .statHexagonValue {
+    font-size: clamp(0.7rem, 3vw, 0.95rem);
+  }
+  
+  .statHexagonLabel {
+    font-size: clamp(0.4rem, 1.5vw, 0.5rem);
+  }
+  
+  .statHexagonIcon {
+    width: clamp(18px, 5vw, 24px);
+    height: clamp(18px, 5vw, 24px);
+  }
+  
+  .statActions {
+    opacity: 1;
+  }
+  
+  .editStatBtn,
+  .deleteStatBtn {
+    width: clamp(18px, 4vw, 22px);
+    height: clamp(18px, 4vw, 22px);
+  }
+  
+  .editStatBtn svg,
+  .deleteStatBtn svg {
+    width: clamp(10px, 2.5vw, 14px);
+    height: clamp(10px, 2.5vw, 14px);
+  }
+}
+
+@media (max-width: 380px) {
+  .statsScroll {
+    grid-template-columns: repeat(auto-fill, minmax(clamp(55px, 22vw, 70px), 1fr));
+    gap: 0.8rem;
+  }
+  
+  .statHexagonValue {
+    font-size: clamp(0.6rem, 3.5vw, 0.8rem);
+  }
+  
+  .statHexagonLabel {
+    font-size: clamp(0.35rem, 1.8vw, 0.45rem);
+  }
+  
+  .statHexagonIcon {
+    width: clamp(14px, 5vw, 20px);
+    height: clamp(14px, 5vw, 20px);
+  }
+}

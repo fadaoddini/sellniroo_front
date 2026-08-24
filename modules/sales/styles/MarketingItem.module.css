@@ -1,0 +1,328 @@
+/* ============================================
+   MarketingItem.module.css - Hexagon Dark Theme
+   ============================================ */
+
+.item {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.item:hover {
+  border-color: rgba(139, 154, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.todayItem {
+  border-color: rgba(255, 149, 0, 0.3);
+  background: rgba(255, 149, 0, 0.05);
+}
+
+.todayItem:hover {
+  border-color: rgba(255, 149, 0, 0.4);
+  box-shadow: 0 4px 20px rgba(255, 149, 0, 0.05);
+}
+
+.itemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.itemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.itemTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  color: #fff;
+  font-size: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.titleText {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.customerName {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.55rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ============================================
+   ✅ نمایش توضیحات - اضافه شده در جای درست
+   ============================================ */
+.itemDescription {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 6px;
+  border-right: 2px solid rgba(139, 154, 255, 0.15);
+  margin: 0.1rem 0;
+}
+
+.descIcon {
+  color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.descText {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* ============================================ */
+
+.itemActions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.deleteBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 59, 48, 0.4);
+  padding: 0.2rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.deleteBtn:hover {
+  color: #ff3b30;
+  background: rgba(255, 59, 48, 0.1);
+}
+
+.viewBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.3);
+  padding: 0.2rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.viewBtn:hover {
+  color: #8b9aff;
+  background: rgba(139, 154, 255, 0.1);
+}
+
+.itemMeta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: 0.6rem;
+  color: #fff;
+}
+
+.itemMeta span {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.itemMeta svg {
+  color: rgba(255, 255, 255, 0.63);
+}
+
+.phone {
+  direction: ltr;
+}
+
+.nextFollow {
+  color: #ff9500;
+}
+
+/* Action Buttons */
+.actionButtons {
+  display: flex;
+  gap: 0.3rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  flex-wrap: wrap;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 0.55rem;
+  font-family: var(--font-iran);
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.actionBtn:hover {
+  transform: translateY(-1px);
+}
+
+.actionBtn span {
+  font-size: 0.55rem;
+}
+
+.followUpBtn {
+  border-color: rgba(255, 149, 0, 0.2);
+  color: #ff9500;
+}
+
+.followUpBtn:hover {
+  background: rgba(255, 149, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(255, 149, 0, 0.1);
+}
+
+.closeBtn {
+  border-color: rgba(255, 59, 48, 0.2);
+  color: #ff3b30;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 59, 48, 0.1);
+  box-shadow: 0 2px 8px rgba(255, 59, 48, 0.1);
+}
+
+.contractBtn {
+  border-color: rgba(52, 199, 89, 0.2);
+  color: #34c759;
+}
+
+.contractBtn:hover {
+  background: rgba(52, 199, 89, 0.1);
+  box-shadow: 0 2px 8px rgba(52, 199, 89, 0.1);
+}
+
+/* ============================================
+   RESULT BADGE (برای آیتم‌های ستون نتایج)
+   ============================================ */
+.resultBadge {
+  padding-top: 0.4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: 0.2rem;
+}
+
+.confirmedBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  background: rgba(52, 199, 89, 0.1);
+  border: 1px solid rgba(52, 199, 89, 0.15);
+  border-radius: 6px;
+  font-size: 0.55rem;
+  color: #34c759;
+  font-weight: 500;
+}
+
+.cancelledBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  background: rgba(255, 59, 48, 0.1);
+  border: 1px solid rgba(255, 59, 48, 0.15);
+  border-radius: 6px;
+  font-size: 0.55rem;
+  color: #ff3b30;
+  font-weight: 500;
+}
+
+.confirmedBadge svg,
+.cancelledBadge svg {
+  flex-shrink: 0;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .item {
+    padding: 0.6rem 0.8rem;
+  }
+
+  .itemTitle {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+
+  .actionButtons {
+    flex-wrap: wrap;
+  }
+
+  .actionBtn {
+    flex: 1;
+    justify-content: center;
+    padding: 0.2rem 0.4rem;
+  }
+  
+  .resultBadge {
+    margin-top: 0.3rem;
+  }
+
+  .itemDescription {
+    padding: 0.3rem 0.5rem;
+  }
+  
+  .descText {
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .actionBtn span {
+    display: none;
+  }
+
+  .actionBtn {
+    flex: 1;
+    justify-content: center;
+    padding: 0.25rem;
+  }
+  
+  .itemMeta {
+    gap: 0.5rem;
+    font-size: 0.5rem;
+  }
+  
+  .confirmedBadge,
+  .cancelledBadge {
+    font-size: 0.5rem;
+    padding: 0.15rem 0.5rem;
+  }
+}

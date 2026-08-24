@@ -1,0 +1,544 @@
+/* modules/lsf/LsfPage.module.css */
+
+/* ============================================
+   استایل‌های عمومی صفحه
+   ============================================ */
+.lsfPage {
+  font-family: var(--font-iran, sans-serif);
+  background: #ffffff;
+  overflow-x: hidden;
+  transition: all 0.3s ease;
+}
+
+/* راست‌چین (پیش‌فرض) */
+.lsfPage[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+/* چپ‌چین */
+.lsfPage[dir="ltr"] {
+  direction: ltr;
+  text-align: left;
+}
+
+/* ============================================
+   استایل‌های تیترهای مشترک
+   ============================================ */
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 4rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sectionBadge {
+  display: inline-block;
+  color: var(--primary, #800020);
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-iran, sans-serif);
+}
+
+.sectionTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary, #1a1a2e);
+  margin-bottom: 1rem;
+  font-family: var(--font-edameh, sans-serif);
+}
+
+.sectionDesc {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #6b7280);
+  max-width: 42rem;
+  margin: 0 auto;
+  font-family: var(--font-iran, sans-serif);
+}
+
+/* ============================================
+   ریسپانسیو عمومی
+   ============================================ */
+@media (max-width: 1024px) {
+  .sectionTitle {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .sectionHeader {
+    margin-bottom: 2.5rem;
+  }
+  
+  .sectionTitle {
+    font-size: 2rem;
+  }
+  
+  .sectionDesc {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sectionTitle {
+    font-size: 1.75rem;
+  }
+  
+  .sectionDesc {
+    font-size: 0.9rem;
+  }
+}
+
+/* ============================================
+   کلاس‌های کمکی
+   ============================================ */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.textRight {
+  text-align: right;
+}
+
+.textLeft {
+  text-align: left;
+}
+
+/* راست‌چین و چپ‌چین بر اساس dir */
+[dir="rtl"] .textAlignStart {
+  text-align: right;
+}
+
+[dir="ltr"] .textAlignStart {
+  text-align: left;
+}
+
+[dir="rtl"] .textAlignEnd {
+  text-align: left;
+}
+
+[dir="ltr"] .textAlignEnd {
+  text-align: right;
+}
+
+.textPrimary {
+  color: var(--primary, #800020);
+}
+
+.textWhite {
+  color: #ffffff;
+}
+
+.bgDark {
+  background: linear-gradient(135deg, rgba(128, 0, 32, 0.902), rgb(0, 0, 0), rgb(128, 0, 32));
+}
+
+.bgLight {
+  background: #f9fafb;
+}
+
+.bgWhite {
+  background: #ffffff;
+}
+
+/* ============================================
+   انیمیشن‌های مشترک
+   ============================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* انیمیشن‌های بر اساس جهت */
+[dir="rtl"] .slideIn {
+  animation: slideInRight 0.5s ease forwards;
+}
+
+[dir="ltr"] .slideIn {
+  animation: slideInLeft 0.5s ease forwards;
+}
+
+/* ============================================
+   کلاس‌های ابزاری برای اسکرول
+   ============================================ */
+.scrollTrigger {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease;
+}
+
+.scrollTrigger.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+   استایل دکمه‌های عمومی
+   ============================================ */
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--primary, #800020);
+  color: var(--white, #ffffff);
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-iran, sans-serif);
+}
+
+.btnPrimary:hover {
+  background: var(--primary-dark, #5a0016);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(128, 0, 32, 0.3);
+}
+
+.btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--white, #ffffff);
+  color: var(--text-primary, #1a1a2e);
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-iran, sans-serif);
+}
+
+.btnSecondary:hover {
+  background: #d1d1d6;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.btnWhite {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  color: var(--primary, #800020);
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.125rem;
+  font-family: var(--font-iran-bold, sans-serif);
+}
+
+.btnWhite:hover {
+  background: #f0f0f0;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   ریسپانسیو دکمه‌ها
+   ============================================ */
+@media (max-width: 768px) {
+  .btnPrimary,
+  .btnSecondary,
+  .btnWhite {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ============================================
+   استایل کارت‌های عمومی
+   ============================================ */
+.card {
+  background: var(--macos-card, #ffffff);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--macos-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+  transform: scale(1.02);
+  box-shadow: var(--macos-shadow-hover, 0 10px 15px -3px rgba(0, 0, 0, 0.2));
+}
+
+.cardDark {
+  background: var(--primary-dark, #5a0016);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  color: #ffffff;
+  box-shadow: var(--macos-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  transition: all 0.3s ease;
+}
+
+.cardDark:hover {
+  box-shadow: var(--macos-shadow-hover, 0 10px 15px -3px rgba(0, 0, 0, 0.2));
+}
+
+/* ============================================
+   استایل گریدهای عمومی
+   ============================================ */
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.grid4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+  .grid4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .grid3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid2,
+  .grid3,
+  .grid4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================
+   استایل بخش‌های با پس‌زمینه تیره
+   ============================================ */
+.sectionDark {
+  padding: 5rem 24px;
+  background: linear-gradient(135deg, rgba(128, 0, 32, 0.902), rgb(0, 0, 0), rgb(128, 0, 32));
+  color: #ffffff;
+}
+
+.sectionDark .sectionTitle {
+  color: #ffffff;
+}
+
+.sectionDark .sectionDesc {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.sectionDark .sectionBadge {
+  color: #ff6b6b;
+}
+
+@media (min-width: 1200px) {
+  .sectionDark {
+    padding: 5rem 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .sectionDark {
+    padding: 3rem 16px;
+  }
+}
+
+/* ============================================
+   استایل بخش‌های با پس‌زمینه روشن
+   ============================================ */
+.sectionLight {
+  padding: 5rem 24px;
+  background: #f9fafb;
+}
+
+@media (min-width: 1200px) {
+  .sectionLight {
+    padding: 5rem 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .sectionLight {
+    padding: 3rem 16px;
+  }
+}
+
+/* ============================================
+   استایل بخش‌های با پس‌زمینه سفید
+   ============================================ */
+.sectionWhite {
+  padding: 5rem 24px;
+  background: #ffffff;
+}
+
+@media (min-width: 1200px) {
+  .sectionWhite {
+    padding: 5rem 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .sectionWhite {
+    padding: 3rem 16px;
+  }
+}
+
+/* ============================================
+   استایل فوتر (در صورت نیاز)
+   ============================================ */
+.footer {
+  background: var(--text-primary, #1a1a2e);
+  color: #ffffff;
+  padding: 3rem 24px;
+  text-align: center;
+}
+
+.footer a {
+  color: var(--primary, #800020);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer a:hover {
+  color: #ff6b6b;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 2rem 16px;
+  }
+}
+
+/* ============================================
+   استایل لودینگ و اسکلتون (در صورت نیاز)
+   ============================================ */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 0.5rem;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ============================================
+   استایل نمایش پیام‌ها (Toast/Alert)
+   ============================================ */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  padding: 1rem 2rem;
+  border-radius: 0.75rem;
+  color: #ffffff;
+  font-family: var(--font-iran, sans-serif);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  animation: slideInRight 0.3s ease;
+  z-index: 1000;
+}
+
+.toastSuccess {
+  background: #10b981;
+}
+
+.toastError {
+  background: #ef4444;
+}
+
+.toastWarning {
+  background: #f59e0b;
+}
+
+@media (max-width: 768px) {
+  .toast {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    text-align: center;
+  }
+}

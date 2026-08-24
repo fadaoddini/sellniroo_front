@@ -1,0 +1,253 @@
+.pickerWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.pickerInput {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--macos-bg);
+  border: 1.5px solid var(--macos-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.pickerInput:hover {
+  border-color: var(--macos-blue);
+}
+
+.pickerInput:focus-within {
+  border-color: var(--macos-blue);
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.08);
+}
+
+.calendarIcon {
+  color: var(--macos-text-secondary);
+  flex-shrink: 0;
+}
+
+.selectedDate {
+  flex: 1;
+  font-size: 0.95rem;
+  font-family: var(--font-iran);
+  color: var(--macos-text);
+}
+
+.placeholder {
+  flex: 1;
+  font-size: 0.95rem;
+  font-family: var(--font-iran);
+  color: var(--macos-text-secondary);
+}
+
+.clearBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem;
+  border-radius: 50%;
+  color: var(--macos-text-secondary);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clearBtn:hover {
+  background: var(--macos-bg);
+  color: var(--macos-text);
+}
+
+.pickerDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--macos-border);
+  padding: 1rem;
+  min-width: 320px;
+  z-index: 1000;
+  animation: slideDown 0.2s ease-out;
+}
+
+.pickerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.navBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  color: var(--macos-text-secondary);
+  transition: all 0.2s ease;
+}
+
+.navBtn:hover {
+  background: var(--macos-bg);
+  color: var(--macos-text);
+}
+
+.monthYear {
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  color: var(--macos-text);
+}
+
+.weekDays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.weekDay {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  color: var(--macos-text-secondary);
+  padding: 0.25rem 0;
+}
+
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+}
+
+.dayBtn {
+  aspect-ratio: 1;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  color: var(--macos-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dayBtn:hover {
+  background: var(--macos-bg);
+}
+
+.emptyDay {
+  aspect-ratio: 1;
+}
+
+.today {
+  background: rgba(0, 122, 255, 0.08);
+  color: var(--macos-blue);
+  font-weight: 600;
+}
+
+.today:hover {
+  background: rgba(0, 122, 255, 0.15);
+}
+
+.selected {
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+}
+
+.selected:hover {
+  background: var(--primary-dark);
+}
+
+.timeSection,
+.placeSection {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  background: var(--macos-bg);
+  border-radius: 8px;
+}
+
+.timeSection svg,
+.placeSection svg {
+  color: var(--macos-text-secondary);
+  flex-shrink: 0;
+}
+
+.timeInput,
+.placeInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.9rem;
+  font-family: var(--font-iran);
+  color: var(--macos-text);
+}
+
+.pickerActions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  justify-content: flex-end;
+}
+
+.confirmBtn,
+.cancelBtn {
+  padding: 0.3rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirmBtn {
+  background: var(--primary);
+  color: white;
+}
+
+.confirmBtn:hover {
+  background: var(--primary-dark);
+}
+
+.cancelBtn {
+  background: var(--macos-bg);
+  color: var(--macos-text-secondary);
+}
+
+.cancelBtn:hover {
+  background: var(--macos-border);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .pickerDropdown {
+    min-width: 280px;
+    right: -8px;
+  }
+}

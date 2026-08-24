@@ -1,0 +1,963 @@
+/* components/Quiz/Quiz.module.css */
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.04);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.04);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+@keyframes borderPulse {
+  0% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes borderPulseFast {
+  0% {
+    opacity: 1;
+    box-shadow: 0 0 20px rgba(255, 59, 48, 0.3);
+  }
+  15% {
+    opacity: 0.5;
+    box-shadow: 0 0 50px rgba(255, 59, 48, 0.7);
+  }
+  30% {
+    opacity: 1;
+    box-shadow: 0 0 30px rgba(255, 59, 48, 0.5);
+  }
+  45% {
+    opacity: 0.5;
+    box-shadow: 0 0 60px rgba(255, 59, 48, 0.8);
+  }
+  60% {
+    opacity: 1;
+    box-shadow: 0 0 30px rgba(255, 59, 48, 0.5);
+  }
+  75% {
+    opacity: 0.5;
+    box-shadow: 0 0 50px rgba(255, 59, 48, 0.7);
+  }
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 20px rgba(255, 59, 48, 0.3);
+  }
+}
+
+@keyframes borderGlow {
+  0% {
+    box-shadow: 0 0 20px rgba(255, 59, 48, 0.2);
+  }
+  25% {
+    box-shadow: 0 0 60px rgba(255, 59, 48, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 59, 48, 0.3);
+  }
+  75% {
+    box-shadow: 0 0 60px rgba(255, 59, 48, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(255, 59, 48, 0.2);
+  }
+}
+
+/* استایل‌های عمومی */
+.container {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-iran);
+  padding: 24px;
+  background: linear-gradient(135deg, #f5f5f7 0%, #e8e8ec 100%);
+}
+
+.card {
+  max-width: 600px;
+  width: 100%;
+  padding: 40px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  animation: slideIn 0.4s ease-out;
+  position: relative;
+}
+
+.cardWide {
+  max-width: 900px;
+  padding: 40px;
+}
+
+/* کارت سوال - border به عنوان نوار پیشرفت */
+.cardQuestion {
+  max-width: 720px;
+  padding: 12px;
+  position: relative;
+
+  border-radius: 44px;
+
+  
+  /* border اصلی به عنوان نوار پیشرفت */
+  border: 6px solid transparent;
+  transition: border-image 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* برای پشتیبانی از border-radius با border-image */
+.cardQuestion::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 44px;
+  padding: 10px;
+  background: conic-gradient(
+    from 0deg,
+    #34c759 0%,
+    #34c759 var(--progress, 0%),
+    #e5e5ea var(--progress, 0%),
+    #e5e5ea 100%
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 0;
+  transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* حالت هشدار (نارنجی) - 10 تا 5 ثانیه */
+.cardQuestion.warning::before {
+  background: conic-gradient(
+    from 0deg,
+    #ff9500 0%,
+    #ff9500 var(--progress, 0%),
+    #e5e5ea var(--progress, 0%),
+    #e5e5ea 100%
+  ) !important;
+  animation: pulse 0.8s ease-in-out infinite;
+}
+
+/* حالت خطر (قرمز) - 5 تا 3 ثانیه */
+.cardQuestion.danger::before {
+  background: conic-gradient(
+    from 0deg,
+    #ff3b30 0%,
+    #ff3b30 var(--progress, 0%),
+    #e5e5ea var(--progress, 0%),
+    #e5e5ea 100%
+  ) !important;
+  animation: borderPulse 0.6s ease-in-out infinite;
+}
+
+.cardQuestion.danger {
+  box-shadow: 0 0 30px rgba(255, 59, 48, 0.15);
+}
+
+/* حالت ضربان قوی - 3 ثانیه آخر (فقط border بدون لرزش صفحه) */
+.cardQuestion.heartbeat::before {
+  background: conic-gradient(
+    from 0deg,
+    #ff3b30 0%,
+    #ff3b30 var(--progress, 0%),
+    #e5e5ea var(--progress, 0%),
+    #e5e5ea 100%
+  ) !important;
+  animation: borderPulseFast 0.4s ease-in-out infinite;
+}
+
+.cardQuestion.heartbeat {
+  box-shadow: 0 0 40px rgba(255, 59, 48, 0.25);
+  animation: borderGlow 0.4s ease-in-out infinite;
+}
+
+/* محتوای سوال - بالاتر از border */
+.questionContent {
+  position: relative;
+  z-index: 1;
+  padding: 5rem;
+}
+
+/* هدر */
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 8px 20px;
+  background: linear-gradient(135deg, #800020, #a8324a);
+  border-radius: 20px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-family: var(--font-iran-extra);
+  font-size: 28px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-family: var(--font-iran-extra);
+  line-height: 1.6;
+}
+
+/* انتخاب تخصص */
+.specialtyGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 12px;
+  margin: 24px 0 32px;
+}
+
+.specialtyButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 12px;
+  background: white;
+  border: 2px solid #e5e5ea;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: var(--font-iran);
+  font-size: 13px;
+  color: var(--text-primary);
+  text-align: center;
+  min-height: 80px;
+}
+
+.specialtyButton:hover {
+  border-color: #800020;
+  background: rgba(128, 0, 32, 0.04);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.specialtyButtonActive {
+  border-color: #800020;
+  background: rgba(128, 0, 32, 0.08);
+  box-shadow: 0 4px 12px rgba(128, 0, 32, 0.15);
+}
+
+.specialtyIcon {
+  font-size: 24px;
+}
+
+.specialtyName {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+/* استایل‌های سوال */
+.questionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.questionCounter {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-iran);
+  background: rgba(0, 0, 0, 0.04);
+  padding: 4px 12px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.timerWarning {
+  background: rgba(255, 149, 0, 0.15);
+  animation: pulse 0.8s ease-in-out infinite;
+}
+
+.timerDanger {
+  background: rgba(255, 59, 48, 0.15);
+  animation: heartbeat 0.6s ease-in-out infinite;
+}
+
+.timerText {
+  font-size: 20px;
+  font-weight: 700;
+  transition: color 0.3s ease;
+  min-width: 40px;
+  text-align: center;
+}
+
+.timerTextGreen {
+  color: #34c759;
+}
+
+.timerTextOrange {
+  color: #ff9500;
+}
+
+.timerTextRed {
+  color: #ff3b30;
+}
+
+/* بار پیشرفت خطی */
+.progressBar {
+  width: 100%;
+  height: 4px;
+  background: #e5e5ea;
+  border-radius: 2px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #800020, #a8324a);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+/* دسته‌بندی سوال */
+.category {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(128, 0, 32, 0.08);
+  border-radius: 12px;
+  color: #800020;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.questionText {
+  font-family: var(--font-iran-bold);
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+/* گزینه‌ها */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.optionButton {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 10px;
+  background: white;
+  border: 2px solid #e5e5ea;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: right;
+}
+
+.optionButton:hover:not(:disabled) {
+  border-color: #007aff;
+  background: rgba(0, 122, 255, 0.04);
+}
+
+.optionButton:disabled {
+  cursor: default;
+}
+
+.optionButtonSelected {
+  border-color: #007aff;
+  background: rgba(0, 122, 255, 0.08);
+  transform: scale(1.02);
+}
+
+.optionButtonCorrect {
+  border-color: #34c759;
+  background: rgba(52, 199, 89, 0.12);
+}
+
+.optionButtonWrong {
+  border-color: #ff3b30;
+  background: rgba(255, 59, 48, 0.12);
+}
+
+.optionButtonDisabled {
+  opacity: 0.5;
+}
+
+.optionLetter {
+  min-width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.optionText {
+  flex: 1;
+}
+
+.optionIcon {
+  margin-right: auto;
+}
+
+.optionIconCorrect {
+  color: #34c759;
+}
+
+.optionIconWrong {
+  color: #ff3b30;
+}
+
+/* اطلاعات تکمیلی سوال */
+.questionFooter {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* استایل‌های نتیجه */
+.resultHeader {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.resultEmoji {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.resultTitle {
+  font-family: var(--font-iran-extra);
+  font-size: 28px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.resultSubtitle {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+/* گرید آمار */
+.resultGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.chartContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(245, 245, 247, 0.5);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.chartCanvas {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+
+.detailItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.detailItem:last-child {
+  border-bottom: none;
+}
+
+.detailLabel {
+  color: var(--text-secondary);
+}
+
+.detailValue {
+  font-weight: 700;
+}
+
+.detailValueGreen {
+  color: #34c759;
+}
+
+.detailValueRed {
+  color: #ff3b30;
+}
+
+.detailValueOrange {
+  color: #ff9500;
+}
+
+/* دکمه‌ها */
+.buttonPrimary {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #800020, #a8324a);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-family: var(--font-iran-extra);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.buttonPrimary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(128, 0, 32, 0.3);
+}
+
+.buttonPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.buttonSecondary {
+  flex: 1;
+  padding: 14px;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-family: var(--font-iran-extra);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.buttonSecondary:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+}
+
+.footerText {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 12px;
+}
+
+/* اشتراک‌گذاری */
+.shareSection {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+.shareText {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.shareButtons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.shareButton {
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text-primary);
+  font-size: 13px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.shareButton:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* استایل‌های لودینگ */
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #e5e5ea;
+  border-top: 4px solid #007aff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+.loadingText {
+  color: #8e8e93;
+}
+
+/* ============================================
+   ریسپانسیو - موبایل (زیر 640px)
+   ============================================ */
+@media (max-width: 640px) {
+  .cardQuestion {
+    padding: 16px;
+    border-radius: 18px;
+    max-width: 100%;
+  }
+
+  .cardQuestion::before {
+    inset: -4px;
+    border-radius: 18px;
+    padding: 4px;
+  }
+
+  .questionContent {
+    padding: 0.5rem;
+  }
+
+  .questionHeader {
+    margin-bottom: 16px;
+    gap: 6px;
+  }
+
+  .questionCounter {
+    font-size: 12px;
+  }
+
+  .timer {
+    padding: 3px 10px;
+    gap: 4px;
+  }
+
+  .timerText {
+    font-size: 16px;
+    min-width: 30px;
+  }
+
+  .timerIcon {
+    font-size: 12px;
+  }
+
+  .progressBar {
+    height: 3px;
+    margin-bottom: 16px;
+  }
+
+  .category {
+    font-size: 10px;
+    padding: 3px 10px;
+    margin-bottom: 12px;
+  }
+
+  .questionText {
+    font-size: 0.8rem;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .options {
+    gap: 8px;
+  }
+
+  .optionButton {
+    padding: 10px 12px;
+    font-size: 0.75rem;
+    gap: 10px;
+    border-radius: 10px;
+  }
+
+  .optionLetter {
+    min-width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+
+  .optionIcon {
+    font-size: 14px;
+  }
+
+  .questionFooter {
+    margin-top: 16px;
+    padding-top: 12px;
+    font-size: 9px;
+    gap: 4px;
+  }
+
+  .card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .cardWide {
+    padding: 20px;
+  }
+
+  .cardResult {
+    padding: 20px;
+  }
+
+  .specialtyGrid {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px;
+    margin: 16px 0 24px;
+  }
+
+  .specialtyButton {
+    min-height: 60px;
+    padding: 10px 6px;
+    gap: 4px;
+    border-radius: 10px;
+  }
+
+  .specialtyIcon {
+    font-size: 20px;
+  }
+
+  .specialtyName {
+    font-size: 10px;
+  }
+
+  .resultGrid {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+
+  .resultTitle {
+    font-size: 22px;
+  }
+
+  .resultEmoji {
+    font-size: 36px;
+  }
+
+  .resultSubtitle {
+    font-size: 13px;
+  }
+
+  .chartContainer {
+    padding: 12px;
+  }
+
+  .chartCanvas {
+    max-width: 150px;
+  }
+
+  .details {
+    gap: 8px;
+  }
+
+  .detailItem {
+    padding: 6px 0;
+    font-size: 13px;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .buttonPrimary {
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 10px;
+  }
+
+  .buttonSecondary {
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  .shareButtons {
+    gap: 8px;
+  }
+
+  .shareButton {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .shareText {
+    font-size: 12px;
+  }
+
+  .footerText {
+    font-size: 11px;
+  }
+}
+
+/* تنظیمات برای صفحه‌های بسیار کوچک (زیر 400px) */
+@media (max-width: 400px) {
+  .container {
+    padding: 8px;
+  }
+
+  .cardQuestion {
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .cardQuestion::before {
+    inset: -3px;
+    border-radius: 14px;
+    padding: 3px;
+  }
+
+  .questionContent {
+    padding: 0.25rem;
+  }
+
+  .questionText {
+    font-size: 0.75rem;
+  }
+
+  .optionButton {
+    padding: 8px 10px;
+    font-size: 0.7rem;
+    gap: 8px;
+  }
+
+  .optionLetter {
+    min-width: 20px;
+    height: 20px;
+    font-size: 10px;
+  }
+
+  .timerText {
+    font-size: 14px;
+    min-width: 25px;
+  }
+
+  .specialtyGrid {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 6px;
+  }
+
+  .specialtyButton {
+    min-height: 50px;
+    padding: 8px 4px;
+  }
+
+  .specialtyIcon {
+    font-size: 16px;
+  }
+
+  .specialtyName {
+    font-size: 9px;
+  }
+}

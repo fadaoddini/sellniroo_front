@@ -1,0 +1,397 @@
+.listContainer {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid var(--macos-border);
+  overflow: hidden;
+  box-shadow: var(--macos-shadow);
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: var(--macos-bg);
+  border-bottom: 1px solid var(--macos-border);
+  flex-wrap: wrap;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.8rem;
+  background: white;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  flex: 1;
+  min-width: 200px;
+}
+
+.searchBox:focus-within {
+  border-color: var(--macos-blue);
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.08);
+}
+
+.searchInput {
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+  font-family: var(--font-iran);
+  background: transparent;
+  width: 100%;
+}
+
+.filterGroup {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 6px;
+  background: transparent;
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  color: var(--macos-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.filterBtn:hover {
+  background: var(--macos-bg);
+}
+
+.activeFilter {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.tableContainer {
+  overflow-x: auto;
+}
+
+.customerTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.customerTable thead {
+  background: var(--macos-bg);
+}
+
+.customerTable th {
+  padding: 0.75rem 1rem;
+  text-align: right;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  border-bottom: 1px solid var(--macos-border);
+  white-space: nowrap;
+}
+
+.customerTable td {
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  color: var(--macos-text);
+  border-bottom: 1px solid var(--macos-border);
+  vertical-align: middle;
+}
+
+.customerRow:hover {
+  background: rgba(128, 0, 32, 0.02);
+}
+
+.customerCell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.customerAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  font-family: var(--font-iran-bold);
+  flex-shrink: 0;
+}
+
+.customerName {
+  font-weight: 600;
+  font-family: var(--font-iran-bold);
+  color: var(--macos-text);
+}
+
+.customerCity {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.7rem;
+  color: var(--macos-text-secondary);
+}
+
+.phoneCell {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  font-family: monospace;
+}
+
+.phoneCell svg {
+  color: var(--macos-text-secondary);
+}
+
+.topicBadge {
+  padding: 0.15rem 0.6rem;
+  background: rgba(128, 0, 32, 0.06);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: var(--primary);
+  font-family: var(--font-iran);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+}
+
+.dateCell {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: var(--macos-text-secondary);
+}
+
+.actionButtons {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.actionBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0.4rem;
+  border-radius: 6px;
+  color: var(--macos-text-secondary);
+  transition: all 0.2s ease;
+}
+
+.actionBtn:hover {
+  background: var(--macos-bg);
+  color: var(--macos-text);
+}
+
+.moreWrapper {
+  position: relative;
+}
+
+.actionsDropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: 10px;
+  box-shadow: var(--macos-shadow-hover);
+  border: 1px solid var(--macos-border);
+  padding: 0.25rem;
+  min-width: 120px;
+  z-index: 10;
+}
+
+.actionsDropdown button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.4rem 0.75rem;
+  border: none;
+  background: transparent;
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  color: var(--macos-text);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.actionsDropdown button:hover {
+  background: rgba(0, 122, 255, 0.06);
+  color: var(--macos-blue);
+}
+
+.deleteAction {
+  color: var(--macos-red) !important;
+}
+
+.deleteAction:hover {
+  background: rgba(255, 59, 48, 0.08) !important;
+  color: var(--macos-red) !important;
+}
+
+/* ردیف توسعه یافته */
+.expandedRow {
+  padding: 1rem;
+  background: var(--macos-bg);
+}
+
+.followUpSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.followUpSection h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: var(--font-iran-bold);
+  color: var(--macos-text);
+}
+
+.followUpForm {
+  max-width: 400px;
+}
+
+.followUpInfo {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  background: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid var(--macos-border);
+}
+
+.infoItem svg {
+  color: var(--macos-text-secondary);
+}
+
+.notesSection {
+  max-width: 100%;
+}
+
+.notesInput {
+  width: 100%;
+  padding: 0.5rem 0.8rem;
+  border: 1.5px solid var(--macos-border);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  transition: all 0.2s ease;
+  outline: none;
+  background: white;
+  resize: vertical;
+}
+
+.notesInput:focus {
+  border-color: var(--macos-blue);
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.08);
+}
+
+.statusUpdate {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.statusUpdate label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  color: var(--macos-text-secondary);
+}
+
+.statusButtons {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.statusBtn {
+  padding: 0.2rem 0.6rem;
+  border: 1.5px solid var(--macos-border);
+  border-radius: 8px;
+  background: transparent;
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  color: var(--macos-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.statusBtn:hover {
+  background: var(--macos-bg);
+}
+
+.activeStatus {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+@media (max-width: 1024px) {
+  .customerTable {
+    font-size: 0.75rem;
+  }
+  
+  .customerTable th,
+  .customerTable td {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filterGroup {
+    justify-content: center;
+  }
+  
+  .customerTable th:nth-child(4),
+  .customerTable td:nth-child(4) {
+    display: none;
+  }
+  
+  .statusButtons {
+    flex-wrap: wrap;
+  }
+  
+  .statusBtn {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.4rem;
+  }
+}

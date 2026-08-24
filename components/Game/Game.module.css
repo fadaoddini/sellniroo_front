@@ -1,0 +1,285 @@
+/* components/Game/Game.module.css */
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-iran);
+  background: #f7f7f7;
+  padding: 20px;
+  transition: background 0.5s ease;
+  direction: ltr;
+}
+
+.container.night {
+  background: #1a1a2e;
+}
+
+.gameWrapper {
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  padding: 30px;
+  max-width: 800px;
+  width: 100%;
+  transition: background 0.5s ease, box-shadow 0.5s ease;
+}
+
+.gameWrapper.night {
+  background: #16213e;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* هدر بازی */
+.gameHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 8px;
+}
+
+.gameTitle {
+  font-family: var(--font-iran-extra);
+  font-size: 18px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gameTitle.night {
+  color: #e0e0e0;
+}
+
+.gameStats {
+  display: flex;
+  gap: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.gameStats.night {
+  color: #aaa;
+}
+
+.gameStats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* کانوس بازی */
+.canvasWrapper {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #f0f0f0;
+  transition: background 0.5s ease;
+}
+
+.canvasWrapper.night {
+  background: #1a1a2e;
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  cursor: pointer;
+  touch-action: none;
+}
+
+/* وضعیت‌های بازی */
+.gameOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  animation: slideIn 0.4s ease-out;
+  gap: 12px;
+  padding: 20px;
+}
+
+.gameOverlay h2 {
+  color: white;
+  font-family: var(--font-iran-extra);
+  font-size: 28px;
+  margin: 0;
+}
+
+.gameOverlay p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  margin: 0;
+}
+
+.gameOverlay .score {
+  font-size: 48px;
+  font-weight: 800;
+  color: #ffd700;
+  font-family: var(--font-iran-extra);
+}
+
+.gameOverlay .highScore {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+}
+
+.startButton {
+  padding: 14px 40px;
+  background: linear-gradient(135deg, #800020, #a8324a);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-family: var(--font-iran-extra);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 8px;
+}
+
+.startButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(128, 0, 32, 0.3);
+}
+
+.startButton:active {
+  transform: scale(0.95);
+}
+
+/* کنترل‌ها */
+.gameControls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.controlButton {
+  padding: 12px 24px;
+  background: rgba(0, 0, 0, 0.06);
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-family: var(--font-iran);
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controlButton:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.controlButton.night {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+.controlButton.night:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ریسپانسیو */
+@media (max-width: 640px) {
+  .gameWrapper {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .gameHeader {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .gameTitle {
+    font-size: 16px;
+  }
+
+  .gameStats {
+    font-size: 12px;
+    gap: 12px;
+  }
+
+  .gameOverlay h2 {
+    font-size: 22px;
+  }
+
+  .gameOverlay .score {
+    font-size: 36px;
+  }
+
+  .startButton {
+    padding: 12px 32px;
+    font-size: 16px;
+  }
+
+  .controlButton {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 400px) {
+  .gameWrapper {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .gameTitle {
+    font-size: 14px;
+  }
+
+  .gameStats {
+    font-size: 10px;
+    gap: 8px;
+  }
+
+  .gameOverlay h2 {
+    font-size: 18px;
+  }
+
+  .gameOverlay .score {
+    font-size: 28px;
+  }
+
+  .startButton {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+}

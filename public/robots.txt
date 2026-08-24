@@ -1,0 +1,21 @@
+# public/robots.txt
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile/
+
+Sitemap: https://ariastudholding.com/sitemap.xml
+
+# گوگل
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+
+# بینگ
+User-agent: bingbot
+Allow: /
+
+# یاندکس
+User-agent: Yandex
+Allow: /

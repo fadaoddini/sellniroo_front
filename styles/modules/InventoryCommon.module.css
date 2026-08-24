@@ -1,0 +1,5719 @@
+/* styles/modules/InventoryCommon.module.css */
+
+/* ============================================
+   INVENTORY COMMON STYLES
+   استایل‌های مشترک برای تمام کامپوننت‌های انبار
+   ============================================ */
+
+/* ============================================
+   CONTAINER
+   ============================================ */
+.inventoryContainer {
+  padding: 2rem 0;
+  background: var(--macos-bg);
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.inventoryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  font-size: 1rem;
+  font-weight: 800;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pageTitle .titleIcon {
+  color: var(--primary);
+  width: 28px;
+  height: 28px;
+}
+
+.pageDesc {
+  color: var(--macos-text);
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(128, 0, 32, 0.3);
+}
+
+.primaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.secondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  background: var(--macos-card);
+  color: var(--macos-text);
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.secondaryBtn:hover:not(:disabled) {
+  background: var(--macos-bg);
+  border-color: var(--macos-text-secondary);
+}
+
+.secondaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.successBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #189762, #0d6439);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.successBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(46, 125, 50, 0.3);
+}
+
+.successBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dangerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #c62828, #b71c1c);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dangerBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(198, 40, 40, 0.3);
+}
+
+.dangerBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.refreshBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  background: var(--macos-card);
+  color: var(--macos-text);
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.refreshBtn:hover:not(:disabled) {
+  background: var(--macos-bg);
+  border-color: var(--macos-text-secondary);
+  transform: translateY(-1px);
+}
+
+.refreshBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.refreshBtn svg {
+  transition: transform 0.3s ease;
+}
+
+.refreshBtn:hover:not(:disabled) svg {
+  transform: rotate(90deg);
+}
+
+.spinning {
+  animation: spin 0.8s linear infinite !important;
+}
+
+.spinnerSmall {
+  animation: spin 0.8s linear infinite !important;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   NAVIGATION BAR (منوی انبار)
+   ============================================ */
+.navBar {
+  background: var(--primary-dark);
+ 
+  border-radius: 16px;
+
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--macos-shadow);
+}
+
+.navBarTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+  margin-bottom: 0.75rem;
+}
+
+.navBarTitle svg {
+  color: var(--primary);
+}
+
+.actionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.5rem;
+}
+
+.actionCard {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  background: var(--white);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--macos-text);
+  transition: all 0.3s ease;
+  font-family: var(--font-iran);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.actionCard:hover {
+  background: var(--macos-card);
+  border-color: var(--macos-border);
+  transform: translateY(-2px);
+  box-shadow: var(--macos-shadow);
+}
+
+.actionCard svg {
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.actionCard:hover svg {
+  transform: scale(1.1);
+}
+
+.actionCardActive {
+  background: rgba(234, 234, 234, 0.145);
+  border-color: #d13913;
+  color: var(--white);
+}
+
+.actionCardActive:hover {
+  background: rgba(128, 0, 32, 0.12);
+}
+
+/* ============================================
+   STATS GRID
+   ============================================ */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  background: var(--macos-card);
+  backdrop-filter: var(--macos-blur);
+  border-radius: 16px;
+  border: 1px solid var(--macos-border);
+  box-shadow: var(--macos-shadow);
+  transition: all 0.3s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--macos-shadow-hover);
+}
+
+.statIconWrapper {
+  width: 28px;
+  height: 48px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.statIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.statInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.statValue {
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+}
+
+.statLabel {
+  font-size: 0.6rem;
+  color: var(--macos-text);
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   SEARCH SECTION
+   ============================================ */
+.searchSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.searchBox {
+  position: relative;
+  flex: 1;
+  max-width: 450px;
+  min-width: 200px;
+}
+
+.searchBox .searchIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--macos-text-secondary);
+  pointer-events: none;
+  width: 16px;
+  height: 16px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.5rem 2.5rem 0.5rem 1rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--macos-text);
+  transition: all 0.3s ease;
+  direction: rtl;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: var(--macos-text-secondary);
+  opacity: 0.7;
+  font-size: 0.7rem;
+}
+
+.searchInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.1);
+  background: white;
+}
+
+.searchInput:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--macos-bg);
+}
+
+.clearSearch {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--macos-text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  width: 24px;
+  height: 24px;
+}
+
+.clearSearch:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.05);
+  color: #c62828;
+}
+
+.clearSearch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.totalCount {
+  font-size: 0.7rem;
+  color: var(--macos-text-secondary);
+  white-space: nowrap;
+  padding: 0.3rem 1rem;
+  background: var(--macos-bg);
+  border-radius: 16px;
+  font-family: var(--font-iran);
+  border: 1px solid var(--macos-border);
+}
+
+.searchHint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  margin-bottom: 1rem;
+  background: #fff3e0;
+  border: 1px solid #ffe0b2;
+  border-radius: 8px;
+  color: #e65100;
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  animation: fadeIn 0.3s ease;
+}
+
+.searchHint span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   FILTER SECTION
+   ============================================ */
+.filterActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.filterToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  background: var(--macos-card);
+  color: var(--macos-text);
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filterToggle:hover {
+  background: var(--macos-bg);
+  border-color: var(--macos-text-secondary);
+}
+
+.filterActive {
+  border-color: var(--primary);
+  background: rgba(128, 0, 32, 0.05);
+  color: var(--primary);
+}
+
+.filterBadge {
+  color: var(--primary);
+  font-size: 0.5rem;
+}
+
+.clearFiltersBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #c62828;
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clearFiltersBtn:hover {
+  background: #ffebee;
+}
+
+.filterPanel {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--macos-card);
+  border: 1px solid var(--macos-border);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+  min-width: 150px;
+}
+
+.filterLabel {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.filterSelect {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--macos-text);
+  transition: all 0.3s ease;
+  outline: none;
+  direction: rtl;
+}
+
+.filterSelect:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.08);
+}
+
+.filterSelect:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.filterApplyBtn {
+  padding: 0.4rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.filterApplyBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(128, 0, 32, 0.3);
+}
+
+/* ============================================
+   ERROR ALERT
+   ============================================ */
+.errorAlert {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 10px;
+  color: #c62828;
+  margin-bottom: 1rem;
+  font-family: var(--font-iran);
+  font-size: 0.75rem;
+}
+
+.errorAlert button {
+  background: none;
+  border: none;
+  color: #c62828;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0 4px;
+  transition: opacity 0.2s ease;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.errorAlert button:hover {
+  background: rgba(198, 40, 40, 0.1);
+}
+
+/* ============================================
+   TABLE CONTAINER
+   ============================================ */
+.tableContainer {
+  background: var(--macos-card);
+  backdrop-filter: var(--macos-blur);
+  border-radius: 16px;
+  border: 1px solid var(--macos-border);
+  box-shadow: var(--macos-shadow);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.tableContainer:hover {
+  box-shadow: var(--macos-shadow-hover);
+}
+
+/* ============================================
+   TABLE SEARCH (داخل جدول)
+   ============================================ */
+.tableSearch {
+  display: flex;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--macos-border);
+  background: var(--macos-bg);
+  gap: 0.75rem;
+}
+
+.tableSearch .searchIcon {
+  color: var(--macos-text-secondary);
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.tableSearch .searchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.85rem;
+  background: transparent;
+  color: var(--macos-text);
+  font-family: var(--font-iran);
+  padding: 0.3rem 0;
+  direction: rtl;
+  max-width: none;
+}
+
+.tableSearch .searchInput::placeholder {
+  color: var(--macos-text-secondary);
+  opacity: 0.6;
+}
+
+/* ============================================
+   TABLE WRAPPER
+   ============================================ */
+.tableWrapper {
+  overflow-x: auto;
+  padding: 0;
+}
+
+/* ============================================
+   TABLE
+   ============================================ */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-iran);
+  font-size: 0.85rem;
+}
+
+/* ============================================
+   TABLE HEADER
+   ============================================ */
+.table thead {
+  background: linear-gradient(135deg, var(--macos-bg), #f5f5f7);
+  border-bottom: 2px solid var(--macos-border);
+}
+
+.table th {
+  padding: 0.75rem 1.25rem;
+  text-align: right;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--macos-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-family: var(--font-edameh);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--macos-border);
+  position: sticky;
+  top: 0;
+  background: inherit;
+  z-index: 5;
+}
+
+.table th:first-child {
+  padding-right: 1.5rem;
+}
+
+.table th:last-child {
+  padding-left: 1.5rem;
+}
+
+/* ============================================
+   TABLE BODY
+   ============================================ */
+.table tbody tr {
+  transition: all 0.2s ease;
+  border-bottom: 1px solid var(--macos-border);
+}
+
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: var(--macos-bg);
+}
+
+.table tbody tr.clickable {
+  cursor: pointer;
+}
+
+.table tbody tr.clickable:hover {
+  background: rgba(128, 0, 32, 0.04);
+}
+
+.table td {
+  padding: 0.7rem 1.25rem;
+  font-size: 0.85rem;
+  color: var(--macos-text);
+  vertical-align: middle;
+  border-bottom: 1px solid var(--macos-border);
+}
+
+.table td:first-child {
+  padding-right: 1.5rem;
+}
+
+.table td:last-child {
+  padding-left: 1.5rem;
+}
+
+/* ============================================
+   ACTIONS COLUMN
+   ============================================ */
+.actionsHeader {
+  text-align: center !important;
+  min-width: 120px;
+  background: linear-gradient(135deg, rgba(128, 0, 32, 0.05), rgba(128, 0, 32, 0.02));
+  border-right: 2px solid var(--macos-border);
+}
+
+.actionsCell {
+  text-align: center !important;
+  min-width: 120px;
+  background: linear-gradient(135deg, rgba(128, 0, 32, 0.03), rgba(128, 0, 32, 0.01));
+  border-right: 2px solid var(--macos-border);
+  position: relative;
+}
+
+.actionsCell::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, transparent, var(--primary), transparent);
+  opacity: 0.2;
+}
+
+/* ============================================
+   ACTION BUTTONS
+   ============================================ */
+.actionsCell .actionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--macos-text-secondary);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin: 0 2px;
+  position: relative;
+}
+
+.actionsCell .actionBtn:hover {
+  background: var(--macos-card);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.actionsCell .actionBtn:active {
+  transform: translateY(0);
+}
+
+/* رنگ‌های مختلف برای دکمه‌های عملیات */
+.actionsCell .actionBtn:first-child {
+  color: #1976d2;
+}
+
+.actionsCell .actionBtn:first-child:hover {
+  background: #e3f2fd;
+  color: #0d47a1;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.2);
+}
+
+.actionsCell .actionBtn:nth-child(2) {
+  color: #f57c00;
+}
+
+.actionsCell .actionBtn:nth-child(2):hover {
+  background: #fff3e0;
+  color: #e65100;
+  box-shadow: 0 4px 12px rgba(245, 124, 0, 0.2);
+}
+
+.actionsCell .actionBtn:nth-child(3) {
+  color: #c62828;
+}
+
+.actionsCell .actionBtn:nth-child(3):hover {
+  background: #ffebee;
+  color: #b71c1c;
+  box-shadow: 0 4px 12px rgba(198, 40, 40, 0.2);
+}
+
+/* ============================================
+   TABLE STATES
+   ============================================ */
+.loadingCell {
+  text-align: center;
+  padding: 3rem 0 !important;
+}
+
+.spinner {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--macos-border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.emptyCell {
+  text-align: center;
+  padding: 3rem 0 !important;
+  color: var(--macos-text-secondary);
+  font-size: 0.95rem;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   PAGINATION
+   ============================================ */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid var(--macos-border);
+  background: var(--macos-bg);
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.paginationInfo {
+  font-size: 0.8rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.paginationButtons {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.pageBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--macos-border);
+  border-radius: 8px;
+  background: var(--macos-card);
+  color: var(--macos-text);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-size: 0.85rem;
+}
+
+.pageBtn:hover:not(:disabled) {
+  background: var(--macos-bg);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.pageBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pageBtn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* ============================================
+   UNIT TABLE CELL STYLES
+   ============================================ */
+.unitNameCell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.unitIconWrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--macos-bg);
+  border: 1px solid var(--macos-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.unitIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.unitNameInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.unitName {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+}
+
+.unitDescription {
+  font-size: 0.6rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.colName {
+  min-width: 200px;
+}
+
+.unitAbbr {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  background: var(--macos-bg);
+  border: 1px solid var(--macos-border);
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+}
+
+.colAbbr {
+  min-width: 80px;
+}
+
+.hasProducts {
+  color: #2e7d32;
+}
+
+.noProducts {
+  color: var(--macos-text-secondary);
+}
+
+.colProducts {
+  min-width: 100px;
+  text-align: center;
+}
+
+.colStatus {
+  min-width: 90px;
+}
+
+/* ============================================
+   UNIT DETAIL MODAL
+   ============================================ */
+.unitDetail {
+  padding: 0.25rem 0;
+}
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--macos-bg);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  border: 1px solid var(--macos-border);
+}
+
+.detailIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(128, 0, 32, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.detailTitle {
+  flex: 1;
+  min-width: 0;
+}
+
+.detailTitle h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+  margin: 0;
+}
+
+.detailAbbr {
+  font-size: 0.7rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.detailAbbrValue {
+  font-weight: 600;
+  color: var(--primary);
+  font-family: var(--font-edameh);
+}
+
+.detailGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--macos-border);
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+}
+
+.detailLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.detailValue {
+  font-size: 0.7rem;
+  color: var(--macos-text);
+  font-family: var(--font-iran);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.relatedProducts {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--macos-border);
+}
+
+.relatedProducts h4 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+  margin: 0 0 0.5rem 0;
+}
+
+.productTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.productTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  background: var(--macos-bg);
+  border: 1px solid var(--macos-border);
+  border-radius: 12px;
+  font-size: 0.6rem;
+  color: var(--macos-text);
+  font-family: var(--font-iran);
+}
+
+.productMore {
+  font-size: 0.6rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  padding: 0.2rem 0.6rem;
+}
+
+/* ============================================
+   UNIT FORM
+   ============================================ */
+.unitForm {
+  padding: 0.25rem 0;
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.fieldHelp {
+  font-size: 0.55rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  margin-top: 0.1rem;
+}
+
+/* ============================================
+   FORM STYLES (General)
+   ============================================ */
+.form {
+  padding: 0.25rem 0;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.formGroup:last-of-type {
+  grid-column: 1 / -1;
+}
+
+.formLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  color: var(--macos-text);
+}
+
+.required {
+  color: #c62828;
+  margin-right: 2px;
+}
+
+.formInput {
+  width: 100%;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--macos-text);
+  transition: all 0.3s ease;
+  outline: none;
+  direction: rtl;
+}
+
+.formInput::placeholder {
+  color: var(--macos-text-secondary);
+  font-size: 0.65rem;
+}
+
+.formInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.08);
+  background: white;
+}
+
+.formInput.error {
+  border-color: #c62828;
+}
+
+.formInput:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--macos-bg);
+}
+
+.formTextarea {
+  width: 100%;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--macos-text);
+  transition: all 0.3s ease;
+  outline: none;
+  resize: vertical;
+  min-height: 60px;
+  direction: rtl;
+}
+
+.formTextarea::placeholder {
+  color: var(--macos-text-secondary);
+  font-size: 0.65rem;
+}
+
+.formTextarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.08);
+  background: white;
+}
+
+.formTextarea.error {
+  border-color: #c62828;
+}
+
+.formTextarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--macos-bg);
+}
+
+.formFile {
+  padding: 0.3rem 0;
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  color: var(--macos-text-secondary);
+  cursor: pointer;
+}
+
+.formFile:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.formCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  color: var(--macos-text);
+  cursor: pointer;
+  padding: 0.3rem 0;
+}
+
+.formCheckbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.formCheckbox input[type="checkbox"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.formCheckbox span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.errorText {
+  font-size: 0.6rem;
+  color: #c62828;
+  font-family: var(--font-iran);
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--macos-border);
+}
+
+/* ============================================
+   MODAL
+   ============================================ */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal {
+  background: var(--macos-card);
+  backdrop-filter: var(--macos-blur);
+  -webkit-backdrop-filter: var(--macos-blur);
+  border: 1px solid var(--macos-border);
+  border-radius: 20px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: auto;
+  animation: modalSlide 0.25s ease;
+  box-shadow: var(--macos-shadow-hover);
+}
+
+@keyframes modalSlide {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modalSm { max-width: 400px; }
+.modalMd { max-width: 600px; }
+.modalLg { max-width: 800px; }
+.modalXl { max-width: 1000px; }
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--macos-border);
+}
+
+.modalTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--macos-text);
+  font-family: var(--font-iran-extra);
+  margin: 0;
+}
+
+.modalClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--macos-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modalClose:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--macos-text);
+}
+
+.modalBody {
+  padding: 24px;
+}
+
+/* ============================================
+   CONFIRM DIALOG
+   ============================================ */
+.confirmDialog {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.confirmIcon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: var(--macos-orange);
+}
+
+.confirmMessage {
+  font-size: 15px;
+  color: var(--macos-text);
+  font-family: var(--font-iran);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.confirmActions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.confirmCancel {
+  padding: 10px 24px;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  background: var(--macos-glass);
+  color: var(--macos-text);
+  font-family: var(--font-iran);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.confirmCancel:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.confirmBtn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-family: var(--font-iran);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.confirmDanger {
+  background: var(--macos-red);
+}
+
+.confirmDanger:hover:not(:disabled) {
+  background: #e0352b;
+  transform: translateY(-2px);
+}
+
+.confirmSuccess {
+  background: var(--macos-green);
+}
+
+.confirmSuccess:hover:not(:disabled) {
+  background: #2db84d;
+  transform: translateY(-2px);
+}
+
+.confirmBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ============================================
+   LOADING & ERROR STATES
+   ============================================ */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+}
+
+.loadingContainer .spinner {
+  animation: spin 0.8s linear infinite;
+  color: var(--primary);
+}
+
+.loadingContainer p {
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 0.75rem;
+}
+
+.errorContainer h3 {
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+}
+
+.errorContainer p {
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.retryBtn {
+  padding: 0.6rem 2rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.retryBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(128, 0, 32, 0.3);
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  gap: 0.5rem;
+}
+
+.emptyState svg {
+  color: var(--macos-text-secondary);
+  opacity: 0.5;
+}
+
+.emptyState p {
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   PRODUCT TABLE CELL STYLES (برای ProductList)
+   ============================================ */
+.productCode {
+  font-family: var(--font-edameh);
+  font-size: 0.7rem;
+  color: var(--macos-text-secondary);
+  font-weight: 600;
+}
+
+.colCode {
+  width: 80px;
+  min-width: 80px;
+}
+
+.productNameCell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.productThumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid var(--macos-border);
+  flex-shrink: 0;
+}
+
+.productThumbPlaceholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--macos-bg);
+  border: 1px solid var(--macos-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--macos-text-secondary);
+  flex-shrink: 0;
+}
+
+.productNameInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.productName {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+}
+
+.productSpecs {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.specTag {
+  font-size: 0.55rem;
+  padding: 0.05rem 0.4rem;
+  background: var(--macos-bg);
+  border: 1px solid var(--macos-border);
+  border-radius: 4px;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  white-space: nowrap;
+}
+
+.specMore {
+  font-size: 0.55rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.colProduct {
+  min-width: 200px;
+}
+
+.categoryTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  padding: 0.15rem 0.5rem;
+  background: var(--macos-bg);
+  border-radius: 12px;
+}
+
+.colCategory {
+  min-width: 100px;
+}
+
+.unitTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.colUnit {
+  min-width: 80px;
+}
+
+/* ============================================
+   STOCK BAR
+   ============================================ */
+.stockBarWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 100px;
+}
+
+.stockBarTrack {
+  flex: 1;
+  height: 6px;
+  background: var(--macos-bg);
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 50px;
+}
+
+.stockBarFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.stockBarValue {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+  min-width: 25px;
+  text-align: left;
+}
+
+.colStock {
+  min-width: 130px;
+}
+
+/* ============================================
+   STATUS BADGES (Product)
+   ============================================ */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.6rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+}
+
+.statusInStock {
+  background: #e8f5e9;
+  color: #1a934c;
+}
+
+.statusLowStock {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.statusOutOfStock {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.colStatus {
+  min-width: 90px;
+}
+
+.colActive {
+  min-width: 70px;
+}
+
+/* ============================================
+   TABLE CELL STYLES (General)
+   ============================================ */
+.unitTitle {
+  font-weight: 600;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+  font-size: 0.8rem;
+}
+
+.unitDesc {
+  color: var(--macos-text-secondary);
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+}
+
+.productCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--macos-text);
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  font-weight: 600;
+}
+
+.activeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.6rem;
+  background: #e8f5e9;
+  color: #1a934c;
+  border-radius: 16px;
+  font-size: 0.6rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+}
+
+.inactiveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.6rem;
+  background: #ffebee;
+  color: #c62828;
+  border-radius: 16px;
+  font-size: 0.6rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1200px) {
+  .statsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .formGroup:last-of-type {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .inventoryContainer {
+    padding: 1rem 0;
+  }
+  
+  .container {
+    padding: 0 0.75rem;
+  }
+  
+  .inventoryHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .headerActions {
+    flex-wrap: wrap;
+  }
+  
+  .headerActions button,
+  .headerActions a {
+    flex: 1;
+    justify-content: center;
+    min-width: 80px;
+  }
+  
+  .pageTitle {
+    font-size: 1.5rem;
+  }
+  
+  .searchSection {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .searchBox {
+    max-width: 100%;
+  }
+  
+  .totalCount {
+    align-self: flex-start;
+  }
+  
+  .navBar {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .navBarTitle {
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .actionsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 0.4rem;
+  }
+  
+  .actionCard {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.7rem;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .actionCard svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .filterPanel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filterGroup {
+    min-width: auto;
+  }
+  
+  .filterApplyBtn {
+    width: 100%;
+  }
+  
+  .filterActions {
+    width: 100%;
+  }
+  
+  .statsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .modal {
+    border-radius: 16px;
+    margin: 12px;
+  }
+
+  .modalHeader {
+    padding: 12px 16px;
+  }
+
+  .modalBody {
+    padding: 16px;
+  }
+
+  .modalTitle {
+    font-size: 16px;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 8px;
+    padding: 0.6rem 1rem;
+  }
+  
+  .paginationInfo {
+    text-align: center;
+  }
+  
+  .paginationButtons {
+    justify-content: center;
+  }
+
+  .tableContainer {
+    border-radius: 12px;
+  }
+
+  .tableSearch {
+    padding: 0.6rem 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .tableSearch .searchInput {
+    font-size: 0.8rem;
+  }
+
+  .formActions {
+    flex-direction: column;
+  }
+  
+  .formActions button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stockBarWrapper {
+    min-width: 80px;
+  }
+  
+  .colCode {
+    width: 60px;
+    min-width: 60px;
+  }
+  
+  .colProduct {
+    min-width: 150px;
+  }
+  
+  .colStock {
+    min-width: 100px;
+  }
+
+  .colName {
+    min-width: 150px;
+  }
+
+  .unitNameCell {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .detailHeader {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .detailRow {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .table th,
+  .table td {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  .table th:first-child,
+  .table td:first-child {
+    padding-right: 1rem;
+  }
+  
+  .table th:last-child,
+  .table td:last-child {
+    padding-left: 1rem;
+  }
+  
+  .actionsHeader,
+  .actionsCell {
+    min-width: 90px;
+  }
+  
+  .actionsCell .actionBtn {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .actionsCell .actionBtn svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .headerActions {
+    flex-direction: column;
+  }
+  
+  .headerActions button,
+  .headerActions a {
+    width: 100%;
+  }
+  
+  .actionsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.3rem;
+  }
+  
+  .actionCard {
+    padding: 0.3rem 0.4rem;
+    font-size: 0.6rem;
+    border-radius: 8px;
+  }
+  
+  .actionCard svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .modalSm,
+  .modalMd,
+  .modalLg,
+  .modalXl {
+    max-width: 100%;
+  }
+
+  .modal {
+    margin: 8px;
+    border-radius: 12px;
+  }
+
+  .modalBody {
+    padding: 12px;
+  }
+
+  .confirmActions {
+    flex-direction: column;
+  }
+
+  .confirmCancel,
+  .confirmBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .actionsCell .actionBtn {
+    width: 24px;
+    height: 24px;
+    margin: 0 1px;
+  }
+  
+  .actionsCell .actionBtn svg {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .actionsHeader,
+  .actionsCell {
+    min-width: 70px;
+  }
+
+  .filterToggle span {
+    display: none;
+  }
+  
+  .filterToggle {
+    padding: 0.5rem;
+  }
+  
+  .productNameCell {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .stockBarWrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .unitNameCell {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .table th,
+  .table td {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+  }
+  
+  .table th:first-child,
+  .table td:first-child {
+    padding-right: 0.6rem;
+  }
+  
+  .table th:last-child,
+  .table td:last-child {
+    padding-left: 0.6rem;
+  }
+  
+  .pagination {
+    padding: 0.5rem 0.6rem;
+  }
+  
+  .paginationInfo {
+    font-size: 0.7rem;
+  }
+  
+  .pageBtn {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+}
+
+/* ============================================
+   RTL SUPPORT
+   ============================================ */
+[dir="rtl"] .table th {
+  text-align: right;
+}
+
+[dir="rtl"] .table td {
+  text-align: right;
+}
+
+[dir="rtl"] .tableSearch .searchInput {
+  text-align: right;
+}
+
+[dir="rtl"] .searchInput {
+  text-align: right;
+}
+
+[dir="rtl"] .stockBarValue {
+  text-align: right;
+}
+
+[dir="rtl"] .detailRow {
+  text-align: right;
+}
+
+[dir="ltr"] .table th {
+  text-align: left;
+}
+
+[dir="ltr"] .table td {
+  text-align: left;
+}
+
+[dir="ltr"] .tableSearch .searchInput {
+  text-align: left;
+}
+
+[dir="ltr"] .searchInput {
+  text-align: left;
+}
+
+[dir="ltr"] .stockBarValue {
+  text-align: left;
+}
+
+[dir="ltr"] .detailRow {
+  text-align: left;
+}
+/* ============================================
+   PRODUCT FORM STYLES (اضافه شده به InventoryCommon.module.css)
+   ============================================ */
+
+/* ============================================
+   PRODUCT FORM
+   ============================================ */
+.productForm {
+  padding: 0.25rem 0;
+}
+
+/* ============================================
+   FORM SELECT
+   ============================================ */
+.formSelect {
+  width: 100%;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--macos-text);
+  transition: all 0.3s ease;
+  outline: none;
+  direction: rtl;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 12px center;
+  background-size: 12px;
+  cursor: pointer;
+}
+
+.formSelect:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.08);
+  background: white;
+}
+
+.formSelect.error {
+  border-color: #c62828;
+}
+
+.formSelect:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--macos-bg);
+}
+
+.formSelect option {
+  padding: 0.3rem 0.5rem;
+  font-family: var(--font-iran);
+  font-size: 0.7rem;
+  color: var(--macos-text);
+}
+
+/* ============================================
+   IMAGE PREVIEW
+   ============================================ */
+.imagePreview {
+  margin-top: 0.5rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 8px;
+  padding: 0.5rem;
+  background: var(--macos-bg);
+  display: inline-block;
+}
+
+.imagePreview img {
+  max-width: 120px;
+  max-height: 120px;
+  border-radius: 6px;
+  object-fit: cover;
+  display: block;
+}
+
+.imagesPreview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: var(--macos-bg);
+  border: 1px solid var(--macos-border);
+  border-radius: 8px;
+}
+
+.imagesPreview img {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid var(--macos-border);
+}
+
+/* ============================================
+   SPECIFICATIONS (مشخصات فنی)
+   ============================================ */
+.specsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: var(--macos-bg);
+  border: 1px solid var(--macos-border);
+  border-radius: 8px;
+  min-height: 50px;
+}
+
+.specItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  background: var(--macos-card);
+  border: 1px solid var(--macos-border);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.specItem:hover {
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.specKey {
+  font-weight: 600;
+  font-size: 0.7rem;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+  padding: 0.1rem 0.3rem;
+  background: rgba(128, 0, 32, 0.05);
+  border-radius: 4px;
+}
+
+.specValue {
+  font-size: 0.7rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  flex: 1;
+}
+
+.specRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #c62828;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.specRemove:hover:not(:disabled) {
+  background: #ffebee;
+  transform: scale(1.1);
+}
+
+.specRemove:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.specInputGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding: 0.3rem;
+  background: var(--macos-card);
+  border: 1px solid var(--macos-border);
+  border-radius: 6px;
+}
+
+.specInput {
+  flex: 1;
+  min-width: 80px;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--macos-text);
+  transition: all 0.2s ease;
+  outline: none;
+  direction: rtl;
+}
+
+.specInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(128, 0, 32, 0.08);
+}
+
+.specInput:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--macos-bg);
+}
+
+.specInput::placeholder {
+  color: var(--macos-text-secondary);
+  font-size: 0.65rem;
+}
+
+.specAddBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.8rem;
+  border: 1px dashed var(--macos-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--macos-text-secondary);
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  align-self: flex-start;
+}
+
+.specAddBtn:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(128, 0, 32, 0.04);
+}
+
+.specAddBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.specConfirmBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 4px;
+  background: #e8f5e9;
+  color: #2e7d32;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.specConfirmBtn:hover:not(:disabled) {
+  background: #c8e6c9;
+  transform: scale(1.05);
+}
+
+.specConfirmBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.specCancelBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 4px;
+  background: #ffebee;
+  color: #c62828;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.specCancelBtn:hover:not(:disabled) {
+  background: #ffcdd2;
+  transform: scale(1.05);
+}
+
+.specCancelBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* styles/modules/InventoryCommon.module.css */
+
+/* ============================================
+   Hierarchical Unit Manager
+   ============================================ */
+
+.hierarchicalUnitManager {
+  background: var(--macos-card);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid var(--macos-border);
+}
+
+.sectionHeader {
+  margin-bottom: 1.5rem;
+}
+
+.sectionHeader h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+}
+
+.sectionDesc {
+  color: var(--macos-text-secondary);
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  margin-top: 0.25rem;
+}
+
+/* ===== Unit List ===== */
+.unitList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  background: var(--macos-bg);
+  border-radius: 12px;
+  border: 1px solid var(--macos-border);
+}
+
+.unitItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  background: var(--macos-card);
+  border-radius: 10px;
+  border: 1px solid var(--macos-border);
+  transition: all 0.2s ease;
+}
+
+.unitItem:hover {
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.unitInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.unitLevel {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.5rem;
+  background: var(--primary);
+  color: white;
+  border-radius: 12px;
+  font-weight: 600;
+  font-family: var(--font-iran);
+}
+
+.unitName {
+  font-weight: 600;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+}
+
+.unitCode {
+  font-size: 0.8rem;
+  padding: 0.1rem 0.6rem;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 6px;
+  font-weight: 600;
+  font-family: var(--font-edameh);
+}
+
+.unitQuantity {
+  font-size: 0.8rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.unitParent {
+  font-size: 0.75rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  padding: 0.1rem 0.5rem;
+  background: var(--macos-bg);
+  border-radius: 4px;
+}
+
+.unitActions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.unitActions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--macos-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.unitActions button:hover:not(:disabled) {
+  background: var(--macos-bg);
+  transform: scale(1.05);
+}
+
+.unitActions button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.moveBtn:hover:not(:disabled) {
+  color: #1976d2;
+}
+
+.editBtn:hover:not(:disabled) {
+  color: #f57c00;
+}
+
+.removeBtn:hover:not(:disabled) {
+  color: #c62828;
+}
+
+/* ===== Unit Form ===== */
+.unitForm {
+  background: var(--macos-bg);
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid var(--macos-border);
+  margin-bottom: 1rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.formGroup label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.formGroup input,
+.formGroup select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--macos-text);
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.08);
+}
+
+.formGroup input:disabled,
+.formGroup select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.formActions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.addBtn {
+  background: var(--primary);
+  color: white;
+}
+
+.addBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(128, 0, 32, 0.3);
+}
+
+.saveBtn {
+  background: #2e7d32;
+  color: white;
+}
+
+.saveBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+.cancelBtn {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.cancelBtn:hover:not(:disabled) {
+  background: #ffcdd2;
+}
+
+.formActions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== Final Actions ===== */
+.finalActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--macos-border);
+}
+
+.submitBtn {
+  padding: 0.6rem 2rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submitBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(128, 0, 32, 0.3);
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== Preview ===== */
+.previewSection {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--macos-border);
+}
+
+.previewSection h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+  margin-bottom: 0.5rem;
+}
+
+.hierarchyPreview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.5rem;
+  background: var(--macos-bg);
+  border-radius: 8px;
+  border: 1px solid var(--macos-border);
+}
+
+.hierarchyItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+}
+
+.hierarchyArrow {
+  color: var(--macos-text-secondary);
+  font-size: 0.7rem;
+}
+
+.hierarchyName {
+  font-weight: 600;
+  color: var(--macos-text);
+}
+
+.hierarchyQuantity {
+  font-size: 0.75rem;
+  color: var(--macos-text-secondary);
+}
+
+.hierarchyParent {
+  font-size: 0.75rem;
+  color: #1976d2;
+  background: #e3f2fd;
+  padding: 0.05rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 768px) {
+  .formRow {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .unitInfo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+  
+  .unitItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .unitActions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .hierarchicalUnitManager {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+  
+  .unitActions {
+    flex-wrap: wrap;
+  }
+}
+
+
+/* styles/modules/InventoryCommon.module.css */
+
+/* ============================================
+   سلسله‌مراتب بسته‌بندی (Hierarchy)
+   ============================================ */
+
+.hierarchyContainer {
+  background: var(--macos-bg);
+  border-radius: 12px;
+  border: 1px solid var(--macos-border);
+  padding: 1rem;
+  margin-top: 0.25rem;
+}
+
+.hierarchyList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.hierarchyItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  background: var(--macos-card);
+  border-radius: 8px;
+  border: 1px solid var(--macos-border);
+  transition: all 0.2s ease;
+}
+
+.hierarchyItem:hover {
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.hierarchyItemInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.hierarchyLevel {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.5rem;
+  background: var(--primary);
+  color: white;
+  border-radius: 10px;
+  font-weight: 600;
+  font-family: var(--font-iran);
+}
+
+.hierarchyName {
+  font-weight: 600;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+}
+
+.hierarchyCode {
+  font-size: 0.75rem;
+  padding: 0.1rem 0.6rem;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 4px;
+  font-weight: 600;
+  font-family: var(--font-edameh);
+}
+
+.hierarchyQuantity {
+  font-size: 0.8rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.hierarchyParent {
+  font-size: 0.7rem;
+  color: #6c5ce7;
+  background: #f3e5f5;
+  padding: 0.05rem 0.5rem;
+  border-radius: 4px;
+  font-family: var(--font-iran);
+}
+
+.hierarchyActions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.hierarchyActions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--macos-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hierarchyActions button:hover:not(:disabled) {
+  background: var(--macos-bg);
+  transform: scale(1.05);
+}
+
+.hierarchyActions button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.hierarchyMoveBtn:hover:not(:disabled) {
+  color: #1976d2;
+}
+
+.hierarchyEditBtn:hover:not(:disabled) {
+  color: #f57c00;
+}
+
+.hierarchyRemoveBtn:hover:not(:disabled) {
+  color: #c62828;
+}
+
+/* ============================================
+   فرم افزودن واحد
+   ============================================ */
+
+.hierarchyForm {
+  background: white;
+  border-radius: 10px;
+  padding: 1rem;
+  border: 1.5px solid var(--primary);
+  margin-bottom: 1rem;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hierarchyFormRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.hierarchyFormGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.hierarchyFormGroup label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.hierarchyFormGroup input,
+.hierarchyFormGroup select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--macos-text);
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.hierarchyFormGroup input:focus,
+.hierarchyFormGroup select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.08);
+}
+
+.hierarchyFormGroup input:disabled,
+.hierarchyFormGroup select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hierarchyFormActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.hierarchyFormActions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hierarchySaveBtn {
+  background: #2e7d32;
+  color: white;
+}
+
+.hierarchySaveBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+.hierarchyCancelBtn {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.hierarchyCancelBtn:hover:not(:disabled) {
+  background: #ffcdd2;
+}
+
+.hierarchyFormActions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ============================================
+   دکمه افزودن واحد
+   ============================================ */
+
+.hierarchyAddBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1.5px dashed var(--primary);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  justify-content: center;
+}
+
+.hierarchyAddBtn:hover:not(:disabled) {
+  background: rgba(128, 0, 32, 0.05);
+  border-color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.hierarchyAddBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media (max-width: 768px) {
+  .hierarchyFormRow {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .hierarchyItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .hierarchyActions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .hierarchyFormRow {
+    grid-template-columns: 1fr;
+  }
+  
+  .hierarchyItemInfo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+}
+
+/* ============================================
+   دکمه مدیریت سلسله‌مراتب
+   ============================================ */
+
+.hierarchyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid #6c5ce7;
+  border-radius: 6px;
+  background: transparent;
+  color: #6c5ce7;
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hierarchyBtn:hover {
+  background: #6c5ce7;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.3);
+}
+
+.hierarchyBtn span {
+  margin-right: 0.15rem;
+}
+
+.colHierarchy {
+  width: 100px;
+  text-align: center;
+}
+
+/* ============================================
+   مودال سلسله‌مراتب
+   ============================================ */
+
+.hierarchicalModalContent {
+  padding: 0.5rem 0;
+}
+
+.hierarchicalModalDesc {
+  color: var(--macos-text-secondary);
+  font-size: 0.9rem;
+  font-family: var(--font-iran);
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--macos-bg);
+  border-radius: 8px;
+  border: 1px solid var(--macos-border);
+  line-height: 1.6;
+}
+
+/* ============================================
+   پاسخگو - ستون سلسله‌مراتب
+   ============================================ */
+
+@media (max-width: 768px) {
+  .colHierarchy {
+    width: 70px;
+  }
+  
+  .hierarchyBtn {
+    padding: 0.15rem 0.4rem;
+    font-size: 0.6rem;
+  }
+  
+  .hierarchyBtn svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .colHierarchy {
+    display: none;
+  }
+}
+
+
+/* ============================================
+   Hierarchical Unit Manager - استایل‌های کامل
+   ============================================ */
+
+.hierarchicalUnitManager {
+  background: var(--macos-card);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid var(--macos-border);
+}
+
+.sectionHeader {
+  margin-bottom: 1.5rem;
+}
+
+.sectionHeader h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+}
+
+.sectionDesc {
+  color: var(--macos-text-secondary);
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  margin-top: 0.25rem;
+}
+
+/* ===== Unit List ===== */
+.unitList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  max-height: 350px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  background: var(--macos-bg);
+  border-radius: 12px;
+  border: 1px solid var(--macos-border);
+  min-height: 60px;
+}
+
+.emptyHierarchy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  font-size: 0.9rem;
+}
+
+.unitItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  background: var(--macos-card);
+  border-radius: 10px;
+  border: 1px solid var(--macos-border);
+  transition: all 0.2s ease;
+}
+
+.unitItem:hover {
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.unitInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.unitLevel {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.5rem;
+  background: var(--primary);
+  color: white;
+  border-radius: 12px;
+  font-weight: 600;
+  font-family: var(--font-iran);
+}
+
+.unitName {
+  font-weight: 600;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+}
+
+.unitCode {
+  font-size: 0.8rem;
+  padding: 0.1rem 0.6rem;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 6px;
+  font-weight: 600;
+  font-family: var(--font-edameh);
+}
+
+.unitQuantity {
+  font-size: 0.8rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.unitParent {
+  font-size: 0.75rem;
+  color: #6c5ce7;
+  background: #f3e5f5;
+  padding: 0.05rem 0.5rem;
+  border-radius: 4px;
+  font-family: var(--font-iran);
+}
+
+.unitActions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.unitActions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--macos-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.unitActions button:hover:not(:disabled) {
+  background: var(--macos-bg);
+  transform: scale(1.05);
+}
+
+.unitActions button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.moveBtn:hover:not(:disabled) {
+  color: #1976d2;
+}
+
+.editBtn:hover:not(:disabled) {
+  color: #f57c00;
+}
+
+.removeBtn:hover:not(:disabled) {
+  color: #c62828;
+}
+
+/* ===== Add Unit Button ===== */
+.addUnitBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1.5px dashed var(--primary);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.addUnitBtn:hover:not(:disabled) {
+  background: rgba(128, 0, 32, 0.05);
+  border-color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.addUnitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== Unit Form ===== */
+.unitForm {
+  background: white;
+  border-radius: 10px;
+  padding: 1rem;
+  border: 1.5px solid var(--primary);
+  margin-bottom: 1rem;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.formGroup label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.formGroup input,
+.formGroup select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--macos-text);
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.08);
+}
+
+.formGroup input:disabled,
+.formGroup select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.formActions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.saveBtn {
+  background: #2e7d32;
+  color: white;
+}
+
+.saveBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+.cancelBtn {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.cancelBtn:hover:not(:disabled) {
+  background: #ffcdd2;
+}
+
+.formActions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== Final Actions ===== */
+.finalActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--macos-border);
+}
+
+.submitBtn {
+  padding: 0.6rem 2rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submitBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(128, 0, 32, 0.3);
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== Preview ===== */
+.previewSection {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--macos-border);
+}
+
+.previewSection h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+  margin-bottom: 0.5rem;
+}
+
+.hierarchyPreview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.5rem;
+  background: var(--macos-bg);
+  border-radius: 8px;
+  border: 1px solid var(--macos-border);
+}
+
+.hierarchyItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+}
+
+.hierarchyArrow {
+  color: var(--macos-text-secondary);
+  font-size: 0.7rem;
+}
+
+.hierarchyName {
+  font-weight: 600;
+  color: var(--macos-text);
+}
+
+.hierarchyQuantity {
+  font-size: 0.75rem;
+  color: var(--macos-text-secondary);
+}
+
+.hierarchyParent {
+  font-size: 0.75rem;
+  color: #6c5ce7;
+  background: #f3e5f5;
+  padding: 0.05rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 768px) {
+  .formRow {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .unitInfo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+  
+  .unitItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .unitActions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .hierarchicalUnitManager {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+  
+  .unitActions {
+    flex-wrap: wrap;
+  }
+}
+
+/* styles/modules/InventoryCommon.module.css */
+
+/* ============================================
+   TREE TABLE
+   ============================================ */
+
+.treeTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-iran);
+  font-size: 0.85rem;
+}
+
+.treeTable thead {
+  background: linear-gradient(135deg, var(--macos-bg), #f5f5f7);
+  border-bottom: 2px solid var(--macos-border);
+}
+
+.treeTable th {
+  padding: 0.75rem 1.25rem;
+  text-align: right;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--macos-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-family: var(--font-edameh);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--macos-border);
+  position: sticky;
+  top: 0;
+  background: inherit;
+  z-index: 5;
+}
+
+.treeTable td {
+  padding: 0.5rem 1.25rem;
+  font-size: 0.85rem;
+  color: var(--macos-text);
+  vertical-align: middle;
+  border-bottom: 1px solid var(--macos-border);
+}
+
+.treeTable tbody tr {
+  transition: all 0.2s ease;
+}
+
+.treeTable tbody tr:hover {
+  background: var(--macos-bg);
+}
+
+.treeTable tbody tr.clickable {
+  cursor: pointer;
+}
+
+.treeTable tbody tr.clickable:hover {
+  background: rgba(128, 0, 32, 0.04);
+}
+
+/* ============================================
+   TREE CELL
+   ============================================ */
+
+.treeCell {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 40px;
+}
+
+.toggleBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--macos-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.toggleBtn:hover {
+  background: var(--macos-bg);
+  color: var(--macos-text);
+}
+
+.togglePlaceholder {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   UNIT NAME CELL IN TREE
+   ============================================ */
+
+.treeCell .unitNameCell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.treeCell .unitIconWrapper {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--macos-bg);
+  border: 1px solid var(--macos-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.treeCell .unitNameInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.treeCell .unitName {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+}
+
+.treeCell .unitDescription {
+  font-size: 0.6rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+
+/* ============================================
+   TREE CELL
+   ============================================ */
+
+.treeCell {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 40px;
+}
+
+.toggleBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--macos-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.toggleBtn:hover {
+  background: var(--macos-bg);
+  color: var(--macos-text);
+}
+
+.togglePlaceholder {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   LEVEL BADGE
+   ============================================ */
+
+.levelBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 12px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+}
+
+.childrenCount {
+  font-size: 0.55rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  background: var(--macos-bg);
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.colLevel {
+  min-width: 70px;
+}
+
+/* ============================================
+   UNIT FORM - PARENT SELECT
+   ============================================ */
+
+.formSelect option {
+  padding: 0.3rem 0.5rem;
+  font-family: var(--font-iran);
+  font-size: 0.7rem;
+  color: var(--macos-text);
+}
+
+.formSelect option:disabled {
+  color: var(--macos-text-secondary);
+  opacity: 0.6;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .colLevel {
+    display: none;
+  }
+  
+  .toggleBtn {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .toggleBtn svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .togglePlaceholder {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .childrenCount {
+    display: block;
+    margin-top: 0.1rem;
+  }
+}
+/* ============================================
+   TREE TABLE - استایل‌های کامل
+   ============================================ */
+
+.treeTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-iran);
+  font-size: 0.85rem;
+}
+
+.treeTable thead {
+  background: linear-gradient(135deg, var(--macos-bg), #f5f5f7);
+  border-bottom: 2px solid var(--macos-border);
+}
+
+.treeTable th {
+  padding: 0.75rem 1.25rem;
+  text-align: right;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--macos-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-family: var(--font-edameh);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--macos-border);
+  position: sticky;
+  top: 0;
+  background: inherit;
+  z-index: 5;
+}
+
+.treeTable td {
+  padding: 0.5rem 1.25rem;
+  font-size: 0.85rem;
+  color: var(--macos-text);
+  vertical-align: middle;
+  border-bottom: 1px solid var(--macos-border);
+}
+
+.treeTable tbody tr {
+  transition: all 0.2s ease;
+}
+
+.treeTable tbody tr:hover {
+  background: var(--macos-bg);
+}
+
+.treeTable tbody tr.clickable {
+  cursor: pointer;
+}
+
+.treeTable tbody tr.clickable:hover {
+  background: rgba(128, 0, 32, 0.04);
+}
+
+/* ============================================
+   TREE CELL
+   ============================================ */
+
+.treeCell {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 40px;
+}
+
+.toggleBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--macos-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.toggleBtn:hover {
+  background: var(--macos-bg);
+  color: var(--macos-text);
+}
+
+.togglePlaceholder {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   UNIT NAME CELL IN TREE
+   ============================================ */
+
+.treeCell .unitNameCell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.treeCell .unitIconWrapper {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--macos-bg);
+  border: 1px solid var(--macos-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.treeCell .unitNameInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.treeCell .unitName {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+}
+
+.treeCell .unitDescription {
+  font-size: 0.6rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.unitAbbr {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  background: var(--macos-bg);
+  border: 1px solid var(--macos-border);
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+}
+
+.childrenCount {
+  font-size: 0.55rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  background: var(--macos-bg);
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* ============================================
+   LEVEL BADGE
+   ============================================ */
+
+.levelBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 12px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   COLUMN WIDTHS
+   ============================================ */
+
+.colName {
+  min-width: 250px;
+}
+
+.colAbbr {
+  min-width: 80px;
+}
+
+.colLevel {
+  min-width: 70px;
+}
+
+.colProducts {
+  min-width: 80px;
+  text-align: center;
+}
+
+.colStatus {
+  min-width: 80px;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .colLevel {
+    display: none;
+  }
+  
+  .colProducts {
+    display: none;
+  }
+  
+  .treeTable th,
+  .treeTable td {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  .treeCell {
+    padding-right: 0 !important;
+  }
+  
+  .toggleBtn {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .toggleBtn svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .togglePlaceholder {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .colAbbr {
+    display: none;
+  }
+  
+  .colStatus {
+    min-width: 60px;
+  }
+  
+  .treeTable th,
+  .treeTable td {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+  }
+  
+  .treeCell .unitName {
+    font-size: 0.7rem;
+  }
+  
+  .treeCell .unitIconWrapper {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .treeCell .unitIconWrapper svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .childrenCount {
+    font-size: 0.5rem;
+    padding: 0.05rem 0.3rem;
+  }
+}
+
+.breakdownBox {
+  background: var(--macos-card);
+  border: 1px solid var(--macos-border);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  box-shadow: var(--macos-shadow);
+  transition: all 0.3s ease;
+}
+
+.breakdownBox:hover {
+  box-shadow: var(--macos-shadow-hover);
+}
+
+.breakdownHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--macos-border);
+  flex-wrap: wrap;
+}
+
+.breakdownBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.1rem 0.6rem;
+  background: var(--macos-bg);
+  border: 1px solid var(--macos-border);
+  border-radius: 12px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.breakdownLoading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--macos-bg);
+  border-radius: 8px;
+  border: 1px solid var(--macos-border);
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  font-size: 0.85rem;
+}
+
+.breakdownContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.breakdownItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--macos-card);
+  border-radius: 8px;
+  border: 1px solid var(--macos-border);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.breakdownItem:hover {
+  border-color: var(--primary);
+  transform: translateX(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.breakdownItem.breakdownSelected {
+  border-color: #2e7d32;
+  background: #e8f5e9;
+  border-width: 2px;
+}
+
+.breakdownItem.breakdownRoot {
+  border-color: #e65100;
+  background: #fff3e0;
+}
+
+.breakdownLevelBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 24px;
+  padding: 0 0.4rem;
+  background: var(--macos-bg);
+  border-radius: 4px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  border: 1px solid var(--macos-border);
+  flex-shrink: 0;
+}
+
+.breakdownInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.breakdownName {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+}
+
+.breakdownAbbr {
+  font-size: 0.65rem;
+  color: var(--macos-text-secondary);
+  font-weight: 400;
+  margin-right: 0.25rem;
+}
+
+.breakdownDesc {
+  font-size: 0.6rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.breakdownQuantityGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.breakdownQuantity {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+  min-width: 60px;
+  text-align: left;
+  direction: ltr;
+}
+
+.breakdownParentCount {
+  font-size: 0.6rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  background: var(--macos-bg);
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+}
+
+.breakdownSelectedBadge {
+  font-size: 0.6rem;
+  color: #2e7d32;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  background: #c8e6c9;
+  padding: 0.05rem 0.5rem;
+  border-radius: 4px;
+}
+
+.breakdownArrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--macos-text-secondary);
+  flex-shrink: 0;
+  margin: 0 -0.25rem;
+}
+
+/* ===== Total ===== */
+.breakdownTotal {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  border-radius: 10px;
+  border: 2px solid #a5d6a7;
+  margin-top: 0.5rem;
+}
+
+.breakdownTotalIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2e7d32;
+}
+
+.breakdownTotalContent {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.breakdownTotalLabel {
+  font-size: 0.75rem;
+  color: #1a5a2a;
+  font-family: var(--font-iran);
+  font-weight: 600;
+}
+
+.breakdownTotalValue {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0d6439;
+  font-family: var(--font-edameh);
+  direction: ltr;
+}
+
+.breakdownTotalUnit {
+  font-size: 0.75rem;
+  color: #1a5a2a;
+  font-family: var(--font-iran);
+  font-weight: 600;
+}
+
+/* ============================================
+   SUMMARY - بهبود یافته
+   ============================================ */
+
+.summaryBox {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid #90caf9;
+}
+
+.summaryHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0d47a1;
+  font-family: var(--font-edameh);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(13, 71, 161, 0.2);
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.summaryItem {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0;
+  font-size: 0.75rem;
+  color: var(--macos-text);
+}
+
+.summaryLabel {
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  min-width: 70px;
+}
+
+.summaryValue {
+  font-weight: 600;
+  color: #0d47a1;
+  font-family: var(--font-edameh);
+}
+
+.summaryCode {
+  font-size: 0.6rem;
+  color: #1565c0;
+  font-weight: 600;
+  font-family: var(--font-edameh);
+}
+
+.summaryUnit {
+  font-size: 0.6rem;
+  color: #1565c0;
+  font-weight: 600;
+}
+
+.summaryTotal {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0d6439;
+  font-family: var(--font-edameh);
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media (max-width: 768px) {
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .breakdownItem {
+    flex-wrap: wrap;
+    padding: 0.5rem;
+  }
+  
+  .breakdownQuantityGroup {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .breakdownArrow {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .breakdownHeader {
+    font-size: 0.75rem;
+  }
+  
+  .breakdownBadge {
+    font-size: 0.5rem;
+  }
+  
+  .breakdownQuantity {
+    font-size: 0.8rem;
+    min-width: 40px;
+  }
+  
+  .breakdownTotalValue {
+    font-size: 0.95rem;
+  }
+}
+
+
+.breakdownPath {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--macos-border);
+  flex-wrap: wrap;
+}
+
+.pathLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.pathValue {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.pathItem {
+  font-size: 0.75rem;
+  color: var(--macos-text);
+  font-family: var(--font-iran);
+  padding: 0.1rem 0.4rem;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid var(--macos-border);
+}
+
+.pathSelected {
+  font-size: 0.75rem;
+  color: #0d47a1;
+  font-family: var(--font-iran);
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  background: #e3f2fd;
+  border-radius: 4px;
+  border: 2px solid #1976d2;
+}
+
+.pathArrow {
+  font-size: 0.7rem;
+  color: var(--macos-text-secondary);
+}
+
+/* ============================================
+   BREAKDOWN ITEM VARIANTS
+   ============================================ */
+
+.breakdownItem.breakdownBase {
+  border-color: #e65100;
+  background: #fff3e0;
+}
+
+.breakdownItem.breakdownTop {
+  border-color: #2e7d32;
+  background: #e8f5e9;
+}
+
+.breakdownItem.breakdownSelected {
+  border-color: #1976d2;
+  background: #e3f2fd;
+  border-width: 2px;
+}
+
+.breakdownTotalNote {
+  font-size: 0.65rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   STOCK DISPLAY - با تفکیک
+   ============================================ */
+
+.stockDisplay {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  min-width: 150px;
+}
+
+.stockBarWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.stockBarTrack {
+  flex: 1;
+  height: 6px;
+  background: var(--macos-bg);
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 50px;
+}
+
+.stockBarFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.stockBarValue {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+  min-width: 30px;
+  text-align: left;
+  direction: ltr;
+}
+
+.stockUnit {
+  font-size: 0.6rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.stockUnitLabel {
+  background: var(--macos-bg);
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid var(--macos-border);
+}
+
+.stockExpandBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: none;
+  border: none;
+  color: var(--macos-text-secondary);
+  font-size: 0.6rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  align-self: flex-start;
+}
+
+.stockExpandBtn:hover {
+  background: var(--macos-bg);
+  color: var(--macos-text);
+}
+
+.stockExpandLabel {
+  font-size: 0.6rem;
+}
+
+/* ============================================
+   STOCK BREAKDOWN
+   ============================================ */
+
+.stockBreakdown {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: var(--macos-bg);
+  border-radius: 8px;
+  border: 1px solid var(--macos-border);
+  width: 100%;
+}
+
+.breakdownHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--macos-border);
+}
+
+.breakdownItems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.breakdownItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.2rem 0.4rem;
+  background: var(--macos-card);
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-family: var(--font-iran);
+  border: 1px solid var(--macos-border);
+}
+
+.breakdownItem:hover {
+  border-color: var(--primary);
+}
+
+.breakdownLevel {
+  font-size: 0.55rem;
+  padding: 0.05rem 0.3rem;
+  background: var(--macos-bg);
+  border-radius: 3px;
+  color: var(--macos-text-secondary);
+  font-weight: 600;
+}
+
+.breakdownName {
+  flex: 1;
+  margin: 0 0.5rem;
+  color: var(--macos-text);
+}
+
+.breakdownQuantity {
+  font-weight: 600;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+  direction: ltr;
+}
+
+.breakdownEmpty {
+  text-align: center;
+  color: var(--macos-text-secondary);
+  font-size: 0.6rem;
+  padding: 0.25rem;
+}
+
+.breakdownTotal {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--macos-border);
+}
+
+.breakdownTotalLabel {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.breakdownTotalValue {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #2e7d32;
+  font-family: var(--font-edameh);
+  direction: ltr;
+}
+
+.breakdownTotalUnit {
+  font-size: 0.6rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   PRODUCT DETAIL MODAL
+   ============================================ */
+
+.productDetail {
+  padding: 0.25rem 0;
+}
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--macos-bg);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  border: 1px solid var(--macos-border);
+}
+
+.detailIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(46, 125, 50, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2e7d32;
+  flex-shrink: 0;
+}
+
+.detailTitle {
+  flex: 1;
+  min-width: 0;
+}
+
+.detailTitle h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+  margin: 0;
+}
+
+.detailCode {
+  font-size: 0.7rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.detailGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--macos-border);
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+}
+
+.detailLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  min-width: 80px;
+}
+
+.detailValue {
+  font-size: 0.7rem;
+  color: var(--macos-text);
+  font-family: var(--font-iran);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  text-align: left;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.detailSpecs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  justify-content: flex-end;
+}
+
+.detailSpec {
+  font-size: 0.6rem;
+  padding: 0.1rem 0.4rem;
+  background: var(--macos-bg);
+  border: 1px solid var(--macos-border);
+  border-radius: 4px;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.detailActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--macos-border);
+}
+
+/* ============================================
+   COLUMN WIDTHS FOR PRODUCTS
+   ============================================ */
+
+.colCode {
+  width: 80px;
+  min-width: 80px;
+}
+
+.colProduct {
+  min-width: 200px;
+}
+
+.colCategory {
+  min-width: 100px;
+}
+
+.colUnit {
+  min-width: 80px;
+}
+
+.colStock {
+  min-width: 200px;
+}
+
+.colStatus {
+  min-width: 90px;
+}
+
+.colActive {
+  min-width: 70px;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .stockDisplay {
+    min-width: 120px;
+  }
+  
+  .colStock {
+    min-width: 150px;
+  }
+  
+  .colProduct {
+    min-width: 150px;
+  }
+  
+  .detailRow {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .detailValue {
+    justify-content: flex-start;
+  }
+  
+  .detailSpecs {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .colCode {
+    width: 60px;
+    min-width: 60px;
+  }
+  
+  .colStock {
+    min-width: 120px;
+  }
+  
+  .stockBarValue {
+    font-size: 0.65rem;
+    min-width: 20px;
+  }
+  
+  .stockBreakdown {
+    padding: 0.25rem;
+  }
+  
+  .breakdownItem {
+    font-size: 0.55rem;
+    padding: 0.15rem 0.3rem;
+  }
+}
+
+/* ============================================
+   STOCK DISPLAY - نمایش همه سطوح
+   ============================================ */
+
+.stockDisplay {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  min-width: 180px;
+}
+
+.stockBarWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.stockBarTrack {
+  flex: 1;
+  height: 6px;
+  background: var(--macos-bg);
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 50px;
+}
+
+.stockBarFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.stockBarValue {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+  min-width: 35px;
+  text-align: left;
+  direction: ltr;
+}
+
+.stockUnit {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.stockUnitLabel {
+  font-size: 0.6rem;
+  background: var(--macos-bg);
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid var(--macos-border);
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.stockLevelsCount {
+  font-size: 0.55rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  background: #e3f2fd;
+  padding: 0.05rem 0.4rem;
+  border-radius: 10px;
+  color: #1976d2;
+}
+
+.stockExpandBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: none;
+  border: none;
+  color: var(--macos-text-secondary);
+  font-size: 0.6rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  align-self: flex-start;
+}
+
+.stockExpandBtn:hover {
+  background: var(--macos-bg);
+  color: var(--macos-text);
+}
+
+.stockExpandLabel {
+  font-size: 0.6rem;
+}
+
+/* ============================================
+   STOCK BREAKDOWN - همه سطوح
+   ============================================ */
+
+.stockBreakdown {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: var(--macos-bg);
+  border-radius: 8px;
+  border: 1px solid var(--macos-border);
+  width: 100%;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.breakdownHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--macos-border);
+  flex-wrap: wrap;
+}
+
+.breakdownTotalBadge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: #2e7d32;
+  font-family: var(--font-iran);
+  background: #e8f5e9;
+  padding: 0.05rem 0.5rem;
+  border-radius: 10px;
+  margin-right: auto;
+}
+
+.breakdownItems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.breakdownItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  background: var(--macos-card);
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-family: var(--font-iran);
+  border: 1px solid var(--macos-border);
+  transition: all 0.2s ease;
+}
+
+.breakdownItem:hover {
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.breakdownItem.hasValue {
+  border-color: #c8e6c9;
+  background: #f1f8e9;
+}
+
+.breakdownItem.noValue {
+  opacity: 0.6;
+}
+
+.breakdownLevelBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.55rem;
+  padding: 0.05rem 0.4rem;
+  background: var(--macos-bg);
+  border-radius: 4px;
+  color: var(--macos-text-secondary);
+  font-weight: 600;
+  white-space: nowrap;
+  border: 1px solid var(--macos-border);
+}
+
+.breakdownInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+.breakdownName {
+  font-weight: 600;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+  font-size: 0.65rem;
+}
+
+.breakdownAbbr {
+  font-size: 0.55rem;
+  color: var(--macos-text-secondary);
+  font-weight: 400;
+}
+
+.breakdownCountInfo {
+  font-size: 0.55rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  background: var(--macos-bg);
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
+}
+
+.breakdownQuantityGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.breakdownQuantity {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #1a5a2a;
+  font-family: var(--font-edameh);
+  direction: ltr;
+}
+
+.breakdownRemainder {
+  font-size: 0.55rem;
+  color: #f57c00;
+  font-family: var(--font-iran);
+  background: #fff3e0;
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
+}
+
+.breakdownOnlyRemainder {
+  font-size: 0.6rem;
+  color: #e65100;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  background: #fff3e0;
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
+}
+
+.breakdownEmptyQuantity {
+  color: var(--macos-text-secondary);
+  font-size: 0.6rem;
+}
+
+/* ============================================
+   BREAKDOWN TOTAL
+   ============================================ */
+
+.breakdownTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 2px solid var(--macos-border);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.breakdownTotalContent {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.breakdownTotalLabel {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.breakdownTotalValue {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #0d6439;
+  font-family: var(--font-edameh);
+  direction: ltr;
+}
+
+.breakdownTotalUnit {
+  font-size: 0.6rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.breakdownTotalLevels {
+  font-size: 0.6rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  background: #e3f2fd;
+  padding: 0.05rem 0.5rem;
+  border-radius: 10px;
+  color: #1976d2;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .stockDisplay {
+    min-width: 140px;
+  }
+  
+  .breakdownItem {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  
+  .breakdownLevelBadge {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .breakdownQuantityGroup {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .breakdownTotal {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .stockBarValue {
+    font-size: 0.65rem;
+    min-width: 25px;
+  }
+  
+  .breakdownItem {
+    padding: 0.2rem 0.3rem;
+    font-size: 0.55rem;
+  }
+  
+  .breakdownQuantity {
+    font-size: 0.6rem;
+  }
+  
+  .breakdownTotalValue {
+    font-size: 0.7rem;
+  }
+}
+
+/* ============================================
+   STOCK PATH DISPLAY
+   ============================================ */
+
+.stockPathDisplay {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.55rem;
+  padding: 0.1rem 0.3rem;
+  background: var(--macos-bg);
+  border-radius: 4px;
+  border: 1px solid var(--macos-border);
+  flex-wrap: wrap;
+}
+
+.pathLabel {
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  font-weight: 600;
+}
+
+.pathValue {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.1rem;
+}
+
+.pathItem {
+  color: var(--macos-text);
+  font-family: var(--font-iran);
+  padding: 0.05rem 0.2rem;
+  background: white;
+  border-radius: 3px;
+}
+
+.pathRoot {
+  color: #e65100;
+  font-family: var(--font-iran);
+  font-weight: 700;
+  padding: 0.05rem 0.2rem;
+  background: #fff3e0;
+  border-radius: 3px;
+}
+
+.pathArrow {
+  color: var(--macos-text-secondary);
+  font-size: 0.5rem;
+}
+
+.stockWarning {
+  font-size: 0.55rem;
+  color: #c62828;
+  font-family: var(--font-iran);
+  background: #ffebee;
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid #ffcdd2;
+}
+
+/* ============================================
+   LEVEL STYLES
+   ============================================ */
+
+.levelRoot {
+  border-color: #e65100 !important;
+  background: #fff3e0 !important;
+}
+
+.levelBase {
+  border-color: #2e7d32 !important;
+  background: #e8f5e9 !important;
+}
+
+.levelMiddle {
+  border-color: #1976d2 !important;
+  background: #e3f2fd !important;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .stockPathDisplay {
+    font-size: 0.5rem;
+    padding: 0.05rem 0.2rem;
+  }
+  
+  .pathItem, .pathRoot {
+    font-size: 0.5rem;
+    padding: 0.05rem 0.15rem;
+  }
+}
+
+/* ============================================
+   SUMMARY ERROR
+   ============================================ */
+
+.summaryError {
+  border-color: #c62828 !important;
+  background: #ffebee !important;
+}
+
+.summarySuccess {
+  border-color: #2e7d32 !important;
+  background: #e8f5e9 !important;
+}
+
+.textSuccess {
+  color: #2e7d32 !important;
+}
+
+.textError {
+  color: #c62828 !important;
+}
+
+/* ============================================
+   DANGER BUTTON
+   ============================================ */
+
+.dangerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #c62828, #b71c1c);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dangerBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(198, 40, 40, 0.3);
+}
+
+.dangerBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.personForm {
+  padding: 0.25rem 0;
+}
+
+.selectedWarehouses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: var(--macos-bg);
+  border-radius: 8px;
+  border: 1px solid var(--macos-border);
+}
+
+.selectedLabel {
+  font-size: 0.7rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  font-weight: 600;
+}
+
+.warehouseBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 12px;
+  font-size: 0.65rem;
+  font-family: var(--font-iran);
+  font-weight: 500;
+  border: 1px solid #bbdefb;
+}
+
+.warehouseBadge svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ============================================
+   PERSON DETAIL
+   ============================================ */
+
+.personDetail {
+  padding: 0.25rem 0;
+}
+
+.detailAvatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--macos-bg);
+  border: 2px solid var(--macos-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--macos-text-secondary);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.detailAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detailStatuses {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-end;
+}
+
+.detailWarehouses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}

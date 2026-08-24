@@ -1,0 +1,1464 @@
+/* styles/modules/inventoryPersons.module.css */
+
+/* ============================================
+   Container
+   ============================================ */
+.personContainer {
+  padding: 2rem 0;
+  background: var(--macos-bg);
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ============================================
+   Header
+   ============================================ */
+.personHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pageTitle .titleIcon {
+  color: var(--primary);
+}
+
+.pageDesc {
+  color: var(--macos-text-secondary);
+  font-size: 1rem;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(128, 0, 32, 0.3);
+}
+
+.primaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.refreshBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 12px;
+  background: var(--macos-card);
+  color: var(--macos-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.refreshBtn:hover:not(:disabled) {
+  background: var(--macos-bg);
+  border-color: var(--macos-text-secondary);
+}
+
+.refreshBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinning {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   Stats Bar
+   ============================================ */
+.statsBar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.25rem;
+  background: var(--macos-card);
+  backdrop-filter: var(--macos-blur);
+  border-radius: 12px;
+  border: 1px solid var(--macos-border);
+  box-shadow: var(--macos-shadow);
+  transition: all 0.3s ease;
+}
+
+.statItem:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--macos-shadow-hover);
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+  margin-top: 0.25rem;
+}
+
+.statActive {
+  color: #2e7d32;
+}
+
+.statInactive {
+  color: #c62828;
+}
+
+.statConfirm {
+  color: #1976d2;
+}
+
+.statNoConfirm {
+  color: #f57c00;
+}
+
+/* ============================================
+   Search Section
+   ============================================ */
+.searchSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.searchBox {
+  position: relative;
+  flex: 1;
+  max-width: 450px;
+  min-width: 200px;
+}
+
+.searchIcon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--macos-text-secondary);
+  pointer-events: none;
+  width: 18px;
+  height: 18px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.7rem 2.8rem 0.7rem 1rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--macos-text);
+  transition: all 0.3s ease;
+  direction: rtl;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: var(--macos-text-secondary);
+  opacity: 0.7;
+  font-size: 0.85rem;
+}
+
+.searchInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.1);
+  background: white;
+}
+
+.searchInput:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--macos-bg);
+}
+
+.clearSearch {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--macos-text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  width: 28px;
+  height: 28px;
+}
+
+.clearSearch:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.05);
+  color: #c62828;
+}
+
+.clearSearch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.filterActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filterToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 12px;
+  background: var(--macos-card);
+  color: var(--macos-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filterToggle:hover:not(:disabled) {
+  background: var(--macos-bg);
+  border-color: var(--macos-text-secondary);
+}
+
+.filterToggle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.filterActive {
+  border-color: var(--primary);
+  background: rgba(128, 0, 32, 0.05);
+  color: var(--primary);
+}
+
+.filterBadge {
+  color: var(--primary);
+  font-size: 0.6rem;
+}
+
+.clearFiltersBtn {
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 12px;
+  background: #ffebee;
+  color: #c62828;
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.clearFiltersBtn:hover {
+  background: #ffcdd2;
+}
+
+.totalCount {
+  font-size: 0.85rem;
+  color: var(--macos-text-secondary);
+  white-space: nowrap;
+  padding: 0.4rem 1.2rem;
+  background: var(--macos-bg);
+  border-radius: 20px;
+  font-family: var(--font-iran);
+  border: 1px solid var(--macos-border);
+}
+
+/* ============================================
+   Filter Panel
+   ============================================ */
+.filterPanel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  background: var(--macos-card);
+  backdrop-filter: var(--macos-blur);
+  border-radius: 12px;
+  border: 1px solid var(--macos-border);
+  box-shadow: var(--macos-shadow);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.filterLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.filterSelect {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  background: var(--macos-card);
+  color: var(--macos-text);
+  font-size: 0.9rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.filterSelect:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.1);
+}
+
+.filterSelect:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.filterApplyBtn {
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  grid-column: span 1;
+  align-self: flex-end;
+}
+
+.filterApplyBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(128, 0, 32, 0.3);
+}
+
+/* ============================================
+   Search Hint
+   ============================================ */
+.searchHint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  background: #fff3e0;
+  border: 1px solid #ffe0b2;
+  border-radius: 10px;
+  color: #e65100;
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   Error Alert
+   ============================================ */
+.errorAlert {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 12px;
+  color: #c62828;
+  margin-bottom: 1rem;
+  font-family: var(--font-iran);
+  font-size: 0.9rem;
+}
+
+.errorAlert button {
+  background: none;
+  border: none;
+  color: #c62828;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0 4px;
+  transition: opacity 0.2s ease;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.errorAlert button:hover {
+  background: rgba(198, 40, 40, 0.1);
+}
+
+/* ============================================
+   Table Columns
+   ============================================ */
+.colName {
+  min-width: 200px;
+}
+
+.colPhone {
+  width: 130px;
+}
+
+.colEmail {
+  width: 180px;
+}
+
+.colWarehouses {
+  min-width: 150px;
+}
+
+.colStatus {
+  width: 100px;
+}
+
+.colConfirm {
+  width: 120px;
+}
+
+/* ============================================
+   Person Name Cell
+   ============================================ */
+.personNameCell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.personAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--macos-border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--macos-bg);
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarPlaceholder {
+  color: var(--macos-text-secondary);
+}
+
+.personNameInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.personName {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+}
+
+.personPosition {
+  font-size: 0.75rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   Phone & Email Cells
+   ============================================ */
+.phoneCell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--macos-text);
+  font-family: var(--font-iran);
+}
+
+.phoneIcon {
+  color: #1976d2;
+  flex-shrink: 0;
+}
+
+.emailCell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--macos-text);
+  font-family: var(--font-iran);
+}
+
+.emailIcon {
+  color: #6c5ce7;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   Warehouses Cell
+   ============================================ */
+.warehousesCell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.warehouseTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  background: var(--macos-bg);
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  font-size: 0.7rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  white-space: nowrap;
+}
+
+.warehouseTag svg {
+  color: #1976d2;
+}
+
+.warehouseMore {
+  font-size: 0.7rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  padding: 2px 6px;
+  background: var(--macos-bg);
+  border-radius: 10px;
+}
+
+/* ============================================
+   Status Badges
+   ============================================ */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.2rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  white-space: nowrap;
+}
+
+.statusActive {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.statusInactive {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.confirmBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.2rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  white-space: nowrap;
+}
+
+.confirmYes {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.confirmNo {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+/* ============================================
+   Person Detail
+   ============================================ */
+.personDetail {
+  padding: 0.5rem 0;
+}
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--macos-border);
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.detailAvatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--macos-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--macos-bg);
+  flex-shrink: 0;
+}
+
+.detailAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detailAvatar svg {
+  color: var(--macos-text-secondary);
+}
+
+.detailTitle {
+  flex: 1;
+}
+
+.detailTitle h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+  margin: 0;
+}
+
+.detailPosition {
+  font-size: 0.85rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.detailStatuses {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 2rem;
+}
+
+.detailRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--macos-border);
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+}
+
+.detailLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.detailValue {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--macos-text);
+  font-family: var(--font-iran);
+}
+
+.detailValue svg {
+  color: var(--macos-text-secondary);
+  flex-shrink: 0;
+}
+
+.detailWarehouses {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 1200px) {
+  .statsBar {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .colEmail {
+    display: none;
+  }
+  
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .personContainer {
+    padding: 1rem 0;
+  }
+  
+  .container {
+    padding: 0 0.75rem;
+  }
+  
+  .personHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .headerActions {
+    flex-wrap: wrap;
+  }
+  
+  .headerActions button {
+    flex: 1;
+    justify-content: center;
+    min-width: 100px;
+  }
+  
+  .pageTitle {
+    font-size: 1.5rem;
+  }
+  
+  .statsBar {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .statItem {
+    padding: 0.75rem 1rem;
+  }
+  
+  .statValue {
+    font-size: 1.2rem;
+  }
+  
+  .searchSection {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .searchBox {
+    max-width: 100%;
+  }
+  
+  .filterActions {
+    justify-content: space-between;
+  }
+  
+  .totalCount {
+    align-self: flex-start;
+  }
+  
+  .filterPanel {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .filterApplyBtn {
+    grid-column: span 2;
+  }
+  
+  .colPhone {
+    width: 100px;
+  }
+  
+  .colWarehouses {
+    min-width: 120px;
+  }
+  
+  .colStatus {
+    min-width: 80px;
+  }
+  
+  .colConfirm {
+    min-width: 90px;
+  }
+  
+  .detailHeader {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .detailStatuses {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .headerActions {
+    flex-direction: column;
+  }
+  
+  .headerActions button {
+    width: 100%;
+  }
+  
+  .statsBar {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  
+  .statItem {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .statValue {
+    font-size: 1rem;
+  }
+  
+  .filterPanel {
+    grid-template-columns: 1fr;
+  }
+  
+  .filterApplyBtn {
+    grid-column: span 1;
+  }
+  
+  .colPhone {
+    display: none;
+  }
+  
+  .colName {
+    min-width: 150px;
+  }
+  
+  .colWarehouses {
+    min-width: 100px;
+  }
+  
+  .colStatus {
+    min-width: 70px;
+  }
+  
+  .colConfirm {
+    min-width: 80px;
+  }
+  
+  .personNameCell {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .personAvatar {
+    width: 32px;
+    height: 32px;
+  }
+}
+/* styles/modules/inventoryPersons.module.css */
+
+/* ============================================
+   فرم افراد مجاز (Person Form)
+   ============================================ */
+
+/* فرم اصلی */
+.personForm {
+  padding: 0.5rem 0;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+/* برچسب‌ها */
+.formLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--macos-text);
+  font-family: var(--font-iran);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.required {
+  color: #c62828;
+  font-size: 1rem;
+}
+
+/* فیلدهای ورودی */
+.formInput {
+  padding: 0.6rem 0.9rem;
+  border: 1.5px solid var(--macos-border);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--macos-text);
+  transition: all 0.3s ease;
+  outline: none;
+  width: 100%;
+  direction: rtl;
+}
+
+.formInput::placeholder {
+  color: var(--macos-text-secondary);
+  opacity: 0.6;
+}
+
+.formInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.1);
+  background: white;
+}
+
+.formInput:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--macos-bg);
+}
+
+.formInput.error {
+  border-color: #c62828;
+}
+
+.formInput.error:focus {
+  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
+}
+
+/* فیلدهای انتخاب (Select) */
+.formSelect {
+  padding: 0.6rem 0.9rem;
+  border: 1.5px solid var(--macos-border);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--macos-text);
+  transition: all 0.3s ease;
+  outline: none;
+  width: 100%;
+  direction: rtl;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236e6e73' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 12px center;
+  padding-left: 2.5rem;
+  cursor: pointer;
+}
+
+/* استایل خاص برای select چندگانه */
+.formSelect[multiple] {
+  min-height: 120px;
+  background-image: none;
+  padding-left: 0.9rem;
+  cursor: default;
+  overflow-y: auto;
+}
+
+.formSelect[multiple] option {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  margin: 2px 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-iran);
+}
+
+.formSelect[multiple] option:hover {
+  background: var(--macos-bg);
+}
+
+.formSelect[multiple] option:checked {
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+}
+
+.formSelect:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.1);
+  background-color: white;
+}
+
+.formSelect:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--macos-bg);
+}
+
+.formSelect.error {
+  border-color: #c62828;
+}
+
+.formSelect.error:focus {
+  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
+}
+
+.formSelect option {
+  padding: 0.5rem;
+}
+
+/* پیام‌های خطا */
+.errorText {
+  font-size: 0.75rem;
+  color: #c62828;
+  font-family: var(--font-iran);
+  margin-top: 0.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.helperText {
+  font-size: 0.7rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  margin-top: 0.1rem;
+}
+
+.fieldHelp {
+  font-size: 0.7rem;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  margin-top: 0.1rem;
+}
+
+/* چک‌باکس */
+.formCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: var(--font-iran);
+  color: var(--macos-text);
+  user-select: none;
+  padding-top: 0.3rem;
+}
+
+.formCheckbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.formCheckbox input[type="checkbox"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.formCheckbox span {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* دکمه‌های فرم */
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--macos-border);
+}
+
+/* دکمه‌ها */
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(128, 0, 32, 0.3);
+}
+
+.primaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.secondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  border: 1.5px solid var(--macos-border);
+  border-radius: 10px;
+  background: var(--macos-card);
+  color: var(--macos-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.secondaryBtn:hover:not(:disabled) {
+  background: var(--macos-bg);
+  border-color: var(--macos-text-secondary);
+}
+
+.secondaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* اسپینر کوچک */
+.spinnerSmall {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   Badge برای نمایش انبارهای انتخاب شده
+   ============================================ */
+.selectedWarehouses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: var(--macos-bg);
+  border-radius: 8px;
+  border: 1px solid var(--macos-border);
+  min-height: 40px;
+}
+
+.warehouseBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.75rem;
+  background: var(--macos-card);
+  border: 1px solid var(--macos-border);
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: var(--macos-text);
+  font-family: var(--font-iran);
+}
+
+.warehouseBadge svg {
+  color: #1976d2;
+}
+
+/* ============================================
+   پاسخگو (Responsive)
+   ============================================ */
+
+@media (max-width: 768px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .fullWidth {
+    grid-column: 1;
+  }
+  
+  .formActions {
+    flex-direction: column-reverse;
+  }
+  
+  .formActions button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .formInput,
+  .formSelect {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .formSelect[multiple] {
+    min-height: 100px;
+  }
+  
+  .formSelect[multiple] option {
+    padding: 0.4rem 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .formGrid {
+    gap: 0.75rem;
+  }
+  
+  .formLabel {
+    font-size: 0.8rem;
+  }
+  
+  .formInput,
+  .formSelect {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+  }
+  
+  .primaryBtn,
+  .secondaryBtn {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .formSelect[multiple] {
+    min-height: 80px;
+  }
+  
+  .formSelect[multiple] option {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.8rem;
+  }
+  
+  .selectedWarehouses {
+    padding: 0.35rem;
+    gap: 0.3rem;
+  }
+  
+  .warehouseBadge {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+  }
+}
+
+/* ===== Quick Actions ===== */
+.quickActions {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.quickActions h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+  margin-bottom: 1rem;
+}
+
+.actionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 0.75rem;
+}
+
+.actionCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--macos-card);
+  backdrop-filter: var(--macos-blur);
+  border: 1px solid var(--macos-border);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--macos-text);
+  transition: all 0.3s ease;
+  font-family: var(--font-iran);
+  font-size: 0.85rem;
+}
+
+.actionCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--macos-shadow-hover);
+  border-color: var(--primary);
+}
+
+.actionCard svg {
+  transition: transform 0.3s ease;
+}
+
+.actionCard:hover svg {
+  transform: scale(1.1);
+}
+
+/* ===== Transaction Detail ===== */
+.transactionDetail {
+  padding: 0.5rem 0;
+}
+
+.detailRow {
+  display: flex;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--macos-border);
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+}
+
+.detailLabel {
+  min-width: 120px;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+  font-size: 0.85rem;
+}
+
+.detailValue {
+  flex: 1;
+  color: var(--macos-text);
+  font-family: var(--font-iran);
+  font-size: 0.85rem;
+}
+
+.detailActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--macos-border);
+}
+
+

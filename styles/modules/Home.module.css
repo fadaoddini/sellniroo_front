@@ -1,0 +1,840 @@
+/* ============================================
+   هیرو سکشن
+   ============================================ */
+.hero {
+  padding: 4rem 0 2rem;
+  background: linear-gradient(135deg, rgba(128, 0, 32, 0.04) 0%, rgba(45, 74, 62, 0.04) 100%);
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(128, 0, 32, 0.03) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: -5%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(45, 74, 62, 0.03) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.heroContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.heroText {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.heroBadge {
+  display: inline-block;
+  padding: 0.4rem 1.2rem;
+  background: rgba(128, 0, 32, 0.08);
+  color: var(--primary);
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  margin-bottom: 1.5rem;
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+  color: var(--macos-text);
+  font-family: var(--font-edameh);
+}
+
+.heroSubtitle {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.gradientText {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-family: var(--font-edameh);
+}
+
+.heroDesc {
+  font-size: 1.2rem;
+  color: var(--macos-text-secondary);
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  max-width: 90%;
+  font-family: var(--font-iran);
+}
+
+.heroButtons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 2rem;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  cursor: pointer;
+}
+
+.primaryBtn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(128, 0, 32, 0.3);
+}
+
+.secondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 2rem;
+  background: transparent;
+  color: var(--macos-text);
+  border: 2px solid var(--macos-border);
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.secondaryBtn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-3px);
+}
+
+/* تصویر هیرو */
+.heroImage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeInUp 1s ease-out 0.3s both;
+}
+
+.heroCard {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  padding: 3rem;
+  border-radius: 24px;
+  color: white;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(128, 0, 32, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.heroCard::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+}
+
+.heroCardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.statValue {
+  font-size: 2.5rem;
+  font-weight: 800;
+  font-family: var(--font-edameh);
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  font-family: var(--font-iran);
+}
+
+.statDivider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================
+   بخش آمار
+   ============================================ */
+.stats {
+  padding: 4rem 0;
+  background: white;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.statCard {
+  text-align: center;
+  padding: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.statCard:hover {
+  transform: translateY(-5px);
+}
+
+.statNumber {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+  font-family: var(--font-edameh);
+}
+
+.statLabel {
+  color: var(--macos-text-secondary);
+  font-size: 1rem;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   بخش ویژگی‌ها (حوزه‌های فعالیت)
+   ============================================ */
+.features {
+  padding: 5rem 0;
+  background: var(--macos-bg);
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.sectionTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+}
+
+.sectionDesc {
+  color: var(--macos-text-secondary);
+  font-size: 1.1rem;
+  font-family: var(--font-iran);
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.featureCard {
+  background: var(--macos-card);
+  backdrop-filter: var(--macos-blur);
+  padding: 2rem;
+  border-radius: 16px;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--macos-shadow);
+  border: 1px solid var(--macos-border);
+}
+
+.featureCard:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--macos-shadow-hover);
+}
+
+.featureIcon {
+  display: inline-flex;
+  padding: 1rem;
+  background: rgba(128, 0, 32, 0.08);
+  border-radius: 12px;
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.featureCard:hover .featureIcon {
+  background: var(--primary);
+  color: white;
+  transform: scale(1.05);
+}
+
+.featureTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-iran-bold);
+  color: var(--macos-text);
+}
+
+.featureDesc {
+  color: var(--macos-text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   بخش خدمات
+   ============================================ */
+.services {
+  padding: 5rem 0;
+  background: white;
+}
+
+.servicesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.serviceCard {
+  padding: 2rem;
+  border-radius: 16px;
+  background: var(--macos-bg);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--macos-border);
+  text-align: center;
+}
+
+.serviceCard:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--macos-shadow-hover);
+}
+
+.serviceIcon {
+  display: inline-flex;
+  padding: 0.8rem;
+  background: rgba(128, 0, 32, 0.06);
+  border-radius: 12px;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.serviceCard:hover .serviceIcon {
+  background: var(--primary);
+  color: white;
+  transform: scale(1.05);
+}
+
+.serviceNumber {
+  font-size: 3rem;
+  font-weight: 800;
+  color: rgba(128, 0, 32, 0.06);
+  margin-bottom: 0.5rem;
+  font-family: var(--font-edameh);
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+}
+
+.serviceTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-iran-bold);
+  color: var(--macos-text);
+}
+
+.serviceDesc {
+  color: var(--macos-text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  font-family: var(--font-iran);
+}
+
+.serviceLine {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transform: scaleX(0);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: left;
+}
+
+.serviceCard:hover .serviceLine {
+  transform: scaleX(1);
+}
+
+/* ============================================
+   بخش مزایا
+   ============================================ */
+.advantages {
+  padding: 5rem 0;
+  background: var(--macos-bg);
+}
+
+.advantagesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.advantageCard {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--macos-shadow);
+  border: 1px solid var(--macos-border);
+}
+
+.advantageCard:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--macos-shadow-hover);
+}
+
+.advantageIcon {
+  display: inline-flex;
+  padding: 0.8rem;
+  background: linear-gradient(135deg, rgba(128, 0, 32, 0.08), rgba(45, 74, 62, 0.08));
+  border-radius: 12px;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.advantageTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-iran-bold);
+  color: var(--macos-text);
+}
+
+.advantageDesc {
+  color: var(--macos-text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   بخش گواهینامه‌ها
+   ============================================ */
+.certificates {
+  padding: 4rem 0;
+  background: white;
+}
+
+.certificatesContent {
+  background: linear-gradient(135deg, rgba(128, 0, 32, 0.04), rgba(45, 74, 62, 0.04));
+  border-radius: 24px;
+  padding: 3rem;
+  border: 1px solid var(--macos-border);
+}
+
+.certificatesText {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.certificatesText h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+  margin-bottom: 0.5rem;
+}
+
+.certificatesText p {
+  color: var(--macos-text-secondary);
+  font-size: 1rem;
+  font-family: var(--font-iran);
+}
+
+.certificatesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.certificateItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--macos-border);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.certificateItem:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--macos-shadow-hover);
+}
+
+.certificateItem svg {
+  color: var(--primary);
+}
+
+.certificateItem span {
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  color: var(--macos-text);
+}
+
+/* ============================================
+   CTA
+   ============================================ */
+.cta {
+  padding: 5rem 0;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.cta::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: -5%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.ctaContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.ctaText h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-edameh);
+}
+
+.ctaText h2 span {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-edameh);
+}
+
+
+.ctaText p {
+  opacity: 0.9;
+  font-size: 1.1rem;
+  font-family: var(--font-iran);
+}
+
+.ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 2.5rem;
+  background: white;
+  color: var(--primary);
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 700;
+  font-family: var(--font-iran);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.ctaBtn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   انیمیشن‌ها
+   ============================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   ریسپانسیو
+   ============================================ */
+@media (max-width: 1024px) {
+  .heroContent {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+
+  .heroDesc {
+    max-width: 100%;
+  }
+
+  .heroButtons {
+    justify-content: center;
+  }
+
+  .heroImage {
+    order: -1;
+  }
+
+  .heroCard {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .featuresGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .servicesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .advantagesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .certificatesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sectionTitle {
+    font-size: 2rem;
+  }
+  
+  .heroTitle {
+    font-size: 2.8rem;
+  }
+  
+  .heroSubtitle {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 2rem 0 1rem;
+    min-height: auto;
+  }
+
+  .heroTitle {
+    font-size: 2.2rem;
+  }
+  
+  .heroSubtitle {
+    font-size: 1.2rem;
+  }
+
+  .heroCard {
+    max-width: 100%;
+    padding: 2rem;
+  }
+
+  .statValue {
+    font-size: 2rem;
+  }
+
+  .featuresGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .servicesGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .advantagesGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .certificatesGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.8rem;
+  }
+
+  .ctaContent {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .ctaText h2 {
+    font-size: 1.5rem;
+  }
+  
+  .certificatesContent {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroTitle {
+    font-size: 1.8rem;
+  }
+  
+  .heroSubtitle {
+    font-size: 1rem;
+  }
+
+  .heroDesc {
+    font-size: 1rem;
+  }
+
+  .heroButtons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .primaryBtn,
+  .secondaryBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .statCard {
+    padding: 1rem;
+  }
+
+  .statNumber {
+    font-size: 1.5rem;
+  }
+
+  .featureCard {
+    padding: 1.5rem;
+  }
+
+  .serviceCard {
+    padding: 1.5rem;
+  }
+  
+  .advantageCard {
+    padding: 1.5rem;
+  }
+  
+  .certificatesGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .certificatesContent {
+    padding: 1.5rem;
+  }
+  
+  .certificatesText h2 {
+    font-size: 1.5rem;
+  }
+}
+/* به‌روزرسانی بخش هیرو برای پس‌زمینه انیمیشن */
+.hero {
+  padding: 4rem 0 2rem;
+  background: linear-gradient(135deg, rgba(128, 0, 32, 0.04) 0%, rgba(45, 74, 62, 0.04) 100%);
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* پس‌زمینه انیمیشن در هیرو */
+.hero > div:first-child {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+.hero > .container {
+  position: relative;
+  z-index: 1;
+}

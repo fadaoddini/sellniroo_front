@@ -1,0 +1,607 @@
+.breakingNews {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  height: 30px;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1002;
+  overflow: visible !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.newsContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  gap: 1rem;
+  overflow: visible !important;
+}
+
+.newsLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.newsLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  color: white;
+}
+
+.labelIcon {
+  color: rgba(255, 255, 255, 0.8);
+  flex-shrink: 0;
+}
+
+.labelText {
+  font-size: 0.65rem;
+  font-weight: 700;
+  font-family: var(--font-iran-bold);
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.newsContent {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.newsText {
+  font-size: 0.75rem;
+  color: white;
+  font-family: var(--font-iran);
+  display: inline-block;
+  padding-right: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+[dir="rtl"] .newsText {
+  padding-right: 0;
+  padding-left: 0.5rem;
+}
+
+.cursor {
+  display: inline-block;
+  margin-left: 2px;
+  animation: blink 0.8s step-end infinite;
+  color: white;
+  font-weight: 300;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+[dir="ltr"] .cursor {
+  margin-left: 0;
+  margin-right: 2px;
+}
+
+/* ============================================
+   بخش راست BreakingNews
+   ============================================ */
+.newsRight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  overflow: visible !important;
+}
+
+/* انتخاب زبان */
+.langSelector {
+  position: relative;
+  z-index: 10000;
+}
+
+.langButton {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.6rem;
+  font-family: var(--font-iran);
+}
+
+.langButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.langButton span {
+  font-size: 0.6rem;
+}
+
+.rotated {
+  transform: rotate(180deg);
+}
+
+.langDropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: white;
+  backdrop-filter: blur(20px);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  min-width: 140px;
+  padding: 0.4rem;
+  z-index: 10001;
+  animation: slideDown 0.2s ease-out;
+}
+
+[dir="ltr"] .langDropdown {
+  right: auto;
+  left: 0;
+}
+
+.langOption {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.6rem;
+  color: #333;
+  font-family: var(--font-iran);
+}
+
+.langOption:hover {
+  background: rgba(128, 0, 32, 0.06);
+}
+
+.activeLang {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* دکمه مشاوره */
+.consultButton {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.6rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+}
+
+.consultButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.consultButton span {
+  font-size: 0.6rem;
+}
+
+/* دکمه ورود */
+.loginButton {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.6rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  text-decoration: none;
+}
+
+.loginButton:hover {
+  background: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.loginButton span {
+  font-size: 0.6rem;
+}
+
+/* پروفایل */
+.profileSection {
+  position: relative;
+  z-index: 10000;
+}
+
+.profileButton {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.profileButton:hover {
+  transform: scale(1.05);
+}
+
+.avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+.avatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarPlaceholder {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 10px;
+}
+
+.profileDropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: white;
+  backdrop-filter: blur(20px);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  min-width: 180px;
+  padding: 0.5rem;
+  z-index: 10001;
+  animation: slideDown 0.2s ease-out;
+}
+
+[dir="ltr"] .profileDropdown {
+  left: auto;
+  right: 0;
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem;
+}
+
+.profileAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--primary);
+}
+
+.profileAvatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profileAvatarPlaceholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.profileInfo h4 {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #333;
+  font-family: var(--font-iran-bold);
+  margin: 0;
+}
+
+.profileInfo p {
+  font-size: 0.55rem;
+  color: #666;
+  font-family: var(--font-iran);
+  margin: 0;
+}
+
+.profileDivider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  margin: 0.4rem 0;
+}
+
+.profileMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.3rem 0.6rem;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #555;
+  font-size: 0.6rem;
+  font-family: var(--font-iran);
+  text-decoration: none;
+}
+
+.profileMenuItem:hover {
+  background: rgba(128, 0, 32, 0.06);
+  color: var(--primary);
+}
+
+.logoutItem {
+  color: #e74c3c;
+}
+
+.logoutItem:hover {
+  background: rgba(255, 59, 48, 0.08);
+  color: #e74c3c;
+}
+
+/* تاریخ - بدون ساعت */
+.datetime {
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-iran);
+  font-size: 0.6rem;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.15rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dateText {
+  font-weight: 400;
+  font-family: var(--font-iran);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   ریسپانسیو
+   ============================================ */
+@media (max-width: 1024px) {
+  .newsText {
+    font-size: 0.7rem;
+  }
+  
+  .consultButton span {
+    display: none;
+  }
+  
+  .consultButton {
+    padding: 0.2rem 0.5rem;
+  }
+  
+  .loginButton span {
+    display: none;
+  }
+  
+  .loginButton {
+    padding: 0.2rem 0.5rem;
+  }
+  
+  .langButton span {
+    display: none;
+  }
+  
+  .langButton {
+    padding: 0.2rem 0.5rem;
+  }
+  
+  .datetime {
+    font-size: 0.55rem;
+    padding: 0.1rem 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .breakingNews {
+    height: 32px;
+  }
+  
+  .newsContainer {
+    padding: 0 0.75rem;
+    gap: 0.5rem;
+  }
+  
+  .labelText {
+    font-size: 0.5rem;
+  }
+  
+  .newsText {
+    font-size: 0.6rem;
+  }
+  
+  .langButton {
+    font-size: 0.5rem;
+    padding: 0.15rem 0.4rem;
+  }
+  
+  .consultButton {
+    font-size: 0.5rem;
+    padding: 0.15rem 0.4rem;
+  }
+  
+  .loginButton {
+    font-size: 0.5rem;
+    padding: 0.15rem 0.4rem;
+  }
+  
+  .datetime {
+    font-size: 0.5rem;
+    padding: 0.1rem 0.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .breakingNews {
+    height: 30px;
+  }
+  
+  .newsContainer {
+    padding: 0 0.5rem;
+    gap: 0.3rem;
+  }
+  
+  .labelIcon {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .labelText {
+    font-size: 0.4rem;
+  }
+  
+  .newsText {
+    font-size: 0.5rem;
+  }
+  
+  .langButton {
+    font-size: 0.4rem;
+    padding: 0.1rem 0.3rem;
+  }
+  
+  .langButton svg {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .consultButton {
+    font-size: 0.4rem;
+    padding: 0.1rem 0.3rem;
+  }
+  
+  .consultButton svg {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .loginButton {
+    font-size: 0.4rem;
+    padding: 0.1rem 0.3rem;
+  }
+  
+  .loginButton svg {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .profileButton .avatar {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .datetime {
+    font-size: 0.4rem;
+    padding: 0.05rem 0.3rem;
+  }
+  
+  .dateText {
+    font-size: 0.4rem;
+  }
+}
+
+
+
+/* ✅ نشان کارمند */
+.employeeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.5rem;
+  color: #2d4a3e;
+  background: rgba(45, 74, 62, 0.1);
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-top: 2px;
+  font-family: var(--font-iran);
+}
+
+[dir="ltr"] .employeeBadge {
+  flex-direction: row-reverse;
+}
+
+/* ✅ آیتم داشبورد با هایلایت ویژه */
+.profileMenuItem.dashboardItem {
+  background: rgba(128, 0, 32, 0.05);
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.profileMenuItem.dashboardItem:hover {
+  background: rgba(128, 0, 32, 0.12);
+}
+
+.profileMenuItem.dashboardItem svg {
+  color: var(--primary);
+}
+
