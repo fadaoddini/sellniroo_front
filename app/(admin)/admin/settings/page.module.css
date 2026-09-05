@@ -1,0 +1,85 @@
+/* src/app/admin/settings/page.module.css */
+.page {
+  padding: 4px 0;
+}
+
+.pageHeader {
+  margin-bottom: 24px;
+}
+
+.pageTitle {
+  font-family: var(--font-iran-extra);
+  font-size: 24px;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.pageDesc {
+  font-family: var(--font-iran);
+  font-size: 14px;
+  color: #8e8e93;
+  margin: 4px 0 0;
+}
+
+.content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.toggleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.toggle input {
+  display: none;
+}
+
+.toggleSlider {
+  width: 44px;
+  height: 24px;
+  background: #d1d1d6;
+  border-radius: 12px;
+  position: relative;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.toggleSlider::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle input:checked + .toggleSlider {
+  background: #800020;
+}
+
+.toggle input:checked + .toggleSlider::after {
+  right: 22px;
+}
+
+.toggleLabel {
+  font-size: 14px;
+  color: #1a1a2e;
+  font-family: var(--font-iran);
+}

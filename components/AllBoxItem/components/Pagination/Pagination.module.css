@@ -1,0 +1,133 @@
+/* ============================================
+   صفحه‌بندی
+   ============================================ */
+
+.paginationContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 0 0.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  margin-top: 0.5rem;
+}
+
+.paginationInfo {
+  font-size: 0.75rem;
+  color: #888;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.paginationWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.paginationBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.5rem;
+  background: transparent;
+  border: 1px solid #e8e8ea;
+  border-radius: 8px;
+  color: #555;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.paginationBtn:hover:not(.disabled):not(.active) {
+  background: rgba(230, 126, 34, 0.06);
+  border-color: #e67e22;
+  color: #e67e22;
+  transform: translateY(-1px);
+}
+
+.paginationBtn.active {
+  background: #e67e22;
+  border-color: #e67e22;
+  color: white;
+  box-shadow: 0 2px 8px rgba(230, 126, 34, 0.3);
+}
+
+.paginationBtn.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.paginationBtn:active:not(.disabled) {
+  transform: scale(0.95);
+}
+
+.paginationDots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  color: #999;
+  font-size: 0.8rem;
+  font-weight: 300;
+}
+
+/* ============================================
+   ریسپانسیو صفحه‌بندی
+   ============================================ */
+
+@media (max-width: 768px) {
+  .paginationBtn {
+    min-width: 32px;
+    height: 32px;
+    font-size: 0.7rem;
+    padding: 0 0.3rem;
+  }
+
+  .paginationDots {
+    min-width: 32px;
+    height: 32px;
+    font-size: 0.7rem;
+  }
+
+  .paginationInfo {
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .paginationWrapper {
+    gap: 0.2rem;
+  }
+
+  .paginationBtn {
+    min-width: 28px;
+    height: 28px;
+    font-size: 0.6rem;
+    padding: 0 0.2rem;
+    border-radius: 6px;
+  }
+
+  .paginationDots {
+    min-width: 28px;
+    height: 28px;
+    font-size: 0.6rem;
+  }
+
+  .paginationInfo {
+    font-size: 0.6rem;
+  }
+}
+
+/* RTL */
+.paginationInfo,
+.paginationBtn {
+  direction: rtl;
+}

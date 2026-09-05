@@ -1,0 +1,227 @@
+/* ============================================
+   ویژگی‌های آگهی
+   ============================================ */
+
+.featuresContainer {
+  margin: 0.25rem 0 0.5rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.featuresContainer.compact {
+  margin: 0.15rem 0 0.25rem;
+  padding: 0.3rem 0;
+}
+
+.featuresLabel {
+  display: block;
+  font-size: 0.6rem;
+  color: #999;
+  margin-bottom: 0.3rem;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.featuresGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.55rem;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  transition: all 0.2s ease;
+}
+
+/* حالت فعال (سبز) */
+.featureItem.active {
+  background: rgba(52, 199, 89, 0.1);
+  color: #2ecc71;
+}
+
+.featureItem.active svg {
+  color: #2ecc71;
+}
+
+.activeIcon {
+  color: #2ecc71;
+}
+
+/* حالت غیرفعال (خاکستری) */
+.featureItem.inactive {
+  background: rgba(0, 0, 0, 0.04);
+  color: #999;
+  opacity: 0.6;
+}
+
+.featureItem.inactive svg {
+  color: #ccc;
+}
+
+.inactiveIcon {
+  color: #ccc;
+}
+
+/* حالت نامشخص (برای کارجوها) */
+.featureItem.unknown {
+  background: rgba(0, 0, 0, 0.02);
+  color: #bbb;
+  opacity: 0.4;
+}
+
+.featureItem.unknown svg {
+  color: #ddd;
+}
+
+.unknownIcon {
+  color: #ddd;
+}
+
+.featureLabel {
+  white-space: nowrap;
+}
+
+/* ============================================
+   ریسپانسیو
+   ============================================ */
+
+@media (max-width: 768px) {
+  .featuresGrid {
+    gap: 0.2rem;
+  }
+
+  .featureItem {
+    font-size: 0.5rem;
+    padding: 0.1rem 0.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .featuresGrid {
+    gap: 0.15rem;
+  }
+
+  .featureItem {
+    font-size: 0.45rem;
+    padding: 0.05rem 0.25rem;
+  }
+}/* ============================================
+   ویژگی‌های آگهی
+   ============================================ */
+
+.featuresContainer {
+  margin: 0.25rem 0 0.5rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.featuresContainer.compact {
+  margin: 0.15rem 0 0.25rem;
+  padding: 0.3rem 0;
+}
+
+.featuresLabel {
+  display: block;
+  font-size: 0.6rem;
+  color: #999;
+  margin-bottom: 0.3rem;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.featuresGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.55rem;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  transition: all 0.2s ease;
+}
+
+/* حالت فعال (سبز) */
+.featureItem.active {
+  background: rgba(52, 199, 89, 0.1);
+  color: #2ecc71;
+}
+
+.featureItem.active svg {
+  color: #2ecc71;
+}
+
+.activeIcon {
+  color: #2ecc71;
+}
+
+/* حالت غیرفعال (خاکستری) */
+.featureItem.inactive {
+  background: rgba(0, 0, 0, 0.04);
+  color: #999;
+  opacity: 0.6;
+}
+
+.featureItem.inactive svg {
+  color: #ccc;
+}
+
+.inactiveIcon {
+  color: #ccc;
+}
+
+/* حالت نامشخص (برای کارجوها) */
+.featureItem.unknown {
+  background: rgba(0, 0, 0, 0.02);
+  color: #bbb;
+  opacity: 0.4;
+}
+
+.featureItem.unknown svg {
+  color: #ddd;
+}
+
+.unknownIcon {
+  color: #ddd;
+}
+
+.featureLabel {
+  white-space: nowrap;
+}
+
+/* ============================================
+   ریسپانسیو
+   ============================================ */
+
+@media (max-width: 768px) {
+  .featuresGrid {
+    gap: 0.2rem;
+  }
+
+  .featureItem {
+    font-size: 0.5rem;
+    padding: 0.1rem 0.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .featuresGrid {
+    gap: 0.15rem;
+  }
+
+  .featureItem {
+    font-size: 0.45rem;
+    padding: 0.05rem 0.25rem;
+  }
+}

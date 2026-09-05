@@ -1,13 +1,9 @@
 'use client'
 
 import React from 'react'
-import HeroSection from './sections/HeroSection'
 import CTASection from './sections/CTASection'
+import AllBoxItem from '@/components/AllBoxItem/AllBoxItem'
 import NewsSection from './sections/NewsSection'
-import BrandSection from './sections/BrandSection'
-import SliderSection from './sections/SliderSection'
-import ProlineSection from './sections/ProlineSection'
-import CertificatesCarousel from './sections/CertificatesCarousel'
 import VideoArchiveSection from '@/components/Story/VideoArchiveSection'
 import styles from '../styles/HomePage.module.css'
 
@@ -19,13 +15,7 @@ const HomePage = () => {
         خدمات و پروژه‌های هلدینگ آریا استاد در زمینه سازه‌های سبک فولادی ال اس اف
       </h2>
       
-      <HeroSection />
-      <VideoArchiveSection />
-      <NewsSection />
-      <BrandSection />
-      <ProlineSection />
-      <CertificatesCarousel />
-      <SliderSection />
+      <AllBoxItem />
       <CTASection />
     </div>
   )

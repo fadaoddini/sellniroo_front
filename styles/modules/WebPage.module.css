@@ -1,9 +1,0 @@
-.webContainer {
-  padding: 1rem 0;
-}
-
-@media (max-width: 768px) {
-  .webContainer {
-    padding: 0.5rem 0;
-  }
-}

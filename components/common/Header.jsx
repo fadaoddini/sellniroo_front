@@ -1,29 +1,36 @@
-// src/components/common/Header.js
+// src/components/common/Header.jsx
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { 
-  Menu, X, Activity, ChevronDown, LayoutDashboard, Container , LibraryBig, Mountain, Layers,
-  DollarSign, CheckSquare, Palette, User as UserIcon, Home, Info,
-  Building2, Calculator
+  Menu, X, Home, Briefcase, Users, UserPlus, 
+  Search, MapPin, ChevronDown, Phone, FileText,
+  Building2, Award, Target, TrendingUp
 } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
 import styles from "@/styles/modules/Header.module.css";
 
 const Header = () => {
-  const { language, dir } = useLanguage();
-  
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isActivityOpen, setIsActivityOpen] = useState(false);
-  const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCity, setSelectedCity] = useState("همه شهرها");
+  const [isCityOpen, setIsCityOpen] = useState(false);
   
-  const openTimerRef = useRef(null);
-  const closeTimerRef = useRef(null);
-  const calcOpenTimerRef = useRef(null);
-  const calcCloseTimerRef = useRef(null);
+  const cityDropdownRef = useRef(null);
+  const cityButtonRef = useRef(null);
+  const searchFormRef = useRef(null);
+
+  // لیست شهرهای ایران
+  const cities = [
+    "همه شهرها",
+    "تهران", "مشهد", "اصفهان", "شیراز", "تبریز", "کرج", 
+    "قم", "اهواز", "رشت", "کرمانشاه", "زاهدان", "همدان",
+    "یزد", "اراک", "اردبیل", "بندرعباس", "ایلام", "بوشهر",
+    "خرم‌آباد", "ساری", "سنندج", "شهرکرد", "قزوین", "گرگان",
+    "ارومیه", "زنجان", "سمنان", "قشم", "کیش"
+  ];
 
   useEffect(() => {
     const checkMobile = () => {
@@ -34,216 +41,171 @@ const Header = () => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  // مدیریت کلیک خارج از دراپ‌داون شهر
   useEffect(() => {
-    return () => {
-      if (openTimerRef.current) clearTimeout(openTimerRef.current);
-      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
-      if (calcOpenTimerRef.current) clearTimeout(calcOpenTimerRef.current);
-      if (calcCloseTimerRef.current) clearTimeout(calcCloseTimerRef.current);
+    const handleClickOutside = (event) => {
+      // اگر کلیک روی دکمه شهر یا داخل دراپ‌داون نبود، ببند
+      if (
+        cityDropdownRef.current && 
+        !cityDropdownRef.current.contains(event.target) &&
+        cityButtonRef.current &&
+        !cityButtonRef.current.contains(event.target)
+      ) {
+        setIsCityOpen(false);
+      }
     };
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // جلوگیری از بسته شدن دراپ‌داون هنگام کلیک روی آیتم‌ها
+  const handleCitySelect = (city) => {
+    setSelectedCity(city);
+    setIsCityOpen(false);
+    // حفظ فوکوس روی فرم
+    if (searchFormRef.current) {
+      const input = searchFormRef.current.querySelector('input');
+      if (input) input.focus();
+    }
+  };
+
+  // باز و بسته کردن دراپ‌داون
+  const toggleCityDropdown = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsCityOpen(!isCityOpen);
+  };
+
+  // تابع جستجو
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      const params = new URLSearchParams();
+      params.append('q', searchQuery.trim());
+      if (selectedCity !== "همه شهرها") {
+        params.append('city', selectedCity);
+      }
+      window.location.href = `/jobs?${params.toString()}`;
+    }
+  };
+
+  // آیتم‌های منوی اصلی
   const navItems = [
-    { label: language === "fa" ? "خانه" : "Home", icon: Home, href: "/" },
-    { label: language === "fa" ? "اِل اِس اِف" : "Lsf", icon: Container, href: "/lsf" },
-    // { label: language === "fa" ? "کناف" : "Kanaf", icon: LibraryBig, href: "/kanaf" },
-    // { label: language === "fa" ? "گچ" : "Gypsum", icon: Mountain, href: "/gypsum" },
-    { label: language === "fa" ? "سازمان" : "Chart", icon: Layers, href: "/chart" },
-    { label: language === "fa" ? "محاسبات" : "Calculator", icon: Calculator, href: "/design" },
-    { label: language === "fa" ? "درباره ما" : "About", icon: Info, href: "/about" },
+    { label: "ثبت آگهی", icon: UserPlus, href: "/post-job" },
+
   ];
-
-  const activityItems = [
-    { label: language === "fa" ? "وب" : "Web", icon: LayoutDashboard, href: "/web" },
-    { label: language === "fa" ? "فروش" : "Sales", icon: DollarSign, href: "/sale" },
-    { label: language === "fa" ? "وظایف" : "Tasks", icon: CheckSquare, href: "/todo" },
-    { label: language === "fa" ? "کاربران" : "Users", icon: UserIcon, href: "/user" },
-    { label: language === "fa" ? "طراحی" : "Design", icon: Palette, href: "/design" },
-  ];
-
-  const calculatorItems = [
-    { label: language === "fa" ? "سازه" : "Structure", icon: Building2, href: "/calculator/structure" },
-    { label: language === "fa" ? "کناف" : "Gypsum", icon: LayoutDashboard, href: "/calculator/gypsum" },
-    { label: language === "fa" ? "طراحی" : "Design", icon: Palette, href: "/design" },
-    { label: language === "fa" ? "ویلا" : "Villa", icon: Home, href: "/calculator/villa" },
-  ];
-
-  // مدیریت منوی فعالیت‌ها
-  const handleActivityMouseEnter = () => {
-    if (closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = null;
-    }
-    if (!isActivityOpen) {
-      openTimerRef.current = setTimeout(() => {
-        setIsActivityOpen(true);
-        openTimerRef.current = null;
-      }, 150);
-    }
-  };
-
-  const handleActivityMouseLeave = () => {
-    if (openTimerRef.current) {
-      clearTimeout(openTimerRef.current);
-      openTimerRef.current = null;
-    }
-    closeTimerRef.current = setTimeout(() => {
-      setIsActivityOpen(false);
-      closeTimerRef.current = null;
-    }, 300);
-  };
-
-  const handleActivityClick = () => {
-    if (openTimerRef.current) {
-      clearTimeout(openTimerRef.current);
-      openTimerRef.current = null;
-    }
-    if (closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = null;
-    }
-    setIsActivityOpen(!isActivityOpen);
-  };
-
-  // مدیریت منوی محاسبات
-  const handleCalculatorMouseEnter = () => {
-    if (calcCloseTimerRef.current) {
-      clearTimeout(calcCloseTimerRef.current);
-      calcCloseTimerRef.current = null;
-    }
-    if (!isCalculatorOpen) {
-      calcOpenTimerRef.current = setTimeout(() => {
-        setIsCalculatorOpen(true);
-        calcOpenTimerRef.current = null;
-      }, 150);
-    }
-  };
-
-  const handleCalculatorMouseLeave = () => {
-    if (calcOpenTimerRef.current) {
-      clearTimeout(calcOpenTimerRef.current);
-      calcOpenTimerRef.current = null;
-    }
-    calcCloseTimerRef.current = setTimeout(() => {
-      setIsCalculatorOpen(false);
-      calcCloseTimerRef.current = null;
-    }, 300);
-  };
-
-  const handleCalculatorClick = () => {
-    if (calcOpenTimerRef.current) {
-      clearTimeout(calcOpenTimerRef.current);
-      calcOpenTimerRef.current = null;
-    }
-    if (calcCloseTimerRef.current) {
-      clearTimeout(calcCloseTimerRef.current);
-      calcCloseTimerRef.current = null;
-    }
-    setIsCalculatorOpen(!isCalculatorOpen);
-  };
-
-  const handleCalcMegaMenuEnter = () => {
-    if (calcCloseTimerRef.current) {
-      clearTimeout(calcCloseTimerRef.current);
-      calcCloseTimerRef.current = null;
-    }
-  };
-
-  const handleCalcMegaMenuLeave = () => {
-    calcCloseTimerRef.current = setTimeout(() => {
-      setIsCalculatorOpen(false);
-      calcCloseTimerRef.current = null;
-    }, 300);
-  };
-
-  const handleMegaMenuEnter = () => {
-    if (closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = null;
-    }
-  };
-
-  const handleMegaMenuLeave = () => {
-    closeTimerRef.current = setTimeout(() => {
-      setIsActivityOpen(false);
-      closeTimerRef.current = null;
-    }, 300);
-  };
-
-  const activityLabel = language === "fa" ? "فعالیت‌ها" : "Activities";
-  const calculatorLabel = language === "fa" ? "محاسبات" : "Calculator";
 
   return (
     <>
-      <header className={styles.header} dir={dir}>
-        <div className={`container ${styles.headerContainer}`}>
-         <div className={styles.logo}>
-  <Link href="/"     
-  title="آریا استاد هلدینگ | LSF"
-    aria-label="آریا استاد هلدینگ">
-    <Image
-      src="/images/logo.png"
-      alt="آریا استاد هلدینگ"
-      width={180}
-      height={50}
-      priority
-      className={styles.logoImage}
-    />
-  </Link>
-</div>
+      <header className={styles.header}>
+        <div className={styles.headerContainer}>
+          {/* لوگو */}
+          <div className={styles.logo}>
+            <Link href="/" title="آریا استاد | کاریابی تخصصی فروش و بازاریابی">
+              <Image
+                src="/images/logo.png"
+                alt="آریا استاد"
+                width={160}
+                height={45}
+                priority
+                className={styles.logoImage}
+              />
+            </Link>
+          </div>
 
-          {!isMobile && (
-            <nav className={styles.desktopNav}>
-              <ul className={styles.navList}>
-                {navItems.map((item) => (
-                  <li key={item.href}>
-                    <Link href={item.href} className={styles.navLink}>
-                      <item.icon size={18} />
-                      <span>{item.label}</span>
-                    </Link>
-                  </li>
-                ))}
+          {/* بخش جستجو */}
+          <div className={styles.searchSection}>
+            <form 
+              ref={searchFormRef}
+              onSubmit={handleSearch} 
+              className={styles.searchForm}
+            >
+              {/* انتخاب شهر */}
+              <div className={styles.citySelector}>
+                <button
+                  type="button"
+                  ref={cityButtonRef}
+                  className={styles.cityButton}
+                  onClick={toggleCityDropdown}
+                  aria-expanded={isCityOpen}
+                  aria-haspopup="true"
+                >
+                  <MapPin size={16} />
+                  <span>{selectedCity}</span>
+                  <ChevronDown 
+                    size={14} 
+                    className={`${styles.dropdownArrow} ${isCityOpen ? styles.rotated : ''}`}
+                  />
+                </button>
                 
-                {/* <li 
-                  className={styles.dropdownWrapper}
-                  onMouseEnter={handleActivityMouseEnter}
-                  onMouseLeave={handleActivityMouseLeave}
-                >
-                  <button 
-                    className={`${styles.navLink} ${styles.dropdownTrigger} ${isActivityOpen ? styles.dropdownOpen : ""}`}
-                    onClick={handleActivityClick}
+                {isCityOpen && (
+                  <div 
+                    ref={cityDropdownRef}
+                    className={styles.cityDropdown}
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <Activity size={18} />
-                    <span>{activityLabel}</span>
-                    <ChevronDown size={14} className={`${styles.dropdownArrow} ${isActivityOpen ? styles.rotated : ""}`} />
-                  </button>
-                </li> */}
+                    <div className={styles.cityList}>
+                      {cities.map((city) => (
+                        <button
+                          key={city}
+                          type="button"
+                          className={`${styles.cityOption} ${city === selectedCity ? styles.activeCity : ''}`}
+                          onClick={() => handleCitySelect(city)}
+                        >
+                          {city}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
 
-                {/* <li 
-                  className={styles.dropdownWrapper}
-                  onMouseEnter={handleCalculatorMouseEnter}
-                  onMouseLeave={handleCalculatorMouseLeave}
+              {/* ورودی جستجو */}
+              <div className={styles.searchInputWrapper}>
+                <input
+                  type="text"
+                  className={styles.searchInput}
+                  placeholder="عنوان شغل، مهارت یا شرکت..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="جستجوی شغل"
+                />
+                <button 
+                  type="submit" 
+                  className={styles.searchButton}
+                  aria-label="جستجو"
                 >
-                  <button 
-                    className={`${styles.navLink} ${styles.dropdownTrigger} ${isCalculatorOpen ? styles.dropdownOpen : ""}`}
-                    onClick={handleCalculatorClick}
-                  >
-                    <Calculator size={18} />
-                    <span>{calculatorLabel}</span>
-                    <ChevronDown size={14} className={`${styles.dropdownArrow} ${isCalculatorOpen ? styles.rotated : ""}`} />
-                  </button>
-                </li> */}
-              </ul>
-            </nav>
-          )}
+                  <Search size={18} />
+                </button>
+              </div>
+            </form>
+          </div>
 
+          {/* بخش راست هدر */}
           <div className={styles.headerRight}>
-            {/* این بخش خالی شد - موارد به BreakingNews منتقل شدند */}
-            
+            {/* منوی دسکتاپ */}
+            {!isMobile && (
+              <nav className={styles.desktopNav}>
+                <ul className={styles.navList}>
+                  {navItems.map((item) => (
+                    <li key={item.href}>
+                      <Link href={item.href} className={styles.navLink}>
+                        <item.icon size={18} />
+                        <span>{item.label}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            )}
+
+            {/* دکمه منوی موبایل */}
             {isMobile && (
               <button 
                 className={styles.menuToggle}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
+                aria-label="منو"
               >
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
@@ -252,98 +214,32 @@ const Header = () => {
         </div>
       </header>
 
-      {/* منوی فعالیت‌ها */}
-      {/* {!isMobile && isActivityOpen && (
-        <div 
-          className={styles.megaMenu}
-          onMouseEnter={handleMegaMenuEnter}
-          onMouseLeave={handleMegaMenuLeave}
-        >
-          <div className={`container ${styles.megaMenuContainer}`}>
-            <div className={styles.megaMenuContent}>
-              {activityItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={styles.megaMenuItem}
-                  onClick={() => setIsActivityOpen(false)}
-                >
-                  <span className={styles.megaMenuItemIcon}>
-                    <item.icon size={22} />
-                  </span>
-                  <span className={styles.megaMenuItemLabel}>{item.label}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      )} */}
-
-      {/* منوی محاسبات */}
-      {/* {!isMobile && isCalculatorOpen && (
-        <div 
-          className={styles.megaMenu}
-          onMouseEnter={handleCalcMegaMenuEnter}
-          onMouseLeave={handleCalcMegaMenuLeave}
-        >
-          <div className={`container ${styles.megaMenuContainer}`}>
-            <div className={styles.megaMenuContent}>
-              {calculatorItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={styles.megaMenuItem}
-                  onClick={() => setIsCalculatorOpen(false)}
-                >
-                  <span className={styles.megaMenuItemIcon}>
-                    <item.icon size={22} />
-                  </span>
-                  <span className={styles.megaMenuItemLabel}>{item.label}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      )} */}
-
+      {/* منوی موبایل */}
       {isMobile && isMenuOpen && (
         <div className={styles.mobileMenu}>
           <nav>
             <ul className={styles.mobileNavList}>
               {navItems.map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className={styles.mobileNavLink} onClick={() => setIsMenuOpen(false)}>
+                  <Link 
+                    href={item.href} 
+                    className={styles.mobileNavLink} 
+                    onClick={() => setIsMenuOpen(false)}
+                  >
                     <item.icon size={20} />
                     <span>{item.label}</span>
                   </Link>
                 </li>
               ))}
-              
-              {/* <li className={styles.mobileDivider}>
-                <span className={styles.mobileDividerText}>{activityLabel}</span>
-              </li>
-              
-              {activityItems.map((item) => (
-                <li key={item.href}>
-                  <Link href={item.href} className={styles.mobileNavLink} onClick={() => setIsMenuOpen(false)}>
-                    <item.icon size={20} />
-                    <span>{item.label}</span>
-                  </Link>
-                </li>
-              ))}
-
               <li className={styles.mobileDivider}>
-                <span className={styles.mobileDividerText}>{calculatorLabel}</span>
+                <span className={styles.mobileDividerText}>ارتباط با ما</span>
               </li>
-              
-              {calculatorItems.map((item) => (
-                <li key={item.href}>
-                  <Link href={item.href} className={styles.mobileNavLink} onClick={() => setIsMenuOpen(false)}>
-                    <item.icon size={20} />
-                    <span>{item.label}</span>
-                  </Link>
-                </li>
-              ))} */}
+              <li>
+                <Link href="/contact" className={styles.mobileNavLink} onClick={() => setIsMenuOpen(false)}>
+                  <Phone size={20} />
+                  <span>تماس با ما</span>
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>

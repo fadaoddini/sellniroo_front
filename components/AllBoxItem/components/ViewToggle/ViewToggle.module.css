@@ -1,0 +1,84 @@
+/* ============================================
+   تغییر نحوه نمایش
+   ============================================ */
+
+.viewToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #f0f0f2;
+  padding: 0.25rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.viewBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  color: #999;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.viewBtn:hover {
+  color: #666;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.viewBtn.active {
+  background: #ffffff;
+  color: var(--primary-dark);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.viewBtn:active {
+  transform: scale(0.95);
+}
+
+.viewBtn svg {
+  transition: all 0.2s ease;
+}
+
+/* ============================================
+   ریسپانسیو
+   ============================================ */
+
+@media (max-width: 768px) {
+  .viewToggle {
+    padding: 0.2rem;
+    gap: 0.15rem;
+  }
+
+  .viewBtn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .viewBtn svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .viewBtn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .viewBtn svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* RTL */
+.viewToggle {
+  direction: ltr;
+}

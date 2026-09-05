@@ -1,0 +1,42 @@
+/* src/app/admin/categories/page.module.css */
+.page {
+  padding: 4px 0;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.pageTitle {
+  font-family: var(--font-iran-extra);
+  font-size: 24px;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.pageDesc {
+  font-family: var(--font-iran);
+  font-size: 14px;
+  color: #8e8e93;
+  margin: 4px 0 0;
+}
+
+.addBtn {
+  padding: 8px 20px;
+  border: none;
+  background: linear-gradient(135deg, #800020, #a8324a);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(128, 0, 32, 0.3);
+}

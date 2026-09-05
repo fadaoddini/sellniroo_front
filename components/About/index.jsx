@@ -14,7 +14,6 @@ import {
 import { useLanguage } from '@/contexts/LanguageContext'
 import { AboutProvider, useAboutContext } from './AboutContext'
 import styles from './About.module.css'
-import OrganizationChartHexa from '../../modules/home/components/sections/ChartSection/OrganizationChartHexa';
 
 
 // Icon mapping
@@ -180,26 +179,6 @@ const AboutContent = () => {
 
 
 
- {/* نمودار سازمانی - با هدر و توضیحات */}
-          <div className={styles.orgChartSection}>
-            <h2 className={styles.orgChartSectionTitle}>
-              <GitBranch size={28} style={{ display: 'inline-block', marginLeft: '8px', color: '#f97316' }} />
-              {language === 'fa' ? (
-                <>ساختار <span className={styles.highlight}>سازمانی</span></>
-              ) : (
-                <>Organizational <span className={styles.highlight}>Structure</span></>
-              )}
-            </h2>
-            <p className={styles.orgChartSectionDesc}>
-              {language === 'fa' 
-                ? 'نمودار ساختار هلدینگ آریا استاد شامل شرکت‌ها، بخش‌ها و زیرمجموعه‌ها'
-                : 'chart of Aria Stud Holding structure including companies, departments and subsidiaries'
-              }
-            </p>
-            <div className={styles.orgChartWrapper}>
-              <OrganizationChartHexa />
-            </div>
-          </div>
 
 
 

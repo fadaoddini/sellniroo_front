@@ -1,0 +1,123 @@
+/* ============================================
+   بخش لیست آگهی‌ها
+   ============================================ */
+
+.listingsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.listingsGridWrapper {
+  width: 100%;
+}
+
+.listingsGrid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* حالت دو ستونه */
+.listingsGrid.grid2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* حالت سه ستونه */
+.listingsGrid.grid3 {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+/* حالت تصویر-چپ (سه ستونه) */
+.listingsGrid.imageLeft {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+/* حالت لیستی */
+.listingsGrid.list {
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+/* ============================================
+   حالت خالی (Empty State)
+   ============================================ */
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  grid-column: 1 / -1;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.emptyText {
+  font-size: 1rem;
+  color: #888;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  margin-bottom: 1.5rem;
+}
+
+/* ============================================
+   ریسپانسیو
+   ============================================ */
+
+@media (max-width: 1024px) {
+  /* حالت سه ستونه در تبلت به دو ستونه تبدیل میشه */
+  .listingsGrid.grid3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* حالت تصویر-چپ در تبلت به دو ستونه تبدیل میشه */
+  .listingsGrid.imageLeft {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .listingsGrid.grid2,
+  .listingsGrid.grid3,
+  .listingsGrid.imageLeft {
+    grid-template-columns: 1fr;
+  }
+
+  .emptyState {
+    padding: 2rem 1rem;
+  }
+
+  .emptyIcon {
+    font-size: 3rem;
+  }
+
+  .emptyText {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .emptyState {
+    padding: 1.5rem 0.5rem;
+  }
+
+  .emptyIcon {
+    font-size: 2.5rem;
+  }
+
+  .emptyText {
+    font-size: 0.8rem;
+  }
+}
+
+/* RTL */
+.emptyText {
+  direction: rtl;
+}

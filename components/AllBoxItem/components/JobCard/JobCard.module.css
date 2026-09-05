@@ -1,0 +1,1571 @@
+/* ============================================
+   کارت آگهی با تصویر شاخص (مشابه دیوار)
+   ============================================ */
+
+.jobCard {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.jobCard:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  border-color: rgba(230, 126, 34, 0.15);
+}
+
+/* ============================================
+   حالت فشرده (سه ستونه)
+   ============================================ */
+
+.jobCard.compact {
+  border-radius: 12px;
+}
+
+.jobCard.compact:hover {
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   بخش تصویر شاخص
+   ============================================ */
+
+.cardImageWrapper {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  background: #f0f0f2;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.cardImageWrapper.compactImage {
+  height: 150px;
+}
+
+.cardImage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.cardImage .image {
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.jobCard:hover .cardImage .image {
+  transform: scale(1.05);
+}
+
+/* پلاس‌هولدر تصویر */
+.cardImagePlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f5f5f7 0%, #e8e8ea 100%);
+  color: #999;
+  gap: 0.5rem;
+}
+
+.cardImagePlaceholder svg {
+  color: #ccc;
+}
+
+.cardImagePlaceholder span {
+  font-size: 0.75rem;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  color: #aaa;
+}
+
+/* برچسب ویژه */
+.featuredBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, #e67e22, #d35400);
+  color: white;
+  padding: 0.2rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  box-shadow: 0 2px 8px rgba(230, 126, 34, 0.4);
+  z-index: 2;
+  letter-spacing: 0.5px;
+}
+
+.compact .featuredBadge {
+  font-size: 0.5rem;
+  padding: 0.15rem 0.6rem;
+  top: 8px;
+  right: 8px;
+}
+
+/* دکمه لایک */
+.likeBtn {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  width: 36px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.likeBtn:hover {
+  background: rgba(0, 0, 0, 0.7);
+  transform: scale(1.1);
+}
+
+.likeBtn:active {
+  transform: scale(0.9);
+}
+
+.likeBtn svg {
+  transition: all 0.3s ease;
+}
+
+.compact .likeBtn {
+  width: 30px;
+  height: 30px;
+  bottom: 8px;
+  left: 8px;
+}
+
+/* ============================================
+   محتوای کارت
+   ============================================ */
+
+.cardContent {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.compact .cardContent {
+  padding: 0.8rem;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.compact .cardHeader {
+  margin-bottom: 0.5rem;
+}
+
+.companyInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.compact .companyInfo {
+  gap: 0.5rem;
+}
+
+.companyLogo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: rgba(230, 126, 34, 0.08);
+  border-radius: 10px;
+  color: var(--primary-dark);
+  flex-shrink: 0;
+}
+
+.compact .companyLogo {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+
+.jobTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a2a3a;
+  margin: 0;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  line-height: 1.3;
+}
+
+.jobTitle.compactTitle {
+  font-size: 0.8rem;
+}
+
+.companyName {
+  font-size: 0.65rem;
+  color: #999;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.compact .companyName {
+  font-size: 0.55rem;
+}
+
+.jobDate {
+  font-size: 0.55rem;
+  color: #999;
+  flex-shrink: 0;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  background: #f5f5f7;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+.compact .jobDate {
+  font-size: 0.5rem;
+  padding: 0.1rem 0.4rem;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.compact .cardBody {
+  gap: 0.5rem;
+}
+
+.jobDescription {
+  font-size: 0.75rem;
+  color: #555;
+  margin: 0;
+  line-height: 1.6;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.jobTags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.compact .jobTags {
+  gap: 0.3rem;
+}
+
+.tag {
+  font-size: 0.55rem;
+  padding: 0.15rem 0.6rem;
+  background: rgba(230, 126, 34, 0.08);
+  color: var(--primary-dark);
+  border-radius: 4px;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.compact .tag {
+  font-size: 0.5rem;
+  padding: 0.1rem 0.4rem;
+}
+
+.tagMore {
+  font-size: 0.5rem;
+  padding: 0.1rem 0.4rem;
+  background: #f0f0f2;
+  color: #999;
+  border-radius: 4px;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.jobDetails {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+
+.jobDetails.compactDetails {
+  grid-template-columns: 1fr 1fr;
+  gap: 0.2rem;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.65rem;
+  color: #666;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.compact .detailItem {
+  font-size: 0.55rem;
+}
+
+.detailItem svg {
+  color: var(--primary-dark);
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.compact .detailItem svg {
+  width: 11px;
+  height: 11px;
+}
+
+.detailItem span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ============================================
+   فوتر کارت
+   ============================================ */
+
+.cardFooter {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.compact .cardFooter {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  gap: 0.3rem;
+}
+
+.viewBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  background: transparent;
+  color: var(--primary-dark);
+  border: 1.5px solid var(--primary);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.compact .viewBtn {
+  font-size: 0.55rem;
+  padding: 0.3rem 0.4rem;
+  border-width: 1px;
+}
+
+.viewBtn:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.contactBtn {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--primary-dark);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  white-space: nowrap;
+}
+
+.compact .contactBtn {
+  font-size: 0.55rem;
+  padding: 0.3rem 0.5rem;
+}
+
+.contactBtn:hover {
+  background: var(--secondary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3);
+}
+
+.contactBtn:active {
+  transform: scale(0.97);
+}
+
+/* ============================================
+   حالت لیستی
+   ============================================ */
+
+.listItem {
+  display: block;
+  text-decoration: none;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.listItem:hover {
+  background: #fafafa;
+  border-color: rgba(230, 126, 34, 0.2);
+  transform: translateX(-4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.listItemContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.listItemLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.listItemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(230, 126, 34, 0.08);
+  border-radius: 8px;
+  color: var(--primary-dark);
+  flex-shrink: 0;
+}
+
+.listItemInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.listItemTitle {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #1a2a3a;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.listItemCompany {
+  font-size: 0.65rem;
+  color: #999;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  white-space: nowrap;
+}
+
+.listItemRight {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.listItemLocation {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.6rem;
+  color: #666;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.listItemLocation svg {
+  color: var(--primary-dark);
+}
+
+.listItemSalary {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.6rem;
+  color: var(--primary-dark);
+  font-weight: 500;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+}
+
+.listItemSalary svg {
+  color: var(--primary-dark);
+}
+
+.listItemArrow {
+  color: #ccc;
+  transition: all 0.2s ease;
+}
+
+.listItem:hover .listItemArrow {
+  color: var(--primary-dark);
+  transform: translateX(-4px);
+}
+
+/* ============================================
+   ریسپانسیو
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .cardImageWrapper {
+    height: 180px;
+  }
+
+  .cardImageWrapper.compactImage {
+    height: 140px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cardImageWrapper {
+    height: 160px;
+  }
+
+  .cardImageWrapper.compactImage {
+    height: 130px;
+  }
+
+  .cardContent {
+    padding: 1rem;
+  }
+
+  .jobTitle {
+    font-size: 0.85rem;
+  }
+
+  .jobDetails {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cardFooter {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  /* حالت لیستی در موبایل */
+  .listItem {
+    padding: 0.6rem 0.8rem;
+  }
+
+  .listItemContent {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .listItemRight {
+    justify-content: space-between;
+    padding-right: 2.5rem;
+  }
+
+  .listItemArrow {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .cardImageWrapper {
+    height: 140px;
+  }
+
+  .cardImageWrapper.compactImage {
+    height: 120px;
+  }
+
+  .cardContent {
+    padding: 0.8rem;
+  }
+
+  .jobTitle {
+    font-size: 0.8rem;
+  }
+
+  .jobDescription {
+    font-size: 0.7rem;
+    -webkit-line-clamp: 2;
+  }
+
+  .detailItem {
+    font-size: 0.6rem;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .jobDate {
+    font-size: 0.5rem;
+    align-self: flex-start;
+  }
+
+  .jobDetails {
+    grid-template-columns: 1fr;
+  }
+
+  .likeBtn {
+    width: 32px;
+    height: 32px;
+    bottom: 10px;
+    left: 10px;
+  }
+
+  .likeBtn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .featuredBadge {
+    font-size: 0.5rem;
+    padding: 0.15rem 0.6rem;
+    top: 8px;
+    right: 8px;
+  }
+
+  .viewBtn {
+    font-size: 0.6rem;
+    padding: 0.35rem 0.5rem;
+  }
+
+  .contactBtn {
+    font-size: 0.6rem;
+    padding: 0.35rem 0.6rem;
+  }
+
+  .compact .viewBtn {
+    font-size: 0.5rem;
+    padding: 0.25rem 0.3rem;
+  }
+
+  .compact .contactBtn {
+    font-size: 0.5rem;
+    padding: 0.25rem 0.4rem;
+  }
+
+  /* حالت لیستی در موبایل کوچک */
+  .listItemInfo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+  }
+
+  .listItemTitle {
+    font-size: 0.8rem;
+  }
+
+  .listItemCompany {
+    font-size: 0.6rem;
+  }
+
+  .listItemRight {
+    padding-right: 2.5rem;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .listItemLocation,
+  .listItemSalary {
+    font-size: 0.55rem;
+  }
+}
+
+/* ============================================
+   RTL
+   ============================================ */
+
+.jobTitle,
+.companyName,
+.jobDescription,
+.tag,
+.detailItem,
+.viewBtn,
+.contactBtn,
+.jobDate,
+.cardImagePlaceholder span,
+.featuredBadge,
+.listItemTitle,
+.listItemCompany,
+.listItemLocation,
+.listItemSalary {
+  direction: rtl;
+}
+
+.likeBtn {
+  left: 12px;
+  right: auto;
+}
+
+.featuredBadge {
+  right: 12px;
+  left: auto;
+}
+
+.compact .likeBtn {
+  left: 8px;
+  right: auto;
+}
+
+.compact .featuredBadge {
+  right: 8px;
+  left: auto;
+}
+
+.listItem:hover {
+  transform: translateX(4px);
+}
+
+.listItem:hover .listItemArrow {
+  transform: translateX(4px);
+}
+
+.listItemArrow {
+  transform: rotate(180deg);
+}
+
+.listItem:hover .listItemArrow {
+  transform: rotate(180deg) translateX(4px);
+}
+
+@media (max-width: 480px) {
+  .likeBtn {
+    left: 10px;
+    right: auto;
+  }
+
+  .featuredBadge {
+    right: 8px;
+    left: auto;
+  }
+
+  .listItemRight {
+    padding-right: 0;
+    padding-left: 2.5rem;
+  }
+}
+
+/* ============================================
+   حالت تصویر-چپ (Image-Left)
+   ============================================ */
+
+.jobCard.imageLeftCard {
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.jobCard.imageLeftCard:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  border-color: rgba(230, 126, 34, 0.15);
+}
+
+.imageLeftWrapper {
+  display: flex;
+  gap: 0;
+  height: 100%;
+  min-height: 130px;
+}
+
+/* تصویر در سمت راست (RTL) */
+.imageLeftImage {
+  flex: 0 0 130px;
+  width: 130px;
+  height: 130px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.imageLeftImageWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #f0f0f2;
+}
+
+.imageLeftImg {
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.jobCard.imageLeftCard:hover .imageLeftImg {
+  transform: scale(1.05);
+}
+
+.imageLeftPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f5f5f7 0%, #e8e8ea 100%);
+  color: #ccc;
+}
+
+.imageLeftBadge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: linear-gradient(135deg, #e67e22, #d35400);
+  color: white;
+  padding: 0.1rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.45rem;
+  font-weight: 600;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  box-shadow: 0 2px 8px rgba(230, 126, 34, 0.4);
+  z-index: 2;
+}
+
+.imageLeftLike {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  width: 28px;
+  height: 28px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.imageLeftLike:hover {
+  background: rgba(0, 0, 0, 0.7);
+  transform: scale(1.1);
+}
+
+.imageLeftLike:active {
+  transform: scale(0.9);
+}
+
+/* محتوای سمت چپ */
+.imageLeftContent {
+  flex: 1;
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  gap: 0.3rem;
+}
+
+.imageLeftHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.imageLeftTitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1a2a3a;
+  margin: 0;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  line-height: 1.3;
+}
+
+.imageLeftCompany {
+  font-size: 0.6rem;
+  color: #999;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.imageLeftDetails {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.imageLeftDetail {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.55rem;
+  color: #666;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.imageLeftDetail svg {
+  color: var(--primary-dark);
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.imageLeftTags {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.imageLeftTag {
+  font-size: 0.5rem;
+  padding: 0.05rem 0.4rem;
+  background: rgba(230, 126, 34, 0.08);
+  color: var(--primary-dark);
+  border-radius: 3px;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.imageLeftTagMore {
+  font-size: 0.5rem;
+  padding: 0.05rem 0.4rem;
+  background: #f0f0f2;
+  color: #999;
+  border-radius: 3px;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.imageLeftFooter {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.1rem;
+}
+
+.imageLeftViewBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  color: var(--primary-dark);
+  border: 1.5px solid var(--primary);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.imageLeftViewBtn:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.imageLeftContactBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.imageLeftContactBtn:hover {
+  background: var(--secondary);
+}
+
+.imageLeftDate {
+  font-size: 0.5rem;
+  color: #999;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  margin-right: auto;
+}
+
+/* ============================================
+   ریسپانسیو حالت تصویر-چپ
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .imageLeftImage {
+    flex: 0 0 110px;
+    width: 110px;
+    height: 110px;
+  }
+
+  .imageLeftContent {
+    padding: 0.5rem 0.6rem;
+  }
+
+  .imageLeftTitle {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .imageLeftWrapper {
+    min-height: 100px;
+  }
+
+  .imageLeftImage {
+    flex: 0 0 100px;
+    width: 100px;
+    height: 100px;
+  }
+
+  .imageLeftContent {
+    padding: 0.4rem 0.6rem;
+    gap: 0.2rem;
+  }
+
+  .imageLeftTitle {
+    font-size: 0.7rem;
+  }
+
+  .imageLeftCompany {
+    font-size: 0.55rem;
+  }
+
+  .imageLeftDetail {
+    font-size: 0.5rem;
+  }
+
+  .imageLeftDetail svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .imageLeftTag {
+    font-size: 0.45rem;
+    padding: 0.05rem 0.3rem;
+  }
+
+  .imageLeftViewBtn,
+  .imageLeftContactBtn {
+    width: 24px;
+    height: 24px;
+  }
+
+  .imageLeftViewBtn svg,
+  .imageLeftContactBtn svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .imageLeftDate {
+    font-size: 0.45rem;
+  }
+
+  .imageLeftLike {
+    width: 24px;
+    height: 24px;
+    bottom: 4px;
+    left: 4px;
+  }
+
+  .imageLeftLike svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .imageLeftBadge {
+    font-size: 0.4rem;
+    padding: 0.05rem 0.4rem;
+    top: 4px;
+    right: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .imageLeftWrapper {
+    min-height: 90px;
+  }
+
+  .imageLeftImage {
+    flex: 0 0 80px;
+    width: 80px;
+    height: 80px;
+  }
+
+  .imageLeftContent {
+    padding: 0.3rem 0.4rem;
+    gap: 0.15rem;
+  }
+
+  .imageLeftTitle {
+    font-size: 0.65rem;
+  }
+
+  .imageLeftCompany {
+    font-size: 0.5rem;
+  }
+
+  .imageLeftDetails {
+    gap: 0.3rem;
+  }
+
+  .imageLeftDetail {
+    font-size: 0.45rem;
+  }
+
+  .imageLeftDetail svg {
+    width: 9px;
+    height: 9px;
+  }
+
+  .imageLeftTags {
+    gap: 0.2rem;
+  }
+
+  .imageLeftTag,
+  .imageLeftTagMore {
+    font-size: 0.4rem;
+    padding: 0.05rem 0.3rem;
+  }
+
+  .imageLeftViewBtn,
+  .imageLeftContactBtn {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+  }
+
+  .imageLeftViewBtn svg,
+  .imageLeftContactBtn svg {
+    width: 9px;
+    height: 9px;
+  }
+
+  .imageLeftDate {
+    font-size: 0.4rem;
+  }
+
+  .imageLeftLike {
+    width: 20px;
+    height: 20px;
+    bottom: 3px;
+    left: 3px;
+  }
+
+  .imageLeftLike svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .imageLeftBadge {
+    font-size: 0.35rem;
+    padding: 0.05rem 0.3rem;
+    top: 3px;
+    right: 3px;
+  }
+}
+
+/* ============================================
+   RTL برای حالت تصویر-چپ
+   ============================================ */
+
+.imageLeftBadge {
+  right: 6px;
+  left: auto;
+}
+
+.imageLeftLike {
+  left: 6px;
+  right: auto;
+}
+
+.imageLeftDate {
+  margin-right: auto;
+  margin-left: 0;
+}
+
+@media (max-width: 768px) {
+  .imageLeftBadge {
+    right: 4px;
+    left: auto;
+  }
+
+  .imageLeftLike {
+    left: 4px;
+    right: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .imageLeftBadge {
+    right: 3px;
+    left: auto;
+  }
+
+  .imageLeftLike {
+    left: 3px;
+    right: auto;
+  }
+}
+
+/* ============================================
+   رنگ‌بندی بر اساس نوع آگهی
+   ============================================ */
+
+/* استخدام - آبی/نارنجی */
+.hiringCard {
+  --ad-color: var(--primary);
+  --ad-color-light: rgba(230, 126, 34, 0.08);
+  --ad-color-border: rgba(230, 126, 34, 0.15);
+}
+
+.hiringCard:hover {
+  border-color: var(--ad-color-border);
+}
+
+/* کارجو - سبز */
+.seekingCard {
+  --ad-color: #2ecc71;
+  --ad-color-light: rgba(46, 204, 113, 0.08);
+  --ad-color-border: rgba(46, 204, 113, 0.15);
+}
+
+.seekingCard:hover {
+  border-color: var(--ad-color-border);
+}
+
+/* عنوان و تگ‌ها با رنگ */
+.hiringCard .jobTitle,
+.hiringCard .companyName {
+  color: #1a2a3a;
+}
+
+.seekingCard .jobTitle {
+  color: #1a2a3a;
+}
+
+.seekingCard .companyName {
+  color: #2ecc71;
+}
+
+/* ============================================
+   نشان نوع آگهی روی تصویر
+   ============================================ */
+
+.adTypeOverlay {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.55rem;
+  font-weight: 600;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  color: white;
+  z-index: 2;
+  backdrop-filter: blur(4px);
+}
+
+.hiringOverlay {
+  background: rgba(230, 126, 34, 0.9);
+}
+
+.seekingOverlay {
+  background: rgba(46, 204, 113, 0.9);
+}
+
+/* ============================================
+   نشان نوع آگهی در کارت
+   ============================================ */
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.adTypeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.5rem;
+  font-weight: 600;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+}
+
+.hiringBadge {
+  background: rgba(230, 126, 34, 0.12);
+  color: #e67e22;
+}
+
+.seekingBadge {
+  background: rgba(46, 204, 113, 0.12);
+  color: #2ecc71;
+}
+
+/* نشان کوچک برای حالت‌های مختلف */
+.adTypeBadgeSmall {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.45rem;
+  font-weight: 600;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+}
+
+.hiringBadgeSmall {
+  background: rgba(230, 126, 34, 0.12);
+  color: #e67e22;
+}
+
+.seekingBadgeSmall {
+  background: rgba(46, 204, 113, 0.12);
+  color: #2ecc71;
+}
+
+/* ============================================
+   آیکون تاییدیه
+   ============================================ */
+
+.verifiedIcon {
+  color: #34c759;
+  flex-shrink: 0;
+}
+
+.imageLeftVerified {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.45rem;
+  color: #34c759;
+  background: rgba(52, 199, 89, 0.1);
+  padding: 0.05rem 0.4rem;
+  border-radius: 3px;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+/* ============================================
+   حالت لیستی با رنگ
+   ============================================ */
+
+.listItem.hiringCard .listItemIcon {
+  background: rgba(230, 126, 34, 0.12);
+  color: var(--primary-dark);
+}
+
+.listItem.seekingCard .listItemIcon {
+  background: rgba(46, 204, 113, 0.12);
+  color: #2ecc71;
+}
+
+.listItem.hiringCard {
+  border-right: 3px solid var(--primary-dark);
+}
+
+.listItem.seekingCard {
+  border-right: 3px solid #2ecc71;
+}
+
+/* ============================================
+   حالت تصویر-چپ با رنگ
+   ============================================ */
+
+.imageLeftCard.hiringCard {
+  border-right: 3px solid var(--primary-dark);
+}
+
+.imageLeftCard.seekingCard {
+  border-right: 3px solid #2ecc71;
+}
+
+/* ============================================
+   ریسپانسیو
+   ============================================ */
+
+@media (max-width: 768px) {
+  .listItem.hiringCard,
+  .listItem.seekingCard {
+    border-right: 2px solid;
+  }
+
+  .listItem.hiringCard {
+    border-right-color: var(--primary-dark);
+  }
+
+  .listItem.seekingCard {
+    border-right-color: #2ecc71;
+  }
+
+  .imageLeftCard.hiringCard,
+  .imageLeftCard.seekingCard {
+    border-right: 2px solid;
+  }
+
+  .imageLeftCard.hiringCard {
+    border-right-color: var(--primary-dark);
+  }
+
+  .imageLeftCard.seekingCard {
+    border-right-color: #2ecc71;
+  }
+}
+
+/* ============================================
+   RTL برای رنگ‌بندی
+   ============================================ */
+
+.adTypeOverlay {
+  left: 12px;
+  right: auto;
+}
+
+.listItem.hiringCard,
+.listItem.seekingCard {
+  border-right: 3px solid;
+  border-left: none;
+}
+
+.listItem.hiringCard {
+  border-right-color: var(--primary-dark);
+}
+
+.listItem.seekingCard {
+  border-right-color: #2ecc71;
+}
+
+.imageLeftCard.hiringCard,
+.imageLeftCard.seekingCard {
+  border-right: 3px solid;
+  border-left: none;
+}
+
+.imageLeftCard.hiringCard {
+  border-right-color: var(--primary-dark);
+}
+
+.imageLeftCard.seekingCard {
+  border-right-color: #2ecc71;
+}
+
+@media (max-width: 768px) {
+  .listItem.hiringCard,
+  .listItem.seekingCard {
+    border-right: 2px solid;
+    border-left: none;
+  }
+
+  .imageLeftCard.hiringCard,
+  .imageLeftCard.seekingCard {
+    border-right: 2px solid;
+    border-left: none;
+  }
+}
+
+/* ============================================
+   نمایش حقوق
+   ============================================ */
+
+.salaryDisplay {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.6rem;
+  background: rgba(230, 126, 34, 0.06);
+  border-radius: 6px;
+  border-right: 3px solid var(--primary-dark);
+}
+
+.salaryIcon {
+  color: var(--primary-dark);
+  flex-shrink: 0;
+}
+
+.salaryText {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #1a2a3a;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+}
+
+/* حالت فشرده */
+.compact .salaryDisplay {
+  padding: 0.15rem 0.4rem;
+  border-right-width: 2px;
+}
+
+.compact .salaryText {
+  font-size: 0.65rem;
+}
+
+/* ============================================
+   ریسپانسیو
+   ============================================ */
+
+@media (max-width: 768px) {
+  .salaryDisplay {
+    padding: 0.15rem 0.5rem;
+  }
+
+  .salaryText {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .salaryDisplay {
+    padding: 0.1rem 0.4rem;
+  }
+
+  .salaryText {
+    font-size: 0.65rem;
+  }
+}

@@ -1,0 +1,97 @@
+/* src/components/Admin/AdminModal/AdminModal.module.css */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modalContent {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.sm { max-width: 400px; width: 100%; }
+.md { max-width: 560px; width: 100%; }
+.lg { max-width: 720px; width: 100%; }
+.xl { max-width: 960px; width: 100%; }
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.modalTitle {
+  font-family: var(--font-iran-bold);
+  font-size: 18px;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.modalClose {
+  padding: 4px;
+  border: none;
+  background: transparent;
+  color: #8e8e93;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.modalClose:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: #1a1a2e;
+}
+
+.modalBody {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .modalContent {
+    max-height: 100vh;
+    border-radius: 0;
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .sm, .md, .lg, .xl {
+    max-width: 100%;
+    border-radius: 0;
+  }
+}

@@ -1,0 +1,129 @@
+/* ============================================
+   تب‌های فیلتر نوع آگهی
+   ============================================ */
+
+.tabsContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #f0f0f2;
+  padding: 0.25rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.tabBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  color: #888;
+  white-space: nowrap;
+}
+
+.tabBtn:hover {
+  color: #555;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.tabBtn.active {
+  background: #ffffff;
+  color: #1a2a3a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tabBtn.active .tabIcon {
+  color: var(--primary-dark);
+}
+
+.tabIcon {
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.tabLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+}
+
+.tabCount {
+  font-size: 0.6rem;
+  padding: 0.05rem 0.4rem;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  color: #999;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  transition: all 0.2s ease;
+}
+
+.tabBtn.active .tabCount {
+  background: rgba(230, 126, 34, 0.12);
+  color: var(--primary-dark);
+}
+
+/* ============================================
+   ریسپانسیو
+   ============================================ */
+
+@media (max-width: 768px) {
+  .tabsContainer {
+    padding: 0.2rem;
+    gap: 0.15rem;
+    border-radius: 10px;
+  }
+
+  .tabBtn {
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+  }
+
+  .tabLabel {
+    font-size: 0.65rem;
+  }
+
+  .tabCount {
+    font-size: 0.55rem;
+    padding: 0.05rem 0.3rem;
+  }
+
+  .tabIcon {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tabBtn {
+    padding: 0.25rem 0.4rem;
+    gap: 0.2rem;
+  }
+
+  .tabLabel {
+    font-size: 0.55rem;
+  }
+
+  .tabCount {
+    font-size: 0.5rem;
+    padding: 0.05rem 0.25rem;
+  }
+
+  .tabIcon {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* ============================================
+   RTL
+   ============================================ */
+
+.tabsContainer {
+  direction: rtl;
+}

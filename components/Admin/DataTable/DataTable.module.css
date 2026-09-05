@@ -1,0 +1,117 @@
+/* src/components/Admin/DataTable/DataTable.module.css */
+.tableWrapper {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-iran);
+  font-size: 14px;
+}
+
+.th {
+  padding: 12px 16px;
+  text-align: right;
+  background: #f8f8fa;
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.thActions {
+  text-align: center;
+  width: 100px;
+}
+
+.tr {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  transition: background 0.2s ease;
+}
+
+.tr:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.tr:last-child {
+  border-bottom: none;
+}
+
+.td {
+  padding: 12px 16px;
+  color: #1a1a2e;
+}
+
+.tdActions {
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.statusBadge {
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.statusActive {
+  background: rgba(22, 163, 74, 0.08);
+  color: #16a34a;
+}
+
+.statusPending {
+  background: rgba(251, 191, 36, 0.08);
+  color: #d97706;
+}
+
+.statusInactive {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+}
+
+.actionsDropdown {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.actionBtn {
+  padding: 6px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionBtn:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: #1a1a2e;
+}
+
+.actionBtn.danger:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+}
+
+@media (max-width: 768px) {
+  .tableWrapper {
+    overflow-x: auto;
+  }
+  
+  .table {
+    min-width: 600px;
+  }
+}

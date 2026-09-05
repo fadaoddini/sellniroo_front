@@ -1,0 +1,351 @@
+/* ============================================
+   دیالوگ انتخاب فیلتر
+   ============================================ */
+
+.dialogOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.25s ease-out;
+  padding: 1rem;
+}
+
+.dialogContent {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out;
+  overflow: hidden;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.dialogHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+}
+
+.dialogTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a2a3a;
+  margin: 0;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+}
+
+.dialogCloseBtn {
+  background: transparent;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dialogCloseBtn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--primary-dark);
+}
+
+.dialogBody {
+  padding: 1rem 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.dialogBody::-webkit-scrollbar {
+  width: 4px;
+}
+
+.dialogBody::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dialogBody::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 4px;
+}
+
+.dialogBody::-webkit-scrollbar-thumb:hover {
+  background: #ccc;
+}
+
+.dialogOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dialogOption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  text-align: right;
+}
+
+.dialogOption:hover {
+  background: rgba(230, 126, 34, 0.06);
+  color: var(--primary-dark);
+}
+
+.dialogOption:active {
+  transform: scale(0.97);
+}
+
+.dialogOptionSelected {
+  background: rgba(230, 126, 34, 0.1) !important;
+  color: var(--primary-dark) !important;
+  font-weight: 500;
+}
+
+.dialogOption svg {
+  color: var(--primary-dark);
+  flex-shrink: 0;
+}
+
+.dialogFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem 1.25rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.dialogClearBtn {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--primary-dark);
+  color: var(--primary-dark);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.dialogClearBtn:hover {
+  background: var(--primary-dark);
+  color: white;
+}
+
+.dialogClearBtn:active {
+  transform: scale(0.97);
+}
+
+.dialogActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dialogCancelBtn {
+  padding: 0.5rem 1.2rem;
+  background: transparent;
+  border: 1px solid #ddd;
+  color: #666;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.dialogCancelBtn:hover {
+  background: #f5f5f7;
+  border-color: #ccc;
+}
+
+.dialogCancelBtn:active {
+  transform: scale(0.97);
+}
+
+.dialogConfirmBtn {
+  padding: 0.5rem 1.5rem;
+  background: var(--primary-dark);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.dialogConfirmBtn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(230, 126, 34, 0.3);
+}
+
+.dialogConfirmBtn:active {
+  transform: scale(0.97);
+}
+
+/* ============================================
+   ریسپانسیو دیالوگ
+   ============================================ */
+
+@media (max-width: 768px) {
+  .dialogContent {
+    max-width: 100%;
+    margin: 0.5rem;
+    border-radius: 16px;
+  }
+
+  .dialogHeader {
+    padding: 1rem 1.25rem;
+  }
+
+  .dialogBody {
+    padding: 0.75rem 1.25rem;
+  }
+
+  .dialogFooter {
+    padding: 0.75rem 1.25rem 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .dialogClearBtn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .dialogActions {
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .dialogCancelBtn,
+  .dialogConfirmBtn {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .dialogOption {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .dialogTitle {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dialogOverlay {
+    padding: 0.5rem;
+  }
+
+  .dialogContent {
+    border-radius: 14px;
+    max-height: 85vh;
+  }
+
+  .dialogHeader {
+    padding: 0.75rem 1rem;
+  }
+
+  .dialogTitle {
+    font-size: 0.85rem;
+  }
+
+  .dialogBody {
+    padding: 0.5rem 1rem;
+  }
+
+  .dialogOption {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.75rem;
+    border-radius: 8px;
+  }
+
+  .dialogFooter {
+    padding: 0.5rem 1rem 0.75rem;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .dialogClearBtn {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .dialogCancelBtn,
+  .dialogConfirmBtn {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .dialogActions {
+    gap: 0.4rem;
+  }
+}
+
+/* RTL */
+.dialogOption,
+.dialogTitle,
+.dialogClearBtn,
+.dialogCancelBtn,
+.dialogConfirmBtn {
+  direction: rtl;
+}
+
+.dialogOption svg {
+  margin-right: 0.5rem;
+  margin-left: 0;
+}

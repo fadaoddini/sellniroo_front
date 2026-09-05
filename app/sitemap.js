@@ -14,24 +14,6 @@ export default function sitemap() {
       priority: 0.8,
     },
     {
-      url: 'https://ariastudholding.com/%D8%A7%D9%84%D9%80%D8%A7%D8%B3%D9%80%D8%A7%D9%81',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: 'https://ariastudholding.com/chart',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: 'https://ariastudholding.com/design',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
       url: 'https://ariastudholding.com/quiz',
       lastModified: new Date(),
       changeFrequency: 'monthly',

@@ -422,7 +422,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (typeof window === "undefined" || loading) return;
 
-    const publicPaths = ["/login", "/", "/splash"];
+    const publicPaths = ["/login", "/", "/splash", "/admin"];
     const pathname = window.location.pathname || "/";
 
     const isPublicRoute = publicPaths.some(

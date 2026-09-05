@@ -1,0 +1,385 @@
+/* ============================================
+   استایل کلی AllBoxItem
+   ============================================ */
+
+.allBoxItem {
+  padding: 2rem 0;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* ============================================
+   بخش اصلی محتوا
+   ============================================ */
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ============================================
+   هدر لیست آگهی‌ها
+   ============================================ */
+
+.listingsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.listingsTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.listingsTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a2a3a;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  margin: 0;
+}
+
+.listingsTitle svg {
+  color: #e67e22;
+}
+
+.listingsCount {
+  font-size: 0.7rem;
+  color: #999;
+  background: #f0f0f2;
+  padding: 0.2rem 0.8rem;
+  border-radius: 12px;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+/* ============================================
+   دکمه حذف فیلترها (در حالت خالی)
+   ============================================ */
+
+.emptyResetBtn {
+  padding: 0.5rem 1.5rem;
+  background: #e67e22;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.emptyResetBtn:hover {
+  background: #d35400;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3);
+}
+
+/* ============================================
+   ریسپانسیو اصلی
+   ============================================ */
+
+/* تبلت */
+@media (max-width: 1024px) {
+  .container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* موبایل بزرگ */
+@media (max-width: 768px) {
+  .allBoxItem {
+    padding: 1rem 0;
+  }
+
+  .container {
+    padding: 0 0.75rem;
+    gap: 1rem;
+  }
+
+  .listingsHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .listingsTitleWrapper {
+    justify-content: space-between;
+  }
+}
+
+/* موبایل کوچک */
+@media (max-width: 480px) {
+  .allBoxItem {
+    padding: 0.5rem 0;
+  }
+
+  .container {
+    padding: 0 0.5rem;
+  }
+
+  .listingsTitle {
+    font-size: 0.85rem;
+  }
+
+  .listingsCount {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.6rem;
+  }
+}
+
+
+
+/* ============================================
+   RTL
+   ============================================ */
+
+.listingsTitle,
+.listingsCount,
+.emptyResetBtn {
+  direction: rtl;
+}
+
+/* ============================================
+   آمار آگهی‌ها
+   ============================================ */
+
+.statsWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.statBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.6rem;
+  font-weight: 500;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+}
+
+.hiringStat {
+  background: rgba(230, 126, 34, 0.12);
+  color: #e67e22;
+}
+
+.seekingStat {
+  background: rgba(46, 204, 113, 0.12);
+  color: #2ecc71;
+}
+
+/* ============================================
+   ریسپانسیو
+   ============================================ */
+
+@media (max-width: 768px) {
+  .statsWrapper {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .statBadge {
+    font-size: 0.55rem;
+    padding: 0.1rem 0.5rem;
+  }
+}
+
+/* ============================================
+   بخش هدر با کنترل‌ها
+   ============================================ */
+
+.listingsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.listingsTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.listingsTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a2a3a;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  margin: 0;
+}
+
+.listingsTitle svg {
+  color: #e67e22;
+}
+
+.listingsCount {
+  font-size: 0.7rem;
+  color: #999;
+  background: #f0f0f2;
+  padding: 0.2rem 0.8rem;
+  border-radius: 12px;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.headerControls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ============================================
+   آمار آگهی‌ها (اختیاری)
+   ============================================ */
+
+.statsWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.statBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.6rem;
+  font-weight: 500;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+}
+
+.hiringStat {
+  background: rgba(230, 126, 34, 0.12);
+  color: #e67e22;
+}
+
+.seekingStat {
+  background: rgba(46, 204, 113, 0.12);
+  color: #2ecc71;
+}
+
+/* ============================================
+   ریسپانسیو
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .allBoxItem {
+    padding: 1rem 0;
+  }
+
+  .container {
+    padding: 0 0.75rem;
+    gap: 1rem;
+  }
+
+  .listingsHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .listingsTitleWrapper {
+    justify-content: space-between;
+  }
+
+  .headerControls {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .headerControls > * {
+    width: 100%;
+  }
+
+  .headerControls .tabsContainer {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .headerControls .tabsContainer .tabBtn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .headerControls .viewToggle {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .allBoxItem {
+    padding: 0.5rem 0;
+  }
+
+  .container {
+    padding: 0 0.5rem;
+  }
+
+  .listingsTitle {
+    font-size: 0.85rem;
+  }
+
+  .listingsCount {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.6rem;
+  }
+
+  .statsWrapper {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .statBadge {
+    font-size: 0.55rem;
+    padding: 0.1rem 0.5rem;
+  }
+}
+
+
+
+/* ============================================
+   RTL
+   ============================================ */
+
+.listingsTitle,
+.listingsCount,
+.emptyResetBtn {
+  direction: rtl;
+}

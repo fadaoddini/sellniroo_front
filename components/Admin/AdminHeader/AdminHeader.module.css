@@ -1,0 +1,336 @@
+/* src/components/Admin/AdminHeader/AdminHeader.module.css */
+.adminHeader {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  min-height: 64px;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.menuBtn {
+  display: none;
+  padding: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #6b7280;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.menuBtn:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.searchWrapper {
+  position: relative;
+  max-width: 400px;
+  width: 100%;
+}
+
+.searchIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8e8e93;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 36px 8px 14px;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1.5px solid transparent;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1a1a2e;
+  transition: all 0.2s ease;
+  font-family: var(--font-iran);
+}
+
+.searchInput:focus {
+  background: #fff;
+  border-color: #800020;
+  box-shadow: 0 0 0 4px rgba(128, 0, 32, 0.1);
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: #8e8e93;
+}
+
+.searchShortcut {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 2px 8px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 4px;
+  font-size: 11px;
+  color: #8e8e93;
+  font-family: inherit;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.themeToggle {
+  padding: 8px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.themeToggle:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: #1a1a2e;
+}
+
+.notificationWrapper {
+  position: relative;
+}
+
+.notificationBtn {
+  padding: 8px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  color: #6b7280;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.notificationBtn:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: #1a1a2e;
+}
+
+.notificationBadge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-iran);
+}
+
+.notificationDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 280px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 8px 0;
+  overflow: hidden;
+  z-index: 50;
+}
+
+.dropdownHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  font-family: var(--font-iran);
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.dropdownMarkAll {
+  border: none;
+  background: transparent;
+  color: #800020;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: var(--font-iran);
+}
+
+.notificationItem {
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.notificationItem:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.notificationTitle {
+  font-size: 13px;
+  color: #1a1a2e;
+  font-family: var(--font-iran);
+}
+
+.notificationTime {
+  font-size: 11px;
+  color: #8e8e93;
+  font-family: var(--font-iran);
+}
+
+.profileWrapper {
+  position: relative;
+}
+
+.profileBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 12px 4px 4px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profileBtn:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #800020, #a8324a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.profileName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a2e;
+  font-family: var(--font-iran);
+}
+
+.profileRole {
+  font-size: 10px;
+  color: #8e8e93;
+  font-family: var(--font-iran);
+}
+
+.profileArrow {
+  color: #8e8e93;
+  transition: transform 0.2s ease;
+}
+
+.profileBtn:hover .profileArrow {
+  transform: rotate(180deg);
+}
+
+.profileDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 200px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 8px 0;
+  z-index: 50;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  color: #1a1a2e;
+  font-size: 13px;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background: transparent;
+  width: 100%;
+}
+
+.dropdownItem:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.dropdownDivider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.06);
+  margin: 4px 12px;
+}
+
+.dropdownItem.danger {
+  color: #ef4444;
+}
+
+.dropdownItem.danger:hover {
+  background: rgba(239, 68, 68, 0.08);
+}
+
+/* پاسخگو */
+@media (max-width: 768px) {
+  .adminHeader {
+    padding: 12px 16px;
+  }
+
+  .menuBtn {
+    display: flex;
+  }
+
+  .searchWrapper {
+    max-width: 100%;
+  }
+
+  .searchShortcut {
+    display: none;
+  }
+
+  .profileInfo {
+    display: none;
+  }
+
+  .profileBtn {
+    padding: 4px;
+  }
+}

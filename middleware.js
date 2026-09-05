@@ -5,10 +5,7 @@ export function middleware(request) {
   const pathname = request.nextUrl.pathname;
   
   const redirects = {
-    '/kanaf': '/کناف',
-    '/lsf': '/الـاسـاف',
-    '/gach': '/گچ',
-    '/gypsum': '/گچ',
+    '/test': '/تست',
   };
   
   if (redirects[pathname]) {

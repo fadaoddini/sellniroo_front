@@ -1,0 +1,262 @@
+/* src/components/Admin/Sidebar/Sidebar.module.css */
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 260px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.sidebar.collapsed {
+  width: 72px;
+}
+
+/* برند */
+.sidebarBrand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  min-height: 72px;
+}
+
+.brandIcon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #800020, #a8324a);
+  border-radius: 12px;
+  color: #fff;
+}
+
+.brandSparkle {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  color: #fbbf24;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.brandName {
+  font-family: var(--font-iran-extra);
+  font-size: 16px;
+  color: #1a1a2e;
+}
+
+.brandSub {
+  font-size: 11px;
+  color: #8e8e93;
+  font-family: var(--font-iran);
+}
+
+.sidebar.collapsed .brandText {
+  display: none;
+}
+
+.sidebar.collapsed .brandIcon {
+  margin: 0 auto;
+  min-width: 40px;
+}
+
+/* دکمه جمع کردن */
+.collapseBtn {
+  position: absolute;
+  top: 82px;
+  left: -12px;
+  width: 24px;
+  height: 24px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #8e8e93;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  z-index: 10;
+}
+
+.collapseBtn:hover {
+  background: #f5f5f7;
+  color: #1a1a2e;
+  transform: scale(1.05);
+}
+
+.sidebar.collapsed .collapseBtn {
+  left: -12px;
+}
+
+/* منو */
+.sidebarNav {
+  flex: 1;
+  padding: 16px 8px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: #6b7280;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+  font-family: var(--font-iran);
+  font-size: 14px;
+  min-height: 44px;
+}
+
+.navItem:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: #1a1a2e;
+}
+
+.navItem.active {
+  background: rgba(128, 0, 32, 0.08);
+  color: #800020;
+}
+
+.navItem .navIcon {
+  min-width: 20px;
+}
+
+.sidebar.collapsed .navItem {
+  justify-content: center;
+  padding: 10px;
+}
+
+.sidebar.collapsed .navLabel {
+  display: none;
+}
+
+.activeIndicator {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  background: #800020;
+  border-radius: 0 4px 4px 0;
+}
+
+/* فوتر */
+.sidebarFooter {
+  padding: 16px 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-iran);
+  font-size: 14px;
+}
+
+.logoutBtn:hover {
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.sidebar.collapsed .logoutBtn {
+  justify-content: center;
+  padding: 10px;
+}
+
+.sidebar.collapsed .logoutBtn span {
+  display: none;
+}
+
+/* اسکرول */
+.sidebarNav::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebarNav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebarNav::-webkit-scrollbar-thumb {
+  background: #d1d1d6;
+  border-radius: 10px;
+}
+
+/* پاسخگو */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(100%);
+    width: 280px;
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .sidebar.collapsed {
+    transform: translateX(100%);
+    width: 280px;
+  }
+  
+  .sidebar.collapsed .brandText {
+    display: flex;
+  }
+  
+  .sidebar.collapsed .navLabel {
+    display: inline;
+  }
+  
+  .sidebar.collapsed .logoutBtn span {
+    display: inline;
+  }
+  
+  .sidebar.collapsed .navItem {
+    justify-content: flex-start;
+    padding: 10px 14px;
+  }
+  
+  .sidebar.collapsed .logoutBtn {
+    justify-content: flex-start;
+    padding: 10px 14px;
+  }
+}

@@ -1,7 +1,7 @@
 // modules/lsf/ContactSection/ContactSection.jsx
 'use client';
 
-import styles from '../../styles/ContactSection.module.css';
+import styles from '../../styles/CTASection.module.css';
 import { useState, useEffect } from 'react';
 import { Phone, Mail, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { useLanguage } from '../../../../contexts/LanguageContext';  // ✅ اضافه کردن
@@ -36,11 +36,11 @@ const contactInfo = {
     desc: isFa 
       ? 'برای دریافت مشاوره تخصصی و اطلاعات بیشتر، فرم زیر را تکمیل کنید. کارشناسان ما در اسرع وقت با شما تماس می‌گیرند.'
       : 'Fill out the form below to get expert consultation and more information. Our experts will contact you as soon as possible.',
-    phone: '۰۵۱۳۷۶۸۸۵۰۰',
+    phone: '۰۵۱000000۰۰',
     phoneLabel: isFa ? 'تلفن ثابت ' : 'Phone (24/7 Support)',
-    mobile: '۰۹۱۵۱۲۴۴۸۹۸',
+    mobile: '۰۹۱۵0000000',
     mobileLabel: isFa ? 'شماره موبایل (ارتباط با کارشناس)' : 'Mobile (Expert Contact)',
-    email: 'info@ariastudholding.com',
+    email: 'sellniroo@gmail.com',
     emailLabel: isFa ? 'ایمیل' : 'Email',
     form: {
       name: isFa ? 'نام و نام خانوادگی' : 'Full Name',
