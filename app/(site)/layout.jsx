@@ -3,8 +3,10 @@ import React from "react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import Header from "@/components/common/Header";
-import BreakingNews from "@/components/common/BreakingNews";
 import "@/styles/globals.css";
+import BreakingNews from "@/components/common/breakingnews/BreakingNews";
+import HeroSlider from "@/components/slider";
+
 
 export const metadata = {
   metadataBase: new URL("https://sellniroo.com"),
@@ -219,6 +221,8 @@ function LayoutContent({ children }) {
     <html lang="fa" dir="rtl" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <BreakingNews />
+
+        <HeroSlider />
         <Header />
 
         <main>{children}</main>

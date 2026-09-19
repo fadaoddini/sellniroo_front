@@ -4,11 +4,11 @@
    MAIN CONTAINER
    ============================================ */
 .newsContainer {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
   font-family: var(--font-iran);
-  background: radial-gradient(circle at 50% 50%, #16181f 0%, #08090b 100%);
+  background: radial-gradient(circle at 50% 50%, #16181f 0%, #000c24 100%);
   min-height: 100vh;
 }
 
@@ -43,12 +43,12 @@
 }
 
 .title {
-  font-size: 1.4rem;
+  font-size: 1rem;
   font-weight: 700;
   font-family: var(--font-edameh);
   color: #ffffff;
   margin: 0;
-  background: linear-gradient(135deg, #8b9aff, #6c5ce7);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -57,7 +57,7 @@
 .headerIcon {
   margin-left: 0.5rem;
   vertical-align: middle;
-  color: #8b9aff;
+  color: var(--primary-dark);
 }
 
 .totalCount {
@@ -109,7 +109,7 @@
 }
 
 .searchBtn:hover {
-  color: #8b9aff;
+  color: var(--primary-dark);
 }
 
 /* ============================================
@@ -123,7 +123,7 @@
   background: linear-gradient(135deg, rgba(139, 154, 255, 0.15), rgba(108, 92, 231, 0.1));
   border: 1px solid rgba(139, 154, 255, 0.15);
   border-radius: 12px;
-  color: #8b9aff;
+  color: var(--primary-dark);
   font-size: 0.8rem;
   font-family: var(--font-iran);
   font-weight: 500;
@@ -466,7 +466,7 @@
 .pageBtnActive {
   background: linear-gradient(135deg, rgba(139, 154, 255, 0.15), rgba(108, 92, 231, 0.1));
   border-color: rgba(139, 154, 255, 0.2);
-  color: #8b9aff;
+  color: var(--primary-dark);
 }
 
 .pageBtnNav {
@@ -526,7 +526,7 @@
   background: linear-gradient(135deg, rgba(139, 154, 255, 0.15), rgba(108, 92, 231, 0.1));
   border: 1px solid rgba(139, 154, 255, 0.15);
   border-radius: 12px;
-  color: #8b9aff;
+  color: var(--primary-dark);
   font-family: var(--font-iran);
   cursor: pointer;
   transition: all 0.3s ease;
@@ -725,7 +725,7 @@
   background: linear-gradient(135deg, rgba(139, 154, 255, 0.15), rgba(108, 92, 231, 0.1));
   border: 1px solid rgba(139, 154, 255, 0.15);
   border-radius: 12px;
-  color: #8b9aff;
+  color: var(--primary-dark);
   font-size: 0.8rem;
   font-family: var(--font-iran);
   font-weight: 500;
@@ -881,7 +881,7 @@
 .categoryActive {
   background: rgba(139, 154, 255, 0.12);
   border-color: rgba(139, 154, 255, 0.2);
-  color: #8b9aff;
+  color: var(--primary-dark);
 }
 
 /* ============================================
@@ -895,7 +895,7 @@
   background: linear-gradient(135deg, rgba(139, 154, 255, 0.15), rgba(108, 92, 231, 0.1));
   border: 1px solid rgba(139, 154, 255, 0.15);
   border-radius: 12px;
-  color: #8b9aff;
+  color: var(--primary-dark);
   font-size: 0.8rem;
   font-family: var(--font-iran);
   font-weight: 500;

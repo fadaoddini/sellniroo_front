@@ -5,9 +5,8 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { 
-  Menu, X, Home, Briefcase, Users, UserPlus, 
-  Search, MapPin, ChevronDown, Phone, FileText,
-  Building2, Award, Target, TrendingUp
+  Menu, X, UserPlus, 
+  Search, MapPin, ChevronDown, Phone
 } from "lucide-react";
 import styles from "@/styles/modules/Header.module.css";
 
@@ -22,7 +21,6 @@ const Header = () => {
   const cityButtonRef = useRef(null);
   const searchFormRef = useRef(null);
 
-  // لیست شهرهای ایران
   const cities = [
     "همه شهرها",
     "تهران", "مشهد", "اصفهان", "شیراز", "تبریز", "کرج", 
@@ -41,10 +39,8 @@ const Header = () => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // مدیریت کلیک خارج از دراپ‌داون شهر
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // اگر کلیک روی دکمه شهر یا داخل دراپ‌داون نبود، ببند
       if (
         cityDropdownRef.current && 
         !cityDropdownRef.current.contains(event.target) &&
@@ -59,25 +55,21 @@ const Header = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // جلوگیری از بسته شدن دراپ‌داون هنگام کلیک روی آیتم‌ها
   const handleCitySelect = (city) => {
     setSelectedCity(city);
     setIsCityOpen(false);
-    // حفظ فوکوس روی فرم
     if (searchFormRef.current) {
       const input = searchFormRef.current.querySelector('input');
       if (input) input.focus();
     }
   };
 
-  // باز و بسته کردن دراپ‌داون
   const toggleCityDropdown = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsCityOpen(!isCityOpen);
   };
 
-  // تابع جستجو
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -90,127 +82,217 @@ const Header = () => {
     }
   };
 
-  // آیتم‌های منوی اصلی
   const navItems = [
     { label: "ثبت آگهی", icon: UserPlus, href: "/post-job" },
-
   ];
 
   return (
     <>
       <header className={styles.header}>
         <div className={styles.headerContainer}>
-          {/* لوگو */}
-          <div className={styles.logo}>
-            <Link href="/" title="آریا استاد | کاریابی تخصصی فروش و بازاریابی">
-              <Image
-                src="/images/logo.png"
-                alt="آریا استاد"
-                width={160}
-                height={45}
-                priority
-                className={styles.logoImage}
-              />
-            </Link>
-          </div>
-
-          {/* بخش جستجو */}
-          <div className={styles.searchSection}>
-            <form 
-              ref={searchFormRef}
-              onSubmit={handleSearch} 
-              className={styles.searchForm}
-            >
-              {/* انتخاب شهر */}
-              <div className={styles.citySelector}>
-                <button
-                  type="button"
-                  ref={cityButtonRef}
-                  className={styles.cityButton}
-                  onClick={toggleCityDropdown}
-                  aria-expanded={isCityOpen}
-                  aria-haspopup="true"
-                >
-                  <MapPin size={16} />
-                  <span>{selectedCity}</span>
-                  <ChevronDown 
-                    size={14} 
-                    className={`${styles.dropdownArrow} ${isCityOpen ? styles.rotated : ''}`}
+          
+          {/* ============================================
+              🖥️ دسکتاپ / تبلت افقی: چیدمان سه‌ستونه
+              [لوگو]  [جستجو]  [ثبت آگهی]
+              ============================================ */}
+          {!isMobile ? (
+            <>
+              {/* ستون چپ: لوگو */}
+              <div className={styles.logo}>
+                <Link href="/" title="آریا استاد | کاریابی تخصصی فروش و بازاریابی">
+                  <Image
+                    src="/images/logo.png"
+                    alt="آریا استاد"
+                    width={160}
+                    height={45}
+                    priority
+                    className={styles.logoImage}
                   />
-                </button>
-                
-                {isCityOpen && (
-                  <div 
-                    ref={cityDropdownRef}
-                    className={styles.cityDropdown}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div className={styles.cityList}>
-                      {cities.map((city) => (
-                        <button
-                          key={city}
-                          type="button"
-                          className={`${styles.cityOption} ${city === selectedCity ? styles.activeCity : ''}`}
-                          onClick={() => handleCitySelect(city)}
-                        >
-                          {city}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                </Link>
               </div>
 
-              {/* ورودی جستجو */}
-              <div className={styles.searchInputWrapper}>
-                <input
-                  type="text"
-                  className={styles.searchInput}
-                  placeholder="عنوان شغل، مهارت یا شرکت..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  aria-label="جستجوی شغل"
-                />
-                <button 
-                  type="submit" 
-                  className={styles.searchButton}
-                  aria-label="جستجو"
+              {/* ستون مرکز: جستجو */}
+              <div className={styles.searchSection}>
+                <form 
+                  ref={searchFormRef}
+                  onSubmit={handleSearch} 
+                  className={styles.searchForm}
                 >
-                  <Search size={18} />
-                </button>
+                  <div className={styles.citySelector}>
+                    <button
+                      type="button"
+                      ref={cityButtonRef}
+                      className={styles.cityButton}
+                      onClick={toggleCityDropdown}
+                      aria-expanded={isCityOpen}
+                      aria-haspopup="true"
+                    >
+                      <MapPin size={16} />
+                      <span>{selectedCity}</span>
+                      <ChevronDown 
+                        size={14} 
+                        className={`${styles.dropdownArrow} ${isCityOpen ? styles.rotated : ''}`}
+                      />
+                    </button>
+                    
+                    {isCityOpen && (
+                      <div 
+                        ref={cityDropdownRef}
+                        className={styles.cityDropdown}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className={styles.cityList}>
+                          {cities.map((city) => (
+                            <button
+                              key={city}
+                              type="button"
+                              className={`${styles.cityOption} ${city === selectedCity ? styles.activeCity : ''}`}
+                              onClick={() => handleCitySelect(city)}
+                            >
+                              {city}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className={styles.searchInputWrapper}>
+                    <input
+                      type="text"
+                      className={styles.searchInput}
+                      placeholder="عنوان شغل، مهارت یا شرکت..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      aria-label="جستجوی شغل"
+                    />
+                    <button 
+                      type="submit" 
+                      className={styles.searchButton}
+                      aria-label="جستجو"
+                    >
+                      <Search size={18} />
+                    </button>
+                  </div>
+                </form>
               </div>
-            </form>
-          </div>
 
-          {/* بخش راست هدر */}
-          <div className={styles.headerRight}>
-            {/* منوی دسکتاپ */}
-            {!isMobile && (
-              <nav className={styles.desktopNav}>
-                <ul className={styles.navList}>
-                  {navItems.map((item) => (
-                    <li key={item.href}>
-                      <Link href={item.href} className={styles.navLink}>
-                        <item.icon size={18} />
-                        <span>{item.label}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-            )}
+              {/* ستون راست: ثبت آگهی */}
+              <div className={styles.headerRight}>
+                <nav className={styles.desktopNav}>
+                  <ul className={styles.navList}>
+                    {navItems.map((item) => (
+                      <li key={item.href}>
+                        <Link href={item.href} className={styles.navLink}>
+                          <item.icon size={18} />
+                          <span>{item.label}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              </div>
+            </>
+          ) : (
+            /* ============================================
+               📱 موبایل: چیدمان دو‌ردیفی
+               ردیف ۱: [لوگو]  [دکمه منو]
+               ردیف ۲: [جستجو]
+               ============================================ */
+            <>
+              <div className={styles.topRow}>
+                <div className={styles.logo}>
+                  <Link href="/" title="آریا استاد | کاریابی تخصصی فروش و بازاریابی">
+                    <Image
+                      src="/images/logo.png"
+                      alt="آریا استاد"
+                      width={160}
+                      height={45}
+                      priority
+                      className={styles.logoImage}
+                    />
+                  </Link>
+                </div>
 
-            {/* دکمه منوی موبایل */}
-            {isMobile && (
-              <button 
-                className={styles.menuToggle}
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                aria-label="منو"
-              >
-                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            )}
-          </div>
+                <div className={styles.headerRight}>
+                  <button 
+                    className={styles.menuToggle}
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    aria-label="منو"
+                  >
+                    {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                  </button>
+                </div>
+              </div>
+
+              <div className={styles.searchRow}>
+                <div className={styles.searchSection}>
+                  <form 
+                    ref={searchFormRef}
+                    onSubmit={handleSearch} 
+                    className={styles.searchForm}
+                  >
+                    <div className={styles.citySelector}>
+                      <button
+                        type="button"
+                        ref={cityButtonRef}
+                        className={styles.cityButton}
+                        onClick={toggleCityDropdown}
+                        aria-expanded={isCityOpen}
+                        aria-haspopup="true"
+                      >
+                        <MapPin size={16} />
+                        <span>{selectedCity}</span>
+                        <ChevronDown 
+                          size={14} 
+                          className={`${styles.dropdownArrow} ${isCityOpen ? styles.rotated : ''}`}
+                        />
+                      </button>
+                      
+                      {isCityOpen && (
+                        <div 
+                          ref={cityDropdownRef}
+                          className={styles.cityDropdown}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className={styles.cityList}>
+                            {cities.map((city) => (
+                              <button
+                                key={city}
+                                type="button"
+                                className={`${styles.cityOption} ${city === selectedCity ? styles.activeCity : ''}`}
+                                onClick={() => handleCitySelect(city)}
+                              >
+                                {city}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className={styles.searchInputWrapper}>
+                      <input
+                        type="text"
+                        className={styles.searchInput}
+                        placeholder="عنوان شغل، مهارت یا شرکت..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        aria-label="جستجوی شغل"
+                      />
+                      <button 
+                        type="submit" 
+                        className={styles.searchButton}
+                        aria-label="جستجو"
+                      >
+                        <Search size={18} />
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </header>
 

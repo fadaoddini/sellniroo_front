@@ -1,4 +1,7 @@
+// components/News/NewsCard.jsx
+
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar, faImage } from '@fortawesome/free-solid-svg-icons';
@@ -9,7 +12,8 @@ const NewsCard = ({ news, index }) => {
   if (!news) return null;
 
   const {
-    id,
+    slug,        // ✅ استفاده از slug
+    id,          // ✅ fallback به id
     title,
     excerpt,
     featured_image_display,
@@ -19,50 +23,28 @@ const NewsCard = ({ news, index }) => {
     images = [],
   } = news;
 
-  // ✅ اگر id وجود نداشت، از index استفاده کن
-  const newsId = id || `news-${index}`;
+  // ✅ اولویت با slug، اگر نبود از id استفاده کن
+  const newsSlug = slug || id || `news-${index}`;
+  
+  console.log('🔗 NewsCard slug:', newsSlug, 'id:', id);
 
-  // ✅ تابع ساخت آدرس کامل تصویر
+  // ساخت آدرس کامل تصویر
   const getFullImageUrl = (imagePath) => {
     if (!imagePath) return null;
-    
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
       return imagePath;
     }
-    
+    const baseUrl = Config.baseUrl || 'http://localhost:8000';
     if (imagePath.startsWith('/media/')) {
-      return `${Config.baseUrl}${imagePath}`;
+      return `${baseUrl}${imagePath}`;
     }
-    
     if (imagePath.startsWith('media/')) {
-      return `${Config.baseUrl}/${imagePath}`;
+      return `${baseUrl}/${imagePath}`;
     }
-    
-    return `${Config.baseUrl}/media/${imagePath.replace(/^\/+/, '')}`;
+    return `${baseUrl}/media/${imagePath.replace(/^\/+/, '')}`;
   };
 
-  // ✅ دریافت آدرس تصویر
-  const getImageUrl = () => {
-    if (featured_image_display) {
-      return getFullImageUrl(featured_image_display);
-    }
-    
-    if (featured_image) {
-      return getFullImageUrl(featured_image);
-    }
-    
-    if (images && images.length > 0) {
-      const firstImg = images[0];
-      const imgUrl = firstImg.image_display || firstImg.image;
-      if (imgUrl) {
-        return getFullImageUrl(imgUrl);
-      }
-    }
-    
-    return null;
-  };
-
-  const imageUrl = getImageUrl();
+  const imageUrl = getFullImageUrl(featured_image_display || featured_image || images?.[0]?.image_display);
   const hasImage = imageUrl && imageUrl.length > 0;
 
   const formatDate = (dateStr) => {
@@ -80,18 +62,19 @@ const NewsCard = ({ news, index }) => {
   };
 
   return (
-    <Link href={`/news/${newsId}`} className={styles.cardLink}>
+    <Link href={`/news/${newsSlug}`} className={styles.cardLink}>
       <div className={`${styles.card} ${styles.cardHover}`}>
         <div className={styles.cardImage}>
           {hasImage ? (
-            <img
+            <Image
               src={imageUrl}
               alt={title || 'خبر'}
+              fill
               className={styles.cardImageInner}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               loading={index < 3 ? 'eager' : 'lazy'}
               onError={(e) => {
                 e.target.style.display = 'none';
-                e.target.parentElement.querySelector('.fallback-image')?.classList.remove('hidden');
               }}
             />
           ) : (
@@ -99,11 +82,6 @@ const NewsCard = ({ news, index }) => {
               <FontAwesomeIcon icon={faImage} className={styles.cardImageIcon} />
             </div>
           )}
-          <div className="fallback-image hidden">
-            <div className={styles.cardImagePlaceholder}>
-              <FontAwesomeIcon icon={faImage} className={styles.cardImageIcon} />
-            </div>
-          </div>
           {images?.length > 0 && (
             <div className={styles.imageCount}>
               <FontAwesomeIcon icon={faImage} size="xs" />

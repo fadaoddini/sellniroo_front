@@ -1,21 +1,21 @@
+// app/(admin)/layout.jsx
+"use client";
+
+import React from "react";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import "@/styles/globals.css";
 
-export const metadata = {
-  title: {
-    default: "پنل مدیریت",
-    template: "%s | پنل مدیریت آریا استاد",
-  },
-
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
-
-export default function AdminRootLayout({ children }) {
+export default function AdminLayout({ children }) {
   return (
     <html lang="fa" dir="rtl" suppressHydrationWarning>
-      <body suppressHydrationWarning>{children}</body>
+      <body suppressHydrationWarning>
+        <LanguageProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </LanguageProvider>
+      </body>
     </html>
   );
 }

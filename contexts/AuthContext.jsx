@@ -7,17 +7,59 @@ import Config from "@/config/config";
 
 const AuthContext = createContext();
 
+// ✅ لیست کامل مسیرهای عمومی که نیازی به احراز هویت ندارند
+const PUBLIC_PATHS = [
+  "/",
+  "/login",
+  "/splash",
+  "/news",
+  "/news/",
+  "/about",
+  "/about/",
+  "/contact",
+  "/contact/",
+  "/services",
+  "/services/",
+  "/projects",
+  "/projects/",
+];
+
+// ✅ تابع پیشرفته برای بررسی مسیر عمومی
+const isPublicPath = (pathname) => {
+  if (!pathname) return false;
+  
+  // 1. بررسی تطابق دقیق
+  if (PUBLIC_PATHS.includes(pathname)) return true;
+  
+  // 2. بررسی مسیرهای داینامیک با الگوی /news/*
+  if (pathname.startsWith('/news/')) return true;
+  
+  // 3. بررسی سایر مسیرهای داینامیک
+  const dynamicPatterns = [
+    '/about/',
+    '/contact/',
+    '/services/',
+    '/projects/',
+  ];
+  
+  for (const pattern of dynamicPatterns) {
+    if (pathname.startsWith(pattern)) return true;
+  }
+  
+  return false;
+};
+
 export const AuthProvider = ({ children }) => {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   
-  // ✅ stateهای جدید برای وضعیت کارمندی
+  // ✅ stateهای وضعیت کارمندی
   const [isEmployee, setIsEmployee] = useState(false);
   const [employeeData, setEmployeeData] = useState(null);
   const [checkingEmployee, setCheckingEmployee] = useState(true);
-  const [permissions, setPermissions] = useState([]); // ✅ اضافه شد
+  const [permissions, setPermissions] = useState([]);
   
   const isRefreshing = useRef(false);
   const failedQueue = useRef([]);
@@ -113,16 +155,13 @@ export const AuthProvider = ({ children }) => {
       
       console.log("Employee check response:", response.data);
       
-      // ✅ بررسی دقیق پاسخ
       if (response.data && response.data.is_employee === true) {
         setIsEmployee(true);
         setEmployeeData(response.data);
         
-        // ✅ استخراج دسترسی‌ها
         const perms = response.data.permissions || [];
         setPermissions(perms);
         
-        // ✅ ذخیره اطلاعات کارمند در localStorage
         try {
           localStorage.setItem('employeeData', JSON.stringify(response.data));
           localStorage.setItem('permissions', JSON.stringify(perms));
@@ -267,7 +306,6 @@ export const AuthProvider = ({ children }) => {
           });
           setIsAuthenticated(true);
           
-          // ✅ بررسی وضعیت کارمندی بعد از ورود
           await checkEmployeeStatus(accessToken);
           
           setLoading(false);
@@ -284,7 +322,6 @@ export const AuthProvider = ({ children }) => {
           });
           setIsAuthenticated(true);
           
-          // ✅ بررسی وضعیت کارمندی بعد از ورود
           await checkEmployeeStatus(accessToken);
           
           setLoading(false);
@@ -376,7 +413,7 @@ export const AuthProvider = ({ children }) => {
     return token ? { Authorization: `Bearer ${token}` } : {};
   }, []);
 
-  // ✅ مقداردهی اولیه
+  // ✅ مقداردهی اولیه - بدون تغییر
   useEffect(() => {
     const initializeAuth = async () => {
       setLoading(true);
@@ -402,7 +439,6 @@ export const AuthProvider = ({ children }) => {
         });
         setIsAuthenticated(true);
         
-        // ✅ بررسی وضعیت کارمندی در مقداردهی اولیه
         await checkEmployeeStatus(authData.accessToken);
       } else {
         setUser(null);
@@ -418,33 +454,52 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, [validateAndRefreshTokens, checkEmployeeStatus]);
 
-  // ✅ محافظت از مسیرها
+  // ✅ محافظت از مسیرها - به‌روزرسانی شده
   useEffect(() => {
     if (typeof window === "undefined" || loading) return;
 
-    const publicPaths = ["/login", "/", "/splash", "/admin"];
     const pathname = window.location.pathname || "/";
 
-    const isPublicRoute = publicPaths.some(
-      (path) => pathname === path || pathname.startsWith(`${path}/`)
-    );
+    // ✅ بررسی عمومی بودن مسیر
+    const isPublic = isPublicPath(pathname);
 
-    if (!isAuthenticated && !isPublicRoute) {
-      router.replace("/login");
+    // اگر مسیر عمومی است، اجازه دسترسی بده (حتی اگر لاگین نباشد)
+    if (isPublic) {
+      return;
     }
 
+    // اگر مسیر عمومی نیست و کاربر لاگین نیست، به لاگین هدایت کن
+    if (!isPublic && !isAuthenticated) {
+      router.replace("/login");
+      return;
+    }
+
+    // اگر کاربر لاگین است و در صفحه لاگین است، به خانه هدایت کن
     if (isAuthenticated && pathname === "/login") {
       router.replace("/");
     }
   }, [isAuthenticated, loading, router]);
 
-  // ✅ Interceptors برای axios
+  // ✅ Interceptors برای axios - به‌روزرسانی شده
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    // ✅ اینترسپتور درخواست - به‌روزرسانی شده
     const requestInterceptor = axios.interceptors.request.use(
       (config) => {
         try {
+          // اگر درخواست مربوط به مسیرهای عمومی است، هدر ارسال نشود
+          const isPublicEndpoint = 
+            config.url?.includes('/news') || 
+            config.url?.includes('/about') ||
+            config.url?.includes('/contact') ||
+            config.url?.includes('/services') ||
+            config.url?.includes('/projects');
+          
+          if (isPublicEndpoint && !config._isAuthRequest) {
+            return config;
+          }
+          
           const token = localStorage.getItem("accessToken");
           if (token && !config._isAuthRequest) {
             config.headers = config.headers || {};
@@ -458,6 +513,7 @@ export const AuthProvider = ({ children }) => {
       (error) => Promise.reject(error)
     );
 
+    // ✅ اینترسپتور پاسخ - به‌روزرسانی شده
     const responseInterceptor = axios.interceptors.response.use(
       (response) => response,
       async (error) => {
@@ -522,7 +578,6 @@ export const AuthProvider = ({ children }) => {
           });
           setIsAuthenticated(true);
           
-          // ✅ بررسی مجدد وضعیت کارمندی بعد از تمدید توکن
           await checkEmployeeStatus(authData.accessToken);
 
           processQueue(null, authData.accessToken);
@@ -543,13 +598,11 @@ export const AuthProvider = ({ children }) => {
           localStorage.removeItem("employeeData");
           localStorage.removeItem("permissions");
 
-          const publicPaths = ["/login", "/", "/splash"];
+          // ✅ فقط در صورت عدم حضور در مسیرهای عمومی به لاگین هدایت کن
           const pathname = window.location.pathname || "/";
-          const isPublicRoute = publicPaths.some(
-            (path) => pathname === path || pathname.startsWith(`${path}/`)
-          );
-
-          if (!isPublicRoute) {
+          const isPublic = isPublicPath(pathname);
+          
+          if (!isPublic) {
             router.replace("/login");
           }
 
@@ -575,13 +628,12 @@ export const AuthProvider = ({ children }) => {
     sendOtp,
     getAuthHeaders,
     refreshTokens: validateAndRefreshTokens,
-    // ✅ اضافه کردن وضعیت‌های جدید
     isEmployee,
     employeeData,
     checkingEmployee,
     checkEmployeeStatus,
-    permissions,        // ✅ دسترسی‌ها
-    hasPermission,      // ✅ تابع بررسی دسترسی
+    permissions,
+    hasPermission,
   };
 
   return (

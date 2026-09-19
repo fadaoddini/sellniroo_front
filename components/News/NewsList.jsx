@@ -13,7 +13,8 @@ import {
   faCheck,
   faSpinner,
   faExclamationTriangle,
-  faTags
+  faTags,
+  faBriefcase
 } from '@fortawesome/free-solid-svg-icons';
 import newsService from '@/services/newsService';
 import NewsCard from './NewsCard';
@@ -76,7 +77,7 @@ const NewsList = () => {
         setTotalPages(result.totalPages || 0);
         setError(null);
       } else {
-        setError(result.error || 'خطا در دریافت اخبار');
+        setError(result.error || 'خطا در دریافت محتوا');
         setNews([]);
         setTotalPages(0);
       }
@@ -191,10 +192,10 @@ const NewsList = () => {
         return;
       }
 
-      setRefreshMessage('⏳ در حال پردازش اخبار جدید...');
+      setRefreshMessage('⏳ در حال پردازش محتوا جدید...');
       await new Promise(resolve => setTimeout(resolve, 3000));
 
-      setRefreshMessage('📰 در حال بارگذاری اخبار جدید...');
+      setRefreshMessage('📰 در حال بارگذاری محتوا جدید...');
       
       const refreshPromise = newsService.refreshNews();
       const refreshResult = await Promise.race([refreshPromise, timeoutPromise]);
@@ -213,7 +214,7 @@ const NewsList = () => {
         await fetchNews(currentPage, searchTerm, selectedCategory);
         setRefreshStatus('success');
         const count = refreshResult.data?.count || refreshResult.data?.data?.length || 0;
-        setRefreshMessage(`✅ بروزرسانی با موفقیت انجام شد (${count} خبر جدید)`);
+        setRefreshMessage(`✅ بروزرسانی با موفقیت انجام شد (${count} محتوا جدید)`);
         
         setTimeout(() => {
           setRefreshStatus('idle');
@@ -221,8 +222,8 @@ const NewsList = () => {
         }, 4000);
       } else {
         setRefreshStatus('error');
-        setRefreshMessage('❌ ' + (refreshResult.error || 'خطا در دریافت اخبار جدید'));
-        setError(refreshResult.error || 'خطا در دریافت اخبار جدید');
+        setRefreshMessage('❌ ' + (refreshResult.error || 'خطا در دریافت محتوا جدید'));
+        setError(refreshResult.error || 'خطا در دریافت محتوا جدید');
       }
     } catch (err) {
       console.error('❌ خطا در بروزرسانی:', err);
@@ -231,8 +232,8 @@ const NewsList = () => {
         setRefreshMessage('⏰ زمان بروزرسانی بیش از حد مجاز بود');
       } else {
         setRefreshStatus('error');
-        setRefreshMessage('❌ خطا در بروزرسانی اخبار');
-        setError('خطا در بروزرسانی اخبار');
+        setRefreshMessage('❌ خطا در بروزرسانی محتوا');
+        setError('خطا در بروزرسانی محتوا');
       }
     } finally {
       if (timeoutId) clearTimeout(timeoutId);
@@ -350,15 +351,14 @@ const NewsList = () => {
     );
   };
 
-  // ... بقیه کدهای NewsList مانند قبل ...
-
+  // ✅ حالت خالی
   if (!loading && !error && news.length === 0) {
     return (
       <div className={styles.newsContainer}>
         <div className={styles.header}>
           <h1 className={styles.title}>
-            <FontAwesomeIcon icon={faNewspaper} className={styles.headerIcon} />
-            اخبار صنعت ساختمان
+            <FontAwesomeIcon icon={faBriefcase} className={styles.headerIcon} />
+           مجله
           </h1>
           {renderRefreshButton()}
         </div>
@@ -366,8 +366,8 @@ const NewsList = () => {
         {renderCategories()}
         <div className={styles.emptyState}>
           <FontAwesomeIcon icon={faNewspaper} className={styles.emptyIcon} />
-          <h3>هیچ خبری یافت نشد</h3>
-          <p>با بروزرسانی صفحه، اخبار جدید دریافت کنید</p>
+          <h3>هیچ محتوایی یافت نشد</h3>
+          <p>با بروزرسانی صفحه، محتوا جدید دریافت کنید</p>
           {isAdmin && (
             <button className={styles.emptyBtn} onClick={handleRefresh}>
               <FontAwesomeIcon icon={faSync} />
@@ -379,13 +379,14 @@ const NewsList = () => {
     );
   }
 
+  // ✅ حالت خطا
   if (error && !loading) {
     return (
       <div className={styles.newsContainer}>
         <div className={styles.header}>
           <h1 className={styles.title}>
-            <FontAwesomeIcon icon={faNewspaper} className={styles.headerIcon} />
-            اخبار صنعت ساختمان
+            <FontAwesomeIcon icon={faBriefcase} className={styles.headerIcon} />
+مجله 
           </h1>
           {renderRefreshButton()}
         </div>
@@ -393,7 +394,7 @@ const NewsList = () => {
         {renderCategories()}
         <div className={styles.errorState}>
           <FontAwesomeIcon icon={faExclamationTriangle} className={styles.errorIcon} />
-          <h3>خطا در دریافت اخبار</h3>
+          <h3>خطا در دریافت محتوا</h3>
           <p>{error}</p>
           <button className={styles.errorBtn} onClick={() => fetchNews(currentPage, searchTerm, selectedCategory)}>
             تلاش مجدد
@@ -408,18 +409,19 @@ const NewsList = () => {
       <div className={styles.header}>
         <div className={styles.headerLeft}>
           <h1 className={styles.title}>
-            <FontAwesomeIcon icon={faNewspaper} className={styles.headerIcon} />
-            اخبار صنعت ساختمان
+            <FontAwesomeIcon icon={faBriefcase} className={styles.headerIcon} />
+
+مجله
           </h1>
           <span className={styles.totalCount}>
-            {totalCount} خبر
+            {totalCount} محتوا
           </span>
         </div>
         <div className={styles.headerRight}>
           <form onSubmit={handleSearch} className={styles.searchForm}>
             <input
               type="text"
-              placeholder="جستجو در اخبار..."
+              placeholder="جستجو در محتوا..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className={styles.searchInput}
@@ -439,7 +441,7 @@ const NewsList = () => {
         <div className={styles.statItem}>
           <FontAwesomeIcon icon={faNewspaper} />
           <span>{totalCount}</span>
-          <span>خبر</span>
+          <span>محتوا</span>
         </div>
         <div className={styles.statItem}>
           <FontAwesomeIcon icon={faClock} />
@@ -465,7 +467,11 @@ const NewsList = () => {
         <>
           <div className={styles.newsGrid}>
             {news.map((item, index) => (
-              <NewsCard key={item.id || index} news={item} index={index} />
+              <NewsCard 
+                key={item.slug || item.id || index}
+                news={item} 
+                index={index} 
+              />
             ))}
           </div>
 

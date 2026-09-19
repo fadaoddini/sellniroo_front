@@ -3,9 +3,10 @@
 import React from 'react'
 import CTASection from './sections/CTASection'
 import AllBoxItem from '@/components/AllBoxItem/AllBoxItem'
-import NewsSection from './sections/NewsSection'
+
 import VideoArchiveSection from '@/components/Story/VideoArchiveSection'
 import styles from '../styles/HomePage.module.css'
+import NewsSection from './sections/news/NewsSection'
 
 const HomePage = () => {
   return (
@@ -14,7 +15,7 @@ const HomePage = () => {
       <h2 className="sr-only">
         خدمات و پروژه‌های هلدینگ آریا استاد در زمینه سازه‌های سبک فولادی ال اس اف
       </h2>
-      
+      <NewsSection />
       <AllBoxItem />
       <CTASection />
     </div>

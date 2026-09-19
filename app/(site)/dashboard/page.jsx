@@ -4,8 +4,8 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '../../contexts/AuthContext'
-import { useLanguage } from '../../contexts/LanguageContext'
+import { useAuth } from '@/contexts/AuthContext'
+import { useLanguage } from '@/contexts/LanguageContext'
 import Link from 'next/link'
 import {
   LayoutDashboard,
@@ -21,7 +21,7 @@ import {
   Clock,
   AlertCircle
 } from 'lucide-react'
-import styles from '../../styles/modules/Dashboard.module.css'
+import styles from './Dashboard.module.css'
 
 const Dashboard = () => {
   const router = useRouter()

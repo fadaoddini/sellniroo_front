@@ -16,9 +16,9 @@ import {
   Image as ImageIcon,
   Loader2
 } from 'lucide-react'
-import { useLanguage } from '../../../../contexts/LanguageContext'
-import { useAuth } from '../../../../contexts/AuthContext'
-import styles from '../../styles/NewsSection.module.css'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { useAuth } from '@/contexts/AuthContext'
+import styles from './NewsSection.module.css'
 import newsService from '@/services/newsService'
 import Config from '@/config/config'
 
@@ -39,15 +39,22 @@ const NewsSection = () => {
   // State for new news
   const [newNewsData, setNewNewsData] = useState({
     title: '',
+    subtitle: '',
+    lid: '',
     excerpt: '',
     content: '',
     featured_image: null,
     image_url: '',
-    source_name: 'نبض ساختمان',
-    source_link: 'https://nabzsakhteman.com',
-    publish_date: new Date().toISOString(),
+    source_name: '',
+    source_link: '',
+    publish_date: new Date().toISOString().slice(0, 16),
     category: null,
-    is_active: true
+    status: 'published',
+    is_active: true,
+    is_featured: false,
+    is_breaking: false,
+    is_exclusive: false,
+    language: 'fa'
   })
 
   const isAdmin = user?.is_staff || user?.is_superuser || false
@@ -60,15 +67,17 @@ const NewsSection = () => {
       return imagePath
     }
     
+    const baseUrl = Config.baseUrl || 'http://localhost:8000'
+    
     if (imagePath.startsWith('/media/')) {
-      return `${Config.baseUrl}${imagePath}`
+      return `${baseUrl}${imagePath}`
     }
     
     if (imagePath.startsWith('media/')) {
-      return `${Config.baseUrl}/${imagePath}`
+      return `${baseUrl}/${imagePath}`
     }
     
-    return `${Config.baseUrl}/media/${imagePath.replace(/^\/+/, '')}`
+    return `${baseUrl}/media/${imagePath.replace(/^\/+/, '')}`
   }
 
   // 🔹 تابع دریافت بهترین تصویر برای خبر
@@ -93,7 +102,6 @@ const NewsSection = () => {
     
     // 4. اولویت چهارم: تصاویر گالری
     if (item.images && item.images.length > 0) {
-      // تلاش برای پیدا کردن یک تصویر معتبر از گالری
       for (const img of item.images) {
         const imgUrl = img.image_display || img.image || img.image_url
         if (imgUrl) {
@@ -103,7 +111,6 @@ const NewsSection = () => {
       }
     }
     
-    // اگر هیچ تصویری وجود نداشت، null برگردان
     return null
   }
 
@@ -163,12 +170,20 @@ const NewsSection = () => {
     setIsEditing(true)
     setEditData({
       id: item.id,
+      slug: item.slug,
       title: item.title,
+      subtitle: item.subtitle || '',
+      lid: item.lid || '',
       excerpt: item.excerpt || '',
       content: item.content || '',
       image_url: item.featured_image_url || '',
-      category: item.category || null,
-      is_active: item.is_active !== undefined ? item.is_active : true
+      source_name: item.source_name || '',
+      source_link: item.source_link || '',
+      status: item.status || 'published',
+      is_active: item.is_active !== undefined ? item.is_active : true,
+      is_featured: item.is_featured || false,
+      is_breaking: item.is_breaking || false,
+      is_exclusive: item.is_exclusive || false
     })
   }
 
@@ -182,11 +197,18 @@ const NewsSection = () => {
         item.id === editData.id ? { 
           ...item, 
           title: editData.title,
+          subtitle: editData.subtitle,
+          lid: editData.lid,
           excerpt: editData.excerpt,
           content: editData.content,
           featured_image_url: editData.image_url,
-          category: editData.category,
-          is_active: editData.is_active
+          source_name: editData.source_name,
+          source_link: editData.source_link,
+          status: editData.status,
+          is_active: editData.is_active,
+          is_featured: editData.is_featured,
+          is_breaking: editData.is_breaking,
+          is_exclusive: editData.is_exclusive
         } : item
       ))
       setIsEditing(false)
@@ -222,19 +244,32 @@ const NewsSection = () => {
     try {
       const newItem = {
         id: Date.now(),
+        slug: newNewsData.title
+          .trim()
+          .replace(/\s+/g, '-')
+          .replace(/[^a-zA-Z0-9\u0600-\u06FF\-]/g, '')
+          .toLowerCase(),
         title: newNewsData.title,
-        excerpt: newNewsData.excerpt,
-        content: newNewsData.content,
+        subtitle: newNewsData.subtitle || '',
+        lid: newNewsData.lid || '',
+        excerpt: newNewsData.excerpt || '',
+        content: newNewsData.content || '',
         featured_image_url: newNewsData.image_url || '',
         featured_image_display: newNewsData.image_url || '',
-        source_name: newNewsData.source_name,
-        source_link: newNewsData.source_link,
-        publish_date: newNewsData.publish_date,
-        category: newNewsData.category,
+        source_name: newNewsData.source_name || '',
+        source_link: newNewsData.source_link || '',
+        publish_date: newNewsData.publish_date || new Date().toISOString(),
+        status: newNewsData.status || 'published',
         is_active: newNewsData.is_active,
+        is_featured: newNewsData.is_featured,
+        is_breaking: newNewsData.is_breaking,
+        is_exclusive: newNewsData.is_exclusive,
         images: [],
-        views: 0,
-        created_at: new Date().toISOString()
+        view_count: 0,
+        like_count: 0,
+        comment_count: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
       setNews(prev => [newItem, ...prev])
       setIsAdding(false)
@@ -250,16 +285,37 @@ const NewsSection = () => {
   const resetNewNewsForm = () => {
     setNewNewsData({
       title: '',
+      subtitle: '',
+      lid: '',
       excerpt: '',
       content: '',
       featured_image: null,
       image_url: '',
-      source_name: 'نبض ساختمان',
-      source_link: 'https://nabzsakhteman.com',
-      publish_date: new Date().toISOString(),
+      source_name: '',
+      source_link: '',
+      publish_date: new Date().toISOString().slice(0, 16),
       category: null,
-      is_active: true
+      status: 'published',
+      is_active: true,
+      is_featured: false,
+      is_breaking: false,
+      is_exclusive: false,
+      language: 'fa'
     })
+  }
+
+  // 🔹 دریافت وضعیت نمایشی
+  const getStatusBadge = (status) => {
+    const statusMap = {
+      draft: { label: 'پیش‌نویس', color: '#6c757d' },
+      pending: { label: 'در انتظار بررسی', color: '#ffc107' },
+      review: { label: 'در حال بررسی', color: '#17a2b8' },
+      published: { label: 'منتشر شده', color: '#28a745' },
+      scheduled: { label: 'برنامه‌ریزی شده', color: '#007bff' },
+      archived: { label: 'بایگانی شده', color: '#6c757d' },
+      rejected: { label: 'رد شده', color: '#dc3545' }
+    }
+    return statusMap[status] || { label: status, color: '#6c757d' }
   }
 
   if (loading) {
@@ -275,7 +331,7 @@ const NewsSection = () => {
     )
   }
 
-  const title = language === 'fa' ? 'اخبار و رویدادها' : 'News & Events'
+  const title = language === 'fa' ? 'مجله' : 'Magazine'
   const viewAll = language === 'fa' ? 'مشاهده همه' : 'View All'
 
   return (
@@ -283,14 +339,12 @@ const NewsSection = () => {
       <div className="container">
         <div className={styles.newsHeader}>
           <div className={styles.newsHeaderLeft}>
-            <span className={styles.newsBadge}>
-              {language === 'fa' ? '📰 آخرین اخبار' : '📰 Latest News'}
-            </span>
+       
             <h2 className={styles.newsTitle}>{title}</h2>
             <p className={styles.newsSubtitle}>
               {language === 'fa'
-                ? 'با آخرین اخبار صنعت راه و ساختمان با ما همراه باشید'
-                : 'Stay updated with the latest news in the road and building industry'}
+                ? 'با آخرین محتوای آموزش ، استخدام و کاریابی با ما همراه باشید'
+                : 'Stay updated with the latest news ...'}
             </p>
           </div>
           <div className={styles.newsHeaderRight}>
@@ -330,6 +384,26 @@ const NewsSection = () => {
               </div>
               
               <div className={styles.formField}>
+                <label>{language === 'fa' ? 'زیر عنوان (روتیر)' : 'Subtitle'}</label>
+                <input
+                  type="text"
+                  value={newNewsData.subtitle}
+                  onChange={(e) => setNewNewsData({...newNewsData, subtitle: e.target.value})}
+                  placeholder={language === 'fa' ? 'زیر عنوان خبر' : 'News subtitle'}
+                />
+              </div>
+              
+              <div className={styles.formField}>
+                <label>{language === 'fa' ? 'لید (تیزر کوتاه)' : 'Lid'}</label>
+                <input
+                  type="text"
+                  value={newNewsData.lid}
+                  onChange={(e) => setNewNewsData({...newNewsData, lid: e.target.value})}
+                  placeholder={language === 'fa' ? 'لید خبر' : 'News lid'}
+                />
+              </div>
+              
+              <div className={styles.formField}>
                 <label>{language === 'fa' ? 'لینک تصویر شاخص' : 'Featured Image URL'}</label>
                 <input
                   type="url"
@@ -362,6 +436,22 @@ const NewsSection = () => {
               <div className={styles.formField}>
                 <label>{language === 'fa' ? 'وضعیت' : 'Status'}</label>
                 <select
+                  value={newNewsData.status}
+                  onChange={(e) => setNewNewsData({...newNewsData, status: e.target.value})}
+                >
+                  <option value="draft">پیش‌نویس</option>
+                  <option value="pending">در انتظار بررسی</option>
+                  <option value="review">در حال بررسی</option>
+                  <option value="published">منتشر شده</option>
+                  <option value="scheduled">برنامه‌ریزی شده</option>
+                  <option value="archived">بایگانی شده</option>
+                  <option value="rejected">رد شده</option>
+                </select>
+              </div>
+              
+              <div className={styles.formField}>
+                <label>{language === 'fa' ? 'فعال' : 'Active'}</label>
+                <select
                   value={newNewsData.is_active ? 'active' : 'inactive'}
                   onChange={(e) => setNewNewsData({...newNewsData, is_active: e.target.value === 'active'})}
                 >
@@ -371,12 +461,64 @@ const NewsSection = () => {
               </div>
               
               <div className={styles.formField}>
+                <label>{language === 'fa' ? 'خبر ویژه' : 'Featured'}</label>
+                <select
+                  value={newNewsData.is_featured ? 'yes' : 'no'}
+                  onChange={(e) => setNewNewsData({...newNewsData, is_featured: e.target.value === 'yes'})}
+                >
+                  <option value="no">{language === 'fa' ? 'خیر' : 'No'}</option>
+                  <option value="yes">{language === 'fa' ? 'بله' : 'Yes'}</option>
+                </select>
+              </div>
+              
+              <div className={styles.formField}>
+                <label>{language === 'fa' ? 'خبر فوری' : 'Breaking'}</label>
+                <select
+                  value={newNewsData.is_breaking ? 'yes' : 'no'}
+                  onChange={(e) => setNewNewsData({...newNewsData, is_breaking: e.target.value === 'yes'})}
+                >
+                  <option value="no">{language === 'fa' ? 'خیر' : 'No'}</option>
+                  <option value="yes">{language === 'fa' ? 'بله' : 'Yes'}</option>
+                </select>
+              </div>
+              
+              <div className={styles.formField}>
+                <label>{language === 'fa' ? 'اختصاصی' : 'Exclusive'}</label>
+                <select
+                  value={newNewsData.is_exclusive ? 'yes' : 'no'}
+                  onChange={(e) => setNewNewsData({...newNewsData, is_exclusive: e.target.value === 'yes'})}
+                >
+                  <option value="no">{language === 'fa' ? 'خیر' : 'No'}</option>
+                  <option value="yes">{language === 'fa' ? 'بله' : 'Yes'}</option>
+                </select>
+              </div>
+              
+              <div className={styles.formField}>
                 <label>{language === 'fa' ? 'نام منبع' : 'Source Name'}</label>
                 <input
                   type="text"
                   value={newNewsData.source_name}
                   onChange={(e) => setNewNewsData({...newNewsData, source_name: e.target.value})}
-                  placeholder="نبض ساختمان"
+                  placeholder={language === 'fa' ? 'نام منبع' : 'Source name'}
+                />
+              </div>
+              
+              <div className={styles.formField}>
+                <label>{language === 'fa' ? 'لینک منبع' : 'Source Link'}</label>
+                <input
+                  type="url"
+                  value={newNewsData.source_link}
+                  onChange={(e) => setNewNewsData({...newNewsData, source_link: e.target.value})}
+                  placeholder="https://example.com"
+                />
+              </div>
+              
+              <div className={styles.formField}>
+                <label>{language === 'fa' ? 'تاریخ انتشار' : 'Publish Date'}</label>
+                <input
+                  type="datetime-local"
+                  value={newNewsData.publish_date}
+                  onChange={(e) => setNewNewsData({...newNewsData, publish_date: e.target.value})}
                 />
               </div>
             </div>
@@ -416,14 +558,38 @@ const NewsSection = () => {
         <div className={styles.newsGrid}>
           {currentNews.map((item) => {
             const imageUrl = getBestImage(item)
+            // ✅ استفاده از slug به جای id
+            const newsSlug = item.slug || item.id
+            const statusInfo = getStatusBadge(item.status)
             
             return (
               <a 
-                href={`/news/${item.id}`} 
+                href={`/news/${newsSlug}`} 
                 key={item.id} 
                 className={styles.newsCardLink}
               >
                 <div className={styles.newsCard}>
+                  {/* برچسب‌های ویژه */}
+                  <div className={styles.newsBadgesTop}>
+                    {item.is_featured && (
+                      <span className={styles.featuredBadge}> ویژه</span>
+                    )}
+                    {item.is_breaking && (
+                      <span className={styles.breakingBadge}> فوری</span>
+                    )}
+                    {item.is_exclusive && (
+                      <span className={styles.exclusiveBadge}> اختصاصی</span>
+                    )}
+                    {item.status && (
+                      <span 
+                        className={styles.statusBadge}
+                        style={{ backgroundColor: statusInfo.color }}
+                      >
+                        {statusInfo.label}
+                      </span>
+                    )}
+                  </div>
+
                   {isAdmin && !isEditing && (
                     <div className={styles.newsActions}>
                       <button
@@ -458,6 +624,14 @@ const NewsSection = () => {
                           value={editData.title}
                           onChange={(e) => setEditData({...editData, title: e.target.value})}
                           placeholder="عنوان خبر"
+                        />
+                      </div>
+                      <div className={styles.formField}>
+                        <input
+                          type="text"
+                          value={editData.subtitle || ''}
+                          onChange={(e) => setEditData({...editData, subtitle: e.target.value})}
+                          placeholder="زیر عنوان"
                         />
                       </div>
                       <div className={styles.formField}>
@@ -518,7 +692,6 @@ const NewsSection = () => {
                             alt={item.title}
                             className={styles.newsImage}
                             onError={(e) => {
-                              // اگر تصویر بارگذاری نشد، سعی کن از گالری تصویر دیگری استفاده کن
                               if (item.images && item.images.length > 0) {
                                 for (const img of item.images) {
                                   const imgUrl = img.image_display || img.image || img.image_url
@@ -531,20 +704,11 @@ const NewsSection = () => {
                                   }
                                 }
                               }
-                              // اگر هیچ تصویری کار نکرد، یک placeholder نشان بده
                               e.target.style.display = 'none'
                               e.target.parentElement.querySelector('.no-image-placeholder')?.classList.remove('hidden')
                             }}
                           />
                         ) : (
-                          <div className={`${styles.noImagePlaceholder} no-image-placeholder`}>
-                            <ImageIcon size={48} />
-                            <span>بدون تصویر</span>
-                          </div>
-                        )}
-                        
-                        {/* Placeholder برای زمانی که تصویر وجود ندارد */}
-                        {!imageUrl && (
                           <div className={styles.noImagePlaceholder}>
                             <ImageIcon size={48} />
                             <span>بدون تصویر</span>
@@ -557,6 +721,12 @@ const NewsSection = () => {
                           <h3 className={styles.newsCardTitle}>
                             {item.title}
                           </h3>
+
+                          {item.subtitle && (
+                            <p className={styles.newsSubtitleText}>
+                              {item.subtitle}
+                            </p>
+                          )}
 
                           <div className={styles.newsExcerptWrapper}>
                             <p className={styles.newsExcerpt}>
@@ -578,6 +748,12 @@ const NewsSection = () => {
                               <span className={styles.badge}>
                                 <ImageIcon size={12} />
                                 {item.images.length}
+                              </span>
+                            )}
+                            {item.view_count > 0 && (
+                              <span className={styles.badge}>
+                                <Eye size={12} />
+                                {item.view_count}
                               </span>
                             )}
                           </div>
