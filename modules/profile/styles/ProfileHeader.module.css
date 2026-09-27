@@ -1,0 +1,562 @@
+/* ============================================
+   ProfileHeader - Light Theme Standard
+   ============================================ */
+
+.header {
+  position: relative;
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.3s ease;
+}
+
+.header:hover {
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* ============================================
+   پس‌زمینه گرادیانت بالای هدر
+   ============================================ */
+.headerBg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 100px;
+  background: linear-gradient(
+    135deg,
+    var(--primary-dark) 0%,
+    var(--primary) 50%,
+    var(--secondary) 100%
+  );
+  opacity: 0.9;
+}
+
+.headerBg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 20% 50%,
+    rgba(255, 255, 255, 0.25) 0%,
+    transparent 60%
+  );
+}
+
+/* ============================================
+   محتوای هدر
+   ============================================ */
+.headerContent {
+  position: relative;
+  padding: 10px 2rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+/* ============================================
+   آواتار
+   ============================================ */
+.avatarWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #ffffff;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+  background: #f5f5f7;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.avatar:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.avatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatarPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-family: var(--font-iran-bold);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   دکمه دوربین
+   ============================================ */
+.cameraBtn {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--macos-blue);
+  color: #ffffff;
+  border: 3px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.35);
+}
+
+.cameraBtn:hover:not(:disabled) {
+  background: var(--macos-blue-hover);
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.45);
+}
+
+.cameraBtn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.cameraBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.fileInput {
+  display: none;
+}
+
+/* ============================================
+   اطلاعات
+   ============================================ */
+.info {
+  flex: 1;
+  min-width: 0;
+  padding-top: 0.5rem;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1c1c1e;
+  font-family: var(--font-iran-bold);
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+/* ============================================
+   دکمه ویرایش
+   ============================================ */
+.editBtn {
+  padding: 0.5rem 1rem;
+  background: #ffffff;
+  color: var(--macos-blue);
+  border: 1.5px solid var(--macos-blue);
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.editBtn:hover {
+  background: var(--macos-blue);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+.editBtn:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   اطلاعات متنی
+   ============================================ */
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-iran);
+  padding: 0.2rem 0.6rem;
+  background: #f5f5f7;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.metaItem:hover {
+  background: #ebecef;
+  color: #1c1c1e;
+}
+
+.metaItem svg {
+  color: var(--primary-dark);
+  flex-shrink: 0;
+}
+
+/* ============================================
+   فرم ویرایش
+   ============================================ */
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: #f9f9fb;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 14px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.formGroup label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6b7280;
+  font-family: var(--font-iran);
+}
+
+.formGroup input {
+  padding: 0.55rem 0.75rem;
+  background: #ffffff;
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  color: #1c1c1e;
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.formGroup input::placeholder {
+  color: #b0b0b5;
+}
+
+.formGroup input:hover {
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.formGroup input:focus {
+  border-color: var(--macos-blue);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.12);
+}
+
+/* ============================================
+   دکمه‌های ذخیره و لغو
+   ============================================ */
+.formActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.saveBtn,
+.cancelBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.saveBtn {
+  background: var(--macos-green);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(52, 199, 89, 0.25);
+}
+
+.saveBtn:hover:not(:disabled) {
+  background: #2db84d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(52, 199, 89, 0.35);
+}
+
+.saveBtn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.cancelBtn {
+  background: #ffffff;
+  color: #4b5563;
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+}
+
+.cancelBtn:hover:not(:disabled) {
+  background: #f5f5f7;
+  color: #1c1c1e;
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.saveBtn:disabled,
+.cancelBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ============================================
+   پیام‌ها
+   ============================================ */
+.message {
+  margin-top: 0.75rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  animation: messageSlideIn 0.3s ease-out;
+}
+
+.msgSuccess {
+  background: rgba(52, 199, 89, 0.1);
+  color: #1a8f3a;
+  border: 1px solid rgba(52, 199, 89, 0.25);
+}
+
+.msgError {
+  background: rgba(255, 59, 48, 0.08);
+  color: #c0392b;
+  border: 1px solid rgba(255, 59, 48, 0.2);
+}
+
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   انیمیشن چرخش
+   ============================================ */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   ریسپانسیو - تبلت (768px)
+   ============================================ */
+@media (max-width: 768px) {
+  .headerContent {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 70px 1.25rem 1.5rem;
+  }
+
+  .avatar {
+    width: 90px;
+    height: 90px;
+  }
+
+  .avatarPlaceholder {
+    font-size: 1.5rem;
+  }
+
+  .name {
+    font-size: 1.25rem;
+  }
+
+  .nameRow {
+    justify-content: center;
+  }
+
+  .metaRow {
+    justify-content: center;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .info {
+    width: 100%;
+    padding-top: 0;
+  }
+}
+
+/* ============================================
+   ریسپانسیو - موبایل (480px)
+   ============================================ */
+@media (max-width: 480px) {
+  .header {
+    border-radius: 16px;
+  }
+
+  .headerBg {
+    height: 85px;
+  }
+
+  .headerContent {
+    padding: 65px 1rem 1.25rem;
+    gap: 1rem;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+    border-width: 2.5px;
+  }
+
+  .avatarPlaceholder {
+    font-size: 1.35rem;
+  }
+
+  .cameraBtn {
+    width: 28px;
+    height: 28px;
+    bottom: 3px;
+    left: 3px;
+    border-width: 2.5px;
+  }
+
+  .cameraBtn svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .name {
+    font-size: 1.1rem;
+  }
+
+  .editBtn {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.75rem;
+  }
+
+  .metaRow {
+    gap: 0.6rem;
+    font-size: 0.78rem;
+  }
+
+  .metaItem {
+    padding: 0.18rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .metaItem svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .editForm {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .saveBtn,
+  .cancelBtn {
+    flex: 1;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.76rem;
+  }
+
+  .message {
+    font-size: 0.75rem;
+    padding: 0.55rem 0.85rem;
+  }
+}
+
+/* ============================================
+   ریسپانسیو - موبایل خیلی کوچک (360px)
+   ============================================ */
+@media (max-width: 360px) {
+  .headerContent {
+    padding: 60px 0.75rem 1rem;
+  }
+
+  .avatar {
+    width: 72px;
+    height: 72px;
+  }
+
+  .avatarPlaceholder {
+    font-size: 1.2rem;
+  }
+
+  .name {
+    font-size: 1rem;
+  }
+
+  .metaItem {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.45rem;
+  }
+
+  .metaItem svg {
+    width: 11px;
+    height: 11px;
+  }
+}

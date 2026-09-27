@@ -1,0 +1,76 @@
+/* ============================================
+   ProfileTabs - Light Theme
+   ============================================ */
+
+.tabsWrapper {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 0.4rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabsWrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  min-width: max-content;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.1rem;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  color: #6b7280;
+  font-size: 0.82rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tab svg {
+  color: #8e8e93;
+  transition: color 0.2s ease;
+}
+
+.tab:hover {
+  background: #f5f5f7;
+  color: #1c1c1e;
+}
+
+.tab:hover svg {
+  color: #4b5563;
+}
+
+.tab.active {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(251, 195, 0, 0.3);
+}
+
+.tab.active svg {
+  color: #ffffff;
+}
+
+@media (max-width: 480px) {
+  .tab {
+    padding: 0.55rem 0.85rem;
+    font-size: 0.75rem;
+  }
+
+  .tab svg {
+    width: 14px;
+    height: 14px;
+  }
+}

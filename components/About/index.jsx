@@ -85,7 +85,6 @@ const AboutContent = () => {
       <div className="container">
         {/* Header */}
         <div className={styles.header}>
-        
           <h1 className={styles.title}>{data.title}</h1>
           <p className={styles.subtitle}>{data.subtitle}</p>
         </div>
@@ -104,29 +103,29 @@ const AboutContent = () => {
                 </p>
               ))}
             </div>
-<div className={styles.imageWrapper}>
-  <Image
-    src="/images/bglogo.jpg"
-    alt="آریا استاد هلدینگ"
-    width={900}
-    height={650}
-    className={styles.contentImage}
-    priority
-  />
-</div>
+            <div className={styles.imageWrapper}>
+              <Image
+                src="/images/bglogo.jpeg"
+                alt="سلنیرو - کاریابی تخصصی فروش و بازاریابی"
+                width={900}
+                height={650}
+                className={styles.contentImage}
+                priority
+              />
+            </div>
           </div>
 
           {/* بخش دوم: سابقه و استانداردها - تصویر سمت چپ */}
           <div className={`${styles.sectionBlock} ${styles.imageLeft}`}>
-  <div className={styles.imageWrapper}>
-  <Image
-    src="/images/lsf.jpeg"
-    alt="سازه سبک فولادی LSF"
-    width={900}
-    height={650}
-    className={styles.contentImage}
-  />
-</div>
+            <div className={styles.imageWrapper}>
+              <Image
+                src="/images/sell.jpeg"
+                alt="تعهد به کیفیت و شفافیت سلنیرو"
+                width={900}
+                height={650}
+                className={styles.contentImage}
+              />
+            </div>
             <div className={styles.textContent}>
               <h2 className={styles.sectionTitle}>
                 {data.section2.title}
@@ -139,14 +138,10 @@ const AboutContent = () => {
             </div>
           </div>
 
-                   
-     
-  
-
           {/* آمار کلیدی */}
           <div className={styles.statsSection}>
             <h3 className={styles.sectionTitle}>
-              {language === 'fa' ? ' آمار کلیدی' : ' Key Statistics'}
+              {language === 'fa' ? 'آمار کلیدی' : 'Key Statistics'}
             </h3>
             <div className={styles.statsGrid}>
               {data.stats.map((stat, index) => (
@@ -161,7 +156,7 @@ const AboutContent = () => {
             </div>
           </div>
 
-          {/* بخش‌های اصلی هلدینگ */}
+          {/* بخش‌های اصلی */}
           <div className={styles.sectionsSection}>
             <h3 className={styles.sectionTitle}>{data.sections.title}</h3>
             <div className={styles.sectionsGrid}>
@@ -177,16 +172,10 @@ const AboutContent = () => {
             </div>
           </div>
 
-
-
-
-
-
-
-          {/* افتخارات و گواهینامه‌ها */}
+          {/* افتخارات و مزیت‌ها */}
           <div className={styles.achievementsSection}>
             <h3 className={styles.sectionTitle}>
-              {language === 'fa' ? ' افتخارات و گواهینامه‌ها' : ' Achievements & Certifications'}
+              {language === 'fa' ? 'مزیت‌های سلنیرو' : 'Sellniroo Advantages'}
             </h3>
             <div className={styles.achievementsGrid}>
               {data.achievements.items.map((item, index) => (

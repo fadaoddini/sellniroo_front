@@ -1,0 +1,98 @@
+/* ============================================
+   EmptyState - Light Theme
+   ============================================ */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px dashed rgba(0, 0, 0, 0.12);
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.iconWrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(251, 195, 0, 0.12);
+  color: var(--primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  opacity: 0.9;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1c1c1e;
+  font-family: var(--font-iran-bold);
+  margin: 0;
+}
+
+.description {
+  font-size: 0.82rem;
+  color: #6b7280;
+  font-family: var(--font-iran);
+  line-height: 1.7;
+  max-width: 400px;
+  margin: 0;
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1.3rem;
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-family: var(--font-iran);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+  box-shadow: 0 4px 12px rgba(251, 195, 0, 0.25);
+}
+
+.actionBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(251, 195, 0, 0.35);
+}
+
+.actionBtn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 480px) {
+  .empty {
+    padding: 3rem 1.25rem;
+  }
+
+  .iconWrapper {
+    width: 64px;
+    height: 64px;
+  }
+
+  .iconWrapper svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .title {
+    font-size: 0.9rem;
+  }
+
+  .description {
+    font-size: 0.78rem;
+  }
+}

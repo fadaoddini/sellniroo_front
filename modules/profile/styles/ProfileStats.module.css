@@ -1,0 +1,193 @@
+/* ============================================
+   ProfileStats - Light Theme
+   ============================================ */
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.statCard {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.25rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.statCard::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  filter: blur(45px);
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.statCard.primary::before {
+  background: var(--primary);
+}
+.statCard.secondary::before {
+  background: var(--secondary);
+}
+.statCard.green::before {
+  background: var(--macos-green);
+}
+.statCard.orange::before {
+  background: var(--macos-orange);
+}
+
+.statCard:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.09);
+}
+
+.statHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.statIconWrapper {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.primary .statIconWrapper {
+  background: rgba(251, 195, 0, 0.15);
+  color: var(--primary-dark);
+}
+.secondary .statIconWrapper {
+  background: rgba(0, 107, 207, 0.12);
+  color: var(--secondary);
+}
+.green .statIconWrapper {
+  background: rgba(52, 199, 89, 0.12);
+  color: #2db84d;
+}
+.orange .statIconWrapper {
+  background: rgba(255, 149, 0, 0.12);
+  color: var(--macos-orange);
+}
+
+.statTitleWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.statTitleWrapper h3 {
+  font-size: 0.72rem;
+  color: #6b7280;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1c1c1e;
+  font-family: var(--font-iran-bold);
+  line-height: 1;
+  letter-spacing: -0.5px;
+}
+
+.subItems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.subItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  color: #6b7280;
+  font-family: var(--font-iran);
+}
+
+.subItem svg {
+  color: #8e8e93;
+  flex-shrink: 0;
+}
+
+.subLabel {
+  flex: 1;
+}
+
+.subValue {
+  font-weight: 700;
+  color: #1c1c1e;
+  font-family: var(--font-iran-bold);
+}
+
+.extraStats {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.extraItem {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  color: #6b7280;
+  font-family: var(--font-iran);
+}
+
+.extraItem svg {
+  color: #8e8e93;
+}
+
+/* ریسپانسیو */
+@media (max-width: 1024px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statValue {
+    font-size: 1.3rem;
+  }
+
+  .statCard {
+    padding: 1rem;
+  }
+}

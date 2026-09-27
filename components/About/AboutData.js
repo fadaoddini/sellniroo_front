@@ -2,153 +2,157 @@
 
 export const aboutData = {
   fa: {
-    title: 'درباره هلدینگ آریا اِستاد',
-    subtitle: 'پیشرو در صنعت ساخت‌وساز با بیش از ۲۵ سال تجربه',
+    title: 'درباره سلنیرو',
+    subtitle: 'کاریابی تخصصی فروش و بازاریابی در ایران',
     
     // بخش اول: معرفی اصلی (تصویر سمت راست)
     section1: {
-      title: 'معرفی هلدینگ',
+      title: 'معرفی سلنیرو',
       paragraphs: [
-        'هلدینگ آریا استاد یک گروه صنعتی پیشرو با بیش از ۲۵ سال تجربه در طراحی، تولید و اجرای ساختمان‌های پیش‌ساخته با استفاده از فناوری LSF است. این هلدینگ مالک دو شرکت بزرگ: شرکت تولیدی فولاد رسیس استاد و شرکت آریاسازه نوین شریعت می‌باشد.',
-        'با تکیه بر شبکه توزیع گسترده، هلدینگ آریا استاد از استعدادهای خلاق و تیم‌های نوآور برای ارائه خدمات برجسته در زمینه‌های تحقیق، مشاوره، طراحی، مدیریت پروژه و مهندسی در پروژه‌های معماری و صنعتی در سراسر ایران بهره می‌برد.',
-        'تلاش‌های این هلدینگ منجر به اجرای موفق پروژه‌های ساختمانی شده و گرید ۲ انبوه‌سازی از سازمان مسکن و شهرسازی و گرید ابنیه و راه‌سازی از سازمان برنامه و بودجه را کسب کرده است.'
+        'سلنیرو یک پلتفرم تخصصی کاریابی در حوزه فروش و بازاریابی است که با هدف اتصال کارجویان مستعد به فرصت‌های شغلی معتبر و کارفرمایان در جستجوی نیروهای متخصص طراحی شده است. ما با تمرکز بر نیازهای واقعی بازار کار فروش و بازاریابی، بستری امن، سریع و کارآمد را برای جستجوی شغل و جذب نیرو فراهم کرده‌ایم.',
+        'در سلنیرو، هزاران آگهی استخدام فروشنده، بازاریاب، ویزیتور، کارشناس فروش، مدیر فروش و سایر نقش‌های تخصصی این حوزه منتشر می‌شود. کارجویان می‌توانند بر اساس شهر، نوع همکاری، سطح حقوق و مزایا و سایر فیلترهای حرفه‌ای، مناسب‌ترین فرصت شغلی را پیدا کنند.',
+        'کارفرمایان و شرکت‌ها نیز می‌توانند با ثبت آگهی استخدام رایگان، در سریع‌ترین زمان ممکن نیروی فروش و بازاریابی مورد نیاز خود را جذب کنند. سلنیرو با ارائه ابزارهای پیشرفته جستجو و دسته‌بندی دقیق مشاغل، فرآیند استخدام را برای هر دو طرف ساده‌تر و سریع‌تر کرده است.'
       ],
       image: {
-        src: '/images/about/factory.jpg',
-        alt: 'کارخانه تولیدی آریا استاد',
-        caption: 'کارخانه تولیدی پیشرفته آریا استاد'
+        src: '/images/about/sellniroo-team.jpg',
+        alt: 'تیم سلنیرو',
+        caption: 'تیم متخصص سلنیرو'
       }
     },
     
     // بخش دوم: سابقه و استانداردها (تصویر سمت چپ)
     section2: {
-      title: 'سابقه درخشان و استانداردهای بین‌المللی',
+      title: 'تعهد ما به کیفیت و شفافیت',
       paragraphs: [
-        'با سابقه‌ای درخشان و پایبندی به استانداردهای بین‌المللی، هلدینگ آریا استاد نقش مهمی در توسعه فناوری‌های نوین ساخت‌وساز در ایران و کشورهای همسایه ایفا کرده است.'
+        'سلنیرو با تعهد به شفافیت، اعتبار و کیفیت، تمامی آگهی‌های استخدام را بررسی و اعتبارسنجی می‌کند تا کارجویان با اطمینان بیشتری اقدام به ارسال رزومه کنند. ما معتقدیم که پیدا کردن شغل مناسب و جذب نیروی کارآمد باید ساده، سریع و قابل اعتماد باشد.'
       ],
       image: {
-        src: '/images/about/standards.jpg',
-        alt: 'استانداردهای بین‌المللی آریا استاد',
-        caption: 'پایبندی به استانداردهای بین‌المللی'
+        src: '/images/about/sellniroo-quality.jpg',
+        alt: 'کیفیت و شفافیت سلنیرو',
+        caption: 'تعهد به شفافیت و کیفیت'
       }
     },
 
     stats: [
-      { value: '۲۵+', label: 'سال تجربه', icon: 'Calendar' },
-      { value: '۱۷۰۰+', label: 'پروژه موفق', icon: 'CheckCircle' },
-      { value: '۵', label: 'کارخانه فعال', icon: 'Factory' },
-      { value: '۱۰۰+', label: 'همکار متخصص', icon: 'Users' },
-      { value: '۹۶%', label: 'رضایت مشتری', icon: 'Award' }
+      { value: '۱۰۰۰+', label: 'آگهی استخدام فعال', icon: 'Briefcase' },
+      { value: '۵۰۰+', label: 'شرکت و کارفرما', icon: 'Building2' },
+      { value: '۱۰۰۰۰+', label: 'کارجوی فعال', icon: 'Users' },
+      { value: '۹۵%', label: 'رضایت کاربران', icon: 'Award' },
+      { value: '۲۴/۷', label: 'پشتیبانی', icon: 'Shield' }
     ],
+    
     sections: {
-      title: 'بخش‌های اصلی هلدینگ',
+      title: 'خدمات اصلی سلنیرو',
       items: [
         {
-          title: 'مهندسی',
-          desc: 'طراحی و محاسبات سازه‌های LSF با استفاده از نرم‌افزارهای پیشرفته و استانداردهای بین‌المللی',
+          title: 'جستجوی شغل',
+          desc: 'جستجوی پیشرفته در بین هزاران آگهی استخدام فروش و بازاریابی با فیلترهای دقیق شهر، حقوق، نوع همکاری و سابقه کاری',
           icon: 'Target'
         },
         {
-          title: 'فنی',
-          desc: 'اجرای تخصصی سازه‌های سبک فولادی با تیم‌های فنی مجرب و تجهیزات مدرن',
+          title: 'ثبت آگهی استخدام',
+          desc: 'ثبت آگهی استخدام رایگان برای کارفرمایان و جذب سریع نیروی فروش، بازاریاب و ویزیتور متخصص',
           icon: 'Zap'
         },
         {
-          title: 'طراحی و تولید',
-          desc: 'تولید انبوه مقاطع LSF با بالاترین کیفیت و طراحی متناسب با نیاز پروژه',
+          title: 'رزومه‌سازی حرفه‌ای',
+          desc: 'ساخت رزومه آنلاین و حرفه‌ای برای کارجویان جهت افزایش شانس استخدام در فرصت‌های شغلی',
           icon: 'Building2'
         },
         {
-          title: 'اجرا و پشتیبانی',
-          desc: 'مدیریت اجرای پروژه‌ها و ارائه خدمات پشتیبانی پس از ساخت',
+          title: 'مشاوره شغلی',
+          desc: 'ارائه مشاوره تخصصی برای انتخاب مسیر شغلی مناسب در حوزه فروش و بازاریابی',
           icon: 'Briefcase'
         }
       ]
     },
+    
     achievements: {
-      title: 'افتخارات و گواهینامه‌ها',
+      title: 'مزیت‌های سلنیرو',
       items: [
-        { label: 'گرید ۵ ابنیه', desc: '-' },
-        { label: 'گرید ۲ انبوه‌سازی', desc: '-' },
-        { label: 'گرید راه‌سازی', desc: '-' },
-        { label: 'گرید ۱ مدیریت', desc: '-' },
-
+        { label: 'تخصصی‌ترین سایت کاریابی فروش و بازاریابی', desc: '-' },
+        { label: 'آگهی‌های استخدام معتبر و اعتبارسنجی شده', desc: '-' },
+        { label: 'ثبت آگهی استخدام رایگان برای کارفرمایان', desc: '-' },
+        { label: 'رابط کاربری ساده و سریع', desc: '-' }
       ]
     }
   },
+  
   en: {
-    title: 'About Aria Stud Holding',
-    subtitle: 'Pioneer in Construction Industry with Over 25 Years of Experience',
+    title: 'About Sellniroo',
+    subtitle: 'Specialized Sales & Marketing Job Board in Iran',
     
     // Section 1: Main Introduction (image on right)
     section1: {
-      title: 'Holding Introduction',
+      title: 'Introduction to Sellniroo',
       paragraphs: [
-        'Aria Stud Holding is a leading industrial group with over 25 years of experience in design, production, and execution of prefabricated buildings using LSF technology. The holding owns two major companies: Resis Steel Production Company and Ariasaze Novin Shariat Company.',
-        'Leveraging an extensive distribution network, Aria Stud Holding harnesses creative talents and innovative teams to deliver outstanding services in research, consulting, design, project management, and engineering for architectural and industrial projects across Iran.',
-        'The holding\'s efforts have led to successful implementation of construction projects, earning Grade 2 Mass Construction from the Housing and Urban Development Organization and Grade 1 Building and Road Construction from the Plan and Budget Organization.'
+        'Sellniroo is a specialized job board platform in the field of sales and marketing, designed to connect talented job seekers with credible career opportunities and employers seeking specialized professionals. With a focus on the real needs of the sales and marketing job market, we provide a secure, fast, and efficient platform for job search and recruitment.',
+        'On Sellniroo, thousands of job postings for sales representatives, marketers, sales specialists, sales managers, and other specialized roles are published. Job seekers can find the most suitable career opportunities based on city, employment type, salary level, benefits, and other professional filters.',
+        'Employers and companies can also post free job ads and recruit the sales and marketing workforce they need in the shortest possible time. Sellniroo simplifies and accelerates the recruitment process for both parties with advanced search tools and precise job categorization.'
       ],
       image: {
-        src: '/images/about/factory.jpg',
-        alt: 'Aria Stud Factory',
-        caption: 'Aria Stud Advanced Production Factory'
+        src: '/images/about/sellniroo-team.jpg',
+        alt: 'Sellniroo Team',
+        caption: 'Sellniroo Expert Team'
       }
     },
     
     // Section 2: Track Record & Standards (image on left)
     section2: {
-      title: 'Brilliant Track Record & International Standards',
+      title: 'Our Commitment to Quality & Transparency',
       paragraphs: [
-        'With a brilliant track record and commitment to international standards, Aria Stud Holding has played a significant role in developing modern construction technologies in Iran and neighboring countries.'
+        'Sellniroo is committed to transparency, credibility, and quality by reviewing and validating all job postings so that job seekers can apply with greater confidence. We believe that finding the right job and recruiting efficient staff should be simple, fast, and reliable.'
       ],
       image: {
-        src: '/images/about/standards.jpg',
-        alt: 'International Standards',
-        caption: 'Commitment to International Standards'
+        src: '/images/about/sellniroo-quality.jpg',
+        alt: 'Sellniroo Quality & Transparency',
+        caption: 'Commitment to Transparency & Quality'
       }
     },
 
     stats: [
-      { value: '25+', label: 'Years Experience', icon: 'Calendar' },
-      { value: '1700+', label: 'Successful Projects', icon: 'CheckCircle' },
-      { value: '5', label: 'Active Factories', icon: 'Factory' },
-      { value: '100+', label: 'Specialized Colleagues', icon: 'Users' },
-      { value: '96%', label: 'Client Satisfaction', icon: 'Award' }
+      { value: '1000+', label: 'Active Job Postings', icon: 'Briefcase' },
+      { value: '500+', label: 'Companies & Employers', icon: 'Building2' },
+      { value: '10000+', label: 'Active Job Seekers', icon: 'Users' },
+      { value: '95%', label: 'User Satisfaction', icon: 'Award' },
+      { value: '24/7', label: 'Support', icon: 'Shield' }
     ],
+    
     sections: {
-      title: 'Main Divisions of the Holding',
+      title: 'Main Services of Sellniroo',
       items: [
         {
-          title: 'Engineering',
-          desc: 'Design and structural calculations of LSF using advanced software and international standards',
+          title: 'Job Search',
+          desc: 'Advanced search among thousands of sales and marketing job postings with precise filters for city, salary, employment type, and work experience',
           icon: 'Target'
         },
         {
-          title: 'Technical',
-          desc: 'Professional execution of lightweight steel structures with experienced technical teams and modern equipment',
+          title: 'Post a Job',
+          desc: 'Free job posting for employers and rapid recruitment of specialized sales, marketing, and sales representative staff',
           icon: 'Zap'
         },
         {
-          title: 'Design & Production',
-          desc: 'Mass production of LSF profiles with highest quality and design tailored to project needs',
+          title: 'Professional Resume Builder',
+          desc: 'Create an online professional resume for job seekers to increase their chances of employment in career opportunities',
           icon: 'Building2'
         },
         {
-          title: 'Execution & Support',
-          desc: 'Project management and post-construction support services',
+          title: 'Career Counseling',
+          desc: 'Providing specialized counseling for choosing the right career path in sales and marketing',
           icon: 'Briefcase'
         }
       ]
     },
-   achievements: {
-    title: 'Achievements & Certifications',
-  items: [
-    { label: 'Grade 5 Building Construction', desc: '-' },
-    { label: 'Grade 2 Mass Construction', desc: '-' },
-    { label: 'Grade Road Construction', desc: '-' },
-    { label: 'Grade 1 Management', desc: '-' }
-  ]
-}
+    
+    achievements: {
+      title: 'Sellniroo Advantages',
+      items: [
+        { label: 'The most specialized sales & marketing job board', desc: '-' },
+        { label: 'Credible and validated job postings', desc: '-' },
+        { label: 'Free job posting for employers', desc: '-' },
+        { label: 'Simple and fast user interface', desc: '-' }
+      ]
+    }
   }
 }
 
