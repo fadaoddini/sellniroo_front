@@ -2,106 +2,122 @@
 
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { Briefcase } from 'lucide-react'
 import { useFilters } from './hooks/useFilters'
 import { usePagination } from './hooks/usePagination'
-import { useDialog } from './hooks/useDialog'
-import { jobListings } from './constants/jobData'
 import FiltersSection from './components/FiltersSection/FiltersSection'
-import FilterDialog from './components/FilterDialog/FilterDialog'
 import JobListings from './components/JobListings/JobListings'
 import Pagination from './components/Pagination/Pagination'
 import ViewToggle from './components/ViewToggle/ViewToggle'
 import AdTypeTabs from './components/AdTypeTabs/AdTypeTabs'
 import styles from './AllBoxItem.module.css'
 
-const AllBoxItem = () => {
+const AllBoxItem = ({ initialFilters = {} }) => {
   const ITEMS_PER_PAGE = 10
 
-  // State برای نحوه نمایش
+  // ============================================
+  // ✅ State های نمایش
+  // ============================================
   const [viewMode, setViewMode] = useState('grid-2')
-  
-  // State برای تب فعال
-  const [activeTab, setActiveTab] = useState('all')
 
-  // استفاده از هوک‌های سفارشی
+  // ✅ تب فعال از URL یا 'all'
+  const [activeTab, setActiveTab] = useState(() => {
+    if (initialFilters.adType === 'hiring') return 'hiring'
+    if (initialFilters.adType === 'seeking') return 'seeking'
+    return 'all'
+  })
+
+  // ============================================
+  // ✅ هوک فیلترها (داینامیک از API + آبشاری + URL)
+  // ============================================
   const {
+    // فیلترها
     filters,
+    filterOptions,
+    optionsLoading,
+    activeFilterCount,
+
+    // ✅ آبشاری
+    availableCities,
+    availableNeighborhoods,
+    allProvinces,
+
+    // آگهی‌ها
     filteredJobs,
+    jobsLoading,
+    jobsError,
+    totalCount,
+
+    // صفحه‌بندی
     currentPage,
     setCurrentPage,
+
+    // مرتب‌سازی
     sortBy,
     setSortBy,
+
+    // توابع
     updateFilter,
-    clearAllFilters
-  } = useFilters(
-    { 
-      adType: '',
-      neighborhood: '',
-      cooperationType: '',
-      jobTitle: '',
-      isVerified: false,
-      features: []
-    },
-    jobListings
+    clearFilter,
+    clearAllFilters,
+  } = useFilters(initialFilters)
+
+  // ============================================
+  // ✅ فیلتر بر اساس تب فعال
+  // ============================================
+  const tabFilteredJobs = useMemo(() => {
+    if (activeTab === 'all') return filteredJobs
+    return filteredJobs.filter((job) => job.type === activeTab)
+  }, [filteredJobs, activeTab])
+
+  // ============================================
+  // ✅ صفحه‌بندی
+  // ============================================
+  const { totalItems, totalPages, currentItems, goToPage } = usePagination(
+    tabFilteredJobs,
+    ITEMS_PER_PAGE,
+    currentPage
   )
 
-  // فیلتر بر اساس تب انتخاب شده
-  const getFilteredByTab = () => {
-    if (activeTab === 'all') {
-      return filteredJobs
+  // ============================================
+  // ✅ آمار تب‌ها
+  // ============================================
+  const hiringCount = useMemo(
+    () => filteredJobs.filter((job) => job.type === 'hiring').length,
+    [filteredJobs]
+  )
+
+  const seekingCount = useMemo(
+    () => filteredJobs.filter((job) => job.type === 'seeking').length,
+    [filteredJobs]
+  )
+
+  // ============================================
+  // ✅ هندلرها
+  // ============================================
+
+  const handleFilterChange = (key, value) => {
+    updateFilter(key, value)
+  }
+
+  const handleFilterClear = (key) => {
+    clearFilter(key)
+  }
+
+  // ✅ تغییر تب + به‌روزرسانی URL
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId)
+    setCurrentPage(1)
+
+    // اگر تب hiring/seeking است، فیلتر type را ست کن
+    if (tabId === 'hiring') {
+      updateFilter('adType', 'hiring')
+    } else if (tabId === 'seeking') {
+      updateFilter('adType', 'seeking')
+    } else {
+      updateFilter('adType', '')
     }
-    return filteredJobs.filter(job => job.type === activeTab)
-  }
-
-  const tabFilteredJobs = getFilteredByTab()
-
-  const {
-    totalItems,
-    totalPages,
-    currentItems,
-    goToPage
-  } = usePagination(tabFilteredJobs, ITEMS_PER_PAGE, currentPage)
-
-  const {
-    isOpen,
-    selectedKey,
-    tempValue,
-    openDialog,
-    closeDialog,
-    selectOption,
-    setTempValue
-  } = useDialog()
-
-  // آمار برای تب‌ها
-  const hiringCount = filteredJobs.filter(job => job.type === 'hiring').length
-  const seekingCount = filteredJobs.filter(job => job.type === 'seeking').length
-
-  const handleFilterClick = (filterKey) => {
-    openDialog(filterKey, filters[filterKey] || '')
-  }
-
-  const handleConfirm = () => {
-    if (selectedKey) {
-      updateFilter(selectedKey, tempValue)
-    }
-    closeDialog()
-  }
-
-  const handleClear = () => {
-    if (selectedKey) {
-      updateFilter(selectedKey, '')
-      setTempValue('')
-    }
-  }
-
-  const handlePageChange = (page) => {
-    goToPage(page, setCurrentPage)
-  }
-
-  const handleVerifiedToggle = (value) => {
-    updateFilter('isVerified', value)
   }
 
   const handleSortChange = (value) => {
@@ -109,26 +125,61 @@ const AllBoxItem = () => {
     setCurrentPage(1)
   }
 
-  const handleTabChange = (tabId) => {
-    setActiveTab(tabId)
+  const handleVerifiedToggle = (value) => {
+    updateFilter('isVerified', value)
+  }
+
+  const handleFeatureToggle = (featureId) => {
+    const current = filters.features || []
+    const updated = current.includes(featureId)
+      ? current.filter((id) => id !== featureId)
+      : [...current, featureId]
+    updateFilter('features', updated)
+  }
+
+  const handleSearchSubmit = (value) => {
+    updateFilter('q', value)
     setCurrentPage(1)
   }
 
+  const handlePageChange = (page) => {
+    goToPage(page, setCurrentPage)
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+
+  // ✅ حذف همه فیلترها + بازگشت تب به all
+  const handleClearAll = () => {
+    clearAllFilters()
+    setActiveTab('all')
+  }
+
+  // ============================================
+  // ✅ رندر
+  // ============================================
   return (
     <div className={styles.allBoxItem}>
       <div className={styles.container}>
-        {/* بخش فیلترها */}
         <FiltersSection
           filters={filters}
-          onFilterClick={handleFilterClick}
-          onClearAll={clearAllFilters}
-          onVerifiedToggle={handleVerifiedToggle}
-          onSortChange={handleSortChange}
+          filterOptions={filterOptions}
+          optionsLoading={optionsLoading}
+          activeFilterCount={activeFilterCount}
+          allProvinces={allProvinces}
+          availableCities={availableCities}
+          availableNeighborhoods={availableNeighborhoods}
           sortBy={sortBy}
+          onFilterChange={handleFilterChange}
+          onFilterClear={handleFilterClear}
+          onClearAll={handleClearAll}
+          onVerifiedToggle={handleVerifiedToggle}
+          onFeatureToggle={handleFeatureToggle}
+          onSortChange={handleSortChange}
+          onSearchSubmit={handleSearchSubmit}
         />
 
         <div className={styles.mainContent}>
-          {/* بخش هدر با تب‌ها */}
           <div className={styles.listingsHeader}>
             <div className={styles.listingsTitleWrapper}>
               <h3 className={styles.listingsTitle}>
@@ -136,12 +187,14 @@ const AllBoxItem = () => {
                 <span>آگهی‌های شغلی</span>
               </h3>
               <span className={styles.listingsCount}>
-                {totalItems} آگهی
+                {totalCount > 0
+                  ? `${totalCount.toLocaleString('fa-IR')} آگهی`
+                  : 'در حال بارگذاری...'}
               </span>
             </div>
-            
+
             <div className={styles.headerControls}>
-              <AdTypeTabs 
+              <AdTypeTabs
                 activeTab={activeTab}
                 onTabChange={handleTabChange}
                 hiringCount={hiringCount}
@@ -151,41 +204,34 @@ const AllBoxItem = () => {
             </div>
           </div>
 
-          {/* بخش آگهی‌ها */}
-          <JobListings 
-            jobs={currentItems} 
+          <JobListings
+            jobs={currentItems}
             totalItems={totalItems}
             viewMode={viewMode}
+            loading={jobsLoading}
+            error={jobsError}
           >
-            {currentItems.length === 0 && (
-              <button className={styles.emptyResetBtn} onClick={clearAllFilters}>
+            {!jobsLoading && currentItems.length === 0 && (
+              <button
+                className={styles.emptyResetBtn}
+                onClick={handleClearAll}
+              >
                 حذف همه فیلترها
               </button>
             )}
           </JobListings>
 
-          {/* صفحه‌بندی */}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            itemsPerPage={ITEMS_PER_PAGE}
-            onPageChange={handlePageChange}
-          />
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={ITEMS_PER_PAGE}
+              onPageChange={handlePageChange}
+            />
+          )}
         </div>
       </div>
-
-      {/* دیالوگ فیلتر */}
-      <FilterDialog
-        isOpen={isOpen}
-        selectedKey={selectedKey}
-        tempValue={tempValue}
-        onSelectOption={selectOption}
-        onConfirm={handleConfirm}
-        onClear={handleClear}
-        onClose={closeDialog}
-        filters={filters}
-      />
     </div>
   )
 }

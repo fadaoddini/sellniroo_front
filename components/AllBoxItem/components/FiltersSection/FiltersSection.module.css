@@ -1,17 +1,23 @@
 /* ============================================
-   بخش فیلترها
+   src/components/AllBoxItem/components/FiltersSection/FiltersSection.module.css
    ============================================ */
 
+/* ============================================
+   بخش اصلی فیلترها
+   ============================================ */
 .filtersSection {
   position: relative;
   align-self: start;
-  background: var(--white);
+  background: var(--white, #fff);
   border-radius: 16px;
   padding: 1.5rem;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
+/* ============================================
+   هدر فیلترها
+   ============================================ */
 .filtersHeader {
   display: flex;
   justify-content: space-between;
@@ -33,123 +39,305 @@
 }
 
 .filtersTitle svg {
-  color: var(--primary-dark);
+  color: var(--primary-dark, #e67e22);
+}
+
+.filterBadge {
+  background: var(--primary-dark, #e67e22);
+  color: #fff;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-right: 6px;
+  min-width: 20px;
+  text-align: center;
 }
 
 .clearAllBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   background: transparent;
   border: none;
   color: #999;
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: 'iran', Tahoma, Arial, sans-serif;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
 }
 
 .clearAllBtn:hover {
-  color: var(--primary-dark);
-  background: rgba(230, 126, 34, 0.06);
+  color: var(--primary-dark, #e67e22);
+  background: rgba(230, 126, 34, 0.08);
 }
 
-.filtersList {
+/* ============================================
+   جستجو
+   ============================================ */
+.searchFilterForm {
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  gap: 6px;
+  margin-bottom: 16px;
 }
 
-.filterItem {
-  position: relative;
-}
-
-.filterButton {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0.6rem 0.8rem;
-  background: var(--bg-main);
-  border: 1.5px solid transparent;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: 'iran', Tahoma, Arial, sans-serif;
-}
-
-.filterButton:hover {
-  background: var(--primary);
-}
-
-.filterButton:active {
-  transform: scale(0.98);
-}
-
-.filterButton.hasValue {
-  border-color: var(--primary-dark);
-  background: rgba(230, 126, 34, 0.06);
-}
-
-.filterButton.hasValue .filterValue {
-  color: var(--primary-dark);
-  font-weight: 500;
-}
-
-.filterLabel {
-  font-size: 0.7rem;
-  color: #999;
-  font-weight: 400;
-}
-
-.filterValue {
-  font-size: 0.7rem;
-  color: var(--text);
-  font-weight: 500;
+.searchFilterInput {
   flex: 1;
-  text-align: center;
-  margin: 0 0.3rem;
-  transition: color 0.2s ease;
+  padding: 10px 12px;
+  border: 1.5px solid #e8e8ea;
+  border-radius: 8px;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  font-size: 0.75rem;
+  color: #333;
+  background: #fff;
+  outline: none;
+  transition: all 0.2s ease;
+  direction: rtl;
 }
 
-.filterButton svg {
-  color: #999;
-  transition: transform 0.3s ease;
-  flex-shrink: 0;
+.searchFilterInput::placeholder {
+  color: #aaa;
 }
 
+.searchFilterInput:focus {
+  border-color: var(--primary-dark, #e67e22);
+  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+}
+
+/* ✅ دکمه جستجو (فقط آیکون) */
 .searchFilterBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  width: 100%;
-  margin-top: 1.5rem;
-  padding: 0.7rem 1rem;
-  background: var(--primary-dark);
-  color: white;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  background: var(--primary-dark, #e67e22);
+  color: #fff;
   border: none;
   border-radius: 8px;
-  font-size: 0.8rem;
-  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: 'iran', Tahoma, Arial, sans-serif;
+  flex-shrink: 0;
 }
 
 .searchFilterBtn:hover {
-  background: var(--secondary-dark);
+  background: var(--secondary-dark, #d35400);
   transform: translateY(-1px);
-  box-shadow: 0 2px 12px rgba(230, 126, 34, 0.3);
+  box-shadow: 0 2px 8px rgba(230, 126, 34, 0.3);
 }
 
 .searchFilterBtn:active {
-  transform: scale(0.98);
+  transform: scale(0.96);
 }
 
 /* ============================================
-   ریسپانسیو فیلترها
+   ✅ فیلترهای آبشاری (استان → شهر → محله)
    ============================================ */
+.cascadingFilters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  background: #f9f9fb;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #f0f0f2;
+}
 
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filterGroupLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #555;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+}
+
+.filterGroupLabel svg {
+  color: var(--primary-dark, #e67e22);
+}
+
+.filterSelect {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid #e8e8ea;
+  border-radius: 8px;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  font-size: 0.75rem;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  direction: rtl;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: left 12px center;
+  padding-left: 32px;
+}
+
+.filterSelect:hover:not(:disabled) {
+  border-color: var(--primary-dark, #e67e22);
+}
+
+.filterSelect:focus {
+  border-color: var(--primary-dark, #e67e22);
+  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+}
+
+.filterSelect:disabled {
+  background-color: #f5f5f7;
+  color: #aaa;
+  cursor: not-allowed;
+  opacity: 0.7;
+  background-image: none;
+}
+
+/* ============================================
+   سایر فیلترها
+   ============================================ */
+.filtersList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* ============================================
+   ✅ فیلتر تاییدیه (checkbox)
+   ============================================ */
+.verifiedFilter {
+  margin: 12px 0;
+  padding: 10px 12px;
+  background: #f9f9fb;
+  border-radius: 8px;
+  border: 1px solid #f0f0f2;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: #444;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  user-select: none;
+}
+
+.checkboxLabel input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary-dark, #e67e22);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   ✅ ویژگی‌ها (Chips)
+   ============================================ */
+.featuresFilter {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.featuresFilterTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  color: #333;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+}
+
+.featuresFilterList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.featureChip {
+  padding: 6px 12px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 16px;
+  background: #fff;
+  font-size: 0.7rem;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.featureChip:hover {
+  border-color: var(--primary-dark, #e67e22);
+  color: var(--primary-dark, #e67e22);
+}
+
+.featureChipActive {
+  background: var(--primary-dark, #e67e22);
+  color: #fff;
+  border-color: var(--primary-dark, #e67e22);
+}
+
+.featureChipActive:hover {
+  background: var(--secondary-dark, #d35400);
+  color: #fff;
+}
+
+/* ============================================
+   ✅ مرتب‌سازی
+   ============================================ */
+.sortSection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.sortLabel {
+  font-size: 0.7rem;
+  color: #555;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  white-space: nowrap;
+}
+
+.sortSelect {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1.5px solid #e8e8ea;
+  border-radius: 8px;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  font-size: 0.7rem;
+  color: #333;
+  background: #fff;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  direction: rtl;
+}
+
+.sortSelect:focus {
+  border-color: var(--primary-dark, #e67e22);
+  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+}
+
+/* ============================================
+   ریسپانسیو
+   ============================================ */
 @media (max-width: 1024px) {
   .filtersSection {
     position: relative;
@@ -159,7 +347,13 @@
   .filtersList {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
+    gap: 12px;
+  }
+
+  .cascadingFilters {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
   }
 }
 
@@ -172,123 +366,25 @@
     grid-template-columns: 1fr;
   }
 
+  .cascadingFilters {
+    grid-template-columns: 1fr;
+  }
+
   .filtersTitle {
     font-size: 0.8rem;
   }
 
-  .filterButton {
-    padding: 0.5rem 0.6rem;
+  .filterGroupLabel {
+    font-size: 0.65rem;
   }
 
-  .filterLabel {
-    font-size: 0.6rem;
+  .filterSelect,
+  .searchFilterInput,
+  .sortSelect {
+    font-size: 0.7rem;
+    padding: 9px 10px;
   }
 
-  .filterValue {
-    font-size: 0.6rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .filtersSection {
-    padding: 0.8rem;
-  }
-}
-
-/* RTL */
-.filterButton,
-.filterLabel,
-.filterValue,
-.searchFilterBtn,
-.filtersTitle,
-.clearAllBtn {
-  direction: rtl;
-}
-
-/* اضافه کردن به انتهای فایل */
-
-/* ============================================
-   فیلتر تاییدیه
-   ============================================ */
-
-.verifiedFilter {
-  margin: 0.5rem 0;
-}
-
-.verifiedBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  width: 100%;
-  padding: 0.5rem 0.8rem;
-  background: #f5f5f7;
-  border: 1.5px solid transparent;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: 'iran', Tahoma, Arial, sans-serif;
-  font-size: 0.7rem;
-  color: #666;
-}
-
-.verifiedBtn:hover {
-  background: #f0f0f2;
-}
-
-.verifiedBtn.active {
-  border-color: #34c759;
-  background: rgba(52, 199, 89, 0.08);
-  color: #34c759;
-}
-
-.verifiedBtn.active svg {
-  color: #34c759;
-}
-
-/* ============================================
-   مرتب‌سازی
-   ============================================ */
-
-.sortSection {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0.5rem 0;
-  padding: 0.3rem 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.04);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-}
-
-.sortLabel {
-  font-size: 0.65rem;
-  color: #999;
-  font-family: 'iran', Tahoma, Arial, sans-serif;
-  white-space: nowrap;
-}
-
-.sortSelect {
-  flex: 1;
-  padding: 0.3rem 0.5rem;
-  background: transparent;
-  border: 1px solid #e8e8ea;
-  border-radius: 6px;
-  font-size: 0.7rem;
-  color: #333;
-  font-family: 'iran', Tahoma, Arial, sans-serif;
-  outline: none;
-  cursor: pointer;
-}
-
-.sortSelect:focus {
-  border-color: #e67e22;
-}
-
-/* ============================================
-   ریسپانسیو
-   ============================================ */
-
-@media (max-width: 768px) {
   .sortSection {
     flex-wrap: wrap;
   }
@@ -296,4 +392,34 @@
   .sortSelect {
     width: 100%;
   }
+}
+
+@media (max-width: 480px) {
+  .filtersSection {
+    padding: 0.8rem;
+  }
+
+  .searchFilterBtn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .featureChip {
+    font-size: 0.65rem;
+    padding: 5px 10px;
+  }
+}
+
+/* ============================================
+   RTL
+   ============================================ */
+.searchFilterForm,
+.filterGroup,
+.sortSection,
+.checkboxLabel,
+.featuresFilterList,
+.cascadingFilters,
+.filtersList,
+.filtersHeader {
+  direction: rtl;
 }

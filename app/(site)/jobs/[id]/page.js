@@ -1,42 +1,54 @@
 // app/jobs/[id]/page.js
-import { notFound } from 'next/navigation'
-import { jobListings } from '@/components/AllBoxItem/constants/jobData'
-import JobDetailClient from './JobDetailClient'
+import { notFound } from 'next/navigation';
+import JobDetailClient from './JobDetailClient';
+import Config from '@/config/config';
 
-// تولید مسیرهای استاتیک برای بهبود SEO
-export async function generateStaticParams() {
-  return jobListings.map((job) => ({
-    id: String(job.id),
-  }))
+// دریافت جزئیات آگهی از سرور (SSR/SSG)
+async function getJob(id) {
+  try {
+    const res = await fetch(Config.endpoints.jobisell.jobs.detail(id), {
+      next: { revalidate: 60 }, // cache 60 ثانیه
+    });
+
+    if (!res.ok) {
+      if (res.status === 404) return null;
+      throw new Error(`Failed to fetch job: ${res.status}`);
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error('Error fetching job:', err);
+    return null;
+  }
 }
 
-// متادیتا برای SEO
+// Metadata برای SEO
 export async function generateMetadata({ params }) {
-  const job = jobListings.find(j => String(j.id) === params.id)
-  
+  const job = await getJob(params.id);
+
   if (!job) {
     return {
-      title: 'آگهی یافت نشد',
-    }
+      title: 'آگهی یافت نشد | آریا استاد',
+    };
   }
 
   return {
     title: `${job.title} | آریا استاد`,
-    description: job.description,
+    description: job.description?.substring(0, 160) || 'جزئیات آگهی شغلی',
     openGraph: {
       title: job.title,
-      description: job.description,
+      description: job.description?.substring(0, 160),
       images: job.image ? [job.image] : [],
     },
-  }
+  };
 }
 
-export default function JobDetailPage({ params }) {
-  const job = jobListings.find(j => String(j.id) === params.id)
-  
+export default async function JobDetailPage({ params }) {
+  const job = await getJob(params.id);
+
   if (!job) {
-    notFound()
+    notFound();
   }
 
-  return <JobDetailClient job={job} />
+  return <JobDetailClient initialJob={job} />;
 }

@@ -1,54 +1,82 @@
 // src/components/AllBoxItem/components/JobCard/JobCard.jsx
+'use client';
 
-'use client'
+import React, { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import {
+  Building2, MapPin, DollarSign, Clock, Phone, Heart, Eye,
+  ChevronLeft, ShieldCheck, User, Briefcase, Star,
+} from 'lucide-react';
+import JobFeatures from './JobFeatures';
+import jobisellApi from '@/services/jobisellApi';
+import styles from './JobCard.module.css';
 
-import React, { useState } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { 
-  Building2, MapPin, DollarSign, Clock, Phone, Heart, Eye, 
-  ChevronLeft, ShieldCheck, User, Users, Briefcase, Star
-} from 'lucide-react'
-import JobFeatures from './JobFeatures'
-import styles from './JobCard.module.css'
-
-// تابع فرمت کردن قیمت
 const formatSalary = (amount) => {
-  if (!amount) return null
-  return new Intl.NumberFormat('fa-IR').format(amount)
-}
+  if (!amount) return null;
+  return new Intl.NumberFormat('fa-IR').format(amount);
+};
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr);
+    return new Intl.DateTimeFormat('fa-IR').format(d);
+  } catch {
+    return dateStr;
+  }
+};
 
 const JobCard = ({ job, viewMode = 'grid-2' }) => {
-  const [isLiked, setIsLiked] = useState(false)
-  const [imageError, setImageError] = useState(false)
+  const [isLiked, setIsLiked] = useState(job.is_liked || false);
+  const [likesCount, setLikesCount] = useState(job.likes_count || 0);
+  const [imageError, setImageError] = useState(false);
 
-  const handleLike = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsLiked(!isLiked)
-  }
+  const handleLike = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  const isHiring = job.type === 'hiring'
-  const adTypeLabel = isHiring ? 'استخدام' : 'کارجو'
-  const adTypeIcon = isHiring ? <Briefcase size={14} /> : <User size={14} />
-  const cardClass = isHiring ? styles.hiringCard : styles.seekingCard
+    // Optimistic UI
+    setIsLiked(!isLiked);
+    setLikesCount((c) => (isLiked ? c - 1 : c + 1));
 
-  // نمایش حقوق
+    try {
+      const res = await jobisellApi.toggleLike(job.id);
+      setIsLiked(res.status === 'liked');
+      if (typeof res.likes_count === 'number') {
+        setLikesCount(res.likes_count);
+      }
+    } catch (err) {
+      // برگرداندن در صورت خطا
+      setIsLiked(isLiked);
+      setLikesCount((c) => (isLiked ? c + 1 : c - 1));
+      console.error('Like error:', err);
+    }
+  };
+
+  const isHiring = job.type === 'hiring';
+  const adTypeLabel = isHiring ? 'استخدام' : 'کارجو';
+  const adTypeIcon = isHiring ? <Briefcase size={14} /> : <User size={14} />;
+  const cardClass = isHiring ? styles.hiringCard : styles.seekingCard;
+
+  // موقعیت (ساخت رشته از province + city + neighborhood)
+  const locationStr = [job.city_name, job.neighborhood_name]
+    .filter(Boolean)
+    .join('، ') || '—';
+
   const renderSalary = () => {
-    if (!isHiring) return null
-    if (job.minSalary && job.maxSalary) {
-      return `${formatSalary(job.minSalary)} - ${formatSalary(job.maxSalary)} تومان`
+    if (!isHiring) return null;
+    if (job.min_salary && job.max_salary) {
+      return `${formatSalary(job.min_salary)} - ${formatSalary(job.max_salary)} تومان`;
     }
-    if (job.minSalary) {
-      return `از ${formatSalary(job.minSalary)} تومان`
-    }
-    if (job.maxSalary) {
-      return `تا ${formatSalary(job.maxSalary)} تومان`
-    }
-    return null
-  }
+    if (job.min_salary) return `از ${formatSalary(job.min_salary)} تومان`;
+    if (job.max_salary) return `تا ${formatSalary(job.max_salary)} تومان`;
+    return null;
+  };
 
+  // ============================================
   // حالت لیستی
+  // ============================================
   if (viewMode === 'list') {
     return (
       <Link href={`/jobs/${job.id}`} className={`${styles.listItem} ${cardClass}`}>
@@ -59,19 +87,19 @@ const JobCard = ({ job, viewMode = 'grid-2' }) => {
             </div>
             <div className={styles.listItemInfo}>
               <span className={styles.listItemTitle}>{job.title}</span>
-              <span className={styles.listItemCompany}>{job.company}</span>
+              <span className={styles.listItemCompany}>
+                {job.company_name || 'بدون شرکت'}
+              </span>
             </div>
           </div>
           <div className={styles.listItemRight}>
             <span className={`${styles.adTypeBadge} ${isHiring ? styles.hiringBadge : styles.seekingBadge}`}>
               {adTypeLabel}
             </span>
-            {job.isVerified && (
-              <ShieldCheck size={14} className={styles.verifiedIcon} />
-            )}
+            {job.is_verified && <ShieldCheck size={14} className={styles.verifiedIcon} />}
             <span className={styles.listItemLocation}>
               <MapPin size={12} />
-              {job.location}
+              {locationStr}
             </span>
             {isHiring && renderSalary() && (
               <span className={styles.listItemSalary}>
@@ -83,10 +111,12 @@ const JobCard = ({ job, viewMode = 'grid-2' }) => {
           </div>
         </div>
       </Link>
-    )
+    );
   }
 
+  // ============================================
   // حالت تصویر-چپ
+  // ============================================
   if (viewMode === 'image-left') {
     return (
       <div className={`${styles.jobCard} ${styles.imageLeftCard} ${cardClass}`}>
@@ -101,17 +131,12 @@ const JobCard = ({ job, viewMode = 'grid-2' }) => {
                   className={styles.imageLeftImg}
                   onError={() => setImageError(true)}
                 />
-                {job.isFeatured && (
-                  <span className={styles.imageLeftBadge}>ویژه</span>
-                )}
-                <button 
-                  className={styles.imageLeftLike}
-                  onClick={handleLike}
-                >
-                  <Heart 
-                    size={14} 
+                {job.is_featured && <span className={styles.imageLeftBadge}>ویژه</span>}
+                <button className={styles.imageLeftLike} onClick={handleLike}>
+                  <Heart
+                    size={14}
                     fill={isLiked ? '#e67e22' : 'none'}
-                    color={isLiked ? '#e67e22' : '#fff'} 
+                    color={isLiked ? '#e67e22' : '#fff'}
                   />
                 </button>
               </div>
@@ -130,43 +155,40 @@ const JobCard = ({ job, viewMode = 'grid-2' }) => {
                   {adTypeLabel}
                 </span>
               </div>
-              <span className={styles.imageLeftCompany}>{job.company}</span>
+              <span className={styles.imageLeftCompany}>{job.company_name || '—'}</span>
             </div>
 
             <div className={styles.imageLeftDetails}>
               <div className={styles.imageLeftDetail}>
                 <MapPin size={12} />
-                <span>{job.location}</span>
+                <span>{locationStr}</span>
               </div>
-             
             </div>
-
-            {/* ویژگی‌ها در حالت تصویر-چپ */}
-           
-
-            
 
             <div className={styles.imageLeftFooter}>
               <Link href={`/jobs/${job.id}`} className={styles.imageLeftViewBtn}>
                 <Eye size={12} />
               </Link>
-              <button className={styles.imageLeftContactBtn}>
-                <Phone size={12} />
-              </button>
-              <span className={styles.imageLeftDate}>{job.date}</span>
+              {job.contact_phone && (
+                <a href={`tel:${job.contact_phone}`} className={styles.imageLeftContactBtn}>
+                  <Phone size={12} />
+                </a>
+              )}
+              <span className={styles.imageLeftDate}>{formatDate(job.published_at || job.created_at)}</span>
             </div>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
-  // حالت دو ستونه و سه ستونه
-  const isCompact = viewMode === 'grid-3'
+  // ============================================
+  // حالت گرید
+  // ============================================
+  const isCompact = viewMode === 'grid-3';
 
   return (
     <div className={`${styles.jobCard} ${cardClass}`}>
-      {/* بخش تصویر شاخص */}
       <div className={`${styles.cardImageWrapper} ${isCompact ? styles.compactImage : ''}`}>
         {job.image && !imageError ? (
           <div className={styles.cardImage}>
@@ -176,22 +198,19 @@ const JobCard = ({ job, viewMode = 'grid-2' }) => {
               fill
               className={styles.image}
               onError={() => setImageError(true)}
-              priority={job.isFeatured}
+              priority={job.is_featured}
             />
-            {job.isFeatured && (
+            {job.is_featured && (
               <span className={styles.featuredBadge}>
                 <Star size={12} fill="#fff" />
                 ویژه
               </span>
             )}
-            <button 
-              className={styles.likeBtn}
-              onClick={handleLike}
-            >
-              <Heart 
-                size={isCompact ? 14 : 18} 
+            <button className={styles.likeBtn} onClick={handleLike}>
+              <Heart
+                size={isCompact ? 14 : 18}
                 fill={isLiked ? '#e67e22' : 'none'}
-                color={isLiked ? '#e67e22' : '#fff'} 
+                color={isLiked ? '#e67e22' : '#fff'}
               />
             </button>
             <div className={`${styles.adTypeOverlay} ${isHiring ? styles.hiringOverlay : styles.seekingOverlay}`}>
@@ -207,13 +226,16 @@ const JobCard = ({ job, viewMode = 'grid-2' }) => {
         )}
       </div>
 
-      {/* محتوای کارت */}
       <div className={styles.cardContent}>
         <div className={styles.cardHeader}>
           <div className={styles.companyInfo}>
             {!isCompact && (
               <div className={styles.companyLogo}>
-                <Building2 size={20} />
+                {job.company_logo ? (
+                  <Image src={job.company_logo} alt={job.company_name} width={40} height={40} />
+                ) : (
+                  <Building2 size={20} />
+                )}
               </div>
             )}
             <div>
@@ -227,23 +249,22 @@ const JobCard = ({ job, viewMode = 'grid-2' }) => {
                   </span>
                 )}
               </div>
-              <span className={styles.companyName}>{job.company}</span>
+              <span className={styles.companyName}>{job.company_name || '—'}</span>
             </div>
           </div>
           <div className={styles.headerRight}>
-            {job.isVerified && (
+            {job.is_verified && (
               <ShieldCheck size={isCompact ? 14 : 16} className={styles.verifiedIcon} />
             )}
-            <span className={styles.jobDate}>{job.date}</span>
+            <span className={styles.jobDate}>{formatDate(job.published_at || job.created_at)}</span>
           </div>
         </div>
 
         <div className={styles.cardBody}>
-          {!isCompact && (
+          {!isCompact && job.description && (
             <p className={styles.jobDescription}>{job.description}</p>
           )}
-          
-          {/* نمایش حقوق برای آگهی‌های استخدام */}
+
           {isHiring && renderSalary() && (
             <div className={styles.salaryDisplay}>
               <DollarSign size={isCompact ? 14 : 16} className={styles.salaryIcon} />
@@ -251,27 +272,32 @@ const JobCard = ({ job, viewMode = 'grid-2' }) => {
             </div>
           )}
 
-          {/* ویژگی‌های آگهی */}
-          <JobFeatures job={job} isCompact={isCompact} />
+          {/* ✅ ویژگی‌ها از API */}
+          <JobFeatures features={job.features || []} isCompact={isCompact} />
 
-          <div className={`${styles.jobTags} ${isCompact ? styles.compactTags : ''}`}>
-            {job.tags.slice(0, isCompact ? 2 : 3).map((tag, index) => (
-              <span key={index} className={styles.tag}>{tag}</span>
-            ))}
-            {isCompact && job.tags.length > 2 && (
-              <span className={styles.tagMore}>+{job.tags.length - 2}</span>
-            )}
-          </div>
+          {/* تگ‌ها */}
+          {job.tags?.length > 0 && (
+            <div className={`${styles.jobTags} ${isCompact ? styles.compactTags : ''}`}>
+              {job.tags.slice(0, isCompact ? 2 : 3).map((tag) => (
+                <span key={tag.id} className={styles.tag}>{tag.name}</span>
+              ))}
+              {isCompact && job.tags.length > 2 && (
+                <span className={styles.tagMore}>+{job.tags.length - 2}</span>
+              )}
+            </div>
+          )}
 
           <div className={`${styles.jobDetails} ${isCompact ? styles.compactDetails : ''}`}>
             <div className={styles.detailItem}>
               <MapPin size={isCompact ? 12 : 14} />
-              <span>{isCompact ? job.location.split('،')[0] : job.location}</span>
+              <span>{isCompact ? job.city_name || locationStr : locationStr}</span>
             </div>
-            <div className={styles.detailItem}>
-              <Clock size={isCompact ? 12 : 14} />
-              <span>{job.cooperationType}</span>
-            </div>
+            {job.cooperation_type_name && (
+              <div className={styles.detailItem}>
+                <Clock size={isCompact ? 12 : 14} />
+                <span>{job.cooperation_type_name}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -280,14 +306,21 @@ const JobCard = ({ job, viewMode = 'grid-2' }) => {
             <Eye size={isCompact ? 12 : 14} />
             {!isCompact && 'مشاهده جزئیات'}
           </Link>
-          <button className={styles.contactBtn}>
-            <Phone size={isCompact ? 12 : 14} />
-            {!isCompact && 'تماس'}
-          </button>
+          {job.contact_phone ? (
+            <a href={`tel:${job.contact_phone}`} className={styles.contactBtn}>
+              <Phone size={isCompact ? 12 : 14} />
+              {!isCompact && 'تماس'}
+            </a>
+          ) : (
+            <button className={styles.contactBtn} disabled>
+              <Phone size={isCompact ? 12 : 14} />
+              {!isCompact && 'تماس'}
+            </button>
+          )}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default JobCard
+export default JobCard;

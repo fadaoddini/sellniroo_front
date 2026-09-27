@@ -1,0 +1,214 @@
+/* ============================================
+   src/app/jobs/Jobs.module.css
+   ============================================ */
+
+.jobsPage {
+  min-height: 100vh;
+  background: #f8f9fa;
+  padding-bottom: 60px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ============================================
+   هدر صفحه
+   ============================================ */
+.pageHeader {
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 20px 0 24px;
+  margin-bottom: 24px;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #888;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  margin-bottom: 16px;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+.breadcrumbLink {
+  color: #888;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.breadcrumbLink:hover {
+  color: var(--primary-dark, #e67e22);
+}
+
+.breadcrumbSeparator {
+  color: #ccc;
+  transform: rotate(180deg);
+}
+
+.breadcrumbCurrent {
+  color: #333;
+  font-weight: 500;
+}
+
+/* محتوای هدر */
+.headerContent {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.headerLeft {
+  flex: 1;
+  min-width: 0;
+}
+
+.pageTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1a2a3a;
+  margin: 0 0 12px 0;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  line-height: 1.5;
+}
+
+.titleIcon {
+  color: var(--primary-dark, #e67e22);
+  flex-shrink: 0;
+}
+
+/* خلاصه فیلترها */
+.filterSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+.filterSummaryChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: rgba(230, 126, 34, 0.1);
+  color: var(--primary-dark, #e67e22);
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  font-weight: 500;
+}
+
+.clearAllChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: #fff;
+  color: #888;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clearAllChip:hover {
+  background: #fee;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+/* دکمه حذف جستجو */
+.clearSearchBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #fff;
+  color: #666;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.clearSearchBtn:hover {
+  background: #fee;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+/* محتوای اصلی */
+.contentWrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ============================================
+   ریسپانسیو
+   ============================================ */
+@media (max-width: 768px) {
+  .container,
+  .contentWrapper {
+    padding: 0 12px;
+  }
+
+  .pageHeader {
+    padding: 16px 0 20px;
+    margin-bottom: 16px;
+  }
+
+  .pageTitle {
+    font-size: 1.1rem;
+    gap: 8px;
+  }
+
+  .headerContent {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .clearSearchBtn {
+    align-self: flex-start;
+  }
+
+  .filterSummary {
+    gap: 4px;
+  }
+
+  .filterSummaryChip,
+  .clearAllChip {
+    font-size: 0.65rem;
+    padding: 3px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pageTitle {
+    font-size: 0.95rem;
+    flex-wrap: wrap;
+  }
+
+  .breadcrumb {
+    font-size: 0.7rem;
+  }
+}

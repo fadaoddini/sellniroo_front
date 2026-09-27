@@ -1,107 +1,83 @@
 // src/components/AllBoxItem/components/JobCard/JobFeatures.jsx
+'use client';
 
-'use client'
+import React from 'react';
+import {
+  ShieldCheck, Clock, Truck, Utensils, Award, Calendar, Wifi,
+  CheckCircle, XCircle, MinusCircle, Star, Heart, Coffee,
+} from 'lucide-react';
+import styles from './JobFeatures.module.css';
 
-import React from 'react'
-import { 
-  ShieldCheck, 
-  Clock, 
-  Truck, 
-  Utensils, 
-  Award, 
-  Calendar, 
-  Wifi,
-  CheckCircle,
-  XCircle,
-  MinusCircle
-} from 'lucide-react'
-import styles from './JobFeatures.module.css'
+// ✅ نقشه آیکون‌های داینامیک (icon از سرور می‌آید)
+const ICON_MAP = {
+  'shield-check': ShieldCheck,
+  'clock': Clock,
+  'truck': Truck,
+  'utensils': Utensils,
+  'award': Award,
+  'calendar': Calendar,
+  'wifi': Wifi,
+  'star': Star,
+  'heart': Heart,
+  'coffee': Coffee,
+};
 
-const JobFeatures = ({ job, isCompact = false }) => {
+const JobFeatures = ({ features = [], isCompact = false }) => {
   // فقط برای آگهی‌های استخدام
-  if (job.type !== 'hiring') {
-    return null
-  }
-
-  const features = [
-    {
-      key: 'hasInsurance',
-      icon: ShieldCheck,
-      label: 'بیمه',
-      value: job.hasInsurance
-    },
-    {
-      key: 'hasExperience',
-      icon: Clock,
-      label: 'سابقه کار',
-      value: job.hasExperience
-    },
-    {
-      key: 'hasTransportation',
-      icon: Truck,
-      label: 'سرویس رفت و آمد',
-      value: job.hasTransportation
-    },
-    {
-      key: 'hasMeal',
-      icon: Utensils,
-      label: 'وعده غذایی',
-      value: job.hasMeal
-    },
-    {
-      key: 'hasBonus',
-      icon: Award,
-      label: 'پاداش',
-      value: job.hasBonus
-    },
-    {
-      key: 'hasFlexibleHours',
-      icon: Calendar,
-      label: 'ساعت انعطاف‌پذیر',
-      value: job.hasFlexibleHours
-    },
-    {
-      key: 'hasRemoteWork',
-      icon: Wifi,
-      label: 'دورکاری',
-      value: job.hasRemoteWork
-    }
-  ]
+  if (!features || features.length === 0) return null;
 
   const getStatusIcon = (value) => {
-    if (value === true) {
-      return <CheckCircle size={isCompact ? 12 : 14} className={styles.activeIcon} />
-    } else if (value === false) {
-      return <XCircle size={isCompact ? 12 : 14} className={styles.inactiveIcon} />
-    } else {
-      return <MinusCircle size={isCompact ? 12 : 14} className={styles.unknownIcon} />
+    if (value === true || value === 1) {
+      return <CheckCircle size={isCompact ? 12 : 14} className={styles.activeIcon} />;
+    } else if (value === false || value === 0) {
+      return <XCircle size={isCompact ? 12 : 14} className={styles.inactiveIcon} />;
     }
-  }
+    return <MinusCircle size={isCompact ? 12 : 14} className={styles.unknownIcon} />;
+  };
 
   const getStatusClass = (value) => {
-    if (value === true) return styles.active
-    if (value === false) return styles.inactive
-    return styles.unknown
-  }
+    if (value === true || value === 1) return styles.active;
+    if (value === false || value === 0) return styles.inactive;
+    return styles.unknown;
+  };
+
+  // ✅ مقادیر ویژگی
+  const getFeatureValue = (feat) => {
+    if (feat.feature_type === 'boolean') {
+      return feat.value_boolean;
+    }
+    if (feat.feature_type === 'text') return feat.value_text;
+    if (feat.feature_type === 'number') return feat.value_number;
+    return null;
+  };
 
   return (
     <div className={`${styles.featuresContainer} ${isCompact ? styles.compact : ''}`}>
       <span className={styles.featuresLabel}>مزایا و امکانات:</span>
       <div className={styles.featuresGrid}>
-        {features.map((feature) => (
-          <div 
-            key={feature.key} 
-            className={`${styles.featureItem} ${getStatusClass(feature.value)}`}
-            title={feature.label}
-          >
-            <feature.icon size={isCompact ? 12 : 14} />
-            <span className={styles.featureLabel}>{feature.label}</span>
-            {getStatusIcon(feature.value)}
-          </div>
-        ))}
+        {features.map((feat) => {
+          const Icon = ICON_MAP[feat.feature_icon] || ShieldCheck;
+          const value = getFeatureValue(feat);
+
+          return (
+            <div
+              key={feat.id}
+              className={`${styles.featureItem} ${getStatusClass(value)}`}
+              title={feat.feature_name}
+            >
+              <Icon size={isCompact ? 12 : 14} />
+              <span className={styles.featureLabel}>{feat.feature_name}</span>
+              {feat.feature_type === 'boolean' ? (
+                getStatusIcon(value)
+              ) : (
+                <span className={styles.featureValue}>{value ?? '—'}</span>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default JobFeatures
+export default JobFeatures;

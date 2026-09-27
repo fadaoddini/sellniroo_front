@@ -79,13 +79,20 @@ export const jobisellApi = {
   },
 
   async createJob(payload) {
-    const { data } = await axios.post(
-      Config.endpoints.jobisell.jobs.create(),
-      payload,
-      { headers: authHeaders() }
-    );
-    return data;
-  },
+  // اگر payload FormData است، هدر Content-Type نگذار
+  const isFormData = payload instanceof FormData;
+  const { data } = await axios.post(
+    Config.endpoints.jobisell.jobs.create(),
+    payload,
+    {
+      headers: {
+        ...authHeaders(),
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+      },
+    }
+  );
+  return data;
+},
 
   async updateJob(id, payload) {
     const { data } = await axios.patch(
