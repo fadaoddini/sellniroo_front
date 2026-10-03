@@ -7,22 +7,24 @@ import "@/styles/globals.css";
 import BreakingNews from "@/components/common/breakingnews/BreakingNews";
 import HeroSlider from "@/components/slider";
 
-
+/* ============================================
+   METADATA — Sellniroo (کاریابی فروش و بازاریابی)
+   ============================================ */
 export const metadata = {
   metadataBase: new URL("https://sellniroo.com"),
 
-  // عنوان اصلی سایت
+  /* ---------- Title ---------- */
   title: {
     default:
-      "سلنیرو | استخدام فروشنده و بازاریاب، کاریابی تخصصی فروش و بازاریابی",
+      "سلنیرو | کاریابی تخصصی فروش و بازاریابی، استخدام فروشنده و بازاریاب",
     template: "%s | سلنیرو",
   },
 
-  // توضیحات اصلی
+  /* ---------- Description ---------- */
   description:
-    "سلنیرو، سایت کاریابی تخصصی فروش و بازاریابی؛ مشاهده جدیدترین آگهی‌های استخدام فروشنده، بازاریاب، ویزیتور و کارشناس فروش و ثبت آگهی استخدام برای شرکت‌ها و کارفرمایان.",
+    "سلنیرو، سامانه کاریابی تخصصی فروش و بازاریابی؛ مشاهده جدیدترین آگهی‌های استخدام فروشنده، بازاریاب، ویزیتور و کارشناس فروش و ثبت آگهی استخدام برای کارفرمایان و شرکت‌ها.",
 
-  // کلمات کلیدی هدفمند
+  /* ---------- Keywords (گروه‌بندی‌شده) ---------- */
   keywords: [
     // برند
     "سلنیرو",
@@ -31,10 +33,11 @@ export const metadata = {
     "سایت سلنیرو",
     "کاریابی سلنیرو",
 
-    // کاریابی
+    // کاریابی (کلی)
     "کاریابی",
     "سایت کاریابی",
     "کاریابی آنلاین",
+    "کاریابی تخصصی",
     "استخدام",
     "آگهی استخدام",
     "استخدام امروز",
@@ -43,7 +46,6 @@ export const metadata = {
     "فرصت کاری",
     "پیدا کردن کار",
     "جستجوی کار",
-    "کاریابی تخصصی",
 
     // فروش
     "استخدام فروشنده",
@@ -56,14 +58,14 @@ export const metadata = {
     "استخدام نماینده فروش",
     "استخدام فروشنده حضوری",
     "استخدام فروشنده تلفنی",
-    "استخدام فروشنده حرفه ای",
+    "استخدام فروشنده حرفه‌ای",
     "استخدام کارمند فروش",
     "استخدام نیروی فروش حضوری",
     "استخدام نیروی فروش تلفنی",
 
     // بازاریابی
     "استخدام بازاریاب",
-    "استخدام بازاریاب حرفه ای",
+    "استخدام بازاریاب حرفه‌ای",
     "استخدام بازاریاب حضوری",
     "استخدام بازاریاب تلفنی",
     "استخدام بازاریاب پورسانتی",
@@ -149,6 +151,7 @@ export const metadata = {
     "Hiring",
   ],
 
+  /* ---------- Robots ---------- */
   robots: {
     index: true,
     follow: true,
@@ -161,24 +164,19 @@ export const metadata = {
     },
   },
 
-  authors: [
-    {
-      name: "Sellniroo",
-      url: "https://sellniroo.com",
-    },
-  ],
-
+  /* ---------- Author / Creator ---------- */
+  authors: [{ name: "Sellniroo", url: "https://sellniroo.com" }],
   creator: "Sellniroo",
   publisher: "Sellniroo",
 
-  // OpenGraph
+  /* ---------- OpenGraph ---------- */
   openGraph: {
     type: "website",
     locale: "fa_IR",
     url: "https://sellniroo.com",
     siteName: "سلنیرو",
     title:
-      "سلنیرو | استخدام فروشنده و بازاریاب، کاریابی تخصصی فروش و بازاریابی",
+      "سلنیرو | کاریابی تخصصی فروش و بازاریابی، استخدام فروشنده و بازاریاب",
     description:
       "در سلنیرو جدیدترین فرصت‌های شغلی فروش و بازاریابی را پیدا کنید یا به‌عنوان کارفرما برای استخدام فروشنده، بازاریاب، ویزیتور و کارشناس فروش آگهی ثبت کنید.",
     images: [
@@ -191,37 +189,47 @@ export const metadata = {
     ],
   },
 
-  // Twitter / X
+  /* ---------- Twitter / X ---------- */
   twitter: {
     card: "summary_large_image",
     title:
-      "سلنیرو | استخدام فروشنده و بازاریاب، کاریابی تخصصی فروش و بازاریابی",
+      "سلنیرو | کاریابی تخصصی فروش و بازاریابی، استخدام فروشنده و بازاریاب",
     description:
       "جدیدترین آگهی‌های استخدام فروش، بازاریابی و ویزیتوری را در سلنیرو مشاهده کنید یا برای جذب نیروی فروش آگهی استخدام ثبت کنید.",
     images: ["https://sellniroo.com/images/logo.png"],
   },
 
-  // آیکون‌ها
+  /* ---------- Icons ---------- */
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
 
-  // جلوگیری از تشخیص اشتباه شماره تلفن و موارد مشابه
+  /* ---------- Format Detection ---------- */
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
+
+  /* ---------- Alternates (Canonical) ---------- */
+  alternates: {
+    canonical: "https://sellniroo.com",
+  },
+
+  /* ---------- Category ---------- */
+  category: "کاریابی و استخدام",
 };
 
+/* ============================================
+   LAYOUT CONTENT
+   ============================================ */
 function LayoutContent({ children }) {
   return (
     <html lang="fa" dir="rtl" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <BreakingNews />
-
         <HeroSlider />
         <Header />
 
@@ -231,6 +239,9 @@ function LayoutContent({ children }) {
   );
 }
 
+/* ============================================
+   ROOT LAYOUT
+   ============================================ */
 export default function RootLayout({ children }) {
   return (
     <LanguageProvider>
