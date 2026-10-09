@@ -133,7 +133,7 @@
   align-items: center;
   gap: 0.3rem;
   padding: 0.5rem 0.8rem;
-  background: transparent;
+
   border: none;
   border-left: 1px solid rgba(0, 0, 0, 0.08);
   color: var(--text);
@@ -695,7 +695,7 @@
   align-items: center;
   gap: 6px;
   padding: 10px 14px;
-  background: #f8f9fa;
+  background: var(--macos-bg);
   border: 1.5px solid transparent;
   border-radius: 8px;
   cursor: pointer;

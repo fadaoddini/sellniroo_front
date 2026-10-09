@@ -14,13 +14,17 @@ import ApplicationsList from "./ApplicationsList";
 import BookmarksList from "./BookmarksList";
 import EmptyState from "./EmptyState";
 import styles from "../styles/ProfilePage.module.css";
-import { Loader2 } from "lucide-react";
+import CompanyTab from "./company/CompanyTab";
+import { Loader2, Building2 } from "lucide-react";
+import ResumeTab from "./resume/ResumeTab";
 
 const TABS = [
   { key: "hiring", label: "آگهی‌های استخدامی من", icon: "briefcase" },
   { key: "seeking", label: "آگهی‌های کاریابی من", icon: "user" },
   { key: "applications", label: "درخواست‌های ارسالی", icon: "send" },
   { key: "bookmarks", label: "ذخیره‌شده‌ها", icon: "bookmark" },
+  { key: "company", label: "شرکت من", icon: "building" },
+  { key: "resume", label: "رزومه من", icon: "file-text" },
 ];
 
 const ProfilePage = () => {
@@ -40,66 +44,25 @@ const ProfilePage = () => {
   }, [authLoading, isAuthenticated, router]);
 
   // ✅ دریافت آمار
-  const fetchStats = async () => {
-    try {
-      const headers = getAuthHeaders();
-      const [hiringRes, seekingRes, applicationsRes, bookmarksRes] =
-        await Promise.all([
-          axios.get(
-            Config.endpoints.jobisell.jobs.myListings() + "?type=hiring",
-            { headers }
-          ),
-          axios.get(
-            Config.endpoints.jobisell.jobs.myListings() + "?type=seeking",
-            { headers }
-          ),
-          axios.get(Config.endpoints.jobisell.jobs.myApplications(), {
-            headers,
-          }),
-          axios.get(Config.endpoints.jobisell.jobs.myBookmarks(), { headers }),
-        ]);
-
-      const hiringData = hiringRes.data?.results || hiringRes.data || [];
-      const seekingData = seekingRes.data?.results || seekingRes.data || [];
-      const applicationsData =
-        applicationsRes.data?.results || applicationsRes.data || [];
-      const bookmarksData =
-        bookmarksRes.data?.results || bookmarksRes.data || [];
-
-      setStats({
-        hiring: {
-          total: hiringData.length,
-          approved: hiringData.filter((j) => j.status === "approved").length,
-          pending: hiringData.filter((j) => j.status === "pending").length,
-          rejected: hiringData.filter((j) => j.status === "rejected").length,
-          expired: hiringData.filter((j) => j.status === "expired").length,
-          views: hiringData.reduce((sum, j) => sum + (j.views_count || 0), 0),
-          likes: hiringData.reduce((sum, j) => sum + (j.likes_count || 0), 0),
-        },
-        seeking: {
-          total: seekingData.length,
-          approved: seekingData.filter((j) => j.status === "approved").length,
-          pending: seekingData.filter((j) => j.status === "pending").length,
-          rejected: seekingData.filter((j) => j.status === "rejected").length,
-          expired: seekingData.filter((j) => j.status === "expired").length,
-          views: seekingData.reduce((sum, j) => sum + (j.views_count || 0), 0),
-        },
-        applications: {
-          total: applicationsData.length,
-          pending: applicationsData.filter((a) => a.status === "pending").length,
-          reviewed: applicationsData.filter((a) => a.status === "reviewed")
-            .length,
-          accepted: applicationsData.filter((a) => a.status === "accepted")
-            .length,
-          rejected: applicationsData.filter((a) => a.status === "rejected")
-            .length,
-        },
-        bookmarks: { total: bookmarksData.length },
-      });
-    } catch (err) {
-      console.error("Error fetching stats:", err);
-    }
-  };
+const fetchStats = async () => {
+  try {
+    const headers = getAuthHeaders();
+    const res = await axios.get(
+      Config.endpoints.jobisell.jobs.myStats(),
+      { headers }
+    );
+    setStats(res.data);
+  } catch (err) {
+    console.error("Error fetching stats:", err);
+    // fallback: صفر بذار
+    setStats({
+      hiring: { total: 0, approved: 0, pending: 0, rejected: 0, expired: 0, views: 0, likes: 0 },
+      seeking: { total: 0, approved: 0, pending: 0, rejected: 0, expired: 0, views: 0 },
+      applications: { total: 0, pending: 0, reviewed: 0, accepted: 0, rejected: 0 },
+      bookmarks: { total: 0 },
+    });
+  }
+};
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -160,6 +123,13 @@ const ProfilePage = () => {
           {activeTab === "bookmarks" && (
             <BookmarksList key={`bm-${refreshKey}`} />
           )}
+          {activeTab === "company" && (
+  <CompanyTab key={`company-${refreshKey}`} onRefresh={handleRefresh} />
+)}
+
+{activeTab === "resume" && (
+  <ResumeTab key={`resume-${refreshKey}`} onRefresh={handleRefresh} />
+)}
         </div>
       </div>
     </div>

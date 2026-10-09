@@ -5,6 +5,7 @@
   max-width: 1200px;
   margin: 0 auto;
   min-height: 100vh;
+    background: var(--macos-bg);
   font-family: var(--font-iran);
 }
 

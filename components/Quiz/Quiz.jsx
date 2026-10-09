@@ -1,123 +1,141 @@
 // components/Quiz/Quiz.jsx
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import QuizIntro from './QuizIntro';
 import QuizQuestion from './QuizQuestion';
 import QuizResult from './QuizResult';
+import styles from './Quiz.module.css';
 import { specialtyQuestions } from './quizData';
+
+const TIME_PER_QUESTION = 20; // ثانیه
 
 export default function Quiz() {
   const [currentStep, setCurrentStep] = useState('intro');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
-  const [timeRemaining, setTimeRemaining] = useState(20); // 20 ثانیه برای هر سوال
+  const [timeRemaining, setTimeRemaining] = useState(TIME_PER_QUESTION);
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [score, setScore] = useState(0);
   const [selectedSpecialty, setSelectedSpecialty] = useState(null);
   const [questions, setQuestions] = useState([]);
-  const [questionTimer, setQuestionTimer] = useState(20);
+
+  // ✅ useRef برای جلوگیری از بسته شدن روی مقدار قدیمی
+  const answeredRef = useRef(false);
 
   const totalQuestions = questions.length;
 
-  // تایمر برای هر سوال
-  useEffect(() => {
-    let timer;
-    if (isTimerActive && timeRemaining > 0) {
-      timer = setInterval(() => {
-        setTimeRemaining(prev => {
-          const newTime = prev - 1;
-          setQuestionTimer(newTime);
-          return newTime;
-        });
-      }, 1000);
-    } else if (timeRemaining === 0 && isTimerActive) {
-      // زمان تمام شد - پاسخ اشتباه محسوب می‌شود
-      handleTimeOut();
-    }
-    return () => clearInterval(timer);
-  }, [isTimerActive, timeRemaining]);
-
+  /* ============================================
+     شروع آزمون
+     ============================================ */
   const startQuiz = (specialtyId) => {
-    const specialtyQuestionsList = specialtyQuestions[specialtyId] || [];
-    setQuestions(specialtyQuestionsList);
+    const list = specialtyQuestions[specialtyId] || [];
+    setQuestions(list);
     setSelectedSpecialty(specialtyId);
     setCurrentStep('playing');
     setIsTimerActive(true);
     setCurrentQuestionIndex(0);
     setAnswers([]);
     setScore(0);
-    setTimeRemaining(20);
-    setQuestionTimer(20);
+    setTimeRemaining(TIME_PER_QUESTION);
+    answeredRef.current = false;
   };
 
-  const handleTimeOut = () => {
-    // زمان تمام شد - ثبت پاسخ اشتباه
+  /* ============================================
+     ثبت پاسخ + رفتن به سوال بعد / پایان
+     ============================================ */
+  const recordAnswer = useCallback((answer, isCorrect, points = 0) => {
     const currentQuestion = questions[currentQuestionIndex];
-    setAnswers(prev => [...prev, { 
-      questionId: currentQuestion.id, 
-      answer: 'زمان تمام شد', 
-      isCorrect: false,
-      points: 0 
-    }]);
+    if (!currentQuestion) return;
 
-    if (currentQuestionIndex < totalQuestions - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-      setTimeRemaining(20);
-      setQuestionTimer(20);
-    } else {
-      handleFinish();
-    }
-  };
-
-  const handleAnswer = (answer) => {
-    const currentQuestion = questions[currentQuestionIndex];
-    const isCorrect = currentQuestion.correctAnswer === answer;
-    
-    setAnswers(prev => [...prev, { 
-      questionId: currentQuestion.id, 
-      answer, 
-      isCorrect,
-      points: isCorrect ? currentQuestion.points || 1 : 0 
-    }]);
+    setAnswers((prev) => [
+      ...prev,
+      {
+        questionId: currentQuestion.id,
+        answer,
+        isCorrect,
+        points,
+      },
+    ]);
 
     if (isCorrect) {
-      setScore(prev => prev + (currentQuestion.points || 1));
+      setScore((prev) => prev + points);
     }
 
     if (currentQuestionIndex < totalQuestions - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-      setTimeRemaining(20);
-      setQuestionTimer(20);
+      setCurrentQuestionIndex((prev) => prev + 1);
+      setTimeRemaining(TIME_PER_QUESTION);
+      answeredRef.current = false;
     } else {
-      handleFinish();
+      setIsTimerActive(false);
+      setCurrentStep('result');
     }
+  }, [questions, currentQuestionIndex, totalQuestions]);
+
+  /* ============================================
+     پایان زمان
+     ============================================ */
+  const handleTimeOut = useCallback(() => {
+    if (answeredRef.current) return;
+    answeredRef.current = true;
+    recordAnswer('زمان تمام شد', false, 0);
+  }, [recordAnswer]);
+
+  /* ============================================
+     تایمر
+     ============================================ */
+  useEffect(() => {
+    if (!isTimerActive) return;
+    if (timeRemaining <= 0) {
+      handleTimeOut();
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeRemaining((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isTimerActive, timeRemaining, handleTimeOut]);
+
+  /* ============================================
+     پاسخ کاربر
+     ============================================ */
+  const handleAnswer = (answer) => {
+    if (answeredRef.current) return;
+    answeredRef.current = true;
+
+    const currentQuestion = questions[currentQuestionIndex];
+    const isCorrect = currentQuestion.correctAnswer === answer;
+    const points = isCorrect ? currentQuestion.points || 1 : 0;
+    recordAnswer(answer, isCorrect, points);
   };
 
-  const handleFinish = useCallback(() => {
-    setIsTimerActive(false);
-    setCurrentStep('result');
-  }, []);
-
+  /* ============================================
+     ریست
+     ============================================ */
   const resetQuiz = () => {
     setCurrentStep('intro');
     setCurrentQuestionIndex(0);
     setAnswers([]);
-    setTimeRemaining(20);
-    setQuestionTimer(20);
+    setTimeRemaining(TIME_PER_QUESTION);
     setScore(0);
     setIsTimerActive(false);
     setSelectedSpecialty(null);
     setQuestions([]);
+    answeredRef.current = false;
   };
 
+  /* ============================================
+     رندر
+     ============================================ */
   if (currentStep === 'intro') {
-    return <QuizIntro onStart={startQuiz} totalQuestions={totalQuestions} />;
+    return <QuizIntro onStart={startQuiz} />;
   }
 
   if (currentStep === 'result') {
     return (
-      <QuizResult 
+      <QuizResult
         answers={answers}
         score={score}
         totalQuestions={totalQuestions}
@@ -131,7 +149,7 @@ export default function Quiz() {
     return (
       <div className={styles.container}>
         <div className={styles.card}>
-          <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
+          <p className={styles.emptyState}>
             خطا در بارگذاری سوالات. لطفاً مجدداً تلاش کنید.
           </p>
           <button onClick={resetQuiz} className={styles.buttonPrimary}>
@@ -149,8 +167,6 @@ export default function Quiz() {
       totalQuestions={totalQuestions}
       onAnswer={handleAnswer}
       timeRemaining={timeRemaining}
-      questionTimer={questionTimer}
-      onTimeOut={handleTimeOut}
     />
   );
 }

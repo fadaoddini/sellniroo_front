@@ -1,117 +1,122 @@
 // components/Quiz/specialties.js
+// ============================================
+// تخصص‌های آزمون سلنیرو
+// محوریت: استخدام فروش و بازاریابی
+// ============================================
 import {
+  ShoppingCart,
+  Phone,
+  Handshake,
+  Monitor,
+  BarChart3,
+  Headset,
+  Truck,
+  MessageSquare,
   Building2,
-  HardHat,
-  Calculator,
-  PencilRuler,
-  Wrench,
-  Zap,
-  Plug,
-  PenTool,
-  Fan,
-  Cog,
-  Compass,
-  Route,
-  Landmark,
-  RefreshCw,
-  Mountain,
+  Store,
+  Contact,
+  FileText,
+  ShoppingBag,
+  DollarSign,
+  Globe,
+  Scale,
 } from 'lucide-react';
 
 export const specialties = [
   {
-    id: 'civil-supervision',
-    name: 'عمران نظارت',
+    id: 'field-sales',
+    name: 'فروشنده حضوری',
+    icon: ShoppingCart,
+    description: 'ارزیابی مهارت‌های فروش حضوری و ارتباط رو در رو',
+  },
+  {
+    id: 'telemarketing',
+    name: 'فروش تلفنی',
+    icon: Phone,
+    description: 'سنجش مهارت‌های تماس تلفنی و متقاعدسازی',
+  },
+  {
+    id: 'negotiation',
+    name: 'مذاکره و متقاعدسازی',
+    icon: Handshake,
+    description: 'ارزیابی توانایی مذاکره و اثرگذاری',
+  },
+  {
+    id: 'digital-marketing',
+    name: 'بازاریابی دیجیتال',
+    icon: Monitor,
+    description: 'سنجش دانش سئو، تبلیغات آنلاین و شبکه‌های اجتماعی',
+  },
+  {
+    id: 'sales-management',
+    name: 'مدیریت فروش',
+    icon: BarChart3,
+    description: 'ارزیابی مهارت‌های رهبری تیم فروش و برنامه‌ریزی',
+  },
+  {
+    id: 'b2b-telemarketing',
+    name: 'بازاریابی تلفنی B2B',
+    icon: Headset,
+    description: 'سنجش مهارت تماس با مشتریان تجاری',
+  },
+  {
+    id: 'visiting',
+    name: 'ویزیتوری و توزیع',
+    icon: Truck,
+    description: 'ارزیابی مهارت‌های ویزیت و توزیع محصول',
+  },
+  {
+    id: 'communication-skills',
+    name: 'مهارت‌های ارتباطی',
+    icon: MessageSquare,
+    description: 'سنجش مهارت‌های ارتباط کلامی و غیرکلامی',
+  },
+  {
+    id: 'b2b-sales',
+    name: 'فروش B2B',
     icon: Building2,
-    description: 'نظارت بر اجرای پروژه‌های عمرانی'
+    description: 'ارزیابی فروش به کسب‌وکارها و سازمان‌ها',
   },
   {
-    id: 'civil-execution',
-    name: 'عمران اجرا',
-    icon: HardHat,
-    description: 'اجرای عملیات ساختمانی و عمرانی'
+    id: 'b2c-sales',
+    name: 'فروش B2C',
+    icon: Store,
+    description: 'سنجش مهارت فروش به مصرف‌کننده نهایی',
   },
   {
-    id: 'civil-calculation',
-    name: 'عمران محاسبات',
-    icon: Calculator,
-    description: 'محاسبات سازه‌ای و طراحی'
+    id: 'crm',
+    name: 'مدیریت ارتباط با مشتری (CRM)',
+    icon: Contact,
+    description: 'ارزیابی کار با سیستم‌های CRM و مدیریت مشتریان',
   },
   {
-    id: 'architecture-supervision',
-    name: 'معماری نظارت',
-    icon: PencilRuler,
-    description: 'نظارت بر اجرای معماری'
+    id: 'content-marketing',
+    name: 'بازاریابی محتوا',
+    icon: FileText,
+    description: 'سنجش مهارت تولید و توزیع محتوای بازاریابی',
   },
   {
-    id: 'architecture-execution',
-    name: 'معماری اجرا',
-    icon: Wrench,
-    description: 'اجرای جزئیات معماری'
+    id: 'retail-sales',
+    name: 'فروش خرده‌فروشی',
+    icon: ShoppingBag,
+    description: 'ارزیابی مهارت‌های فروش در فروشگاه و خرده‌فروشی',
   },
   {
-    id: 'electrical-supervision',
-    name: 'تاسیسات برق نظارت',
-    icon: Zap,
-    description: 'نظارت بر تاسیسات برقی'
+    id: 'pricing',
+    name: 'قیمت‌گذاری و پیشنهاد',
+    icon: DollarSign,
+    description: 'سنجش دانش استراتژی‌های قیمت‌گذاری',
   },
   {
-    id: 'electrical-execution',
-    name: 'تاسیسات برق اجرا',
-    icon: Plug,
-    description: 'اجرای تاسیسات برقی'
+    id: 'ecommerce-sales',
+    name: 'فروش آنلاین و ای‌کامرس',
+    icon: Globe,
+    description: 'ارزیابی مهارت فروش در بستر آنلاین',
   },
   {
-    id: 'electrical-design',
-    name: 'تاسیسات برق طراحی',
-    icon: PenTool,
-    description: 'طراحی سیستم‌های برقی'
+    id: 'sales-ethics',
+    name: 'اصول و اخلاق حرفه‌ای فروش',
+    icon: Scale,
+    description: 'سنجش اخلاق حرفه‌ای و رعایت اصول در فروش',
   },
-  {
-    id: 'mechanical-supervision',
-    name: 'تاسیسات مکانیک نظارت',
-    icon: Fan,
-    description: 'نظارت بر تاسیسات مکانیکی'
-  },
-  {
-    id: 'mechanical-execution',
-    name: 'تاسیسات مکانیک اجرا',
-    icon: Cog,
-    description: 'اجرای تاسیسات مکانیکی'
-  },
-  {
-    id: 'mechanical-design',
-    name: 'تاسیسات مکانیک طراحی',
-    icon: Compass,
-    description: 'طراحی سیستم‌های مکانیکی'
-  },
-  {
-    id: 'surveying',
-    name: 'نقشه برداری',
-    icon: Compass,
-    description: 'عملیات نقشه‌برداری و ژئوماتیک'
-  },
-  {
-    id: 'traffic',
-    name: 'ترافیک',
-    icon: Route,
-    description: 'مهندسی ترافیک و حمل و نقل'
-  },
-  {
-    id: 'urban-planning',
-    name: 'شهرسازی',
-    icon: Landmark,
-    description: 'برنامه‌ریزی شهری و منطقه‌ای'
-  },
-  {
-    id: 'civil-rehabilitation',
-    name: 'عمران بهسازی',
-    icon: RefreshCw,
-    description: 'بهسازی و مقاوم‌سازی سازه‌ها'
-  },
-  {
-    id: 'civil-excavation',
-    name: 'عمران گودبرداری',
-    icon: Mountain,
-    description: 'گودبرداری و سازه‌های نگهبان'
-  }
 ];

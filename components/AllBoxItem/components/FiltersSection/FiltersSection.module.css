@@ -141,7 +141,7 @@
   flex-direction: column;
   gap: 12px;
   padding: 14px;
-  background: #f9f9fb;
+  background: var(--macos-bg);
   border-radius: 12px;
   margin-bottom: 16px;
   border: 1px solid #f0f0f2;
@@ -221,7 +221,7 @@
 .verifiedFilter {
   margin: 12px 0;
   padding: 10px 12px;
-  background: #f9f9fb;
+  background: var(--macos-bg);
   border-radius: 8px;
   border: 1px solid #f0f0f2;
 }

@@ -1,5 +1,11 @@
+.container{
+   background: var(--macos-bg);
+}
+
+
 .salesContainer {
   padding: 2rem 0;
+  background: var(--macos-bg);
 }
 
 .salesHeader {

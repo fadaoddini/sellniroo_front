@@ -1,5 +1,8 @@
 /* components/Game/Game.module.css */
 
+/* ============================================
+   ANIMATIONS
+   ============================================ */
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -16,6 +19,14 @@
   50% { transform: scale(1.05); }
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ============================================
+   CONTAINER
+   ============================================ */
 .container {
   min-height: 100vh;
   display: flex;
@@ -30,51 +41,66 @@
 }
 
 .container.night {
-  background: #1a1a2e;
+  background: #0a0b0f;
 }
 
+/* ============================================
+   GAME WRAPPER
+   ============================================ */
 .gameWrapper {
-  background: white;
+  background: #ffffff;
   border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
   padding: 30px;
   max-width: 800px;
   width: 100%;
   transition: background 0.5s ease, box-shadow 0.5s ease;
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .gameWrapper.night {
   background: #16213e;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
-/* هدر بازی */
+/* ============================================
+   HEADER
+   ============================================ */
 .gameHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
   padding: 0 8px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .gameTitle {
   font-family: var(--font-iran-extra);
   font-size: 18px;
-  color: #333;
+  color: #1a1a2e;
   display: flex;
   align-items: center;
   gap: 8px;
+  font-weight: 700;
 }
 
 .gameTitle.night {
   color: #e0e0e0;
 }
 
+.gameTitle svg {
+  color: #0e8f59;
+}
+
 .gameStats {
   display: flex;
   gap: 20px;
   font-size: 14px;
-  color: #666;
+  color: #4b5563;
+  align-items: center;
 }
 
 .gameStats.night {
@@ -87,17 +113,30 @@
   gap: 4px;
 }
 
-/* کانوس بازی */
+.gameStats strong {
+  color: #0e8f59;
+  font-family: var(--font-iran-bold);
+}
+
+.gameStats.night strong {
+  color: #2da170;
+}
+
+/* ============================================
+   CANVAS WRAPPER
+   ============================================ */
 .canvasWrapper {
   position: relative;
   border-radius: 16px;
   overflow: hidden;
   background: #f0f0f0;
   transition: background 0.5s ease;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
 .canvasWrapper.night {
   background: #1a1a2e;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .canvas {
@@ -106,9 +145,13 @@
   height: auto;
   cursor: pointer;
   touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-/* وضعیت‌های بازی */
+/* ============================================
+   OVERLAY
+   ============================================ */
 .gameOverlay {
   position: absolute;
   top: 0;
@@ -119,103 +162,223 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 16px;
   animation: slideIn 0.4s ease-out;
-  gap: 12px;
+  gap: 10px;
   padding: 20px;
+  text-align: center;
 }
 
 .gameOverlay h2 {
-  color: white;
+  color: #ffffff;
   font-family: var(--font-iran-extra);
-  font-size: 28px;
+  font-size: 26px;
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: float 2s ease-in-out infinite;
 }
 
 .gameOverlay p {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 16px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 15px;
   margin: 0;
+  max-width: 90%;
+  line-height: 1.5;
 }
 
 .gameOverlay .score {
-  font-size: 48px;
+  font-size: 52px;
   font-weight: 800;
-  color: #ffd700;
+  color: #2da170;
   font-family: var(--font-iran-extra);
+  line-height: 1;
+  text-shadow: 0 0 30px rgba(45, 161, 112, 0.5);
+  animation: pulse 1.5s ease-in-out infinite;
 }
 
 .gameOverlay .highScore {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
 }
 
+.gameOverlay .newRecord {
+  color: #ffd700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+
+.helpRow {
+  display: flex;
+  gap: 20px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 13px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 4px 0;
+}
+
+.helpRow span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+   START BUTTON
+   ============================================ */
 .startButton {
   padding: 14px 40px;
-  background: linear-gradient(135deg, #800020, #a8324a);
-  color: white;
+  background: linear-gradient(135deg, #2da170, #0e8f59);
+  color: #ffffff;
   border: none;
   border-radius: 12px;
-  font-size: 18px;
+  font-size: 17px;
   font-family: var(--font-iran-extra);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 20px rgba(45, 161, 112, 0.35);
 }
 
 .startButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(128, 0, 32, 0.3);
+  box-shadow: 0 8px 30px rgba(45, 161, 112, 0.5);
 }
 
 .startButton:active {
-  transform: scale(0.95);
+  transform: scale(0.96);
 }
 
-/* کنترل‌ها */
+/* ============================================
+   CONTROLS (تک دکمه بزرگ)
+   ============================================ */
 .gameControls {
   display: flex;
   justify-content: center;
   gap: 12px;
   margin-top: 16px;
+  flex-wrap: wrap;
 }
 
 .controlButton {
-  padding: 12px 24px;
-  background: rgba(0, 0, 0, 0.06);
-  border: 2px solid #e0e0e0;
+  padding: 14px 32px;
+  background: #f3f4f6;
+  border: 2px solid #e5e7eb;
   border-radius: 12px;
   font-family: var(--font-iran);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
-  color: #333;
+  color: #1a1a2e;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
-.controlButton:hover {
-  background: rgba(0, 0, 0, 0.1);
+.controlButton:hover:not(:disabled) {
+  background: #e5e7eb;
   transform: translateY(-2px);
+  border-color: #0e8f59;
+  color: #0e8f59;
+}
+
+.controlButton:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.controlButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .controlButton.night {
   background: rgba(255, 255, 255, 0.06);
-  border-color: #444;
+  border-color: rgba(255, 255, 255, 0.1);
   color: #e0e0e0;
 }
 
-.controlButton.night:hover {
-  background: rgba(255, 255, 255, 0.1);
+.controlButton.night:hover:not(:disabled) {
+  background: rgba(45, 161, 112, 0.15);
+  border-color: #2da170;
+  color: #2da170;
 }
 
-/* ریسپانسیو */
+.controlButtonWide {
+  min-width: 220px;
+  justify-content: center;
+}
+
+/* کلید Space به شکل کیبورد */
+.spaceKey {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 14px;
+  background: linear-gradient(180deg, #ffffff, #e5e7eb);
+  border: 1px solid #d1d5db;
+  border-bottom-width: 3px;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: #374151;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
+}
+
+.controlButton:active .spaceKey {
+  transform: translateY(1px);
+  border-bottom-width: 1px;
+}
+
+.controlButton.night .spaceKey {
+  background: linear-gradient(180deg, #2a2a3e, #1a1a2e);
+  border-color: #3a3a4e;
+  color: #e0e0e0;
+}
+
+/* ============================================
+   TIP
+   ============================================ */
+.tip {
+  text-align: center;
+  font-size: 12px;
+  color: #6b7280;
+  margin: 12px 0 0;
+  font-family: var(--font-iran);
+}
+
+.gameWrapper.night .tip {
+  color: #9ca3af;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 @media (max-width: 640px) {
+  .container {
+    padding: 12px;
+  }
+
   .gameWrapper {
     padding: 16px;
     border-radius: 16px;
@@ -223,8 +386,8 @@
 
   .gameHeader {
     flex-direction: column;
-    gap: 8px;
     align-items: flex-start;
+    gap: 8px;
   }
 
   .gameTitle {
@@ -237,21 +400,34 @@
   }
 
   .gameOverlay h2 {
-    font-size: 22px;
+    font-size: 20px;
+  }
+
+  .gameOverlay p {
+    font-size: 13px;
   }
 
   .gameOverlay .score {
-    font-size: 36px;
+    font-size: 40px;
   }
 
   .startButton {
     padding: 12px 32px;
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .controlButton {
-    padding: 10px 16px;
-    font-size: 12px;
+    padding: 12px 20px;
+    font-size: 13px;
+  }
+
+  .controlButtonWide {
+    min-width: 180px;
+  }
+
+  .helpRow {
+    font-size: 11px;
+    gap: 10px;
   }
 }
 
@@ -266,20 +442,29 @@
   }
 
   .gameStats {
-    font-size: 10px;
+    font-size: 11px;
     gap: 8px;
   }
 
   .gameOverlay h2 {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .gameOverlay .score {
-    font-size: 28px;
+    font-size: 32px;
   }
 
   .startButton {
     padding: 10px 24px;
-    font-size: 14px;
+    font-size: 13px;
+  }
+
+  .controlButton {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+
+  .controlButtonWide {
+    min-width: 150px;
   }
 }

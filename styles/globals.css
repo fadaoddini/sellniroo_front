@@ -80,7 +80,7 @@
   /* ============================================
      رنگ‌های مکمل MacOS
      ============================================ */
-  --macos-bg: #f5f5f7;
+  --macos-bg: #fff4e7;
   --text:#333;
   --macos-card: rgb(255, 255, 255);
   --macos-border: rgba(0, 0, 0, 0.08);
@@ -110,7 +110,7 @@
 }
 
 body {
-    background: radial-gradient(circle at 50% 50%, #16181f 0%, #08090b 100%);
+    background: var(--macos-bg);
 
   color: var(--macos-text);
   direction: rtl;
@@ -385,6 +385,7 @@ table {
 /* حذف هایلایت آبی در موبایل - بدون مسدود کردن کلیک */
 * {
   -webkit-tap-highlight-color: transparent !important;
+  
 }
 
 /* حذف فوکوس برای دکمه‌ها و لینک‌ها */

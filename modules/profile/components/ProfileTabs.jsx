@@ -2,13 +2,15 @@
 "use client";
 
 import styles from "../styles/ProfileTabs.module.css";
-import { Briefcase, User, Send, Bookmark } from "lucide-react";
+import { Briefcase, User, Send, Bookmark, Building2, FileText, } from "lucide-react";
 
 const ICONS = {
   briefcase: Briefcase,
   user: User,
   send: Send,
   bookmark: Bookmark,
+  building: Building2,
+  "file-text": FileText,
 };
 
 const ProfileTabs = ({ tabs, activeTab, onChange }) => {

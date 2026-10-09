@@ -1,0 +1,257 @@
+.viewWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: var(--font-iran);
+}
+
+.companyCard {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px;
+  font-family: var(--font-iran);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding-bottom: 20px;
+    font-family: var(--font-iran);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.logoBox {
+  flex-shrink: 0;
+}
+
+.logo {
+  width: 90px;
+  height: 90px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+}
+
+.logoPlaceholder {
+  width: 90px;
+  height: 90px;
+  border-radius: 14px;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3b82f6;
+  border: 2px solid #dbeafe;
+}
+
+.titleBox {
+  flex: 1;
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.titleRow h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #1e293b;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.verified {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.unverified {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.shortDesc {
+  margin: 8px 0 0 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.editBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #f1f5f9;
+  color: #334155;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.editBtn:hover {
+  background: #e2e8f0;
+}
+
+.aboutSection,
+.addressSection,
+.docsSection {
+  padding: 20px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.aboutSection:last-child,
+.docsSection:last-child {
+  border-bottom: none;
+}
+
+.aboutSection h3,
+.addressSection h4,
+.docsSection h4 {
+  margin: 0 0 10px 0;
+  font-size: 15px;
+  color: #334155;
+}
+
+.aboutSection p,
+.addressSection p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+.contactGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  padding: 20px 0;
+}
+
+.contactItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: #64748b;
+}
+
+.contactItem > svg {
+  margin-top: 2px;
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.contactItem > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.contactLabel {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.contactItem a,
+.contactItem span:not(.contactLabel) {
+  color: #1e293b;
+  font-size: 13px;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+.contactItem a:hover {
+  color: #3b82f6;
+}
+
+.docsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.docThumb {
+  position: relative;
+  display: block;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+}
+
+.docThumb:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.docThumb img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  display: block;
+}
+
+.docTitle {
+  display: block;
+  padding: 6px 8px;
+  font-size: 11px;
+  color: #475569;
+  background: #f8fafc;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .companyCard {
+    padding: 20px;
+  }
+  .cardHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .logo,
+  .logoPlaceholder {
+    width: 70px;
+    height: 70px;
+  }
+  .titleRow h2 {
+    font-size: 18px;
+  }
+  .editBtn {
+    align-self: flex-start;
+  }
+}

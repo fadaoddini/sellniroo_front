@@ -1,18 +1,20 @@
 /* ============================================
-   MarketingModule.module.css - Hexagon Dark Theme
-   با ساختار سه ستونی
+   MarketingModule.module.css
+   Hexagon Light Theme - با ساختار سه ستونی
+   پس‌زمینه روشن، متن تیره
    ============================================ */
 
 /* ============================================
    1. MAIN CONTAINER
    ============================================ */
 .container {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
   font-family: var(--font-iran);
-  background: radial-gradient(circle at 50% 50%, #16181f 0%, #08090b 100%);
   min-height: 100vh;
+  color: var(--text-1);
+  background: transparent;
 }
 
 /* ============================================
@@ -24,10 +26,12 @@
   align-items: center;
   margin-bottom: 2rem;
   padding: 1.5rem 2rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.75);
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
 }
 
 .headerIcon {
@@ -40,7 +44,6 @@
   font-size: 1.4rem;
   font-weight: 700;
   font-family: var(--font-edameh);
-  color: #ffffff;
   margin: 0;
   background: linear-gradient(135deg, #2da170, #0e8f59);
   -webkit-background-clip: text;
@@ -49,9 +52,9 @@
 }
 
 .subtitle {
-  color: rgb(255, 255, 255);
   font-size: 0.85rem;
   margin: 0.25rem 0 0;
+  color: #4b5563;
 }
 
 .addBtn {
@@ -59,8 +62,8 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1.5rem;
-background: linear-gradient(135deg, #2da170, #0e8f59);
-  color: white;
+  background: linear-gradient(135deg, #2da170, #0e8f59);
+  color: #ffffff;
   border: none;
   border-radius: 12px;
   font-size: 0.85rem;
@@ -72,7 +75,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 
 .addBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(139, 154, 255, 0.4);
+  box-shadow: 0 4px 20px rgba(45, 161, 112, 0.4);
 }
 
 /* ============================================
@@ -84,9 +87,9 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
   padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .searchBox {
@@ -94,22 +97,23 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   align-items: center;
   gap: 0.5rem;
   padding: 0.4rem 1rem;
-  background: rgba(81, 158, 111, 0.137);
+  background: rgba(81, 158, 111, 0.1);
   border-radius: 10px;
   font-family: var(--font-iran) !important;
   flex: 1;
   min-width: 200px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
 }
 
 .searchBox:focus-within {
-  border-color: rgba(139, 154, 255, 0.3);
-  box-shadow: 0 0 0 4px rgba(139, 154, 255, 0.05);
+  border-color: rgba(45, 161, 112, 0.4);
+  box-shadow: 0 0 0 4px rgba(45, 161, 112, 0.1);
+  background: #ffffff;
 }
 
 .searchIcon {
-  color: rgba(255, 255, 255, 0.677);
+  color: #6b7280;
 }
 
 .searchInput {
@@ -119,11 +123,11 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   font-size: 0.85rem;
   font-family: var(--font-iran);
   width: 100%;
-  color: rgba(255, 255, 255, 0.934);
+  color: #1c1c1e;
 }
 
 .searchInput::placeholder {
-  color: rgba(255, 255, 255, 0.2);
+  color: #9ca3af;
 }
 
 .tabs {
@@ -137,26 +141,32 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   align-items: center;
   gap: 0.3rem;
   padding: 0.3rem 0.8rem;
-  border: 1px solid rgba(255, 255, 255, 0.181);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  background: transparent;
+  background: #ffffff;
   font-size: 0.7rem;
   font-family: var(--font-iran);
-  color: rgb(255, 255, 255);
+  color: #4b5563;
   cursor: pointer;
   transition: all 0.3s ease;
   white-space: nowrap;
 }
 
 .tab:hover {
-  background: rgba(139, 154, 255, 0.05);
-  color: rgba(255, 255, 255, 0.7);
+  background: rgba(45, 161, 112, 0.08);
+  color: #0e8f59;
+  border-color: rgba(45, 161, 112, 0.2);
 }
 
 .activeTab {
   background: linear-gradient(135deg, #2da170, #0e8f59);
   color: #ffffff;
   border-color: rgba(0, 117, 60, 0.2);
+}
+
+.activeTab:hover {
+  background: linear-gradient(135deg, #2da170, #0e8f59);
+  color: #ffffff;
 }
 
 /* ============================================
@@ -170,9 +180,10 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 }
 
 .column {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   padding: 1rem;
   min-height: 400px;
@@ -180,10 +191,13 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   display: flex;
   flex-direction: column;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  color: #1c1c1e;
 }
 
 .column:hover {
-  border-color: rgba(139, 154, 255, 0.1);
+  border-color: rgba(45, 161, 112, 0.2);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
 }
 
 .columnHeader {
@@ -191,7 +205,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   justify-content: space-between;
   align-items: center;
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.06);
   margin-bottom: 1rem;
   flex-shrink: 0;
 }
@@ -203,22 +217,22 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   font-size: 0.9rem;
   font-weight: 600;
   font-family: var(--font-iran-bold);
-  color: rgba(255, 255, 255, 0.7);
+  color: #1c1c1e;
 }
 
 .columnTitle svg {
-  color: #fff;
+  color: #1c1c1e;
 }
 
 .columnCount {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.05);
   padding: 0.2rem 0.7rem;
   border-radius: 20px;
   font-size: 0.7rem;
   font-weight: 500;
   font-family: var(--font-iran);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #4b5563;
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .columnBody {
@@ -239,12 +253,12 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 }
 
 .columnBody::-webkit-scrollbar-thumb {
-  background: rgba(139, 154, 255, 0.2);
+  background: rgba(45, 161, 112, 0.25);
   border-radius: 10px;
 }
 
 .columnBody::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 154, 255, 0.3);
+  background: rgba(45, 161, 112, 0.4);
 }
 
 .emptyColumn {
@@ -253,14 +267,14 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   align-items: center;
   justify-content: center;
   height: 150px;
-  color: rgba(255, 255, 255, 0.952);
+  color: #6b7280;
   font-size: 0.8rem;
   font-family: var(--font-iran);
 }
 
 .emptyColumn svg {
-  color: rgb(255, 255, 255);
   margin-bottom: 0.5rem;
+  color: #9ca3af;
 }
 
 /* ============================================
@@ -271,7 +285,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 }
 
 .columnNew .columnTitle {
-  color: #8b9aff;
+  color: #6366f1;
 }
 
 .columnProgress {
@@ -279,7 +293,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 }
 
 .columnProgress .columnTitle {
-  color: #ff9500;
+  color: #d97706;
 }
 
 .columnResults {
@@ -287,7 +301,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 }
 
 .columnResults .columnTitle {
-  color: #34c759;
+  color: #059669;
 }
 
 /* ============================================
@@ -300,11 +314,11 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 .empty {
   text-align: center;
   padding: 3rem;
-  color: rgb(255, 255, 255);
+  color: #6b7280;
 }
 
 /* ============================================
-   7. MODALS - Hexagon Theme
+   7. MODALS - Light Theme
    ============================================ */
 .modalOverlay {
   position: fixed;
@@ -312,8 +326,9 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(38, 145, 106, 0.419);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -322,7 +337,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 }
 
 .modal {
-  background: linear-gradient(135deg, #1a1c24, #0a0b0f);
+  background: #ffffff;
   border-radius: 20px;
   padding: 2rem;
   max-width: 600px;
@@ -331,8 +346,9 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   max-height: 90vh;
   overflow-y: auto;
   animation: slideUp 0.3s ease-out;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  color: #1c1c1e;
 }
 
 .detailModal {
@@ -348,7 +364,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 }
 
 .modal::-webkit-scrollbar-thumb {
-  background: rgba(139, 154, 255, 0.3);
+  background: rgba(45, 161, 112, 0.3);
   border-radius: 10px;
 }
 
@@ -358,7 +374,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .modalHeader h2 {
@@ -367,7 +383,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   gap: 0.5rem;
   margin: 0;
   font-size: 1.1rem;
-  color: #ffffff;
+  color: #1c1c1e;
   font-family: var(--font-edameh);
 }
 
@@ -377,17 +393,17 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 
 .closeBtn {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   cursor: pointer;
-  color: rgb(255, 146, 146);
+  color: #ef4444;
   padding: 0.25rem;
   border-radius: 6px;
   transition: all 0.2s ease;
 }
 
 .closeBtn:hover {
-  color: rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.2);
 }
 
 /* ============================================
@@ -403,8 +419,8 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   gap: 0.3rem;
   font-size: 0.7rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.4);
   margin-bottom: 0.25rem;
+  color: #4b5563;
 }
 
 .labelIcon {
@@ -415,26 +431,26 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 .formGroup textarea {
   width: 100%;
   padding: 0.6rem 0.8rem;
-  border: 1.5px solid rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
   border-radius: 10px;
   font-size: 0.85rem;
   font-family: var(--font-iran);
   transition: all 0.2s ease;
   outline: none;
-  background: rgba(255, 255, 255, 0.03);
-  color: rgb(255, 255, 255);
+  background: #f9fafb;
+  color: #1c1c1e;
 }
 
 .formGroup input::placeholder,
 .formGroup textarea::placeholder {
-  color: rgba(255, 255, 255, 0.15);
+  color: #9ca3af;
 }
 
 .formGroup input:focus,
 .formGroup textarea:focus {
-  border-color: rgba(139, 154, 255, 0.3);
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 0 4px rgba(139, 154, 255, 0.05);
+  border-color: rgba(45, 161, 112, 0.4);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(45, 161, 112, 0.1);
 }
 
 .formActions {
@@ -443,24 +459,24 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   justify-content: flex-end;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .cancelBtn {
   padding: 0.5rem 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  background: transparent;
+  background: #ffffff;
+  color: #4b5563;
   cursor: pointer;
   font-size: 0.8rem;
   font-family: var(--font-iran);
-  color: rgba(255, 255, 255, 0.4);
   transition: all 0.2s ease;
 }
 
 .cancelBtn:hover {
-  background: rgba(255, 255, 255, 0.03);
-  color: rgba(255, 255, 255, 0.6);
+  background: #f3f4f6;
+  color: #1c1c1e;
 }
 
 .submitBtn {
@@ -471,7 +487,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   border: none;
   border-radius: 10px;
   background: linear-gradient(135deg, #2da170, #0e8f59);
-  color: white;
+  color: #ffffff;
   cursor: pointer;
   font-size: 0.8rem;
   font-family: var(--font-iran);
@@ -481,7 +497,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 
 .submitBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(139, 154, 255, 0.3);
+  box-shadow: 0 4px 16px rgba(45, 161, 112, 0.35);
 }
 
 /* ============================================
@@ -498,9 +514,9 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   flex-wrap: wrap;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: #f9fafb;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .infoItem {
@@ -508,11 +524,11 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   align-items: center;
   gap: 0.3rem;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.965);
+  color: #4b5563;
 }
 
 .infoItem svg {
-  color: linear-gradient(135deg, #2da170, #0e8f59);
+  color: #0e8f59;
 }
 
 .infoStatus {
@@ -530,16 +546,16 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   align-items: flex-start;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: #f9fafb;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.03);
-  color: rgba(255, 255, 255, 0.949);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   font-size: 0.8rem;
+  color: #4b5563;
 }
 
 .descIcon {
-  color: rgba(255, 255, 255, 0.944);
   margin-top: 0.1rem;
+  color: #6b7280;
 }
 
 .followups {
@@ -554,19 +570,19 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   gap: 0.3rem;
   margin: 0 0 0.25rem;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.95);
   font-weight: 500;
+  color: #4b5563;
 }
 
 .noFollowups {
-  color: rgba(255, 255, 255, 0.939);
   font-size: 0.7rem;
   padding: 0.5rem 0;
+  color: #9ca3af;
 }
 
 .followupItem {
   padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: #f9fafb;
   border-radius: 8px;
   border-right: 3px solid #0e916e;
 }
@@ -575,9 +591,9 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   display: flex;
   justify-content: space-between;
   align-items: center;
-    font-size: 0.6rem;
+  font-size: 0.6rem;
   margin-bottom: 0.25rem;
-    color: #fff;
+  color: #6b7280;
 }
 
 .followupStatus {
@@ -586,7 +602,6 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   gap: 0.3rem;
   font-size: 0.6rem;
   font-weight: 500;
-  color: #fff;
 }
 
 .followupDate {
@@ -594,13 +609,13 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   align-items: center;
   gap: 0.2rem;
   font-size: 0.6rem;
-  color: rgba(255, 255, 255, 0.948);
+  color: #6b7280;
 }
 
 .followupDesc {
   margin: 0.25rem 0;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.939);
+  color: #1c1c1e;
 }
 
 .followupReason {
@@ -608,7 +623,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   align-items: center;
   gap: 0.3rem;
   font-size: 0.65rem;
-  color: rgba(255, 255, 255, 0.3);
+  color: #6b7280;
   margin-top: 0.25rem;
 }
 
@@ -617,7 +632,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   align-items: center;
   gap: 0.3rem;
   font-size: 0.65rem;
-  color: rgba(255, 149, 0, 0.6);
+  color: #d97706;
   margin-top: 0.25rem;
 }
 
@@ -640,6 +655,11 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   }
 }
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 /* ============================================
    11. RESPONSIVE
    ============================================ */
@@ -647,7 +667,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   .columnsContainer {
     grid-template-columns: 1fr 1fr;
   }
-  
+
   .column {
     max-height: 500px;
     min-height: 300px;
@@ -661,33 +681,33 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
     gap: 1rem;
     padding: 1rem;
   }
-  
+
   .controls {
     flex-direction: column;
   }
-  
+
   .tabs {
     justify-content: center;
   }
-  
+
   .columnsContainer {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .column {
     max-height: 400px;
     min-height: 250px;
   }
-  
+
   .modal {
     padding: 1.5rem;
   }
-  
+
   .detailModal {
     padding: 1rem;
   }
-  
+
   .infoBar {
     flex-direction: column;
     gap: 0.3rem;
@@ -698,21 +718,21 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   .container {
     padding: 1rem 0.5rem;
   }
-  
+
   .title {
     font-size: 1.2rem;
   }
-  
+
   .addBtn {
     width: 100%;
     justify-content: center;
   }
-  
+
   .tab {
     font-size: 0.6rem;
     padding: 0.2rem 0.5rem;
   }
-  
+
   .modal {
     padding: 1rem;
     width: 95%;
@@ -738,10 +758,12 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 
 [dir="rtl"] .followupItem {
   border-right: none;
-  border-left: 3px solid #8b9aff;
+  border-left: 3px solid #0e916e;
 }
 
-
+/* ============================================
+   13. LOADING
+   ============================================ */
 .loadingContainer {
   display: flex;
   flex-direction: column;
@@ -749,36 +771,35 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   justify-content: center;
   min-height: 400px;
   gap: 16px;
+  color: #4b5563;
 }
 
 .spinner {
   animation: spin 1s linear infinite;
-  color: #4a6cf7;
+  color: #0e8f59;
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
+/* ============================================
+   14. STATS BAR
+   ============================================ */
 .statsBar {
   display: flex;
   gap: 16px;
   margin-top: 8px;
   font-size: 0.7rem;
-  color: #ffffff;
+  color: #4b5563;
 }
 
 .statsBar span {
-  background: #5e5e5ea3;
+  background: rgba(0, 0, 0, 0.06);
   padding: 4px 12px;
   border-radius: 20px;
+  color: #1c1c1e;
 }
 
+/* ============================================
+   15. HEADER ACTIONS
+   ============================================ */
 .headerActions {
   display: flex;
   gap: 12px;
@@ -788,14 +809,16 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 .refreshBtn {
   padding: 8px 16px;
   background: #f0f2f5;
-  border: none;
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 8px;
   font-size: 13px;
+  font-family: var(--font-iran);
+  color: #1c1c1e;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.refreshBtn:hover {
+.refreshBtn:hover:not(:disabled) {
   background: #e4e7ec;
 }
 
@@ -804,10 +827,12 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   cursor: not-allowed;
 }
 
-/* استایل‌های اضافی برای آیتم */
+/* ============================================
+   16. CUSTOMER INFO
+   ============================================ */
 .customerName {
   font-size: 12px;
-  color: #666;
+  color: #6b7280;
   margin-right: 4px;
 }
 
@@ -816,20 +841,19 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   align-items: center;
   gap: 4px;
   font-size: 11px;
-  color: #666;
+  color: #4b5563;
   background: #f0f2f5;
   padding: 2px 8px;
   border-radius: 12px;
 }
 
-
 /* ============================================
-   TIMELINE SECTION
+   17. TIMELINE SECTION
    ============================================ */
 .timelineSection {
   margin-top: 0.5rem;
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .timelineHeader {
@@ -843,35 +867,30 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   margin: 0;
   font-size: 0.75rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.3);
+  color: #6b7280;
 }
 
 .timelineHeader .labelIcon {
-  color: rgba(139, 154, 255, 0.4);
+  color: rgba(45, 161, 112, 0.6);
 }
 
 .timelineCount {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.05);
   padding: 0.05rem 0.5rem;
   border-radius: 12px;
   font-size: 0.55rem;
-  color: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  color: #6b7280;
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-/* ============================================
-   RESPONSIVE FOR TIMELINE
-   ============================================ */
 @media (max-width: 768px) {
   .timelineSection {
     margin-top: 0.25rem;
   }
 }
 
-
-
 /* ============================================
-   FORM ROW (دو ستونه)
+   18. FORM ROW (دو ستونه)
    ============================================ */
 .formRow {
   display: grid;
@@ -880,7 +899,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 }
 
 /* ============================================
-   SUPPORT FOR PERSIAN DATE PICKER IN FORM
+   19. PERSIAN DATE PICKER SUPPORT
    ============================================ */
 .formGroup :global(.pickerWrapper) {
   width: 100%;
@@ -890,14 +909,14 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 .formGroup :global(.pickerInput) {
   width: 100%;
   padding: 0.6rem 0.8rem;
-  border: 1.5px solid rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
   border-radius: 10px;
   font-size: 0.85rem;
   font-family: var(--font-iran);
   transition: all 0.2s ease;
   outline: none;
-  background: rgba(255, 255, 255, 0.03);
-  color: rgba(255, 255, 255, 0.7);
+  background: #f9fafb;
+  color: #1c1c1e;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -906,27 +925,27 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 }
 
 .formGroup :global(.pickerInput:hover) {
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(0, 0, 0, 0.15);
 }
 
 .formGroup :global(.pickerInput:focus-within) {
-  border-color: rgba(139, 154, 255, 0.3);
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 0 4px rgba(139, 154, 255, 0.05);
+  border-color: rgba(45, 161, 112, 0.4);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(45, 161, 112, 0.1);
 }
 
 .formGroup :global(.calendarIcon) {
-  color: rgba(255, 255, 255, 0.2);
+  color: #9ca3af;
   flex-shrink: 0;
 }
 
 .formGroup :global(.selectedDate) {
-  color: rgba(255, 255, 255, 0.7);
+  color: #1c1c1e;
   flex: 1;
 }
 
 .formGroup :global(.placeholder) {
-  color: rgba(255, 255, 255, 0.2);
+  color: #9ca3af;
   flex: 1;
 }
 
@@ -934,7 +953,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   background: transparent;
   border: none;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.2);
+  color: #9ca3af;
   padding: 0.1rem;
   border-radius: 4px;
   transition: all 0.2s ease;
@@ -944,21 +963,21 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 }
 
 .formGroup :global(.clearBtn:hover) {
-  color: rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.05);
+  color: #ef4444;
 }
 
-/* Dropdown استایل در فرم */
+/* Dropdown */
 .formGroup :global(.pickerDropdown) {
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  background: linear-gradient(135deg, #1a1c24, #0a0b0f);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 10px;
   padding: 0.75rem;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   z-index: 10001;
   min-width: 280px;
 }
@@ -974,15 +993,15 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 .formGroup :global(.monthYear) {
   font-size: 0.75rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.6);
   font-family: var(--font-iran);
+  color: #1c1c1e;
 }
 
 .formGroup :global(.navBtn) {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 6px;
-  color: rgba(255, 255, 255, 0.3);
+  color: #6b7280;
   cursor: pointer;
   padding: 0.2rem 0.4rem;
   transition: all 0.2s ease;
@@ -992,8 +1011,9 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 }
 
 .formGroup :global(.navBtn:hover) {
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.6);
+  background: rgba(45, 161, 112, 0.08);
+  color: #0e8f59;
+  border-color: rgba(45, 161, 112, 0.2);
 }
 
 .formGroup :global(.weekDays) {
@@ -1007,7 +1027,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   text-align: center;
   font-size: 0.55rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.2);
+  color: #9ca3af;
   padding: 0.2rem 0;
 }
 
@@ -1024,15 +1044,15 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   padding: 0.25rem 0;
   font-size: 0.65rem;
   font-family: var(--font-iran);
-  color: rgba(255, 255, 255, 0.4);
+  color: #1c1c1e;
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: center;
 }
 
 .formGroup :global(.dayBtn:hover) {
-  background: rgba(139, 154, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
+  background: rgba(45, 161, 112, 0.1);
+  color: #0e8f59;
 }
 
 .formGroup :global(.dayBtn.today) {
@@ -1041,7 +1061,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 }
 
 .formGroup :global(.dayBtn.selected) {
-  background: rgba(139, 154, 255, 0.2);
+  background: rgba(45, 161, 112, 0.2);
   color: #0e8f59;
   font-weight: 600;
 }
@@ -1050,7 +1070,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   padding: 0.25rem 0;
 }
 
-/* RTL برای PersianDatePicker در فرم */
+/* RTL برای PersianDatePicker */
 [dir="rtl"] .formGroup :global(.pickerHeader) {
   direction: rtl;
 }
@@ -1059,28 +1079,28 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   transform: scaleX(-1);
 }
 
-/* Responsive */
 @media (max-width: 600px) {
   .formRow {
     grid-template-columns: 1fr;
     gap: 0.5rem;
   }
-  
+
   .formGroup :global(.pickerDropdown) {
     min-width: 200px;
     left: -10px;
     right: -10px;
   }
 }
+
 /* ============================================
-   توضیحات در صفحه جزئیات
+   20. DESCRIPTION SECTION
    ============================================ */
 .descriptionSection {
   margin: 0.75rem 0;
   padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: #f9fafb;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .sectionTitle {
@@ -1089,23 +1109,24 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
   gap: 0.5rem;
   font-size: 0.8rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
   margin-bottom: 0.5rem;
+  color: #1c1c1e;
 }
 
 .labelIcon {
-  color: rgba(255, 255, 255, 0.3);
+  color: #6b7280;
 }
 
 .descriptionBox {
   padding: 0.5rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: #ffffff;
   border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .descriptionBox p {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #4b5563;
   line-height: 1.6;
   margin: 0;
   white-space: pre-wrap;
@@ -1114,7 +1135,7 @@ background: linear-gradient(135deg, #2da170, #0e8f59);
 
 .emptyDescription {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.3);
+  color: #9ca3af;
   text-align: center;
   padding: 0.5rem 0;
 }

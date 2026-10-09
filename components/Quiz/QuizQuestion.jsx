@@ -1,34 +1,34 @@
 // components/Quiz/QuizQuestion.jsx
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './Quiz.module.css';
 
-export default function QuizQuestion({ 
-  question, 
-  currentIndex, 
-  totalQuestions, 
+const TOTAL_TIME = 20;
+
+export default function QuizQuestion({
+  question,
+  currentIndex,
+  totalQuestions,
   onAnswer,
   timeRemaining,
-  questionTimer,
-  onTimeOut
 }) {
   const [selectedOption, setSelectedOption] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [isAnswering, setIsAnswering] = useState(false);
-  const cardRef = useRef(null);
 
-  const totalTime = 20;
-  const progress = ((totalTime - timeRemaining) / totalTime) * 100;
-
-  // تنظیم متغیر CSS برای progress
+  /* ============================================
+     ریست state هنگام تغییر سوال
+     ============================================ */
   useEffect(() => {
-    if (cardRef.current) {
-      cardRef.current.style.setProperty('--progress', `${progress}%`);
-    }
-  }, [progress]);
+    setSelectedOption(null);
+    setShowResult(false);
+    setIsAnswering(false);
+  }, [question.id]);
 
-  // تشخیص وضعیت تایمر
+  /* ============================================
+     محاسبه وضعیت تایمر
+     ============================================ */
   const getTimerStatus = () => {
     if (timeRemaining <= 3) return 'heartbeat';
     if (timeRemaining <= 5) return 'danger';
@@ -38,7 +38,6 @@ export default function QuizQuestion({
 
   const timerStatus = getTimerStatus();
 
-  // تنظیم کلاس‌های کارت
   const getCardClasses = () => {
     let classes = styles.cardQuestion;
     if (timerStatus === 'warning') classes += ` ${styles.warning}`;
@@ -47,62 +46,67 @@ export default function QuizQuestion({
     return classes;
   };
 
-  const formatTime = (seconds) => {
-    return seconds.toString().padStart(2, '0');
-  };
+  const formatTime = (seconds) =>
+    seconds.toString().padStart(2, '0');
 
+  /* ============================================
+     کلیک روی گزینه
+     ============================================ */
   const handleOptionClick = (option) => {
     if (showResult || isAnswering) return;
-    
+
     setIsAnswering(true);
     setSelectedOption(option);
     setShowResult(true);
 
     setTimeout(() => {
       onAnswer(option);
-      setSelectedOption(null);
-      setShowResult(false);
-      setIsAnswering(false);
-    }, 500);
+    }, 600);
   };
 
+  /* ============================================
+     کلاس گزینه‌ها
+     ============================================ */
   const getOptionClass = (option) => {
     if (!showResult) {
-      return selectedOption === option ? styles.optionButtonSelected : '';
+      return selectedOption === option
+        ? styles.optionButtonSelected
+        : '';
     }
-
-    if (option === question.correctAnswer) {
-      return styles.optionButtonCorrect;
-    }
-
-    if (selectedOption === option && option !== question.correctAnswer) {
-      return styles.optionButtonWrong;
-    }
-
+    if (option === question.correctAnswer) return styles.optionButtonCorrect;
+    if (selectedOption === option) return styles.optionButtonWrong;
     return styles.optionButtonDisabled;
   };
 
   const getTimerClass = () => {
-    if (timerStatus === 'heartbeat' || timerStatus === 'danger') return styles.timerDanger;
+    if (timerStatus === 'heartbeat' || timerStatus === 'danger')
+      return styles.timerDanger;
     if (timerStatus === 'warning') return styles.timerWarning;
     return '';
   };
 
   const getTimerTextClass = () => {
-    if (timerStatus === 'heartbeat' || timerStatus === 'danger') return styles.timerTextRed;
+    if (timerStatus === 'heartbeat' || timerStatus === 'danger')
+      return styles.timerTextRed;
     if (timerStatus === 'warning') return styles.timerTextOrange;
     return styles.timerTextGreen;
+  };
+
+  const getProgressColor = () => {
+    if (timerStatus === 'heartbeat' || timerStatus === 'danger')
+      return 'linear-gradient(90deg, #ff3b30, #ff6b6b)';
+    if (timerStatus === 'warning')
+      return 'linear-gradient(90deg, #ff9500, #ffb347)';
+    return 'linear-gradient(90deg, #0e8f59, #2da170)';
   };
 
   const letters = ['الف', 'ب', 'ج', 'د'];
 
   return (
     <div className={styles.container}>
-      <div 
-        ref={cardRef}
-        className={getCardClasses()}
-      >
+      <div className={getCardClasses()}>
         <div className={styles.questionContent}>
+          {/* ============ Header ============ */}
           <div className={styles.questionHeader}>
             <span className={styles.questionCounter}>
               سوال {currentIndex + 1} از {totalQuestions}
@@ -112,30 +116,30 @@ export default function QuizQuestion({
               <span className={`${styles.timerText} ${getTimerTextClass()}`}>
                 {formatTime(timeRemaining)}
               </span>
-              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                / {formatTime(totalTime)}
+              <span className={styles.timerTotal}>
+                / {formatTime(TOTAL_TIME)}
               </span>
             </div>
           </div>
 
+          {/* ============ Progress Bar ============ */}
           <div className={styles.progressBar}>
-            <div 
+            <div
               className={styles.progressFill}
-              style={{ 
+              style={{
                 width: `${((currentIndex + 1) / totalQuestions) * 100}%`,
-                background: timerStatus === 'heartbeat' || timerStatus === 'danger'
-                  ? 'linear-gradient(90deg, #ff3b30, #ff6b6b)' 
-                  : timerStatus === 'warning'
-                  ? 'linear-gradient(90deg, #ff9500, #ffb347)'
-                  : 'linear-gradient(90deg, #800020, #a8324a)'
+                background: getProgressColor(),
               }}
             />
           </div>
 
+          {/* ============ Category ============ */}
           <div className={styles.category}>{question.category}</div>
 
+          {/* ============ Question Text ============ */}
           <h2 className={styles.questionText}>{question.text}</h2>
 
+          {/* ============ Options ============ */}
           <div className={styles.options}>
             {question.options.map((option, index) => (
               <button
@@ -147,15 +151,22 @@ export default function QuizQuestion({
                 <span className={styles.optionLetter}>{letters[index]}</span>
                 <span className={styles.optionText}>{option}</span>
                 {showResult && option === question.correctAnswer && (
-                  <span className={`${styles.optionIcon} ${styles.optionIconCorrect}`}>✓</span>
+                  <span className={`${styles.optionIcon} ${styles.optionIconCorrect}`}>
+                    ✓
+                  </span>
                 )}
-                {showResult && selectedOption === option && option !== question.correctAnswer && (
-                  <span className={`${styles.optionIcon} ${styles.optionIconWrong}`}>✗</span>
-                )}
+                {showResult &&
+                  selectedOption === option &&
+                  option !== question.correctAnswer && (
+                    <span className={`${styles.optionIcon} ${styles.optionIconWrong}`}>
+                      ✗
+                    </span>
+                  )}
               </button>
             ))}
           </div>
 
+          {/* ============ Footer ============ */}
           <div className={styles.questionFooter}>
             <span>⭐ امتیاز: {question.points || 1} نمره</span>
             <span>⏱️ {formatTime(timeRemaining)} ثانیه باقیمانده</span>

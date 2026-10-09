@@ -1,0 +1,306 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.header h3 {
+  margin: 0 0 6px 0;
+  font-size: 16px;
+  color: #1e293b;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* کارت قالب */
+.card {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.card:hover {
+  border-color: var(--tpl-color, #3b82f6);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.activeCard {
+  border-color: var(--tpl-color, #3b82f6);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tpl-color, #3b82f6) 20%, transparent);
+}
+
+/* Thumbnail */
+.thumbWrapper {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  background: #f1f5f9;
+  overflow: hidden;
+}
+
+.thumbInner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  transform: scale(0.28);
+  transform-origin: top right;
+  width: 357%;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Overlay */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  backdrop-filter: blur(2px);
+}
+
+.thumbWrapper:hover .overlay {
+  opacity: 1;
+}
+
+.previewBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: white;
+  color: #1e293b;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.previewBtn:hover {
+  transform: scale(1.05);
+}
+
+/* Badge */
+.selectedBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  background: var(--tpl-color, #3b82f6);
+  color: white;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* اطلاعات */
+.info {
+  padding: 16px;
+  flex: 1;
+}
+
+.name {
+  margin: 0 0 6px 0;
+  font-size: 15px;
+  color: #1e293b;
+}
+
+.description {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.bestFor {
+  display: inline-block;
+  font-size: 11px;
+  color: #94a3b8;
+  background: #f8fafc;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+/* دکمه انتخاب */
+.selectBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px;
+  margin: 0 16px 16px;
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.selectBtn:hover:not(.selectBtnActive) {
+  background: #e2e8f0;
+}
+
+.selectBtnActive {
+  background: var(--tpl-color, #3b82f6);
+  color: white;
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 900px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #1e293b;
+}
+
+.closeBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+}
+
+.closeBtn:hover {
+  background: #e2e8f0;
+}
+
+.modalBody {
+  flex: 1;
+  overflow: auto;
+  padding: 24px;
+  background: #f8fafc;
+}
+
+.modalPreview {
+  background: white;
+  max-width: 210mm;
+  margin: 0 auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid #e2e8f0;
+  background: white;
+}
+
+.cancelBtn,
+.confirmBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.cancelBtn {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.cancelBtn:hover {
+  background: #e2e8f0;
+}
+
+.confirmBtn {
+  background: #3b82f6;
+  color: white;
+}
+
+.confirmBtn:hover {
+  background: #2563eb;
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .modal {
+    max-height: 100vh;
+    border-radius: 0;
+  }
+}

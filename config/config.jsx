@@ -1468,6 +1468,8 @@ news: {
         search: (q) =>
           `${Config.baseUrl}/api/jobisell/jobs/search/?q=${encodeURIComponent(q)}`,
         stats: () => `${Config.baseUrl}/api/jobisell/jobs/stats/`,
+        myStats: () => `${Config.baseUrl}/api/jobisell/jobs/my-stats/`,
+
         myListings: () => `${Config.baseUrl}/api/jobisell/jobs/my_listings/`,
         myApplications: () => `${Config.baseUrl}/api/jobisell/jobs/my_applications/`,
         myBookmarks: () => `${Config.baseUrl}/api/jobisell/jobs/my_bookmarks/`,
@@ -1489,7 +1491,86 @@ news: {
 
       // ---------- فیلترها (ادمین) ----------
       filterConfigs: () => `${Config.baseUrl}/api/jobisell/filter-configs/`,
+      // ---------- شرکت من (My Company) ----------  ⬅️ اینجا داخل jobisell
+  myCompany: {
+  get: () => `${Config.baseUrl}/api/jobisell/my-company/`,
+  create: () => `${Config.baseUrl}/api/jobisell/my-company/`,
+  update: () => `${Config.baseUrl}/api/jobisell/my-company/`,
+  requestVerification: () =>
+    `${Config.baseUrl}/api/jobisell/my-company/request-verification/`,
+  verificationStatus: () =>
+    `${Config.baseUrl}/api/jobisell/my-company/verification-status/`,
+  
+  // ✅ جدید
+  uploadDocuments: () =>
+    `${Config.baseUrl}/api/jobisell/my-company/upload-documents/`,
+  deleteDocument: (docId) =>
+    `${Config.baseUrl}/api/jobisell/my-company/delete-document/${docId}/`,
+},
+
+  // ---------- درخواست‌های صحت‌سنجی ----------
+  verificationRequests: {
+    list: (params = {}) => {
+      const qs = new URLSearchParams(params).toString();
+      return `${Config.baseUrl}/api/jobisell/verification-requests/${qs ? '?' + qs : ''}`;
     },
+    detail: (id) => `${Config.baseUrl}/api/jobisell/verification-requests/${id}/`,
+    approve: (id) => `${Config.baseUrl}/api/jobisell/verification-requests/${id}/approve/`,
+    reject: (id) => `${Config.baseUrl}/api/jobisell/verification-requests/${id}/reject/`,
+  },
+
+        // ---------- رزومه من ----------
+      myResume: {
+        get: () => `${Config.baseUrl}/api/jobisell/resumes/my/`,
+        create: () => `${Config.baseUrl}/api/jobisell/resumes/my/`,
+        update: () => `${Config.baseUrl}/api/jobisell/resumes/my/`,
+        publish: () => `${Config.baseUrl}/api/jobisell/resumes/my/publish/`,
+        unpublish: () => `${Config.baseUrl}/api/jobisell/resumes/my/unpublish/`,
+      },
+
+      // ---------- بخش‌های رزومه ----------
+      resumeSections: {
+        workExperiences: {
+          list: () => `${Config.baseUrl}/api/jobisell/resume/work-experiences/`,
+          detail: (id) => `${Config.baseUrl}/api/jobisell/resume/work-experiences/${id}/`,
+        },
+        educations: {
+          list: () => `${Config.baseUrl}/api/jobisell/resume/educations/`,
+          detail: (id) => `${Config.baseUrl}/api/jobisell/resume/educations/${id}/`,
+        },
+        skills: {
+          list: () => `${Config.baseUrl}/api/jobisell/resume/skills/`,
+          detail: (id) => `${Config.baseUrl}/api/jobisell/resume/skills/${id}/`,
+        },
+        languages: {
+          list: () => `${Config.baseUrl}/api/jobisell/resume/languages/`,
+          detail: (id) => `${Config.baseUrl}/api/jobisell/resume/languages/${id}/`,
+        },
+        certificates: {
+          list: () => `${Config.baseUrl}/api/jobisell/resume/certificates/`,
+          detail: (id) => `${Config.baseUrl}/api/jobisell/resume/certificates/${id}/`,
+        },
+        projects: {
+          list: () => `${Config.baseUrl}/api/jobisell/resume/projects/`,
+          detail: (id) => `${Config.baseUrl}/api/jobisell/resume/projects/${id}/`,
+        },
+        awards: {
+          list: () => `${Config.baseUrl}/api/jobisell/resume/awards/`,
+          detail: (id) => `${Config.baseUrl}/api/jobisell/resume/awards/${id}/`,
+        },
+        interests: {
+          list: () => `${Config.baseUrl}/api/jobisell/resume/interests/`,
+          detail: (id) => `${Config.baseUrl}/api/jobisell/resume/interests/${id}/`,
+        },
+      },
+
+      // ---------- رزومه عمومی ----------
+      publicResume: {
+        detail: (slug) => `${Config.baseUrl}/api/jobisell/resumes/${slug}/`,
+        download: (slug) => `${Config.baseUrl}/api/jobisell/resumes/${slug}/download/`,
+      },
+    },
+
 
     // ============================================
     // GALLERY

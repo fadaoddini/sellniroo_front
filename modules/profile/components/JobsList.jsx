@@ -40,24 +40,36 @@ const JobsList = ({ type, onRefresh }) => {
   const [deleting, setDeleting] = useState(false);
 
   const fetchJobs = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  try {
+    setLoading(true);
+    setError(null);
 
-      const url = Config.endpoints.jobisell.jobs.myListings();
-      const res = await axios.get(url, { headers: getAuthHeaders() });
+    const url = Config.endpoints.jobisell.jobs.myListings();
+    const res = await axios.get(url, { headers: getAuthHeaders() });
 
-      const data = res.data?.results || res.data || [];
-      // فیلتر بر اساس نوع
-      const filtered = data.filter((j) => j.type === type);
-      setJobs(filtered);
-    } catch (err) {
-      console.error("Error fetching jobs:", err);
-      setError("خطا در دریافت آگهی‌ها. لطفاً دوباره تلاش کنید.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const data = res.data?.results || res.data || [];
+
+    // ✅ DEBUG - این خطوط رو اضافه کن
+    console.log("=== JobsList DEBUG ===");
+    console.log("type prop:", type);
+    console.log("total from server:", data.length);
+    console.log("types in data:", data.map(j => j.type));
+    console.log("hiring count:", data.filter(j => j.type === "hiring").length);
+    console.log("seeking count:", data.filter(j => j.type === "seeking").length);
+    console.log("full data:", data);
+
+    const filtered = data.filter((j) => j.type === type);
+    console.log("after filter:", filtered.length);
+    console.log("====================");
+
+    setJobs(filtered);
+  } catch (err) {
+    console.error("Error fetching jobs:", err);
+    setError("خطا در دریافت آگهی‌ها. لطفاً دوباره تلاش کنید.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchJobs();

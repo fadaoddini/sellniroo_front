@@ -1,0 +1,306 @@
+.template {
+  background: #ffffff;
+ font-family: var(--font-iran);  
+ color: #1e293b;
+  padding: 40px 50px;
+  direction: rtl;
+  width: 100%;
+  min-height: 297mm;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.profileImage {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 3px solid #1e293b;
+  flex-shrink: 0;
+}
+
+.headerText {
+  flex: 1;
+}
+
+.name {
+  margin: 0 0 6px 0;
+  font-size: 28px;
+  font-weight: 700;
+   font-family: var(--font-iran);
+  color: #1e293b;
+  letter-spacing: -0.5px;
+}
+
+.jobTitle {
+  margin: 0 0 10px 0;
+  font-size: 15px;
+  color: #64748b;
+   font-family: var(--font-iran);
+  font-weight: 500;
+}
+
+.contactLine {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 11px;
+  color: #475569;
+}
+
+.contactItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.contactItem svg {
+  color: #1e293b;
+}
+
+.divider {
+  height: 3px;
+  background: #1e293b;
+  margin-bottom: 24px;
+}
+
+.section {
+  margin-bottom: 22px;
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+  padding: 6px 12px;
+  background: #f1f5f9;
+  border-right: 4px solid #1e293b;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summaryText {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.9;
+  color: #334155;
+  text-align: justify;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 24px;
+}
+
+.infoItem {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+  color: #334155;
+}
+
+.infoLabel {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* List */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.listItem {
+  padding-right: 14px;
+  border-right: 2px solid #cbd5e1;
+}
+
+.listHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.itemTitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.itemDate {
+  font-size: 11px;
+  color: #64748b;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.itemSubtitle {
+  margin: 0 0 6px 0;
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.itemDesc {
+  margin: 6px 0 0 0;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #334155;
+}
+
+.itemList {
+  margin: 6px 0 0 0;
+  padding-right: 18px;
+  font-size: 12px;
+  color: #334155;
+  line-height: 1.8;
+}
+
+.itemList li {
+  margin-bottom: 3px;
+}
+
+/* Skills */
+.skillsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px 24px;
+}
+
+.skillItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.skillHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 12px;
+}
+
+.skillName {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.skillLevel {
+  color: #64748b;
+  font-size: 11px;
+}
+
+.skillBar {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.skillBarFill {
+  height: 100%;
+  background: #1e293b;
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+/* Languages */
+.langsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 24px;
+}
+
+.langItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 12px;
+  padding: 6px 10px;
+  background: #f8fafc;
+  border-radius: 4px;
+}
+
+.langItem strong {
+  color: #1e293b;
+}
+
+.langLevel {
+  color: #64748b;
+  font-size: 11px;
+}
+
+/* Simple List */
+.simpleList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: #334155;
+}
+
+.simpleList li {
+  padding-right: 14px;
+  position: relative;
+  line-height: 1.7;
+}
+
+.simpleList li::before {
+  content: "●";
+  position: absolute;
+  right: 0;
+  color: #1e293b;
+  font-size: 8px;
+  top: 4px;
+}
+
+.simpleList strong {
+  color: #1e293b;
+}
+
+/* Interests */
+.interestsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.interestTag {
+  padding: 4px 12px;
+  background: #f1f5f9;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+@media print {
+  .template {
+    box-shadow: none;
+    max-width: 100%;
+    padding: 20px;
+  }
+}
