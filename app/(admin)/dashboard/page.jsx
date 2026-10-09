@@ -32,6 +32,7 @@ const Dashboard = () => {
 
   const [stats, setStats] = useState(null)
   const [newsStats, setNewsStats] = useState(null)
+  const [employeeStats, setEmployeeStats] = useState(null)
   const [loadingData, setLoadingData] = useState(false)
 
   const texts = {
@@ -138,6 +139,19 @@ const Dashboard = () => {
     }
   }, [user, getAuthHeaders])
 
+  // ============================================
+  // ✅ دریافت آمار کارمندان (فقط مدیر/سوپرکاربر — در صورت 403 نادیده گرفته می‌شود)
+  // ============================================
+  const fetchEmployeeStats = useCallback(async () => {
+    try {
+      const url = Config.endpoints.karmandan.stats()
+      const res = await axios.get(url, { headers: getAuthHeaders() })
+      setEmployeeStats(res.data?.data || res.data)
+    } catch (err) {
+      setEmployeeStats(null)
+    }
+  }, [getAuthHeaders])
+
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       router.push('/login')
@@ -149,7 +163,10 @@ const Dashboard = () => {
       fetchDashboardStats()
       fetchNewsStats()
     }
-  }, [isAuthenticated, isEmployee, fetchDashboardStats, fetchNewsStats])
+    if (isAuthenticated && (user?.is_superuser || (employeeData?.access_level ?? 0) >= 3)) {
+      fetchEmployeeStats()
+    }
+  }, [isAuthenticated, isEmployee, user, employeeData, fetchDashboardStats, fetchNewsStats, fetchEmployeeStats])
 
   // ============================================
   // ✅ بررسی دسترسی‌ها
@@ -226,6 +243,19 @@ const Dashboard = () => {
       positive: true,
       bgColor: '#e8f5e9',
       color: '#2e7d32'
+    })
+  }
+
+  if (employeeStats && (employeeStats.total != null || employeeStats.active != null)) {
+    displayStats.push({
+      id: 'employees',
+      icon: <Users />,
+      value: employeeStats.active ?? employeeStats.total ?? 0,
+      label: t.activeEmployees,
+      change: `${t.total}: ${employeeStats.total ?? 0}`,
+      positive: true,
+      bgColor: '#f3e5f5',
+      color: '#6a1b9a'
     })
   }
 

@@ -1,0 +1,755 @@
+/* app/(admin)/employees/Employees.module.css — هماهنگ با تم ادمین (داشبورد) */
+
+.page {
+  padding: 2rem 0;
+  background: var(--macos-bg);
+  min-height: 100vh;
+  font-family: var(--font-iran);
+}
+
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ---------- هدر ---------- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border-radius: 16px;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(128, 0, 32, 0.25);
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.headerIcon {
+  width: 52px;
+  height: 52px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  flex-shrink: 0;
+}
+
+.pageTitle {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-edameh);
+  margin: 0 0 4px 0;
+  color: #fff;
+}
+
+.pageDesc {
+  font-size: 11px;
+  opacity: 0.9;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.headerActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  white-space: nowrap;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.primaryBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ghostBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 9px 18px;
+  border-radius: 12px;
+  background: var(--macos-card);
+  border: 1px solid var(--macos-border);
+  color: var(--macos-text);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  box-shadow: var(--macos-shadow);
+  white-space: nowrap;
+}
+
+.ghostBtn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+/* ---------- آمار ---------- */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 8px;
+  background: var(--macos-card);
+  backdrop-filter: var(--macos-blur);
+  border-radius: 14px;
+  border: 1px solid var(--macos-border);
+  border-top: 4px solid var(--primary);
+  box-shadow: var(--macos-shadow);
+  transition: transform 0.2s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+}
+
+.statIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.statValue {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.statLabel {
+  font-size: 10px;
+  color: var(--macos-text-secondary);
+  font-family: var(--font-iran);
+}
+
+.stTotal { border-top-color: #6a1b9a; }
+.stTotal .statIcon { background: #f3e5f5; color: #6a1b9a; }
+.stActive { border-top-color: #2e7d32; }
+.stActive .statIcon { background: #e8f5e9; color: #2e7d32; }
+.stInactive { border-top-color: #c62828; }
+.stInactive .statIcon { background: #fce4ec; color: #c62828; }
+.stMark { border-top-color: #ef6c00; }
+.stMark .statIcon { background: #fff3e0; color: #ef6c00; }
+.stSales { border-top-color: #1976d2; }
+.stSales .statIcon { background: #e3f2fd; color: #1976d2; }
+.stSup { border-top-color: #00838f; }
+.stSup .statIcon { background: #e0f7fa; color: #00838f; }
+.stWh { border-top-color: #5d4037; }
+.stWh .statIcon { background: #efebe9; color: #5d4037; }
+.stAtt { border-top-color: #455a64; }
+.stAtt .statIcon { background: #eceff1; color: #455a64; }
+
+/* ---------- تولبار ---------- */
+.toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  background: var(--macos-card);
+  border: 1.5px solid var(--macos-border);
+  border-radius: 12px;
+  flex: 1;
+  min-width: 220px;
+  transition: all 0.2s ease;
+}
+
+.searchBox:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(251, 195, 0, 0.15);
+}
+
+.searchIcon {
+  color: var(--macos-text-secondary);
+  flex-shrink: 0;
+}
+
+.searchInput {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 12px;
+  font-family: var(--font-iran);
+  width: 100%;
+  color: var(--macos-text);
+}
+
+.searchInput::placeholder {
+  color: var(--macos-text-secondary);
+}
+
+.clearSearch {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--macos-text-secondary);
+  display: flex;
+  padding: 2px;
+  border-radius: 6px;
+}
+
+.clearSearch:hover {
+  color: #c62828;
+}
+
+.errorBar {
+  background: #fce4ec;
+  border: 1px solid #ef9a9a;
+  color: #c62828;
+  font-size: 12px;
+  font-family: var(--font-iran);
+  border-radius: 12px;
+  padding: 10px 16px;
+  margin-bottom: 14px;
+}
+
+/* ---------- جدول ---------- */
+.tableWrap {
+  background: var(--macos-card);
+  backdrop-filter: var(--macos-blur);
+  border: 1px solid var(--macos-border);
+  border-radius: 16px;
+  box-shadow: var(--macos-shadow);
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-family: var(--font-iran);
+  min-width: 760px;
+}
+
+.table thead th {
+  text-align: start;
+  padding: 12px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--macos-text-secondary);
+  border-bottom: 2px solid var(--macos-border);
+  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.table tbody td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--macos-border);
+  color: var(--macos-text);
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: rgba(251, 195, 0, 0.06);
+}
+
+.rowInactive {
+  opacity: 0.62;
+}
+
+.codeBadge {
+  display: inline-block;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-weight: 700;
+  font-size: 11px;
+  padding: 3px 12px;
+  border-radius: 99px;
+  direction: ltr;
+  font-variant-numeric: tabular-nums;
+}
+
+.mobileCell {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+}
+
+.levelBadge {
+  display: inline-block;
+  background: #f3e5f5;
+  color: #6a1b9a;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.permRow {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.permBadge {
+  display: inline-block;
+  background: #e3f2fd;
+  color: #1565c0;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.noPerm {
+  font-size: 10px;
+  color: var(--macos-text-secondary);
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.statusPill.on {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.statusPill.off {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+.rowActions {
+  display: flex;
+  gap: 6px;
+}
+
+.iconBtn {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  border: 1px solid var(--macos-border);
+  background: var(--macos-card);
+  color: var(--macos-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.iconBtn:hover {
+  border-color: var(--primary);
+  color: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+.iconBtn.warn:hover {
+  border-color: #ef6c00;
+  color: #ef6c00;
+}
+
+.iconBtn.ok:hover {
+  border-color: #2e7d32;
+  color: #2e7d32;
+}
+
+.iconBtn.danger:hover {
+  border-color: #c62828;
+  color: #c62828;
+}
+
+.emptyBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 3rem 1rem;
+  color: var(--macos-text-secondary);
+  font-size: 12px;
+}
+
+/* ---------- مودال ---------- */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+}
+
+.modal {
+  background: var(--macos-card);
+  border-radius: 18px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 620px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid var(--macos-border);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  color: var(--macos-text);
+  font-family: var(--font-iran);
+}
+
+.modalHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.1rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--macos-border);
+}
+
+.modalHead h2 {
+  margin: 0;
+  font-size: 14px;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+}
+
+.formGroup {
+  margin-bottom: 0.85rem;
+  min-width: 0;
+}
+
+.formGroup label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: var(--macos-text-secondary);
+}
+
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1.5px solid var(--macos-border);
+  border-radius: 10px;
+  font-size: 12px;
+  font-family: var(--font-iran);
+  outline: none;
+  background: var(--macos-card);
+  color: var(--macos-text);
+  transition: all 0.2s ease;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(251, 195, 0, 0.15);
+}
+
+.formGroup input[type="date"] {
+  color-scheme: light;
+}
+
+.hint {
+  display: block;
+  font-size: 10px;
+  color: var(--macos-text-secondary);
+  margin-top: 4px;
+}
+
+.userList {
+  margin-top: 6px;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  overflow: hidden;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.userItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--macos-border);
+  cursor: pointer;
+  font-size: 12px;
+  font-family: var(--font-iran);
+  color: var(--macos-text);
+}
+
+.userItem:last-child {
+  border-bottom: none;
+}
+
+.userItem:hover {
+  background: var(--primary-light);
+}
+
+.permGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 0.5rem 0 0.5rem;
+  padding: 0.8rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--macos-text);
+  user-select: none;
+}
+
+.checkRow input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary-dark);
+  cursor: pointer;
+}
+
+.formActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--macos-border);
+}
+
+.formActions .primaryBtn {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border: none;
+}
+
+/* ---------- پروفایل کارمند عادی ---------- */
+.profileCard {
+  background: var(--macos-card);
+  border: 1px solid var(--macos-border);
+  border-radius: 16px;
+  box-shadow: var(--macos-shadow);
+  padding: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.profileRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--macos-text);
+  flex-wrap: wrap;
+}
+
+/* ---------- لودینگ و خطا ---------- */
+.loadingBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+  color: var(--macos-text-secondary);
+  font-size: 13px;
+}
+
+.spinner {
+  animation: spin 0.8s linear infinite;
+  color: var(--primary-dark);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.denied {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 0.75rem;
+  text-align: center;
+  padding: 2rem;
+  background: var(--macos-card);
+  border: 1px solid var(--macos-border);
+  border-radius: 16px;
+}
+
+.deniedIcon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #fce4ec;
+  color: #c62828;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.denied h3 {
+  font-size: 14px;
+  font-family: var(--font-edameh);
+  margin: 0;
+}
+
+.denied p {
+  color: var(--macos-text-secondary);
+  font-size: 12px;
+  max-width: 420px;
+  margin: 0 0 1rem;
+}
+
+.denied .primaryBtn {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border: none;
+}
+
+/* ---------- ریسپانسیو ---------- */
+@media (max-width: 768px) {
+  .page {
+    padding: 1rem 0;
+  }
+
+  .wrap {
+    padding: 0 0.75rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+  }
+
+  .headerIcon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .pageTitle {
+    font-size: 14px;
+  }
+
+  .headerActions {
+    width: 100%;
+  }
+
+  .headerActions .primaryBtn,
+  .headerActions .ghostBtn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .permGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .formActions {
+    flex-direction: column-reverse;
+  }
+
+  .formActions .primaryBtn,
+  .formActions .ghostBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .modal {
+    padding: 1.1rem;
+  }
+}
