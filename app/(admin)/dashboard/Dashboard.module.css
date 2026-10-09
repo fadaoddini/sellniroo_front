@@ -28,7 +28,6 @@
   margin-bottom: 24px;
   padding: 20px 24px;
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  border-radius: 16px;
   color: #fff;
   box-shadow: 0 8px 24px rgba(128, 0, 32, 0.25);
 }
@@ -353,18 +352,6 @@
   padding: 2rem;
 }
 
-.accessDeniedIcon {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: #fce4ec;
-  color: #c62828;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 0.5rem;
-}
-
 .errorContainer h3 {
   font-size: 14px;
   color: var(--macos-text);
@@ -460,6 +447,38 @@
     width: 18px;
     height: 18px;
   }
+
+  .userInfoBar {
+    padding: 0.5rem 0.75rem;
+    font-size: 10px;
+  }
+
+  .statCard {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .statIconWrapper {
+    width: 32px;
+    height: 32px;
+  }
+
+  .statIconWrapper svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .statValue {
+    font-size: 14px;
+  }
+
+  .statLabel {
+    font-size: 9px;
+  }
+
+  .sectionTitle {
+    font-size: 12px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -519,38 +538,4 @@
   .sectionTitle {
     font-size: 12px;
   }
-}
-/* ============================================
-   Header — ساختار جدید با headerLeft
-   ============================================ */
-.dashboardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 24px;
-  padding: 20px 24px;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  border-radius: 16px;
-  color: #fff;
-  box-shadow: 0 8px 24px rgba(128, 0, 32, 0.25);
-}
-
-.headerLeft {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.headerIcon {
-  width: 56px;
-  height: 56px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(10px);
-  flex-shrink: 0;
 }

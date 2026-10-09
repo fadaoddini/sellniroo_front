@@ -10,10 +10,9 @@ import Link from 'next/link'
 import axios from 'axios'
 import Config from '@/config/config'
 import {
-  LayoutDashboard, Warehouse, ShoppingCart, Award, Users, Shield,
-  RefreshCw, Briefcase, TrendingUp, CheckCircle, Clock, AlertCircle,
-  Newspaper, MessageSquare, Package, Headphones, FileText, Zap,
-  Eye, Heart, UserCheck, UserX, BarChart3
+  LayoutDashboard, ShoppingCart, Users, Shield,
+  RefreshCw, Briefcase, TrendingUp, CheckCircle,
+  Newspaper, Zap, Eye
 } from 'lucide-react'
 import styles from './Dashboard.module.css'
 
