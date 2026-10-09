@@ -37,7 +37,7 @@ const StatusChangeModal = ({ isOpen, onClose, item, action, onConfirm, loading =
       followup: {
         title: 'تنظیم پیگیری بعدی',
         icon: <CalendarClock size={20} />,
-        color: '#ff9500',
+        color: '#d97706',
         status: 'in_progress',
         fields: ['nextFollowUp', 'nextFollowUpTime', 'description'],
         requireDate: true,
@@ -47,7 +47,7 @@ const StatusChangeModal = ({ isOpen, onClose, item, action, onConfirm, loading =
       close: {
         title: 'بسته شدن مورد',
         icon: <CircleX size={20} />,
-        color: '#ff3b30',
+        color: '#dc2626',
         status: 'cancelled',
         fields: ['changeReason', 'description'],
         requireDate: false,
@@ -57,7 +57,7 @@ const StatusChangeModal = ({ isOpen, onClose, item, action, onConfirm, loading =
       contract: {
         title: 'تبدیل به قرارداد',
         icon: <CheckCircle2 size={20} />,
-        color: '#34c759',
+        color: '#16a34a',
         status: 'confirmed',
         fields: ['changeReason', 'description'],
         requireDate: false,

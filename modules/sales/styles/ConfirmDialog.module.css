@@ -1,4 +1,4 @@
-/* app/sales/styles/ConfirmDialog.module.css */
+/* ConfirmDialog.module.css — Sale Theme (Indigo Light) */
 
 .overlay {
   position: fixed;
@@ -6,27 +6,38 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(35, 38, 59, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 99999;
+  padding: 1rem;
   animation: fadeIn 0.25s ease-out;
 }
 
 .modal {
-  background: linear-gradient(145deg, #1a1c24, #0e0f14);
+  --s-surface: var(--sale-surface, #ffffff);
+  --s-ink: var(--sale-ink, #23263b);
+  --s-muted: var(--sale-muted, #68708f);
+  --s-line: var(--sale-line, #e4e8f3);
+  --s-shadow-lg: var(--sale-shadow-lg, 0 18px 50px rgba(35, 38, 59, 0.14));
+  --s-font: var(--sale-font, var(--font-iran, Tahoma, Arial, sans-serif));
+  --s-display: var(--sale-display, var(--font-edameh, Tahoma, Arial, sans-serif));
+
+  background: var(--s-surface);
   border-radius: 20px;
-  padding: 2rem;
+  padding: 2rem 1.75rem 1.75rem;
   max-width: 420px;
-  width: 92%;
+  width: 100%;
   text-align: center;
   animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--s-line);
+  box-shadow: var(--s-shadow-lg);
   position: relative;
+  font-family: var(--s-font);
+  color: var(--s-ink);
 }
 
 .closeBtn {
@@ -34,9 +45,9 @@
   top: 12px;
   left: 12px;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--s-line);
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--s-muted);
   padding: 0.3rem;
   border-radius: 8px;
   transition: all 0.2s ease;
@@ -48,45 +59,48 @@
 }
 
 .closeBtn:hover:not(:disabled) {
-  color: rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--sale-danger, #dc2626);
+  background: rgba(220, 38, 38, 0.08);
+  border-color: rgba(220, 38, 38, 0.3);
 }
 
 .closeBtn:disabled {
-  opacity: 0.3;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
 .iconWrapper {
-  margin-bottom: 1.25rem;
+  margin: 0 auto 1.1rem;
   display: flex;
+  align-items: center;
   justify-content: center;
-  padding-top: 0.25rem;
+  width: 68px;
+  height: 68px;
+  border-radius: 22px;
+  background: var(--sale-surface-2, #f4f6fb);
+  border: 1px solid var(--s-line);
 }
 
 .iconWrapper svg {
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 4px 12px rgba(35, 38, 59, 0.18));
 }
 
 .title {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 0.5rem;
-  font-family: var(--font-edameh, 'Tahoma', sans-serif);
-  letter-spacing: 0.5px;
+  color: var(--s-ink);
+  margin: 0 0 0.5rem;
+  font-family: var(--s-display);
+  letter-spacing: 0;
 }
 
 .message {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 1.75rem;
-  line-height: 1.7;
-  font-family: var(--font-iran, 'Tahoma', sans-serif);
+  font-size: 0.83rem;
+  color: var(--s-muted);
+  margin: 0 auto 1.6rem;
+  line-height: 1.8;
+  font-family: var(--s-font);
   max-width: 320px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .actions {
@@ -96,51 +110,53 @@
 }
 
 .cancelBtn {
-  padding: 0.55rem 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.6rem 1.5rem;
+  border: 1px solid var(--s-line);
   border-radius: 10px;
   background: transparent;
   cursor: pointer;
   font-size: 0.8rem;
-  font-family: var(--font-iran, 'Tahoma', sans-serif);
-  color: rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+  font-family: var(--s-font);
+  color: var(--s-muted);
   transition: all 0.2s ease;
   flex: 1;
-  max-width: 140px;
+  max-width: 150px;
 }
 
 .cancelBtn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.6);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: var(--sale-surface-2, #f4f6fb);
+  color: var(--s-ink);
+  border-color: var(--sale-line-strong, #d3d9e9);
 }
 
 .cancelBtn:disabled {
-  opacity: 0.3;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
 .confirmBtn {
-  padding: 0.55rem 1.5rem;
+  padding: 0.6rem 1.5rem;
   border: none;
   border-radius: 10px;
   color: white;
   cursor: pointer;
   font-size: 0.8rem;
-  font-family: var(--font-iran, 'Tahoma', sans-serif);
-  font-weight: 600;
-  transition: all 0.3s ease;
+  font-family: var(--s-font);
+  font-weight: 700;
+  transition: all 0.25s ease;
   flex: 1;
-  max-width: 140px;
+  max-width: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
+  box-shadow: 0 6px 16px rgba(35, 38, 59, 0.25);
 }
 
 .confirmBtn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 24px rgba(35, 38, 59, 0.3);
 }
 
 .confirmBtn:active:not(:disabled) {
@@ -148,7 +164,7 @@
 }
 
 .confirmBtn:disabled {
-  opacity: 0.5;
+  opacity: 0.55;
   cursor: not-allowed;
   transform: none !important;
 }
@@ -170,7 +186,7 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(40px) scale(0.96);
+    transform: translateY(36px) scale(0.97);
   }
   to {
     opacity: 1;
@@ -180,20 +196,20 @@
 
 @media (max-width: 480px) {
   .modal {
-    padding: 1.5rem;
-    width: 94%;
+    padding: 1.5rem 1.25rem;
+    width: 100%;
   }
-  
+
   .actions {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .cancelBtn,
   .confirmBtn {
     max-width: 100%;
     width: 100%;
-    padding: 0.6rem;
+    padding: 0.65rem;
   }
 
   .title {
@@ -201,7 +217,7 @@
   }
 
   .message {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
   }
 
   .closeBtn {
@@ -214,9 +230,9 @@
 
 @media (max-width: 360px) {
   .modal {
-    padding: 1.25rem;
+    padding: 1.25rem 1rem;
   }
-  
+
   .iconWrapper svg {
     width: 28px;
     height: 28px;

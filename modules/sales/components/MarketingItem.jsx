@@ -15,10 +15,10 @@ const MarketingItem = ({ item, onViewDetail, onDelete, onStatusChange }) => {
   
   const getStatusInfo = (status) => {
     const map = {
-      new: { label: 'جدید', color: '#007aff', icon: <CircleDot size={12} /> },
-      in_progress: { label: 'در حال پیگیری', color: '#ff9500', icon: <CircleDot size={12} /> },
-      cancelled: { label: 'بسته شده', color: '#ff3b30', icon: <CircleX size={12} /> },
-      confirmed: { label: 'قرارداد', color: '#34c759', icon: <CheckCircle2 size={12} /> },
+      new: { label: 'جدید', color: '#6366f1', icon: <CircleDot size={12} /> },
+      in_progress: { label: 'در حال پیگیری', color: '#d97706', icon: <CircleDot size={12} /> },
+      cancelled: { label: 'بسته شده', color: '#dc2626', icon: <CircleX size={12} /> },
+      confirmed: { label: 'قرارداد', color: '#16a34a', icon: <CheckCircle2 size={12} /> },
     }
     return map[status] || map.new
   }

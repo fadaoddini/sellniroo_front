@@ -32,13 +32,13 @@ const FollowupTimeline = ({ followups = [] }) => {
 
   const getActionColor = (actionType) => {
     const colors = {
-      create: '#8b9aff',
-      followup: '#ff9500',
-      close: '#ff3b30',
-      contract: '#34c759',
-      update: '#8b9aff',
+      create: '#6366f1',
+      followup: '#d97706',
+      close: '#dc2626',
+      contract: '#16a34a',
+      update: '#6366f1',
     }
-    return colors[actionType] || '#666'
+    return colors[actionType] || '#68708f'
   }
 
   const getActionLabel = (actionType) => {
@@ -64,12 +64,12 @@ const FollowupTimeline = ({ followups = [] }) => {
 
   const getStatusColor = (status) => {
     const map = {
-      new: '#8b9aff',
-      in_progress: '#ff9500',
-      cancelled: '#ff3b30',
-      confirmed: '#34c759',
+      new: '#6366f1',
+      in_progress: '#d97706',
+      cancelled: '#dc2626',
+      confirmed: '#16a34a',
     }
-    return map[status] || '#666'
+    return map[status] || '#68708f'
   }
 
   const formatDate = (dateString) => {

@@ -1,37 +1,53 @@
 /* ============================================
-   MarketingItem.module.css - Hexagon Dark Theme
+   MarketingItem.module.css — Sale Theme (Indigo Light)
+   کارت روشن، هماهنگ با ستون‌های روشن
    ============================================ */
 
 .item {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  padding: 0.75rem 1rem;
+  --s-surface: var(--sale-surface, #ffffff);
+  --s-surface-2: var(--sale-surface-2, #f4f6fb);
+  --s-ink: var(--sale-ink, #23263b);
+  --s-muted: var(--sale-muted, #68708f);
+  --s-faint: var(--sale-faint, #9aa1bd);
+  --s-line: var(--sale-line, #e4e8f3);
+  --s-primary: var(--sale-primary, #4f46e5);
+  --s-primary-strong: var(--sale-primary-strong, #4338ca);
+  --s-primary-soft: var(--sale-primary-soft, #edeeff);
+  --s-new: var(--sale-new, #6366f1);
+  --s-progress: var(--sale-progress, #d97706);
+  --s-success: var(--sale-success, #16a34a);
+  --s-danger: var(--sale-danger, #dc2626);
+  --s-font: var(--sale-font, var(--font-iran, Tahoma, Arial, sans-serif));
+
+  background: var(--s-surface);
+  border: 1px solid var(--s-line);
+  border-radius: 14px;
+  padding: 0.8rem 0.95rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  font-family: var(--s-font);
 }
 
 .item:hover {
-  border-color: rgba(139, 154, 255, 0.2);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  border-color: rgba(79, 70, 229, 0.4);
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.14);
   transform: translateY(-2px);
 }
 
 .todayItem {
-  border-color: rgba(255, 149, 0, 0.3);
-  background: rgba(255, 149, 0, 0.05);
+  border-color: rgba(217, 119, 6, 0.45);
+  background: linear-gradient(180deg, rgba(217, 119, 6, 0.07), var(--s-surface) 65%);
 }
 
 .todayItem:hover {
-  border-color: rgba(255, 149, 0, 0.4);
-  box-shadow: 0 4px 20px rgba(255, 149, 0, 0.05);
+  border-color: rgba(217, 119, 6, 0.6);
+  box-shadow: 0 8px 24px rgba(217, 119, 6, 0.16);
 }
 
 .itemContent {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.45rem;
 }
 
 .itemHeader {
@@ -46,57 +62,61 @@
   align-items: center;
   gap: 0.5rem;
   flex: 1;
-  color: #fff;
-  font-size: 0.8rem;
+  min-width: 0;
+  color: var(--s-ink);
+  font-size: 0.82rem;
   flex-wrap: wrap;
 }
 
 .titleText {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--s-ink);
+  overflow-wrap: anywhere;
 }
 
 .customerName {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.4);
+  font-weight: 500;
+  color: var(--s-muted);
 }
 
 .statusBadge {
   display: inline-flex;
   align-items: center;
-  gap: 0.2rem;
-  padding: 0.1rem 0.5rem;
-  border-radius: 12px;
-  font-size: 0.55rem;
-  font-weight: 500;
+  gap: 0.25rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 99px;
+  font-size: 0.6rem;
+  font-weight: 700;
   white-space: nowrap;
+  border: 1px solid transparent;
 }
 
 /* ============================================
-   ✅ نمایش توضیحات - اضافه شده در جای درست
+   نمایش توضیحات
    ============================================ */
 .itemDescription {
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-  padding: 0.4rem 0.6rem;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 6px;
-  border-right: 2px solid rgba(139, 154, 255, 0.15);
+  padding: 0.45rem 0.65rem;
+  background: var(--s-surface-2);
+  border-radius: 8px;
+  border-inline-start: 3px solid var(--s-primary);
   margin: 0.1rem 0;
 }
 
 .descIcon {
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--s-primary);
   flex-shrink: 0;
   margin-top: 0.1rem;
 }
 
 .descText {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.6);
-  line-height: 1.5;
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: var(--s-muted);
   word-break: break-word;
 }
 
@@ -111,80 +131,105 @@
 
 .deleteBtn {
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
-  color: rgba(255, 59, 48, 0.4);
-  padding: 0.2rem;
-  border-radius: 6px;
+  color: var(--s-faint);
+  padding: 0.25rem;
+  border-radius: 7px;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .deleteBtn:hover {
-  color: #ff3b30;
-  background: rgba(255, 59, 48, 0.1);
+  color: var(--s-danger);
+  background: rgba(220, 38, 38, 0.08);
+  border-color: rgba(220, 38, 38, 0.25);
 }
 
 .viewBtn {
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.3);
-  padding: 0.2rem;
-  border-radius: 6px;
+  color: var(--s-faint);
+  padding: 0.25rem;
+  border-radius: 7px;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .viewBtn:hover {
-  color: #8b9aff;
-  background: rgba(139, 154, 255, 0.1);
+  color: var(--s-primary-strong);
+  background: var(--s-primary-soft);
+  border-color: rgba(79, 70, 229, 0.3);
 }
 
 .itemMeta {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.6rem;
   flex-wrap: wrap;
-  font-size: 0.6rem;
-  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--s-muted);
 }
 
-.itemMeta span {
-  display: flex;
+.itemMeta > span {
+  display: inline-flex;
   align-items: center;
-  gap: 0.2rem;
+  gap: 0.25rem;
+  background: var(--s-surface-2);
+  border: 1px solid var(--s-line);
+  border-radius: 99px;
+  padding: 0.12rem 0.55rem;
 }
 
 .itemMeta svg {
-  color: rgba(255, 255, 255, 0.63);
+  color: var(--s-primary);
 }
 
 .phone {
   direction: ltr;
+  font-variant-numeric: tabular-nums;
+}
+
+.date {
+  color: var(--s-muted);
 }
 
 .nextFollow {
-  color: #ff9500;
+  color: var(--s-progress);
+  border-color: rgba(217, 119, 6, 0.3) !important;
+  background: rgba(217, 119, 6, 0.07) !important;
+}
+
+.assignedTo {
+  color: var(--s-muted);
 }
 
 /* Action Buttons */
 .actionButtons {
   display: flex;
-  gap: 0.3rem;
-  padding-top: 0.4rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 0.35rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--s-line);
   flex-wrap: wrap;
 }
 
 .actionBtn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.2rem 0.6rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.03);
-  font-size: 0.55rem;
-  font-family: var(--font-iran);
-  color: rgba(255, 255, 255, 0.4);
+  gap: 0.3rem;
+  padding: 0.32rem 0.7rem;
+  border: 1px solid var(--s-line);
+  border-radius: 8px;
+  background: var(--s-surface);
+  font-size: 0.62rem;
+  font-weight: 600;
+  font-family: var(--s-font);
+  color: var(--s-muted);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -194,72 +239,75 @@
 }
 
 .actionBtn span {
-  font-size: 0.55rem;
+  font-size: 0.62rem;
 }
 
 .followUpBtn {
-  border-color: rgba(255, 149, 0, 0.2);
-  color: #ff9500;
+  border-color: rgba(217, 119, 6, 0.35);
+  color: var(--s-progress);
+  background: rgba(217, 119, 6, 0.06);
 }
 
 .followUpBtn:hover {
-  background: rgba(255, 149, 0, 0.1);
-  box-shadow: 0 2px 8px rgba(255, 149, 0, 0.1);
+  background: rgba(217, 119, 6, 0.14);
+  box-shadow: 0 3px 10px rgba(217, 119, 6, 0.2);
 }
 
 .closeBtn {
-  border-color: rgba(255, 59, 48, 0.2);
-  color: #ff3b30;
+  border-color: rgba(220, 38, 38, 0.3);
+  color: var(--s-danger);
+  background: rgba(220, 38, 38, 0.05);
 }
 
 .closeBtn:hover {
-  background: rgba(255, 59, 48, 0.1);
-  box-shadow: 0 2px 8px rgba(255, 59, 48, 0.1);
+  background: rgba(220, 38, 38, 0.12);
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.18);
 }
 
 .contractBtn {
-  border-color: rgba(52, 199, 89, 0.2);
-  color: #34c759;
+  border-color: rgba(22, 163, 74, 0.35);
+  color: var(--s-success);
+  background: rgba(22, 163, 74, 0.06);
 }
 
 .contractBtn:hover {
-  background: rgba(52, 199, 89, 0.1);
-  box-shadow: 0 2px 8px rgba(52, 199, 89, 0.1);
+  background: rgba(22, 163, 74, 0.14);
+  box-shadow: 0 3px 10px rgba(22, 163, 74, 0.2);
 }
 
 /* ============================================
    RESULT BADGE (برای آیتم‌های ستون نتایج)
    ============================================ */
 .resultBadge {
-  padding-top: 0.4rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  margin-top: 0.2rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--s-line);
+  margin-top: 0.15rem;
 }
 
 .confirmedBadge {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.2rem 0.6rem;
-  background: rgba(52, 199, 89, 0.1);
-  border: 1px solid rgba(52, 199, 89, 0.15);
-  border-radius: 6px;
-  font-size: 0.55rem;
-  color: #34c759;
-  font-weight: 500;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  background: rgba(22, 163, 74, 0.08);
+  border: 1px solid rgba(22, 163, 74, 0.3);
+  border-radius: 8px;
+  font-size: 0.62rem;
+  color: var(--s-success);
+  font-weight: 600;
 }
 
 .cancelledBadge {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.2rem 0.6rem;
-  background: rgba(255, 59, 48, 0.1);
-  border: 1px solid rgba(255, 59, 48, 0.15);
-  border-radius: 6px;
-  font-size: 0.55rem;
-  color: #ff3b30;
-  font-weight: 500;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.28);
+  border-radius: 8px;
+  font-size: 0.62rem;
+  color: var(--s-danger);
+  font-weight: 600;
 }
 
 .confirmedBadge svg,
@@ -272,7 +320,7 @@
    ============================================ */
 @media (max-width: 768px) {
   .item {
-    padding: 0.6rem 0.8rem;
+    padding: 0.7rem 0.8rem;
   }
 
   .itemTitle {
@@ -288,19 +336,19 @@
   .actionBtn {
     flex: 1;
     justify-content: center;
-    padding: 0.2rem 0.4rem;
+    padding: 0.35rem 0.4rem;
   }
-  
+
   .resultBadge {
     margin-top: 0.3rem;
   }
 
   .itemDescription {
-    padding: 0.3rem 0.5rem;
+    padding: 0.35rem 0.55rem;
   }
-  
+
   .descText {
-    font-size: 0.65rem;
+    font-size: 0.68rem;
   }
 }
 
@@ -312,17 +360,17 @@
   .actionBtn {
     flex: 1;
     justify-content: center;
-    padding: 0.25rem;
+    padding: 0.35rem;
   }
-  
+
   .itemMeta {
-    gap: 0.5rem;
-    font-size: 0.5rem;
+    gap: 0.4rem;
+    font-size: 0.58rem;
   }
-  
+
   .confirmedBadge,
   .cancelledBadge {
-    font-size: 0.5rem;
-    padding: 0.15rem 0.5rem;
+    font-size: 0.56rem;
+    padding: 0.2rem 0.5rem;
   }
 }

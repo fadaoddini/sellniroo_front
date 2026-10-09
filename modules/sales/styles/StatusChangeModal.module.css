@@ -1,4 +1,4 @@
-/* app/sales/styles/StatusChangeModal.module.css */
+/* StatusChangeModal.module.css — Sale Theme (Indigo Light) */
 
 .overlay {
   position: fixed;
@@ -6,31 +6,47 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(20px);
+  background: rgba(35, 38, 59, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10000;
-  animation: fadeIn 0.3s ease-out;
+  padding: 1rem;
+  animation: fadeIn 0.25s ease-out;
 }
 
 .modal {
-  background: linear-gradient(135deg, #1a1c24, #0a0b0f);
-  border-radius: 16px;
-  padding: 2rem;
-  max-width: 500px;
-  width: 92%;
+  --s-surface: var(--sale-surface, #ffffff);
+  --s-surface-2: var(--sale-surface-2, #f4f6fb);
+  --s-ink: var(--sale-ink, #23263b);
+  --s-muted: var(--sale-muted, #68708f);
+  --s-faint: var(--sale-faint, #9aa1bd);
+  --s-line: var(--sale-line, #e4e8f3);
+  --s-primary: var(--sale-primary, #4f46e5);
+  --s-primary-soft: var(--sale-primary-soft, #edeeff);
+  --s-danger: var(--sale-danger, #dc2626);
+  --s-shadow-lg: var(--sale-shadow-lg, 0 18px 50px rgba(35, 38, 59, 0.14));
+  --s-font: var(--sale-font, var(--font-iran, Tahoma, Arial, sans-serif));
+  --s-display: var(--sale-display, var(--font-edameh, Tahoma, Arial, sans-serif));
+
+  background: var(--s-surface);
+  border-radius: 18px;
+  padding: 1.75rem;
+  max-width: 520px;
+  width: 100%;
   max-height: 90vh;
   overflow-y: auto;
   animation: slideUp 0.3s ease-out;
-  font-family: var(--font-iran);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  font-family: var(--s-font);
+  color: var(--s-ink);
+  border: 1px solid var(--s-line);
+  box-shadow: var(--s-shadow-lg);
 }
 
 .modal::-webkit-scrollbar {
-  width: 4px;
+  width: 5px;
 }
 
 .modal::-webkit-scrollbar-track {
@@ -38,104 +54,114 @@
 }
 
 .modal::-webkit-scrollbar-thumb {
-  background: rgba(139, 154, 255, 0.3);
-  border-radius: 10px;
+  background: #c6cde6;
+  border-radius: 99px;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--s-line);
 }
 
 .headerLeft {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.7rem;
+  min-width: 0;
 }
 
 .iconWrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.05);
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  flex-shrink: 0;
 }
 
 .header h2 {
   margin: 0;
   font-size: 1rem;
   font-weight: 700;
-  color: #ffffff;
-  font-family: var(--font-edameh);
+  color: var(--s-ink);
+  font-family: var(--s-display);
 }
 
 .closeBtn {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--s-surface-2);
+  border: 1px solid var(--s-line);
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.3);
-  padding: 0.25rem;
-  border-radius: 6px;
+  color: var(--s-muted);
+  padding: 0.3rem;
+  border-radius: 8px;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .closeBtn:hover:not(:disabled) {
-  color: rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.05);
+  color: var(--s-danger);
+  background: rgba(220, 38, 38, 0.08);
+  border-color: rgba(220, 38, 38, 0.3);
 }
 
 .closeBtn:disabled {
-  opacity: 0.3;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
 .itemInfo {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 10px;
-  padding: 0.75rem 1rem;
+  background: var(--s-surface-2);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
   margin-bottom: 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--s-line);
 }
 
 .infoRow {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.75rem;
+  font-size: 0.76rem;
 }
 
 .infoRow:not(:last-child) {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.35rem;
 }
 
 .infoLabel {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.3);
-  min-width: 60px;
+  font-weight: 600;
+  color: var(--s-muted);
+  min-width: 78px;
+  flex-shrink: 0;
 }
 
 .infoValue {
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 500;
+  color: var(--s-ink);
+  font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 .currentStatus {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  padding: 0.1rem 0.6rem;
-  border-radius: 12px;
-  font-size: 0.65rem;
-  font-weight: 500;
+  padding: 0.15rem 0.65rem;
+  border-radius: 99px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  border: 1px solid transparent;
 }
 
 .form {
@@ -153,47 +179,54 @@
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.3rem;
+  min-width: 0;
 }
 
 .formGroup label {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  font-size: 0.65rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--s-muted);
 }
 
 .formGroup input,
 .formGroup textarea {
   width: 100%;
-  padding: 0.5rem 0.7rem;
-  border: 1.5px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  font-size: 0.75rem;
-  font-family: var(--font-iran);
+  padding: 0.6rem 0.8rem;
+  border: 1.5px solid var(--s-line);
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-family: var(--s-font);
   transition: all 0.2s ease;
   outline: none;
-  background: rgba(255, 255, 255, 0.03);
-  color: rgba(255, 255, 255, 0.7);
+  background: var(--s-surface-2);
+  color: var(--s-ink);
 }
 
 .formGroup input::placeholder,
 .formGroup textarea::placeholder {
-  color: rgba(255, 255, 255, 0.15);
+  color: var(--s-faint);
 }
 
 .formGroup input:focus,
 .formGroup textarea:focus {
-  border-color: rgba(139, 154, 255, 0.3);
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 0 4px rgba(139, 154, 255, 0.05);
+  border-color: var(--s-primary);
+  background: var(--s-surface);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+.formGroup input[type="time"] {
+  color-scheme: light;
+  font-variant-numeric: tabular-nums;
 }
 
 .formGroup textarea {
   resize: vertical;
-  min-height: 60px;
+  min-height: 80px;
+  line-height: 1.7;
 }
 
 .actions {
@@ -201,54 +234,56 @@
   gap: 0.75rem;
   justify-content: flex-end;
   padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  margin-top: 0.5rem;
+  border-top: 1px solid var(--s-line);
+  margin-top: 0.25rem;
 }
 
 .cancelBtn {
-  padding: 0.4rem 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  background: transparent;
+  padding: 0.55rem 1.6rem;
+  border: 1px solid var(--s-line);
+  border-radius: 10px;
+  background: var(--s-surface);
   cursor: pointer;
-  font-size: 0.75rem;
-  font-family: var(--font-iran);
-  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: var(--s-font);
+  color: var(--s-muted);
   transition: all 0.2s ease;
 }
 
 .cancelBtn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.03);
-  color: rgba(255, 255, 255, 0.5);
+  background: var(--s-surface-2);
+  color: var(--s-ink);
 }
 
 .cancelBtn:disabled {
-  opacity: 0.3;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
 .confirmBtn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.4rem 1.5rem;
+  padding: 0.55rem 1.6rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   color: white;
   cursor: pointer;
-  font-size: 0.75rem;
-  font-family: var(--font-iran);
-  font-weight: 600;
-  transition: all 0.3s ease;
+  font-size: 0.78rem;
+  font-family: var(--s-font);
+  font-weight: 700;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 16px rgba(35, 38, 59, 0.25);
 }
 
 .confirmBtn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 24px rgba(35, 38, 59, 0.3);
 }
 
 .confirmBtn:disabled {
-  opacity: 0.5;
+  opacity: 0.55;
   cursor: not-allowed;
   transform: none !important;
 }
@@ -270,7 +305,7 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(28px);
   }
   to {
     opacity: 1;
@@ -279,8 +314,12 @@
 }
 
 @media (max-width: 600px) {
+  .overlay {
+    padding: 0.6rem;
+  }
+
   .modal {
-    padding: 1.5rem;
+    padding: 1.3rem;
   }
 
   .dateSection {
@@ -288,7 +327,7 @@
   }
 
   .actions {
-    flex-direction: column;
+    flex-direction: column-reverse;
   }
 
   .cancelBtn,
@@ -300,68 +339,68 @@
 
 @media (max-width: 480px) {
   .modal {
-    padding: 1rem;
+    padding: 1.1rem;
   }
-  
+
   .header h2 {
     font-size: 0.9rem;
   }
-  
+
   .iconWrapper {
-    width: 30px;
-    height: 30px;
+    width: 34px;
+    height: 34px;
   }
 }
 
 
 /* ============================================
-   SUPPORT FOR PERSIAN DATE PICKER
+   SUPPORT FOR PERSIAN DATE PICKER (هماهنگ با تم فروش)
    ============================================ */
 
-/* استایل‌های PersianDatePicker در حالت مودال */
 .dateSection .formGroup :global(.pickerWrapper) {
   width: 100%;
+  position: relative;
 }
 
 .dateSection .formGroup :global(.pickerInput) {
   width: 100%;
-  padding: 0.5rem 0.7rem;
-  border: 1.5px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.03);
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.75rem;
-  font-family: var(--font-iran);
+  padding: 0.6rem 0.8rem;
+  border: 1.5px solid var(--s-line);
+  border-radius: 10px;
+  background: var(--s-surface-2);
+  color: var(--s-ink);
+  font-size: 0.8rem;
+  font-family: var(--s-font);
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  min-height: 36px;
+  min-height: 42px;
 }
 
 .dateSection .formGroup :global(.pickerInput:hover) {
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--sale-line-strong, #d3d9e9);
 }
 
 .dateSection .formGroup :global(.pickerInput:focus-within) {
-  border-color: rgba(139, 154, 255, 0.3);
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 0 4px rgba(139, 154, 255, 0.05);
+  border-color: var(--s-primary);
+  background: var(--s-surface);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
 }
 
 .dateSection .formGroup :global(.calendarIcon) {
-  color: rgba(255, 255, 255, 0.2);
+  color: var(--s-primary);
   flex-shrink: 0;
 }
 
 .dateSection .formGroup :global(.selectedDate) {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--s-ink);
   flex: 1;
 }
 
 .dateSection .formGroup :global(.placeholder) {
-  color: rgba(255, 255, 255, 0.2);
+  color: var(--s-faint);
   flex: 1;
 }
 
@@ -369,9 +408,9 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.2);
-  padding: 0.1rem;
-  border-radius: 4px;
+  color: var(--s-faint);
+  padding: 0.15rem;
+  border-radius: 6px;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -379,21 +418,21 @@
 }
 
 .dateSection .formGroup :global(.clearBtn:hover) {
-  color: rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.05);
+  color: var(--s-danger);
+  background: rgba(220, 38, 38, 0.08);
 }
 
 /* Dropdown استایل */
 .dateSection .formGroup :global(.pickerDropdown) {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 6px);
   left: 0;
   right: 0;
-  background: linear-gradient(135deg, #1a1c24, #0a0b0f);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
-  padding: 0.75rem;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  background: var(--s-surface);
+  border: 1px solid var(--s-line);
+  border-radius: 14px;
+  padding: 0.8rem;
+  box-shadow: var(--s-shadow-lg);
   z-index: 10001;
   min-width: 280px;
 }
@@ -402,24 +441,24 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.55rem;
   direction: ltr;
 }
 
 .dateSection .formGroup :global(.monthYear) {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.6);
-  font-family: var(--font-iran);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--s-ink);
+  font-family: var(--s-font);
 }
 
 .dateSection .formGroup :global(.navBtn) {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 6px;
-  color: rgba(255, 255, 255, 0.3);
+  background: var(--s-surface-2);
+  border: 1px solid var(--s-line);
+  border-radius: 8px;
+  color: var(--s-muted);
   cursor: pointer;
-  padding: 0.2rem 0.4rem;
+  padding: 0.25rem 0.5rem;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -427,58 +466,65 @@
 }
 
 .dateSection .formGroup :global(.navBtn:hover) {
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.6);
+  background: var(--s-primary-soft);
+  color: var(--s-primary);
 }
 
 .dateSection .formGroup :global(.weekDays) {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 2px;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.3rem;
 }
 
 .dateSection .formGroup :global(.weekDay) {
   text-align: center;
-  font-size: 0.55rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.2);
-  padding: 0.2rem 0;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--s-faint);
+  padding: 0.25rem 0;
 }
 
 .dateSection .formGroup :global(.daysGrid) {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
+  gap: 3px;
 }
 
 .dateSection .formGroup :global(.dayBtn) {
   background: transparent;
   border: none;
-  border-radius: 6px;
-  padding: 0.25rem 0;
-  font-size: 0.65rem;
-  font-family: var(--font-iran);
-  color: rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  padding: 0.35rem 0;
+  font-size: 0.72rem;
+  font-weight: 500;
+  font-family: var(--s-font);
+  color: var(--s-ink);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   text-align: center;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .dateSection .formGroup :global(.dayBtn:hover) {
-  background: rgba(139, 154, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
+  background: var(--s-primary-soft);
+  color: var(--s-primary);
 }
 
 .dateSection .formGroup :global(.dayBtn.today) {
-  color: #8b9aff;
-  font-weight: 600;
+  color: var(--s-primary);
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1.5px var(--s-primary);
 }
 
 .dateSection .formGroup :global(.dayBtn.selected) {
-  background: rgba(139, 154, 255, 0.2);
-  color: #8b9aff;
-  font-weight: 600;
+  background: linear-gradient(135deg, var(--s-primary), var(--sale-primary-strong, #4338ca));
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.4);
 }
 
 .dateSection .formGroup :global(.emptyDay) {

@@ -21,26 +21,26 @@ const ConfirmDialog = ({
   const getIcon = () => {
     switch (type) {
       case 'danger':
-        return <AlertTriangle size={32} style={{ color: '#ff3b30' }} />
+        return <AlertTriangle size={32} style={{ color: '#dc2626' }} />
       case 'success':
-        return <CheckCircle size={32} style={{ color: '#34c759' }} />
+        return <CheckCircle size={32} style={{ color: '#16a34a' }} />
       case 'info':
-        return <Info size={32} style={{ color: '#8b9aff' }} />
+        return <Info size={32} style={{ color: '#6366f1' }} />
       default:
-        return <AlertTriangle size={32} style={{ color: '#ff9500' }} />
+        return <AlertTriangle size={32} style={{ color: '#d97706' }} />
     }
   }
 
   const getConfirmColor = () => {
     switch (type) {
       case 'danger':
-        return '#ff3b30'
+        return '#dc2626'
       case 'success':
-        return '#34c759'
+        return '#16a34a'
       case 'info':
-        return '#8b9aff'
+        return '#6366f1'
       default:
-        return '#ff9500'
+        return '#d97706'
     }
   }
 

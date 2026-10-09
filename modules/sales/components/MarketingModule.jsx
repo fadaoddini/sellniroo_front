@@ -9,6 +9,7 @@ import {
   TrendingUp, Loader2, MessageSquare  // ✅ اضافه کردن MessageSquare
 } from 'lucide-react'
 import karmandanService from '../services/karmandanService'
+import { useAuth } from '@/contexts/AuthContext'
 import MarketingItem from './MarketingItem'
 import StatusChangeModal from './StatusChangeModal'
 import ConfirmDialog from './ConfirmDialog'
@@ -18,6 +19,7 @@ import PersianDatePicker from '@/components/common/PersianDatePicker'
 
 
 const MarketingModule = () => {
+  const { user, hasPermission } = useAuth()
   const [items, setItems] = useState([])
   const [selectedItem, setSelectedItem] = useState(null)
   const [showForm, setShowForm] = useState(false)
@@ -39,7 +41,6 @@ const MarketingModule = () => {
     phone: '',
     description: '',
     customer_name: '',
-    source: '',
     followUpDate: '',
     followUpTime: '',
   })
@@ -48,12 +49,21 @@ const MarketingModule = () => {
     try {
       setLoading(true)
       setError(null)
-      
+
       const leadsResponse = await karmandanService.getLeads()
       console.log('📊 Leads loaded:', leadsResponse)
-      
-      const formattedItems = Array.isArray(leadsResponse) 
-        ? leadsResponse.map(lead => ({
+
+      // ✅ بک‌اند DRF با PageNumberPagination پاسخ می‌دهد:
+      // {count, next, previous, results} — نه آرایه مستقیم
+      const leadsArray = Array.isArray(leadsResponse)
+        ? leadsResponse
+        : Array.isArray(leadsResponse?.results)
+          ? leadsResponse.results
+          : Array.isArray(leadsResponse?.data)
+            ? leadsResponse.data
+            : []
+
+      const formattedItems = leadsArray.map(lead => ({
             id: lead.id,
             title: lead.title,
             phone: lead.phone,
@@ -69,24 +79,24 @@ const MarketingModule = () => {
             created_by: lead.created_by,
             created_by_name: lead.created_by_name,
           }))
-        : []
-      
+
       console.log('📝 Formatted items with descriptions:', formattedItems.map(i => ({
         id: i.id,
         title: i.title,
         hasDescription: !!i.description,
         descriptionPreview: i.description ? i.description.slice(0, 30) + '...' : 'empty'
       })))
-      
+
       setItems(formattedItems)
-      
+
       try {
         const statsResponse = await karmandanService.getLeadStats()
-        setStats(statsResponse)
+        // ✅ بک‌اند {status:'ok', data:{...}} برمی‌گرداند
+        setStats(statsResponse?.data || statsResponse)
       } catch (statsErr) {
         console.error('Error loading stats:', statsErr)
       }
-      
+
     } catch (err) {
       console.error('Error loading data:', err)
       setError(err.error || 'خطا در بارگذاری داده‌ها')
@@ -156,23 +166,25 @@ const MarketingModule = () => {
   const getFilteredItems = useCallback(() => {
     let filtered = items
     
-    if (activeTab !== 'all') {
-      if (activeTab === 'today') {
-        const today = new Date().toISOString().split('T')[0]
-        filtered = items.filter(item => item.nextFollowUp === today)
-      } else if (activeTab === 'near') {
-        const today = new Date().toISOString().split('T')[0]
-        const threeDaysLater = new Date()
-        threeDaysLater.setDate(threeDaysLater.getDate() + 3)
-        const threeDaysLaterStr = threeDaysLater.toISOString().split('T')[0]
-        filtered = items.filter(item => 
-          item.nextFollowUp && 
-          item.nextFollowUp > today && 
-          item.nextFollowUp <= threeDaysLaterStr
-        )
-      } else {
-        filtered = items.filter(item => item.status === activeTab)
-      }
+    // اگرFiltered کردن اختصاصی (today/near) انجام نشود، همه نمایش داده شود
+    if (activeTab === 'all') {
+      // هیچ فیلترApplied نشد - همهItems نمایش داده
+    } else if (activeTab === 'today') {
+      const today = new Date().toISOString().split('T')[0]
+      filtered = items.filter(item => item.nextFollowUp === today)
+    } else if (activeTab === 'near') {
+      const today = new Date().toISOString().split('T')[0]
+      const threeDaysLater = new Date()
+      threeDaysLater.setDate(threeDaysLater.getDate() + 3)
+      const threeDaysLaterStr = threeDaysLater.toISOString().split('T')[0]
+      filtered = items.filter(item => 
+        item.nextFollowUp && 
+        item.nextFollowUp > today && 
+        item.nextFollowUp <= threeDaysLaterStr
+      )
+    } else {
+      // فیلترStatus
+      filtered = items.filter(item => item.status === activeTab)
     }
     
     if (searchTerm) {
@@ -208,6 +220,12 @@ const MarketingModule = () => {
       return
     }
     
+    // Check marketing permission for non-superusers
+    if (!user?.is_superuser && !hasPermission('marketing')) {
+      alert('دسترسی شما به ایجاد لید محدود شده است. لطفاً مدیر یا کارمند بازاریابی باشید.')
+      return
+    }
+    
     try {
       setLoading(true)
       
@@ -216,7 +234,6 @@ const MarketingModule = () => {
         phone: formData.phone,
         description: formData.description || '',
         customer_name: formData.customer_name || '',
-        source: formData.source || 'داخلی',
         status: 'new',
         next_follow_up: formData.followUpDate || null,
         next_follow_up_time: formData.followUpTime || null,
@@ -234,15 +251,18 @@ const MarketingModule = () => {
         phone: '', 
         description: '',
         customer_name: '',
-        source: '',
         followUpDate: '',
         followUpTime: '',
       })
       setShowForm(false)
       
     } catch (err) {
-      console.error('❌ Error creating lead:', err)
-      alert(err.error || 'خطا در ایجاد لید')
+      console.error('❌ Error creating lead:', err.response?.data || err.message || err)
+      const errorMsg = err.response?.data?.error || 
+                       err.response?.data?.message || 
+                       err.error || 
+                       'خطا در ارتباط با سرور'
+      alert('خطا در ایجاد لید: ' + errorMsg)
     } finally {
       setLoading(false)
     }
@@ -274,12 +294,18 @@ const MarketingModule = () => {
     try {
       setLoading(true)
       setSelectedItem(item)
-      
-      const detail = await karmandanService.getLeadDetail(item.id)
-      console.log('📄 Lead detail:', detail)
-      
+
+      const detailResponse = await karmandanService.getLeadDetail(item.id)
+      console.log('📄 Lead detail:', detailResponse)
+
+      // ✅ بک‌اند retrieve حالا {…lead, followups:[…]} برمی‌گرداند
+      const detail = detailResponse?.data || detailResponse || {}
+      if (detail.id) {
+        setSelectedItem(prev => ({ ...prev, ...detail, createdAt: detail.created_at || prev?.createdAt }))
+      }
+
       // ✅ دریافت followups از detail
-      const followupsData = detail.followups || []
+      const followupsData = detail.followups || detailResponse?.followups || []
       console.log('📋 Followups from detail:', followupsData)
       
       // تبدیل داده‌های پیگیری
@@ -388,12 +414,12 @@ const MarketingModule = () => {
 
   const getStatusColor = (status) => {
     const map = {
-      new: '#8b9aff',
-      in_progress: '#ff9500',
-      cancelled: '#ff3b30',
-      confirmed: '#34c759',
+      new: '#6366f1',
+      in_progress: '#d97706',
+      cancelled: '#dc2626',
+      confirmed: '#16a34a',
     }
-    return map[status] || '#666'
+    return map[status] || '#68708f'
   }
 
   const getStatusIcon = (status) => {
@@ -483,7 +509,18 @@ const MarketingModule = () => {
           )}
         </div>
         <div className={styles.headerActions}>
-          <button className={styles.addBtn} onClick={() => setShowForm(true)}>
+          <button className={styles.addBtn} onClick={() => {
+            // supervisors have all permissions
+            if (user?.is_superuser) {
+              setShowForm(true)
+              return
+            }
+            if (!hasPermission('marketing')) {
+              alert('برای ایجاد لید جدید باید دارای دسترسی بازاریابی باشید')
+              return
+            }
+            setShowForm(true)
+          }}>
             <Plus size={16} />
             مورد جدید
           </button>
@@ -675,16 +712,6 @@ const MarketingModule = () => {
                   required
                 />
               </div>
-              <div className={styles.formGroup}>
-                <label>منبع</label>
-                <input
-                  type="text"
-                  value={formData.source}
-                  onChange={(e) => setFormData({ ...formData, source: e.target.value })}
-                  placeholder="منبع (مثلاً: اینستاگرام، تبلیغات، ...)"
-                />
-              </div>
-              
               <div className={styles.formRow}>
                 <div className={styles.formGroup}>
                   <label>
