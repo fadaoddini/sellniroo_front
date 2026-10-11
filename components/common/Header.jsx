@@ -13,8 +13,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import {
-  Menu, X, UserPlus,
-  Search, MapPin, ChevronDown, Phone, Loader2,
+  X, UserPlus,
+  Search, MapPin, ChevronDown, Loader2,
 } from "lucide-react";
 import jobisellApi from "@/services/jobisellApi";
 import { fetchSiteSettings, DEFAULT_SITE_SETTINGS } from "@/services/siteSettings";
@@ -44,7 +44,6 @@ const Header = memo(function Header() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState(null);
@@ -92,7 +91,6 @@ const Header = memo(function Header() {
   }, []);
 
   useEffect(() => {
-    setIsMenuOpen(false);
     setIsCityOpen(false);
   }, [pathname]);
 
@@ -108,10 +106,7 @@ const Header = memo(function Header() {
       }
     };
     const handleEscape = (event) => {
-      if (event.key === "Escape") {
-        setIsCityOpen(false);
-        setIsMenuOpen(false);
-      }
+      if (event.key === "Escape") setIsCityOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
@@ -333,15 +328,13 @@ const Header = memo(function Header() {
               <div className={styles.topRow}>
                 {logoBlock}
                 <div className={styles.headerRight}>
-                  <button
-                    type="button"
-                    className={styles.menuToggle}
-                    onClick={() => setIsMenuOpen((v) => !v)}
-                    aria-label="منو"
-                    aria-expanded={isMenuOpen}
+                  <Link
+                    href={settings.header_cta_href || "/post-job"}
+                    className={styles.mobileCta}
                   >
-                    {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                  </button>
+                    <UserPlus size={16} />
+                    <span>{settings.header_cta_label || "ثبت آگهی"}</span>
+                  </Link>
                 </div>
               </div>
               <div className={styles.searchRow}>
@@ -351,51 +344,6 @@ const Header = memo(function Header() {
           )}
         </div>
       </header>
-
-      {isMobile && isMenuOpen && (
-        <div className={styles.mobileMenu}>
-          <nav aria-label="منوی موبایل">
-            <ul className={styles.mobileNavList}>
-              {navItems.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={styles.mobileNavLink}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <item.icon size={20} />
-                    <span>{item.label}</span>
-                  </Link>
-                </li>
-              ))}
-              <li className={styles.mobileDivider}>
-                <span className={styles.mobileDividerText}>ارتباط با ما</span>
-              </li>
-              <li>
-                {settings.contact_phone ? (
-                  <a
-                    href={`tel:${settings.contact_phone.replace(/\s+/g, "")}`}
-                    className={styles.mobileNavLink}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <Phone size={20} />
-                    <span>{settings.contact_phone}</span>
-                  </a>
-                ) : (
-                  <Link
-                    href="/contact"
-                    className={styles.mobileNavLink}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <Phone size={20} />
-                    <span>تماس با ما</span>
-                  </Link>
-                )}
-              </li>
-            </ul>
-          </nav>
-        </div>
-      )}
     </>
   );
 });

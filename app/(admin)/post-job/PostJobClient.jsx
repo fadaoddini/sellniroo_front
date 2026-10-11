@@ -1,10 +1,19 @@
 // app/post-job/PostJobClient.jsx
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { ChevronRight, ChevronLeft, Check, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
+import {
+  ChevronRight,
+  ChevronLeft,
+  Check,
+  Loader2,
+  AlertCircle,
+  CheckCircle,
+  FilePlus2,
+  Home,
+} from 'lucide-react';
 import Link from 'next/link';
 import jobisellApi from '@/services/jobisellApi';
 
@@ -18,24 +27,14 @@ import Step7Contact from './steps/Step7Contact';
 
 import styles from './PostJob.module.css';
 
-// ============================================
-// ✅ state اولیه فرم
-// ============================================
 const INITIAL_FORM = {
-  // Step 1
   type: '',
-
-  // Step 2
   title: '',
   description: '',
-
-  // Step 3
   province: '',
   city: '',
   neighborhood: '',
   address: '',
-
-  // Step 4
   cooperation_type: '',
   category: '',
   job_title: '',
@@ -43,16 +42,10 @@ const INITIAL_FORM = {
   education_level: '',
   gender: '',
   age_range: '',
-
-  // Step 5
-  features: [], // [{ feature: 1, value_boolean: true }, ...]
-
-  // Step 6
+  features: [],
   min_salary: '',
   max_salary: '',
   salary_range: '',
-
-  // Step 7
   image: null,
   tags: [],
   contact_phone: '',
@@ -61,7 +54,7 @@ const INITIAL_FORM = {
 
 export default function PostJobClient() {
   const router = useRouter();
-  const { isAuthenticated, loading: authLoading, user } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [form, setForm] = useState(INITIAL_FORM);
@@ -72,18 +65,12 @@ export default function PostJobClient() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [createdJobId, setCreatedJobId] = useState(null);
 
-  // ============================================
-  // ✅ چک لاگین
-  // ============================================
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.push('/login?redirect=/post-job');
     }
   }, [authLoading, isAuthenticated, router]);
 
-  // ============================================
-  // ✅ بارگذاری گزینه‌های فیلتر
-  // ============================================
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -100,36 +87,38 @@ export default function PostJobClient() {
     return () => { mounted = false; };
   }, []);
 
-  // ============================================
-  // ✅ تعریف مراحل
-  // ============================================
-  const steps = [
-    { id: 'type', title: 'نوع آگهی', component: Step1Type },
-    { id: 'basic', title: 'اطلاعات پایه', component: Step2Basic },
-    { id: 'location', title: 'موقعیت مکانی', component: Step3Location },
-    { id: 'details', title: 'جزئیات شغلی', component: Step4Details },
-    // ویژگی‌ها فقط برای استخدام
-    ...(form.type === 'hiring'
-      ? [
-          { id: 'features', title: 'مزایا و امکانات', component: Step5Features },
-          { id: 'salary', title: 'حقوق و دستمزد', component: Step6Salary },
-        ]
-      : []),
-    { id: 'contact', title: 'تماس و تصویر', component: Step7Contact },
-  ];
+  const steps = useMemo(
+    () => [
+      { id: 'type', title: 'نوع آگهی', short: 'نوع', component: Step1Type },
+      { id: 'basic', title: 'اطلاعات پایه', short: 'پایه', component: Step2Basic },
+      { id: 'location', title: 'موقعیت مکانی', short: 'مکان', component: Step3Location },
+      { id: 'details', title: 'جزئیات شغلی', short: 'جزئیات', component: Step4Details },
+      ...(form.type === 'hiring'
+        ? [
+            { id: 'features', title: 'مزایا و امکانات', short: 'مزایا', component: Step5Features },
+            { id: 'salary', title: 'حقوق و دستمزد', short: 'حقوق', component: Step6Salary },
+          ]
+        : []),
+      { id: 'contact', title: 'تماس و تصویر', short: 'تماس', component: Step7Contact },
+    ],
+    [form.type]
+  );
 
   const totalSteps = steps.length;
   const isLastStep = currentStep === totalSteps - 1;
   const isFirstStep = currentStep === 0;
+  const progress = Math.round(((currentStep + 1) / totalSteps) * 100);
 
-  // ============================================
-  // ✅ به‌روزرسانی فیلد
-  // ============================================
+  // اگر تعداد مراحل کم شد (مثلاً از hiring به seeking)، ایندکس را اصلاح کن
+  useEffect(() => {
+    if (currentStep > totalSteps - 1) {
+      setCurrentStep(Math.max(0, totalSteps - 1));
+    }
+  }, [currentStep, totalSteps]);
+
   const updateField = useCallback((key, value) => {
     setForm((prev) => {
       const next = { ...prev, [key]: value };
-
-      // آبشاری
       if (key === 'province') {
         next.city = '';
         next.neighborhood = '';
@@ -137,8 +126,6 @@ export default function PostJobClient() {
       if (key === 'city') {
         next.neighborhood = '';
       }
-
-      // اگر نوع عوض شد، ویژگی‌ها را ریست کن
       if (key === 'type' && prev.type !== value) {
         next.features = [];
         if (value === 'seeking') {
@@ -147,67 +134,31 @@ export default function PostJobClient() {
           next.salary_range = '';
         }
       }
-
       return next;
     });
   }, []);
 
-  // ============================================
-  // ✅ اعتبارسنجی هر مرحله
-  // ============================================
-  const validateStep = useCallback((stepIndex) => {
-    const step = steps[stepIndex];
-    if (!step) return true;
-
-    switch (step.id) {
-      case 'type':
-        return !!form.type;
-      case 'basic':
-        return form.title.trim().length >= 3 && form.description.trim().length >= 10;
-      case 'location':
-        return !!form.province && !!form.city;
-      case 'details':
-        return !!form.cooperation_type;
-      case 'features':
-        return true; // اختیاری
-      case 'salary':
-        return true; // اختیاری
-      case 'contact':
-        return true; // اختیاری
-      default:
-        return true;
-    }
-  }, [form, steps]);
+  const validateStep = useCallback(
+    (stepIndex) => {
+      const step = steps[stepIndex];
+      if (!step) return true;
+      switch (step.id) {
+        case 'type':
+          return !!form.type;
+        case 'basic':
+          return form.title.trim().length >= 3 && form.description.trim().length >= 10;
+        case 'location':
+          return !!form.province && !!form.city;
+        case 'details':
+          return !!form.cooperation_type;
+        default:
+          return true;
+      }
+    },
+    [form, steps]
+  );
 
   const canGoNext = validateStep(currentStep);
-
-  // ============================================
-  // ✅ ناوبری
-  // ============================================
-  const handleNext = () => {
-    if (!canGoNext) return;
-    if (isLastStep) {
-      handleSubmit();
-    } else {
-      setCurrentStep((s) => s + 1);
-      scrollToTop();
-    }
-  };
-
-  const handlePrev = () => {
-    if (!isFirstStep) {
-      setCurrentStep((s) => s - 1);
-      scrollToTop();
-    }
-  };
-
-  const handleStepClick = (index) => {
-    // فقط اگر قبلاً پرش کرده یا مرحله قبلی معتبر باشد
-    if (index <= currentStep) {
-      setCurrentStep(index);
-      scrollToTop();
-    }
-  };
 
   const scrollToTop = () => {
     if (typeof window !== 'undefined') {
@@ -215,18 +166,12 @@ export default function PostJobClient() {
     }
   };
 
-  // ============================================
-  // ✅ ارسال به سرور
-  // ============================================
   const handleSubmit = async () => {
     setSubmitting(true);
     setSubmitError(null);
 
     try {
-      // ساخت FormData برای آپلود تصویر
       const formData = new FormData();
-
-      // فیلدهای ساده
       const simpleFields = [
         'type', 'title', 'description', 'address',
         'cooperation_type', 'category', 'job_title',
@@ -239,27 +184,22 @@ export default function PostJobClient() {
         }
       });
 
-      // موقعیت
       if (form.province) formData.append('province', form.province);
       if (form.city) formData.append('city', form.city);
       if (form.neighborhood) formData.append('neighborhood', form.neighborhood);
 
-      // حقوق (فقط استخدام)
       if (form.type === 'hiring') {
         if (form.min_salary) formData.append('min_salary', form.min_salary);
         if (form.max_salary) formData.append('max_salary', form.max_salary);
         if (form.salary_range) formData.append('salary_range', form.salary_range);
       }
 
-      // تگ‌ها (آرایه)
       form.tags.forEach((tagId) => formData.append('tags', tagId));
 
-      // ویژگی‌ها (آرایه‌ای از object) → به JSON
       if (form.features.length > 0) {
         formData.append('features', JSON.stringify(form.features));
       }
 
-      // تصویر
       if (form.image) {
         formData.append('image', form.image);
       }
@@ -286,9 +226,30 @@ export default function PostJobClient() {
     }
   };
 
-  // ============================================
-  // ✅ در حال بارگذاری
-  // ============================================
+  const handleNext = () => {
+    if (!canGoNext) return;
+    if (isLastStep) {
+      handleSubmit();
+    } else {
+      setCurrentStep((s) => s + 1);
+      scrollToTop();
+    }
+  };
+
+  const handlePrev = () => {
+    if (!isFirstStep) {
+      setCurrentStep((s) => s - 1);
+      scrollToTop();
+    }
+  };
+
+  const handleStepClick = (index) => {
+    if (index <= currentStep) {
+      setCurrentStep(index);
+      scrollToTop();
+    }
+  };
+
   if (authLoading || optionsLoading) {
     return (
       <div className={styles.loadingWrap}>
@@ -300,23 +261,23 @@ export default function PostJobClient() {
 
   if (!isAuthenticated) return null;
 
-  // ============================================
-  // ✅ صفحه موفقیت
-  // ============================================
   if (submitSuccess) {
     return (
       <div className={styles.page}>
         <div className={styles.successCard}>
-          <CheckCircle size={64} className={styles.successIcon} />
-          <h1>آگهی شما با موفقیت ثبت شد!</h1>
+          <div className={styles.successIconWrap}>
+            <CheckCircle size={40} />
+          </div>
+          <h1>آگهی شما ثبت شد</h1>
           <p>
-            آگهی شما در انتظار بررسی توسط مدیر است. پس از تایید، در سایت نمایش داده می‌شود.
+            آگهی در انتظار بررسی مدیر است. پس از تایید، در سایت نمایش داده می‌شود.
           </p>
           <div className={styles.successActions}>
             <Link href={`/jobs/${createdJobId}`} className={styles.successBtn}>
               مشاهده آگهی
             </Link>
             <Link href="/" className={styles.successBtnSecondary}>
+              <Home size={16} />
               بازگشت به خانه
             </Link>
           </div>
@@ -325,66 +286,90 @@ export default function PostJobClient() {
     );
   }
 
-  // ============================================
-  // ✅ رندر Wizard
-  // ============================================
-  const CurrentStepComponent = steps[currentStep].component;
+  const CurrentStepComponent = steps[currentStep]?.component;
+  const currentMeta = steps[currentStep];
 
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-        {/* هدر */}
-        <div className={styles.header}>
+        <header className={styles.header}>
+          <div className={styles.headerBadge}>
+            <FilePlus2 size={16} />
+            <span>فرم ثبت آگهی</span>
+          </div>
           <h1 className={styles.title}>ثبت آگهی جدید</h1>
           <p className={styles.subtitle}>
-            در {totalSteps} مرحله ساده، آگهی خود را ثبت کنید
+            در {totalSteps} مرحله ساده، آگهی خود را کامل کنید
           </p>
+        </header>
+
+        {/* نوار پیشرفت */}
+        <div className={styles.progressBlock}>
+          <div className={styles.progressMeta}>
+            <span className={styles.progressStep}>
+              مرحله {currentStep + 1} از {totalSteps}
+            </span>
+            <span className={styles.progressPct}>{progress}٪</span>
+          </div>
+          <div className={styles.progressTrack} aria-hidden="true">
+            <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+          </div>
+          <p className={styles.progressCurrent}>{currentMeta?.title}</p>
         </div>
 
-        {/* Progress Steps */}
-        <div className={styles.stepper}>
+        {/* استپر RTL: ترتیب DOM = آیتم، خط، آیتم… → از راست: ۱ ـ خط ـ ۲ */}
+        <nav className={styles.stepper} aria-label="مراحل ثبت آگهی" dir="rtl">
           {steps.map((step, index) => {
             const isDone = index < currentStep;
             const isActive = index === currentStep;
             const isClickable = index <= currentStep;
+            const connectorDone = index > 0 && index <= currentStep;
 
             return (
-              <div key={step.id} className={styles.stepItem}>
-                <button
-                  className={`${styles.stepCircle} ${isDone ? styles.stepDone : ''} ${isActive ? styles.stepActive : ''}`}
-                  onClick={() => isClickable && handleStepClick(index)}
-                  disabled={!isClickable}
-                  type="button"
-                >
-                  {isDone ? <Check size={16} /> : <span>{index + 1}</span>}
-                </button>
-                <span className={`${styles.stepLabel} ${isActive ? styles.stepLabelActive : ''}`}>
-                  {step.title}
-                </span>
-                {index < totalSteps - 1 && <div className={styles.stepLine} />}
-              </div>
+              <Fragment key={step.id}>
+                {index > 0 && (
+                  <div
+                    className={`${styles.stepConnector} ${connectorDone ? styles.stepConnectorDone : ''}`}
+                    aria-hidden="true"
+                  />
+                )}
+                <div className={styles.stepItem}>
+                  <button
+                    className={`${styles.stepCircle} ${isDone ? styles.stepDone : ''} ${isActive ? styles.stepActive : ''}`}
+                    onClick={() => isClickable && handleStepClick(index)}
+                    disabled={!isClickable}
+                    type="button"
+                    aria-current={isActive ? 'step' : undefined}
+                    title={step.title}
+                  >
+                    {isDone ? <Check size={14} /> : <span>{index + 1}</span>}
+                  </button>
+                  <span className={`${styles.stepLabel} ${isActive ? styles.stepLabelActive : ''} ${isDone ? styles.stepLabelDone : ''}`}>
+                    {step.short}
+                  </span>
+                </div>
+              </Fragment>
             );
           })}
-        </div>
+        </nav>
 
-        {/* خطا */}
         {submitError && (
-          <div className={styles.errorBox}>
+          <div className={styles.errorBox} role="alert">
             <AlertCircle size={18} />
             <span>{submitError}</span>
           </div>
         )}
 
-        {/* محتوای مرحله */}
         <div className={styles.stepContent}>
-          <CurrentStepComponent
-            form={form}
-            updateField={updateField}
-            filterOptions={filterOptions}
-          />
+          {CurrentStepComponent && (
+            <CurrentStepComponent
+              form={form}
+              updateField={updateField}
+              filterOptions={filterOptions}
+            />
+          )}
         </div>
 
-        {/* دکمه‌های ناوبری */}
         <div className={styles.navButtons}>
           {!isFirstStep ? (
             <button
@@ -397,7 +382,9 @@ export default function PostJobClient() {
               مرحله قبل
             </button>
           ) : (
-            <div />
+            <Link href="/" className={styles.cancelBtn}>
+              انصراف
+            </Link>
           )}
 
           <button

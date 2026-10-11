@@ -11,14 +11,14 @@ export default function Step1Type({ form, updateField }) {
       title: 'استخدام',
       desc: 'می‌خواهم نیرو استخدام کنم',
       icon: Briefcase,
-      color: '#e67e22',
+      color: '#e8a000',
     },
     {
       id: 'seeking',
       title: 'کارجو',
       desc: 'به دنبال شغل هستم',
       icon: User,
-      color: '#2ecc71',
+      color: '#2e7d32',
     },
   ];
 

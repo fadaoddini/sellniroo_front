@@ -110,12 +110,41 @@
 }
 
 body {
-    background: var(--macos-bg);
-
+  background: var(--macos-bg);
   color: var(--macos-text);
   direction: rtl;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* پوسته صفحات سایت / ادمین */
+.siteMain {
+  min-height: 40vh;
+}
+
+.adminShell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.adminShellMain {
+  flex: 1 0 auto;
+}
+
+@media (max-width: 1023px) {
+  :root {
+    --mobile-bottom-nav: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* فاصله محتوا تا فوتر؛ خود فوتر بالای منوی پایین فاصله می‌گیرد */
+  .siteMain {
+    padding-bottom: 0.75rem;
+  }
+
+  body {
+    overscroll-behavior-y: contain;
+  }
 }
 
 table {

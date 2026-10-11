@@ -1,111 +1,204 @@
-/* ============================================
-   src/components/AllBoxItem/components/FiltersSection/FiltersSection.module.css
-   ============================================ */
+/* FiltersSection — تم طلایی سلنیرو */
 
-/* ============================================
-   بخش اصلی فیلترها
-   ============================================ */
 .filtersSection {
+  --ink: #2a241c;
+  --muted: #6f675c;
+  --line: rgba(90, 60, 20, 0.12);
+  --gold: #fbc300;
+  --gold-deep: #e8a000;
+  --gold-soft: rgba(251, 195, 0, 0.14);
+  --surface: #fffdf8;
+
   position: relative;
-  background: var(--white, #fff);
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  background: #fff;
+  border-radius: 18px;
+  padding: 1.15rem 1.1rem 1.25rem;
+  box-shadow:
+    0 10px 28px rgba(40, 28, 8, 0.06),
+    0 1px 0 rgba(255, 255, 255, 0.85) inset;
+  border: 1px solid var(--line);
+  font-family: var(--font-iran);
+  color: var(--ink);
+  direction: rtl;
 }
 
-/* ============================================
-   هدر فیلترها
-   ============================================ */
+/* ── Header ── */
 .filtersHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  margin-bottom: 0.95rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--line);
+  gap: 0.5rem;
 }
 
 .filtersTitle {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #1a2a3a;
-  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  gap: 0.45rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--ink);
+  font-family: var(--font-iran-bold), var(--font-iran);
   margin: 0;
 }
 
-.filtersTitle svg {
-  color: var(--primary-dark, #e67e22);
+.titleIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  background: linear-gradient(145deg, var(--gold), var(--gold-deep));
+  color: var(--ink);
+  flex-shrink: 0;
 }
 
 .filterBadge {
-  background: var(--primary-dark, #e67e22);
-  color: #fff;
-  border-radius: 10px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+  color: var(--ink);
+  border-radius: 999px;
   padding: 2px 8px;
   font-size: 11px;
-  font-weight: 600;
-  margin-right: 6px;
+  font-weight: 700;
   min-width: 20px;
   text-align: center;
+  line-height: 1.35;
 }
 
 .clearAllBtn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: transparent;
-  border: none;
-  color: #999;
+  background: #f5f0e6;
+  border: 1px solid var(--line);
+  color: var(--muted);
   font-size: 0.7rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: 'iran', Tahoma, Arial, sans-serif;
-  padding: 0.3rem 0.6rem;
-  border-radius: 6px;
+  transition: all 0.18s ease;
+  font-family: inherit;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
 .clearAllBtn:hover {
-  color: var(--primary-dark, #e67e22);
-  background: rgba(230, 126, 34, 0.08);
+  color: #8a6a10;
+  background: var(--gold-soft);
+  border-color: rgba(232, 160, 0, 0.35);
 }
 
-/* ============================================
-   جستجو
-   ============================================ */
+/* ── Active chips ── */
+.activeChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
+}
+
+.activeChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  max-width: 100%;
+  padding: 0.28rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(232, 160, 0, 0.35);
+  background: var(--gold-soft);
+  color: #8a6a10;
+  font-size: 0.68rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.activeChip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 140px;
+}
+
+.activeChip:hover {
+  background: rgba(251, 195, 0, 0.28);
+}
+
+.activeChip:active {
+  transform: scale(0.97);
+}
+
+/* ── Search ── */
 .searchFilterForm {
   display: flex;
-  gap: 6px;
-  margin-bottom: 16px;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+}
+
+.searchWrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.searchIcon {
+  position: absolute;
+  right: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9a9286;
+  pointer-events: none;
 }
 
 .searchFilterInput {
-  flex: 1;
-  padding: 10px 12px;
-  border: 1.5px solid #e8e8ea;
-  border-radius: 8px;
-  font-family: 'iran', Tahoma, Arial, sans-serif;
-  font-size: 0.75rem;
-  color: #333;
-  background: #fff;
+  width: 100%;
+  padding: 0.7rem 2.2rem 0.7rem 2rem;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  color: var(--ink);
+  background: var(--surface);
   outline: none;
-  transition: all 0.2s ease;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
   direction: rtl;
 }
 
 .searchFilterInput::placeholder {
-  color: #aaa;
+  color: #a39b8f;
 }
 
 .searchFilterInput:focus {
-  border-color: var(--primary-dark, #e67e22);
-  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+  border-color: rgba(232, 160, 0, 0.65);
+  background: #fff;
+  box-shadow: 0 0 0 3px var(--gold-soft);
 }
 
-/* ✅ دکمه جستجو (فقط آیکون) */
+.searchClear {
+  position: absolute;
+  left: 0.45rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #9a9286;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.searchClear:hover {
+  background: rgba(90, 60, 20, 0.08);
+  color: var(--ink);
+}
+
 .searchFilterBtn {
   display: flex;
   align-items: center;
@@ -113,307 +206,484 @@
   width: 42px;
   height: 42px;
   padding: 0;
-  background: var(--primary-dark, #e67e22);
-  color: #fff;
+  background: linear-gradient(145deg, var(--gold), var(--gold-deep));
+  color: var(--ink);
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: filter 0.18s, transform 0.18s;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(200, 150, 20, 0.28);
 }
 
 .searchFilterBtn:hover {
-  background: var(--secondary-dark, #d35400);
+  filter: brightness(1.03);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(230, 126, 34, 0.3);
 }
 
 .searchFilterBtn:active {
   transform: scale(0.96);
 }
 
-/* ============================================
-   ✅ فیلترهای آبشاری (استان → شهر → محله)
-   ============================================ */
-.cascadingFilters {
+/* ── Blocks ── */
+.block {
+  margin-bottom: 0.95rem;
+}
+
+.blockTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.55rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--ink);
+  font-family: var(--font-iran-bold), var(--font-iran);
+}
+
+.blockTitle svg {
+  color: #8a6a10;
+  flex-shrink: 0;
+}
+
+.cascadingFilters,
+.filtersList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 14px;
-  background: var(--macos-bg);
-  border-radius: 12px;
-  margin-bottom: 16px;
-  border: 1px solid #f0f0f2;
+  gap: 0.65rem;
+  padding: 0.75rem;
+  background: linear-gradient(180deg, #fffaf0, var(--surface));
+  border-radius: 14px;
+  border: 1px solid var(--line);
 }
 
 .filterGroup {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.35rem;
 }
 
 .filterGroupLabel {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.7rem;
+  gap: 0.3rem;
+  font-size: 0.68rem;
   font-weight: 600;
-  color: #555;
-  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  color: var(--muted);
 }
 
 .filterGroupLabel svg {
-  color: var(--primary-dark, #e67e22);
+  color: #c49200;
 }
 
-.filterSelect {
+.filterSelect,
+.sortSelect {
   width: 100%;
-  padding: 10px 12px;
-  border: 1.5px solid #e8e8ea;
-  border-radius: 8px;
-  font-family: 'iran', Tahoma, Arial, sans-serif;
-  font-size: 0.75rem;
-  background: #fff;
-  color: #333;
+  padding: 0.65rem 0.75rem;
+  border: 1.5px solid var(--line);
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 0.78rem;
+  background-color: #fff;
+  color: var(--ink);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: border-color 0.18s, box-shadow 0.18s;
   direction: rtl;
   outline: none;
   appearance: none;
   -webkit-appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a6a10' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
-  background-position: left 12px center;
-  padding-left: 32px;
+  background-position: left 0.75rem center;
+  padding-left: 2rem;
 }
 
-.filterSelect:hover:not(:disabled) {
-  border-color: var(--primary-dark, #e67e22);
+.filterSelect:hover:not(:disabled),
+.sortSelect:hover {
+  border-color: rgba(232, 160, 0, 0.45);
 }
 
-.filterSelect:focus {
-  border-color: var(--primary-dark, #e67e22);
-  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+.filterSelect:focus,
+.sortSelect:focus {
+  border-color: rgba(232, 160, 0, 0.65);
+  box-shadow: 0 0 0 3px var(--gold-soft);
 }
 
 .filterSelect:disabled {
-  background-color: #f5f5f7;
+  background-color: #f3efe6;
   color: #aaa;
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 0.85;
   background-image: none;
 }
 
-/* ============================================
-   سایر فیلترها
-   ============================================ */
-.filtersList {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-/* ============================================
-   ✅ فیلتر تاییدیه (checkbox)
-   ============================================ */
+/* ── Verified ── */
 .verifiedFilter {
-  margin: 12px 0;
-  padding: 10px 12px;
-  background: var(--macos-bg);
-  border-radius: 8px;
-  border: 1px solid #f0f0f2;
-}
-
-.checkboxLabel {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.65rem;
+  margin: 0 0 0.95rem;
+  padding: 0.7rem 0.8rem;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1.5px solid var(--line);
   cursor: pointer;
-  font-size: 0.75rem;
-  color: #444;
-  font-family: 'iran', Tahoma, Arial, sans-serif;
+  transition: border-color 0.18s, background 0.18s;
   user-select: none;
 }
 
-.checkboxLabel input[type='checkbox'] {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--primary-dark, #e67e22);
-  cursor: pointer;
+.verifiedFilter:hover {
+  border-color: rgba(232, 160, 0, 0.4);
+}
+
+.verifiedOn {
+  background: var(--gold-soft);
+  border-color: rgba(232, 160, 0, 0.45);
+}
+
+.checkboxVisual {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  border: 1.5px solid rgba(90, 60, 20, 0.22);
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
   flex-shrink: 0;
+  transition: all 0.18s ease;
 }
 
-/* ============================================
-   ✅ ویژگی‌ها (Chips)
-   ============================================ */
-.featuresFilter {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #eee;
+.verifiedOn .checkboxVisual {
+  background: linear-gradient(145deg, var(--gold), var(--gold-deep));
+  border-color: transparent;
 }
 
-.featuresFilterTitle {
-  font-size: 0.75rem;
+.verifiedText {
+  font-size: 0.76rem;
   font-weight: 600;
-  margin: 0 0 10px 0;
-  color: #333;
-  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  color: var(--ink);
+  line-height: 1.35;
 }
 
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Features ── */
 .featuresFilterList {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 0.4rem;
 }
 
 .featureChip {
-  padding: 6px 12px;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 16px;
+  padding: 0.4rem 0.75rem;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
   background: #fff;
   font-size: 0.7rem;
-  font-family: 'iran', Tahoma, Arial, sans-serif;
-  color: #666;
+  font-family: inherit;
+  font-weight: 500;
+  color: var(--muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
 }
 
 .featureChip:hover {
-  border-color: var(--primary-dark, #e67e22);
-  color: var(--primary-dark, #e67e22);
+  border-color: rgba(232, 160, 0, 0.5);
+  color: #8a6a10;
 }
 
 .featureChipActive {
-  background: var(--primary-dark, #e67e22);
-  color: #fff;
-  border-color: var(--primary-dark, #e67e22);
+  background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+  color: var(--ink);
+  border-color: transparent;
+  font-weight: 700;
 }
 
 .featureChipActive:hover {
-  background: var(--secondary-dark, #d35400);
-  color: #fff;
+  filter: brightness(1.03);
+  color: var(--ink);
 }
 
-/* ============================================
-   ✅ مرتب‌سازی
-   ============================================ */
-.sortSection {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #eee;
-}
-
-.sortLabel {
-  font-size: 0.7rem;
-  color: #555;
-  font-family: 'iran', Tahoma, Arial, sans-serif;
-  white-space: nowrap;
+/* ── Sort ── */
+.sortBlock {
+  margin-bottom: 0;
+  padding-top: 0.15rem;
 }
 
 .sortSelect {
-  flex: 1;
-  padding: 8px 10px;
-  border: 1.5px solid #e8e8ea;
-  border-radius: 8px;
-  font-family: 'iran', Tahoma, Arial, sans-serif;
-  font-size: 0.7rem;
-  color: #333;
-  background: #fff;
-  cursor: pointer;
-  outline: none;
-  transition: all 0.2s ease;
-  direction: rtl;
+  background-color: var(--surface);
 }
 
-.sortSelect:focus {
-  border-color: var(--primary-dark, #e67e22);
-  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+/* موبایل: دکمه/چیپ — دسکتاپ مخفی */
+.mobileOpenBtn,
+.mobileChipsBar,
+.moreChipsBtn {
+  display: none;
 }
 
-/* ============================================
-   ریسپانسیو
-   ============================================ */
+/* دسکتاپ: بدنه و هدر کامل */
+.desktopOnly,
+.desktopFilters {
+  display: contents;
+}
+
+/* ── Full-screen filter sheet (موبایل) ── */
+.sheetOverlay {
+  display: none;
+}
+
+/* ── Responsive: از ۹۰۰ به پایین = حالت موبایل فیلتر ── */
 @media (max-width: 900px) {
-  .filtersList {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+  .desktopOnly,
+  .desktopFilters {
+    display: none !important;
   }
 
-  .cascadingFilters {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
-  }
-}
-
-@media (max-width: 768px) {
   .filtersSection {
-    padding: 1rem;
+    padding: 0.85rem 0.85rem 0.9rem;
+    border-radius: 16px;
   }
 
-  .filtersList {
-    grid-template-columns: 1fr;
+  .searchFilterForm {
+    margin-bottom: 0.65rem;
   }
 
-  .cascadingFilters {
-    grid-template-columns: 1fr;
+  .mobileOpenBtn {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: 1.5px solid var(--line);
+    background: linear-gradient(180deg, #fffaf0, #fffdf8);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .filtersTitle {
-    font-size: 0.8rem;
+  .mobileOpenBtn:active {
+    background: var(--gold-soft);
   }
 
-  .filterGroupLabel {
-    font-size: 0.65rem;
+  .mobileChipsBar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.65rem;
+  }
+
+  .moreChipsBtn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.28rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: #f5f0e6;
+    color: var(--muted);
+    font-size: 0.68rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .sheetOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 10050;
+    background: rgba(40, 28, 8, 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    animation: sheetFade 0.2s ease;
+  }
+
+  .sheet {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    background: #fffdf8;
+    font-family: var(--font-iran);
+    animation: sheetUp 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sheetHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    padding-top: calc(0.85rem + env(safe-area-inset-top, 0px));
+    border-bottom: 1px solid var(--line);
+    background: #fff;
+    flex-shrink: 0;
+  }
+
+  .sheetTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    font-family: var(--font-iran-bold), var(--font-iran);
+  }
+
+  .sheetClose {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .sheetClose:active {
+    background: #f5f0e6;
+  }
+
+  .sheetBody {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1rem 0.95rem 1.25rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sheetChips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .sheetBody .filtersList,
+  .sheetBody .cascadingFilters {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: unset;
+  }
+
+  .sheetFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    padding: 0.75rem 0.95rem;
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px) + var(--mobile-bottom-nav, 0px));
+    border-top: 1px solid var(--line);
+    background: rgba(255, 253, 248, 0.96);
+    backdrop-filter: blur(12px);
+    flex-shrink: 0;
+  }
+
+  .sheetClearBtn,
+  .sheetApplyBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .sheetClearBtn {
+    background: #f5f0e6;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    flex: 0 0 auto;
+  }
+
+  .sheetApplyBtn {
+    flex: 1;
+    background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+    color: var(--ink);
+    box-shadow: 0 6px 16px rgba(200, 150, 20, 0.28);
+  }
+
+  .sheetApplyBtn:active {
+    filter: brightness(0.98);
   }
 
   .filterSelect,
   .searchFilterInput,
   .sortSelect {
-    font-size: 0.7rem;
-    padding: 9px 10px;
+    font-size: 0.85rem;
   }
 
-  .sortSection {
-    flex-wrap: wrap;
-  }
-
-  .sortSelect {
-    width: 100%;
+  .activeChip span {
+    max-width: 120px;
   }
 }
 
 @media (max-width: 480px) {
   .filtersSection {
-    padding: 0.8rem;
+    padding: 0.75rem;
+    border-radius: 14px;
   }
 
   .searchFilterBtn {
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
   }
 
   .featureChip {
-    font-size: 0.65rem;
-    padding: 5px 10px;
+    font-size: 0.68rem;
+    padding: 0.35rem 0.65rem;
+  }
+
+  .sheetBody {
+    padding: 0.85rem 0.8rem 1rem;
   }
 }
 
-/* ============================================
-   RTL
-   ============================================ */
-.searchFilterForm,
-.filterGroup,
-.sortSection,
-.checkboxLabel,
-.featuresFilterList,
-.cascadingFilters,
-.filtersList,
-.filtersHeader {
-  direction: rtl;
+@keyframes sheetFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sheetUp {
+  from { transform: translateY(12px); opacity: 0.85; }
+  to { transform: none; opacity: 1; }
+}
+
+/* دسکتاپ: دیالوگ هرگز نشان داده نشود حتی اگر state باز بماند */
+@media (min-width: 901px) {
+  .sheetOverlay {
+    display: none !important;
+  }
+
+  .mobileOpenBtn,
+  .mobileChipsBar {
+    display: none !important;
+  }
 }

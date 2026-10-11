@@ -288,12 +288,15 @@
 
 @media (max-width: 480px) {
   .dialogOverlay {
-    padding: 0.5rem;
+    padding: 0;
+    align-items: flex-end;
   }
 
   .dialogContent {
-    border-radius: 14px;
-    max-height: 85vh;
+    border-radius: 18px 18px 0 0;
+    max-height: calc(88vh - var(--mobile-bottom-nav, 0px));
+    margin: 0;
+    max-width: 100%;
   }
 
   .dialogHeader {

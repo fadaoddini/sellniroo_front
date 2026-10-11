@@ -3,3 +3,19 @@
   overflow-x: clip;
   overflow-y: visible;
 }
+
+/* تجربه اپ‌مانند روی موبایل */
+@media (max-width: 1023px) {
+  .homeContainer {
+    padding-bottom: 0.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .homeContainer {
+    /* فاصله‌های عمودی فشرده‌تر مثل اپ */
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+}

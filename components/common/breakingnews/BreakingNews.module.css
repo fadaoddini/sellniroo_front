@@ -460,19 +460,15 @@
   .newsText {
     font-size: 0.7rem;
   }
+
+  /* تماس و درباره در منوی پایین هستند — اینجا فقط فضای بیشتر به تیکر */
+  .consultButton,
+  .aboutButton {
+    display: none !important;
+  }
   
-  .consultButton span,
-  .aboutButton span,
   .loginButton span {
     display: none;
-  }
-  
-  .consultButton {
-    padding: 0.25rem 0.5rem;
-  }
-  
-  .aboutButton {
-    padding: 0.25rem 0.5rem;
   }
   
   .loginButton {

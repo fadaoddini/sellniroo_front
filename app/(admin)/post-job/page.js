@@ -3,8 +3,8 @@ import { Suspense } from 'react';
 import PostJobClient from './PostJobClient';
 
 export const metadata = {
-  title: 'ثبت آگهی جدید | آریا استاد',
-  description: 'آگهی استخدام یا کارجو خود را ثبت کنید',
+  title: 'ثبت آگهی جدید | سلنیرو',
+  description: 'آگهی استخدام یا کارجو خود را در چند مرحله ساده ثبت کنید',
 };
 
 export default function PostJobPage() {

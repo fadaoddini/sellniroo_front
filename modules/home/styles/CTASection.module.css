@@ -529,7 +529,8 @@
 
 @media (max-width: 640px) {
   .contact {
-    padding: 3.25rem 1rem;
+    padding: 2.25rem 0.85rem calc(2rem + var(--mobile-bottom-nav, 0px));
+    scroll-margin-top: 100px;
   }
 
   .row,
@@ -538,7 +539,8 @@
   }
 
   .form {
-    padding: 1.2rem 1rem 1.3rem;
+    padding: 1.1rem 0.9rem 1.2rem;
+    border-radius: 16px;
   }
 
   .dialog {

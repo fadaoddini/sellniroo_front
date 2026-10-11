@@ -320,9 +320,9 @@
 /* موبایل بزرگ */
 @media (max-width: 768px) {
   .slider {
-    height: 160px;
-    max-height: 160px;
-    border-radius: 12px;
+    height: 148px;
+    max-height: 148px;
+    border-radius: 0 0 16px 16px;
   }
   
   .content {
