@@ -6,6 +6,7 @@ import axios from "axios";
 import Config from "@/config/config";
 import { useAuth } from "@/contexts/AuthContext";
 import styles from "../ResumeForm.module.css";
+import PersianDatePicker from "@/components/common/PersianDatePicker";
 import { Plus, Trash2, Edit2, Check, X, Loader2, Trophy } from "lucide-react";
 
 const emptyForm = {
@@ -152,11 +153,12 @@ const AwardsSection = ({ resume, onRefresh }) => {
 
           <div className={styles.formGroup}>
             <label>تاریخ</label>
-            <input
-              type="date"
+            <PersianDatePicker
               value={formData.date}
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              dir="ltr"
+              onChange={(date) =>
+                setFormData({ ...formData, date: date || "" })
+              }
+              placeholder="انتخاب تاریخ"
             />
           </div>
 

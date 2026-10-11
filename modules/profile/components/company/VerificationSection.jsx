@@ -1,7 +1,7 @@
 // modules/profile/components/company/VerificationSection.jsx
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import Config from "@/config/config";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,12 +28,15 @@ const VerificationSection = ({ company, onRequestSubmitted }) => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  // ✅ برای آپلود مدارک جدید
   const [uploadingDocs, setUploadingDocs] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const [newDocs, setNewDocs] = useState([]);
   const docsInputRef = useRef(null);
   const [localDocs, setLocalDocs] = useState(company.documents || []);
+
+  useEffect(() => {
+    setLocalDocs(company.documents || []);
+  }, [company.documents]);
 
   const status = company.verification_status;
   const docsCount = localDocs.length;
@@ -64,15 +67,10 @@ const VerificationSection = ({ company, onRequestSubmitted }) => {
       },
     });
 
-    console.log("Upload response:", res.data);
-
     setNewDocs([]);
     if (docsInputRef.current) docsInputRef.current.value = "";
-
-    // رفرش کل تب
     onRequestSubmitted?.();
   } catch (err) {
-    console.error(err);
     setUploadError(
       err.response?.data?.error ||
         err.response?.data?.message ||

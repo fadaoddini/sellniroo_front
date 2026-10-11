@@ -1,91 +1,90 @@
-/* ============================================
-   ProfileHeader - Light Theme Standard
-   ============================================ */
+/* ProfileHeader — زیبا، کاربردی، تم طلایی */
 
 .header {
+  --ink: #2a241c;
+  --muted: #6f675c;
+  --line: rgba(90, 60, 20, 0.12);
+  --gold: #fbc300;
+  --gold-dark: #c27800;
+  --cream: #fff7ec;
+
   position: relative;
-  background: #ffffff;
-  border-radius: 20px;
+  background: #fff;
+  border-radius: 24px;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.06),
-    0 1px 3px rgba(0, 0, 0, 0.04);
-  transition: box-shadow 0.3s ease;
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 36px rgba(80, 50, 0, 0.08);
 }
 
-.header:hover {
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.08),
-    0 2px 6px rgba(0, 0, 0, 0.05);
+.cover {
+  position: relative;
+  height: 118px;
+  background: linear-gradient(125deg, #ffd54a 0%, #fbc300 38%, #fb9700 78%, #e67e00 100%);
+  overflow: hidden;
 }
 
-/* ============================================
-   پس‌زمینه گرادیانت بالای هدر
-   ============================================ */
-.headerBg {
+.coverGlow {
   position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  height: 100px;
-  background: linear-gradient(
-    135deg,
-    var(--primary-dark) 0%,
-    var(--primary) 50%,
-    var(--secondary) 100%
-  );
-  opacity: 0.9;
+  inset: -40% 40% auto -10%;
+  height: 160%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.35), transparent 62%);
+  pointer-events: none;
 }
 
-.headerBg::before {
-  content: "";
+.coverPattern {
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    circle at 20% 50%,
-    rgba(255, 255, 255, 0.25) 0%,
-    transparent 60%
-  );
+  opacity: 0.18;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.55) 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.4) 0 1.5px, transparent 2.5px);
+  background-size: 28px 28px, 22px 22px;
+  pointer-events: none;
 }
 
-/* ============================================
-   محتوای هدر
-   ============================================ */
 .headerContent {
   position: relative;
-  padding: 10px 2rem;
+  z-index: 1;
+  padding: 0 1.4rem 1.25rem;
+  margin-top: -48px;
   display: flex;
-  align-items: flex-start;
-  gap: 1.5rem;
+  flex-direction: column;
+  gap: 1.1rem;
 }
 
-/* ============================================
-   آواتار
-   ============================================ */
+.topRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
 .avatarWrapper {
   position: relative;
   flex-shrink: 0;
 }
 
-.avatar {
-  width: 70px;
-  height: 70px;
+.avatarBtn {
+  display: block;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
   border-radius: 50%;
-  overflow: hidden;
-  border: 3px solid #ffffff;
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.15),
-    0 0 0 1px rgba(0, 0, 0, 0.04);
-  background: #f5f5f7;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.avatar:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.2),
-    0 0 0 1px rgba(0, 0, 0, 0.05);
+.avatarBtn:disabled {
+  cursor: wait;
+}
+
+.avatar {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #fff;
+  box-shadow: 0 10px 28px rgba(90, 50, 0, 0.24);
+  background: var(--cream);
 }
 
 .avatarImage {
@@ -98,50 +97,63 @@
 .avatarPlaceholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-  color: #ffffff;
+  background: linear-gradient(145deg, #fb9700, #fbc300);
+  color: #3a2a00;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 800;
   font-family: var(--font-iran-bold);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
-/* ============================================
-   دکمه دوربین
-   ============================================ */
+.avatarOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(40, 28, 8, 0.55);
+  color: #fff8e7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.avatarBtn:hover .avatarOverlay,
+.avatarBtn:focus-visible .avatarOverlay {
+  opacity: 1;
+}
+
 .cameraBtn {
   position: absolute;
   bottom: 4px;
   left: 4px;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background: var(--macos-blue);
-  color: #ffffff;
-  border: 3px solid #ffffff;
+  background: #3a2a00;
+  color: #fff8e7;
+  border: 2.5px solid #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.35);
+  transition: transform 0.2s ease, background 0.2s ease;
+  box-shadow: 0 4px 12px rgba(58, 42, 0, 0.28);
+  z-index: 2;
 }
 
 .cameraBtn:hover:not(:disabled) {
-  background: var(--macos-blue-hover);
-  transform: scale(1.08);
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.45);
-}
-
-.cameraBtn:active:not(:disabled) {
-  transform: scale(0.95);
+  background: #241a00;
+  transform: scale(1.06);
 }
 
 .cameraBtn:disabled {
-  opacity: 0.6;
+  opacity: 0.65;
   cursor: not-allowed;
 }
 
@@ -149,70 +161,86 @@
   display: none;
 }
 
-/* ============================================
-   اطلاعات
-   ============================================ */
 .info {
   flex: 1;
   min-width: 0;
-  padding-top: 0.5rem;
+  padding-top: 2.6rem;
 }
 
 .nameRow {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.nameBlock {
+  min-width: 0;
+}
+
+.greeting {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0 0 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--gold-dark);
 }
 
 .name {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #1c1c1e;
-  font-family: var(--font-iran-bold);
-  margin: 0;
-  letter-spacing: -0.2px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--ink);
+  font-family: var(--font-edameh, var(--font-iran-bold));
+  margin: 0 0 0.2rem;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
 }
 
-/* ============================================
-   دکمه ویرایش
-   ============================================ */
-.editBtn {
-  padding: 0.5rem 1rem;
-  background: #ffffff;
-  color: var(--macos-blue);
-  border: 1.5px solid var(--macos-blue);
-  border-radius: 10px;
+.welcome {
+  margin: 0;
   font-size: 0.8rem;
-  font-weight: 500;
+  color: var(--muted);
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.editBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.05rem;
+  background: #fff;
+  color: var(--gold-dark);
+  border: 1.5px solid rgba(194, 120, 0, 0.35);
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
   font-family: var(--font-iran);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
   white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(80, 50, 0, 0.06);
 }
 
 .editBtn:hover {
-  background: var(--macos-blue);
-  color: #ffffff;
+  background: linear-gradient(135deg, #ffd54a, #fbc300);
+  color: #3a2a00;
+  border-color: transparent;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
 }
 
-.editBtn:active {
-  transform: translateY(0);
-}
-
-/* ============================================
-   اطلاعات متنی
-   ============================================ */
 .metaRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  color: #6b7280;
-  font-size: 0.85rem;
+  gap: 0.45rem;
 }
 
 .metaItem {
@@ -220,34 +248,76 @@
   align-items: center;
   gap: 0.35rem;
   font-family: var(--font-iran);
-  padding: 0.2rem 0.6rem;
-  background: #f5f5f7;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 0.35rem 0.75rem;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: default;
 }
 
-.metaItem:hover {
-  background: #ebecef;
-  color: #1c1c1e;
+button.metaItem {
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+button.metaItem:hover {
+  background: #fff3c4;
+  border-color: rgba(194, 120, 0, 0.35);
+  color: var(--ink);
 }
 
 .metaItem svg {
-  color: var(--primary-dark);
+  color: var(--gold-dark);
   flex-shrink: 0;
 }
 
-/* ============================================
-   فرم ویرایش
-   ============================================ */
+.copyIcon {
+  opacity: 0.45;
+}
+
+button.metaItem:hover .copyIcon {
+  opacity: 1;
+}
+
+.copyOk {
+  color: #2e7d32 !important;
+}
+
+.metaMuted {
+  opacity: 0.75;
+}
+
+.metaWarn {
+  background: #fff8e0;
+  border-color: rgba(194, 120, 0, 0.35);
+  color: var(--gold-dark);
+}
+
 .editForm {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: 1.25rem;
-  background: #f9f9fb;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 14px;
+  gap: 0.9rem;
+  padding: 1.15rem;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  margin-top: 0.35rem;
+}
+
+.editHead h2 {
+  margin: 0 0 0.2rem;
+  font-size: 0.95rem;
+  font-family: var(--font-edameh, var(--font-iran-bold));
+  color: var(--ink);
+}
+
+.editHead p {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--muted);
 }
 
 .formRow {
@@ -259,45 +329,47 @@
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.3rem;
 }
 
 .formGroup label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #6b7280;
-  font-family: var(--font-iran);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
 }
 
 .formGroup input {
-  padding: 0.55rem 0.75rem;
-  background: #ffffff;
-  border: 1.5px solid rgba(0, 0, 0, 0.08);
-  border-radius: 8px;
-  color: #1c1c1e;
+  padding: 0.65rem 0.85rem;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 11px;
+  color: var(--ink);
   font-size: 0.85rem;
   font-family: var(--font-iran);
   outline: none;
-  transition: all 0.2s ease;
-}
-
-.formGroup input::placeholder {
-  color: #b0b0b5;
-}
-
-.formGroup input:hover {
-  border-color: rgba(0, 0, 0, 0.15);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .formGroup input:focus {
-  border-color: var(--macos-blue);
-  background: #ffffff;
-  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.12);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(251, 195, 0, 0.18);
 }
 
-/* ============================================
-   دکمه‌های ذخیره و لغو
-   ============================================ */
+.mobileHint {
+  margin: 0;
+  font-size: 0.74rem;
+  color: var(--muted);
+  padding: 0.5rem 0.75rem;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px dashed var(--line);
+}
+
+.mobileHint em {
+  font-style: normal;
+  color: #9a8f7e;
+}
+
 .formActions {
   display: flex;
   gap: 0.5rem;
@@ -310,43 +382,36 @@
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  padding: 0.55rem 1.1rem;
-  border-radius: 8px;
-  border: none;
+  padding: 0.6rem 1.15rem;
+  border-radius: 11px;
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 700;
   font-family: var(--font-iran);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease;
   white-space: nowrap;
 }
 
 .saveBtn {
-  background: var(--macos-green);
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(52, 199, 89, 0.25);
+  background: #3a2a00;
+  color: #fff8e7;
+  border: none;
+  box-shadow: 0 6px 16px rgba(58, 42, 0, 0.2);
 }
 
 .saveBtn:hover:not(:disabled) {
-  background: #2db84d;
+  background: #241a00;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(52, 199, 89, 0.35);
-}
-
-.saveBtn:active:not(:disabled) {
-  transform: translateY(0);
 }
 
 .cancelBtn {
-  background: #ffffff;
-  color: #4b5563;
-  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  color: var(--ink);
+  border: 1.5px solid var(--line);
 }
 
 .cancelBtn:hover:not(:disabled) {
-  background: #f5f5f7;
-  color: #1c1c1e;
-  border-color: rgba(0, 0, 0, 0.15);
+  background: #fff8e0;
 }
 
 .saveBtn:disabled,
@@ -356,35 +421,158 @@
   transform: none !important;
 }
 
-/* ============================================
-   پیام‌ها
-   ============================================ */
 .message {
   margin-top: 0.75rem;
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  border-radius: 11px;
   font-size: 0.8rem;
-  font-weight: 500;
-  font-family: var(--font-iran);
-  animation: messageSlideIn 0.3s ease-out;
+  font-weight: 600;
+  animation: messageSlideIn 0.28s ease-out;
 }
 
 .msgSuccess {
-  background: rgba(52, 199, 89, 0.1);
-  color: #1a8f3a;
-  border: 1px solid rgba(52, 199, 89, 0.25);
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
 }
 
 .msgError {
-  background: rgba(255, 59, 48, 0.08);
-  color: #c0392b;
-  border: 1px solid rgba(255, 59, 48, 0.2);
+  background: #fde8ea;
+  color: #c62828;
+  border: 1px solid #f5b7b1;
+}
+
+/* نوار پایین: تکمیل + میانبر */
+.bottomBar {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 0.85rem;
+  padding-top: 0.15rem;
+}
+
+.completeBox {
+  padding: 0.9rem 1rem;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.completeHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.completeHead strong {
+  color: var(--gold-dark);
+  font-size: 0.85rem;
+}
+
+.progressTrack {
+  height: 7px;
+  border-radius: 99px;
+  background: rgba(90, 60, 20, 0.1);
+  overflow: hidden;
+  margin-bottom: 0.55rem;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #ffd54a, #fbc300, #fb9700);
+  transition: width 0.35s ease;
+}
+
+.completeChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.chipOk {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.chipMiss {
+  background: #fff;
+  color: #9a8f7e;
+  border: 1px dashed var(--line);
+}
+
+.quickNav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+}
+
+.quickLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.7rem 0.75rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 0.76rem;
+  font-weight: 700;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.quickLink svg {
+  color: var(--gold-dark);
+}
+
+.quickLink:hover {
+  background: var(--cream);
+  border-color: rgba(194, 120, 0, 0.35);
+  transform: translateY(-1px);
+}
+
+.quickPrimary {
+  background: linear-gradient(135deg, #ffd54a, #fbc300);
+  border-color: transparent;
+  color: #3a2a00;
+  box-shadow: 0 6px 14px rgba(201, 120, 0, 0.22);
+}
+
+.quickPrimary svg {
+  color: #3a2a00;
+}
+
+.quickPrimary:hover {
+  background: linear-gradient(135deg, #ffe082, #fbc300);
+}
+
+.spin {
+  animation: spin 0.85s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 @keyframes messageSlideIn {
   from {
     opacity: 0;
-    transform: translateY(-6px);
+    transform: translateY(-5px);
   }
   to {
     opacity: 1;
@@ -392,45 +580,42 @@
   }
 }
 
-/* ============================================
-   انیمیشن چرخش
-   ============================================ */
-.spin {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+@media (max-width: 900px) {
+  .bottomBar {
+    grid-template-columns: 1fr;
   }
 }
 
-/* ============================================
-   ریسپانسیو - تبلت (768px)
-   ============================================ */
 @media (max-width: 768px) {
+  .cover {
+    height: 100px;
+  }
+
   .headerContent {
+    margin-top: -44px;
+    padding: 0 1rem 1.1rem;
+  }
+
+  .topRow {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 70px 1.25rem 1.5rem;
+  }
+
+  .info {
+    width: 100%;
+    padding-top: 0.65rem;
   }
 
   .avatar {
-    width: 90px;
-    height: 90px;
-  }
-
-  .avatarPlaceholder {
-    font-size: 1.5rem;
-  }
-
-  .name {
-    font-size: 1.25rem;
+    width: 100px;
+    height: 100px;
   }
 
   .nameRow {
     justify-content: center;
+    flex-direction: column;
+    align-items: center;
   }
 
   .metaRow {
@@ -441,122 +626,39 @@
     grid-template-columns: 1fr;
   }
 
-  .info {
-    width: 100%;
-    padding-top: 0;
+  .greeting {
+    justify-content: center;
   }
 }
 
-/* ============================================
-   ریسپانسیو - موبایل (480px)
-   ============================================ */
 @media (max-width: 480px) {
   .header {
-    border-radius: 16px;
-  }
-
-  .headerBg {
-    height: 85px;
-  }
-
-  .headerContent {
-    padding: 65px 1rem 1.25rem;
-    gap: 1rem;
-  }
-
-  .avatar {
-    width: 80px;
-    height: 80px;
-    border-width: 2.5px;
-  }
-
-  .avatarPlaceholder {
-    font-size: 1.35rem;
-  }
-
-  .cameraBtn {
-    width: 28px;
-    height: 28px;
-    bottom: 3px;
-    left: 3px;
-    border-width: 2.5px;
-  }
-
-  .cameraBtn svg {
-    width: 13px;
-    height: 13px;
+    border-radius: 20px;
   }
 
   .name {
-    font-size: 1.1rem;
-  }
-
-  .editBtn {
-    padding: 0.45rem 0.9rem;
-    font-size: 0.75rem;
-  }
-
-  .metaRow {
-    gap: 0.6rem;
-    font-size: 0.78rem;
-  }
-
-  .metaItem {
-    padding: 0.18rem 0.5rem;
-    font-size: 0.75rem;
-  }
-
-  .metaItem svg {
-    width: 12px;
-    height: 12px;
-  }
-
-  .editForm {
-    padding: 1rem;
-    border-radius: 12px;
+    font-size: 1.2rem;
   }
 
   .saveBtn,
   .cancelBtn {
     flex: 1;
-    padding: 0.55rem 0.9rem;
-    font-size: 0.76rem;
   }
 
-  .message {
-    font-size: 0.75rem;
-    padding: 0.55rem 0.85rem;
+  .quickNav {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
-/* ============================================
-   ریسپانسیو - موبایل خیلی کوچک (360px)
-   ============================================ */
-@media (max-width: 360px) {
-  .headerContent {
-    padding: 60px 0.75rem 1rem;
-  }
-
-  .avatar {
-    width: 72px;
-    height: 72px;
-  }
-
-  .avatarPlaceholder {
-    font-size: 1.2rem;
-  }
-
-  .name {
-    font-size: 1rem;
-  }
-
-  .metaItem {
-    font-size: 0.7rem;
-    padding: 0.15rem 0.45rem;
-  }
-
-  .metaItem svg {
-    width: 11px;
-    height: 11px;
+@media (prefers-reduced-motion: reduce) {
+  .message,
+  .spin,
+  .editBtn,
+  .cameraBtn,
+  .saveBtn,
+  .progressFill,
+  .quickLink {
+    animation: none !important;
+    transition: none !important;
   }
 }

@@ -1,36 +1,64 @@
+/* CompanyForm — تم طلایی */
+
 .formWrapper {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 28px;
-    font-family: var(--font-iran);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e2e8f0;
+  --ink: #2a241c;
+  --muted: #6f675c;
+  --line: rgba(90, 60, 20, 0.12);
+  --gold: #fbc300;
+  --gold-dark: #c27800;
+  --cream: #fff7ec;
+
+  background: #fff;
+  border-radius: 20px;
+  padding: 1.35rem 1.4rem 1.5rem;
+  font-family: var(--font-iran);
+  box-shadow: 0 8px 24px rgba(80, 50, 0, 0.06);
+  border: 1px solid var(--line);
+  position: relative;
+  overflow: visible;
+}
+
+.formWrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 5px;
+  border-radius: 20px 20px 0 0;
+  background: linear-gradient(90deg, #ffd54a, #fbc300, #fb9700);
+  pointer-events: none;
 }
 
 .header {
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--line);
 }
 
 .header h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.1rem;
+  color: var(--ink);
+  font-family: var(--font-edameh, var(--font-iran-bold));
+}
+
+.subtitle {
   margin: 0;
-  font-size: 18px;
-  color: #1e293b;
+  font-size: 0.78rem;
+  color: var(--muted);
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 1.05rem;
 }
 
 .logoSection label {
   display: block;
-  margin-bottom: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #334155;
+  margin-bottom: 0.55rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
 }
 
 .logoBox {
@@ -41,30 +69,32 @@
 .uploadBox {
   width: 140px;
   height: 140px;
-  border: 2px dashed #cbd5e1;
-  border-radius: 14px;
-  background: #f8fafc;
+  border: 2px dashed rgba(194, 120, 0, 0.35);
+  border-radius: 16px;
+  background: var(--cream);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 0.4rem;
   cursor: pointer;
-  color: #64748b;
-  transition: all 0.2s;
+  color: var(--muted);
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .uploadBox:hover {
-  border-color: #3b82f6;
-  background: #eff6ff;
-  color: #3b82f6;
+  border-color: var(--gold-dark);
+  background: #fff3c4;
+  color: var(--gold-dark);
 }
 
 .uploadBox .hint {
-  font-size: 11px;
-  color: #94a3b8;
+  font-size: 0.68rem;
+  color: #9a8f7e;
+  font-weight: 500;
 }
 
 .logoPreviewWrapper {
@@ -75,8 +105,9 @@
   width: 140px;
   height: 140px;
   object-fit: cover;
-  border-radius: 14px;
-  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  border: 2px solid var(--line);
+  box-shadow: 0 6px 16px rgba(80, 50, 0, 0.1);
 }
 
 .removeLogoBtn {
@@ -86,9 +117,9 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #ef4444;
+  background: #c62828;
   color: white;
-  border: none;
+  border: 2px solid #fff;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -98,40 +129,41 @@
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 0.9rem;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.35rem;
 }
 
 .formGroup label {
-  font-size: 13px;
-  font-weight: 500;
-  color: #334155;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
 }
 
 .formGroup input,
 .formGroup select,
 .formGroup textarea {
-  padding: 10px 14px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid var(--line);
+  border-radius: 11px;
   font-family: inherit;
-  font-size: 14px;
-  color: #1e293b;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  background: #ffffff;
+  font-size: 0.85rem;
+  color: var(--ink);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: var(--cream);
 }
 
 .formGroup input:focus,
 .formGroup select:focus,
 .formGroup textarea:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--gold);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(251, 195, 0, 0.18);
 }
 
 .formGroup textarea {
@@ -140,43 +172,44 @@
 }
 
 .docsSection {
-  padding: 16px;
-  background: #f8fafc;
-  border-radius: 12px;
-  border: 1px dashed #cbd5e1;
+  padding: 1rem;
+  background: var(--cream);
+  border-radius: 14px;
+  border: 1.5px dashed rgba(194, 120, 0, 0.28);
 }
 
 .docsSection > label {
   display: block;
-  font-size: 14px;
-  font-weight: 500;
-  color: #334155;
-  margin-bottom: 4px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 0.25rem;
 }
 
 .docsHint {
-  font-size: 12px;
-  color: #64748b;
-  margin: 0 0 12px 0;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin: 0 0 0.75rem;
   line-height: 1.6;
 }
 
 .docsGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 0.55rem;
 }
 
 .docItem {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 12px;
-  color: #334155;
+  gap: 0.45rem;
+  padding: 0.45rem 0.7rem;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 0.72rem;
+  color: var(--ink);
+  font-weight: 600;
 }
 
 .docName {
@@ -190,7 +223,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #ef4444;
+  color: #c62828;
   display: flex;
   align-items: center;
   padding: 0;
@@ -199,93 +232,100 @@
 .addDocBtn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: #ffffff;
-  border: 1px dashed #94a3b8;
-  border-radius: 8px;
+  gap: 0.4rem;
+  padding: 0.55rem 0.9rem;
+  background: #fff;
+  border: 1.5px dashed rgba(194, 120, 0, 0.4);
+  border-radius: 10px;
   cursor: pointer;
   font-family: inherit;
-  font-size: 13px;
-  color: #475569;
-  transition: all 0.2s;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  transition: all 0.2s ease;
 }
 
 .addDocBtn:hover {
-  border-color: #3b82f6;
-  color: #3b82f6;
-  background: #eff6ff;
+  border-color: var(--gold-dark);
+  color: var(--gold-dark);
+  background: #fff3c4;
 }
 
 .docCount {
-  font-size: 11px;
-  color: #94a3b8;
-  padding: 2px 6px;
-  background: #f1f5f9;
-  border-radius: 4px;
+  font-size: 0.68rem;
+  color: var(--gold-dark);
+  padding: 0.15rem 0.4rem;
+  background: #fff3c4;
+  border-radius: 6px;
+  font-weight: 700;
 }
 
 .errorBox {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 8px;
-  color: #dc2626;
-  font-size: 13px;
+  gap: 0.45rem;
+  padding: 0.65rem 0.85rem;
+  background: #fde8ea;
+  border: 1px solid #f5b7b1;
+  border-radius: 11px;
+  color: #c62828;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .actions {
   display: flex;
-  gap: 12px;
+  gap: 0.65rem;
   justify-content: flex-end;
-  padding-top: 16px;
-  border-top: 1px solid #e2e8f0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line);
 }
 
 .cancelBtn,
 .saveBtn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 22px;
-  border-radius: 8px;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 11px;
   font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 0.84rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.2s ease, transform 0.2s ease;
   border: none;
 }
 
 .cancelBtn {
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--cream);
+  color: var(--ink);
+  border: 1px solid var(--line);
 }
 
 .cancelBtn:hover {
-  background: #e2e8f0;
+  background: #fff3c4;
 }
 
 .saveBtn {
-  background: #3b82f6;
-  color: white;
+  background: #3a2a00;
+  color: #fff8e7;
+  box-shadow: 0 6px 16px rgba(58, 42, 0, 0.2);
 }
 
 .saveBtn:hover:not(:disabled) {
-  background: #2563eb;
+  background: #241a00;
+  transform: translateY(-1px);
 }
 
 .saveBtn:disabled,
 .cancelBtn:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
+  transform: none !important;
 }
 
 .spin {
-  animation: spin 1s linear infinite;
+  animation: spin 0.85s linear infinite;
 }
 
 @keyframes spin {
@@ -296,7 +336,18 @@
   .row {
     grid-template-columns: 1fr;
   }
+
   .formWrapper {
-    padding: 20px;
+    padding: 1.15rem 1rem 1.25rem;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .cancelBtn,
+  .saveBtn {
+    width: 100%;
+    justify-content: center;
   }
 }

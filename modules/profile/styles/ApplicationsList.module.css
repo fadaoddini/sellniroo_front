@@ -131,13 +131,13 @@
 }
 
 .viewBtn {
-  background: var(--macos-blue);
-  color: #ffffff;
+  background: #3a2a00;
+  color: #fff8e7;
 }
 
 .viewBtn:hover {
-  background: var(--macos-blue-hover);
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+  background: #241a00;
+  box-shadow: 0 4px 12px rgba(58, 42, 0, 0.22);
 }
 
 .resumeBtn {

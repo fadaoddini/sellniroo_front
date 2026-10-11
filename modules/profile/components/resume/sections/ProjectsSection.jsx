@@ -6,6 +6,7 @@ import axios from "axios";
 import Config from "@/config/config";
 import { useAuth } from "@/contexts/AuthContext";
 import styles from "../ResumeForm.module.css";
+import PersianDatePicker from "@/components/common/PersianDatePicker";
 import { Plus, Trash2, Edit2, Check, X, Loader2, FolderKanban } from "lucide-react";
 
 const emptyForm = {
@@ -179,20 +180,22 @@ const ProjectsSection = ({ resume, onRefresh }) => {
           <div className={styles.row}>
             <div className={styles.formGroup}>
               <label>تاریخ شروع</label>
-              <input
-                type="date"
+              <PersianDatePicker
                 value={formData.start_date}
-                onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                dir="ltr"
+                onChange={(date) =>
+                  setFormData({ ...formData, start_date: date || "" })
+                }
+                placeholder="تاریخ شروع"
               />
             </div>
             <div className={styles.formGroup}>
               <label>تاریخ پایان</label>
-              <input
-                type="date"
+              <PersianDatePicker
                 value={formData.end_date}
-                onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                dir="ltr"
+                onChange={(date) =>
+                  setFormData({ ...formData, end_date: date || "" })
+                }
+                placeholder="تاریخ پایان"
               />
             </div>
           </div>

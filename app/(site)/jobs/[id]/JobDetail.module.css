@@ -231,16 +231,26 @@
   color: #e67e22;
 }
 
+.jobCompanyVerified {
+  color: #0f2a44;
+}
+
 .verifiedBadge {
   display: inline-flex;
   align-items: center;
-  gap: 0.2rem;
-  color: #34c759;
-  font-size: 0.7rem;
-  font-weight: 500;
-  background: rgba(52, 199, 89, 0.1);
-  padding: 0.1rem 0.5rem;
-  border-radius: 4px;
+  gap: 0.25rem;
+  color: #0a6ebd;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(29, 155, 240, 0.12);
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(29, 155, 240, 0.25);
+}
+
+.verifiedBadge svg {
+  color: #1d9bf0;
+  flex-shrink: 0;
 }
 
 .jobActions {
@@ -522,6 +532,50 @@
   background: #d35400;
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(230, 126, 34, 0.3);
+}
+
+.applyHint {
+  margin: 0 0 0.85rem;
+  font-size: 0.75rem;
+  line-height: 1.65;
+  color: #6b7280;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.coverLabel {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 0.35rem;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+}
+
+.coverLabel span {
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+.coverInput {
+  width: 100%;
+  resize: vertical;
+  min-height: 84px;
+  margin-bottom: 0.85rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #1a2a3a;
+  background: #fafafa;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.coverInput:focus {
+  outline: none;
+  border-color: #e67e22;
+  background: #fff;
 }
 
 .applyBtn {

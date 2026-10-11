@@ -6,7 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import moment from 'moment-jalaali'
 import {
   Edit, Trash2, Eye, Heart, MessageSquare, AlertCircle,
-  RefreshCw, Star, Zap, Calendar, Send, CheckCircle, Loader2
+  RefreshCw, Star, Zap, Calendar, Send, CheckCircle, Loader2, X,
 } from 'lucide-react'
 import styles from '@/styles/modules/NewsManagement.module.css'
 
@@ -59,12 +59,20 @@ const statusColors = {
   rejected: { bg: '#fee2e2', color: '#991b1b' },
 }
 
+const PLATFORM_LABELS = {
+  bale: { fa: 'بله', en: 'Bale' },
+  eitaa: { fa: 'ایتا', en: 'Eitaa' },
+  rubika: { fa: 'روبیکا', en: 'Rubika' },
+}
+
 const NewsList = ({
   news, loading, error,
-  onEdit, onDelete, onSendToBale, onRefresh
+  onEdit, onDelete, onSendToBale, onRefresh, readyPlatforms = [],
 }) => {
   const { language } = useLanguage()
   const [sendingBale, setSendingBale] = React.useState(null)
+  const [sendTarget, setSendTarget] = React.useState(null)
+  const [picked, setPicked] = React.useState({})
 
   const texts = {
     fa: {
@@ -86,11 +94,17 @@ const NewsList = ({
       breaking: 'فوری',
       noCategory: 'بدون دسته',
       noImage: 'بدون تصویر',
-      sendToBale: 'ارسال به بله',
+      sendToBale: 'ارسال به پیام‌رسان‌ها',
       sending: 'در حال ارسال...',
-      alreadySent: 'قبلاً به بله ارسال شده',
-      confirmSend: 'خبر به کانال بله ارسال شود؟',
+      alreadySent: 'قبلاً ارسال شده',
+      confirmSend: 'ارسال',
+      cancel: 'انصراف',
+      pickPlatforms: 'انتخاب پیام‌رسان‌ها',
+      pickHint: 'هر کدام را که می‌خواهید انتخاب کنید؛ فقط پلتفرم‌های آماده نمایش داده می‌شوند.',
+      selectAll: 'همه',
+      noPlatform: 'هیچ پیام‌رسان آماده‌ای نیست. از «اتصالات پیام‌رسان» تنظیم کنید.',
       onlyPublished: 'فقط اخبار منتشر شده قابل ارسال هستند',
+      pickOne: 'حداقل یک پیام‌رسان را انتخاب کنید',
       statusLabel: {
         draft: 'پیش‌نویس',
         pending: 'در انتظار',
@@ -120,11 +134,17 @@ const NewsList = ({
       breaking: 'Breaking',
       noCategory: 'No Category',
       noImage: 'No Image',
-      sendToBale: 'Send to Bale',
+      sendToBale: 'Send to messengers',
       sending: 'Sending...',
-      alreadySent: 'Already sent to Bale',
-      confirmSend: 'Send this news to Bale channel?',
+      alreadySent: 'Already sent',
+      confirmSend: 'Send',
+      cancel: 'Cancel',
+      pickPlatforms: 'Choose messengers',
+      pickHint: 'Pick where to send. Only ready platforms are listed.',
+      selectAll: 'All',
+      noPlatform: 'No ready messenger. Configure them in Messenger bots.',
       onlyPublished: 'Only published news can be sent',
+      pickOne: 'Select at least one messenger',
       statusLabel: {
         draft: 'Draft', pending: 'Pending', review: 'Review',
         published: 'Published', scheduled: 'Scheduled',
@@ -134,23 +154,53 @@ const NewsList = ({
   }
 
   const t = texts[language] || texts.fa
+  const langKey = language === 'en' ? 'en' : 'fa'
 
-  // ============================================
-  // ✅ هندلر ارسال به بله
-  // ============================================
-  const handleSendToBaleClick = async (item) => {
+  const openSendModal = (item) => {
     if (item.status !== 'published') {
       alert(t.onlyPublished)
       return
     }
+    if (!readyPlatforms?.length) {
+      alert(t.noPlatform)
+      return
+    }
+    const initial = {}
+    readyPlatforms.forEach((p) => { initial[p] = true })
+    setPicked(initial)
+    setSendTarget(item)
+  }
 
-    if (!window.confirm(`"${item.title}" ${t.confirmSend}`)) return
+  const togglePlatform = (platform) => {
+    setPicked((prev) => ({ ...prev, [platform]: !prev[platform] }))
+  }
 
+  const selectAllPlatforms = () => {
+    const next = {}
+    readyPlatforms.forEach((p) => { next[p] = true })
+    setPicked(next)
+  }
+
+  const confirmSend = async () => {
+    if (!sendTarget) return
+    const selected = {}
+    let any = false
+    readyPlatforms.forEach((p) => {
+      selected[p] = !!picked[p]
+      if (picked[p]) any = true
+    })
+    if (!any) {
+      alert(t.pickOne)
+      return
+    }
+
+    const item = sendTarget
+    setSendTarget(null)
     setSendingBale(item.id)
     try {
-      await onSendToBale(item)
+      await onSendToBale(item, selected)
     } catch (err) {
-      console.error('Send to bale error:', err)
+      console.error('Send to platforms error:', err)
     } finally {
       setSendingBale(null)
     }
@@ -214,7 +264,7 @@ const NewsList = ({
             )
 
             const isSending = sendingBale === n.id
-            const wasSent = !!n.bale_sent_at
+            const wasSent = !!(n.bale_sent_at || n.eitaa_sent_at || n.rubika_sent_at)
             const canSend = n.status === 'published'
 
             return (
@@ -316,17 +366,18 @@ const NewsList = ({
                       <Edit size={16} />
                     </button>
 
-                    {/* ✅ ارسال به بله */}
                     <button
                       className={`${styles.iconBtn} ${styles.baleBtn}`}
-                      onClick={() => handleSendToBaleClick(n)}
-                      disabled={!canSend || isSending}
+                      onClick={() => openSendModal(n)}
+                      disabled={!canSend || isSending || !readyPlatforms?.length}
                       title={
-                        !canSend
-                          ? t.onlyPublished
-                          : wasSent
-                            ? t.alreadySent
-                            : t.sendToBale
+                        !readyPlatforms?.length
+                          ? t.noPlatform
+                          : !canSend
+                            ? t.onlyPublished
+                            : wasSent
+                              ? t.alreadySent
+                              : t.sendToBale
                       }
                     >
                       {isSending ? (
@@ -353,6 +404,62 @@ const NewsList = ({
           })}
         </tbody>
       </table>
+
+      {sendTarget && (
+        <div
+          className={styles.sendModalOverlay}
+          onClick={() => setSendTarget(null)}
+          role="presentation"
+        >
+          <div
+            className={styles.sendModal}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="send-platform-title"
+          >
+            <div className={styles.sendModalHeader}>
+              <h2 id="send-platform-title">{t.pickPlatforms}</h2>
+              <button
+                type="button"
+                className={styles.modalClose}
+                onClick={() => setSendTarget(null)}
+                aria-label={t.cancel}
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <p className={styles.sendModalTitle}>{sendTarget.title}</p>
+            <p className={styles.sendModalHint}>{t.pickHint}</p>
+            <div className={styles.sendPlatformList}>
+              {readyPlatforms.map((p) => (
+                <label key={p} className={styles.sendPlatformRow}>
+                  <input
+                    type="checkbox"
+                    checked={!!picked[p]}
+                    onChange={() => togglePlatform(p)}
+                  />
+                  <span>{PLATFORM_LABELS[p]?.[langKey] || p}</span>
+                </label>
+              ))}
+            </div>
+            <div className={styles.sendModalActions}>
+              <button type="button" className={styles.sendSelectAll} onClick={selectAllPlatforms}>
+                {t.selectAll}
+              </button>
+              <div className={styles.sendModalBtns}>
+                <button type="button" className={styles.sendCancelBtn} onClick={() => setSendTarget(null)}>
+                  {t.cancel}
+                </button>
+                <button type="button" className={styles.sendConfirmBtn} onClick={confirmSend}>
+                  <Send size={14} />
+                  {t.confirmSend}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

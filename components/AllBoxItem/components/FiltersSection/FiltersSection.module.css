@@ -7,7 +7,6 @@
    ============================================ */
 .filtersSection {
   position: relative;
-  align-self: start;
   background: var(--white, #fff);
   border-radius: 16px;
   padding: 1.5rem;
@@ -338,12 +337,7 @@
 /* ============================================
    ریسپانسیو
    ============================================ */
-@media (max-width: 1024px) {
-  .filtersSection {
-    position: relative;
-    top: 0;
-  }
-
+@media (max-width: 900px) {
   .filtersList {
     display: grid;
     grid-template-columns: 1fr 1fr;

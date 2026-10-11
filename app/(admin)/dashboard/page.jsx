@@ -13,7 +13,7 @@ import {
   LayoutDashboard, ShoppingCart, Users, Shield,
   RefreshCw, Briefcase, TrendingUp, CheckCircle,
   Newspaper, Zap, Eye, Settings, Warehouse, Headphones, Calendar,
-  BarChart3, Megaphone
+  BarChart3, Megaphone, Images, Settings2, Tags, Radio
 } from 'lucide-react'
 import styles from './Dashboard.module.css'
 
@@ -44,6 +44,11 @@ const Dashboard = () => {
       dashboard: 'داشبورد مدیریت',
       employees: 'کارمندان',
       ticker: 'نوار خبری',
+      heroSlider: 'اسلایدر هیرو',
+      siteSettings: 'تنظیمات سایت',
+      requestTypes: 'انواع درخواست تماس',
+      jobsManage: 'مدیریت آگهی‌ها',
+      platformConnections: 'اتصالات پیام‌رسان',
       welcome: 'خوش آمدید',
       accessDenied: 'دسترسی محدود',
       dashboardAccess: 'برای دسترسی به داشبورد باید کارمند باشید',
@@ -72,6 +77,11 @@ const Dashboard = () => {
       dashboard: 'Management Dashboard',
       employees: 'Employees',
       ticker: 'Ticker bar',
+      heroSlider: 'Hero slider',
+      siteSettings: 'Site settings',
+      requestTypes: 'Contact request types',
+      jobsManage: 'Job listings',
+      platformConnections: 'Messenger bots',
       welcome: 'Welcome',
       accessDenied: 'Access Denied',
       dashboardAccess: 'You must be an employee to access the dashboard',
@@ -229,6 +239,56 @@ const Dashboard = () => {
       href: '/ticker',
       color: '#c27800',
       bgColor: '#fff3c4',
+    })
+  }
+  if (canManageTicker && !seenHrefs.has('/hero-slider')) {
+    quickActions.push({
+      id: 'hero-slider',
+      icon: <Images />,
+      label: t.heroSlider,
+      href: '/hero-slider',
+      color: '#1565c0',
+      bgColor: '#e3f2fd',
+    })
+  }
+  if (canManageTicker && !seenHrefs.has('/site-settings')) {
+    quickActions.push({
+      id: 'site-settings',
+      icon: <Settings2 />,
+      label: t.siteSettings,
+      href: '/site-settings',
+      color: '#455a64',
+      bgColor: '#eceff1',
+    })
+  }
+  if (canManageTicker && !seenHrefs.has('/request-types')) {
+    quickActions.push({
+      id: 'request-types',
+      icon: <Tags />,
+      label: t.requestTypes,
+      href: '/request-types',
+      color: '#1565c0',
+      bgColor: '#e3f2fd',
+    })
+  }
+  if (canManageTicker && !seenHrefs.has('/jobs-manage')) {
+    quickActions.unshift({
+      id: 'jobs-manage',
+      icon: <Briefcase />,
+      label: t.jobsManage,
+      href: '/jobs-manage',
+      color: '#c27800',
+      bgColor: '#fff3c4',
+    })
+  }
+  if (canManageTicker && !seenHrefs.has('/platform-connections')) {
+    quickActions.push({
+      id: 'platform-connections',
+      icon: <Radio />,
+      label: t.platformConnections,
+      href: '/platform-connections',
+      color: '#1565c0',
+      bgColor: '#e3f2fd',
     })
   }
 

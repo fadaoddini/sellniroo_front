@@ -1,72 +1,94 @@
-/* ============================================
-   ProfileStats - Light Theme
-   ============================================ */
+/* ProfileStats — تم طلایی، کارت‌های قابل کلیک */
 
 .statsGrid {
+  --ink: #2a241c;
+  --muted: #6f675c;
+  --line: rgba(90, 60, 20, 0.12);
+  --gold: #fbc300;
+  --gold-dark: #c27800;
+  --cream: #fff7ec;
+
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
 .statCard {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 1.25rem;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.04),
-    0 1px 2px rgba(0, 0, 0, 0.03);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: start;
+  background: #fff;
+  border-radius: 18px;
+  padding: 1.15rem;
+  border: 1px solid var(--line);
+  box-shadow: 0 6px 18px rgba(80, 50, 0, 0.05);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  width: 100%;
 }
 
 .statCard::before {
   content: "";
   position: absolute;
-  top: -20px;
-  right: -20px;
-  width: 100px;
-  height: 100px;
+  top: -24px;
+  right: -24px;
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
-  filter: blur(45px);
-  opacity: 0.25;
+  filter: blur(40px);
+  opacity: 0.28;
   pointer-events: none;
 }
 
-.statCard.primary::before {
-  background: var(--primary);
-}
-.statCard.secondary::before {
-  background: var(--secondary);
-}
-.statCard.green::before {
-  background: var(--macos-green);
-}
-.statCard.orange::before {
-  background: var(--macos-orange);
-}
+.statCard.gold::before { background: #fbc300; }
+.statCard.amber::before { background: #fb9700; }
+.statCard.green::before { background: #34c759; }
+.statCard.warm::before { background: #ff9500; }
 
 .statCard:hover {
-  transform: translateY(-3px);
-  box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.08),
-    0 2px 6px rgba(0, 0, 0, 0.05);
-  border-color: rgba(0, 0, 0, 0.09);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(80, 50, 0, 0.1);
+  border-color: rgba(194, 120, 0, 0.28);
+}
+
+.statCard:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.cardActive {
+  border-color: rgba(194, 120, 0, 0.45);
+  box-shadow: 0 10px 26px rgba(201, 120, 0, 0.16);
+  background: linear-gradient(180deg, #fffdf7 0%, #fff 70%);
+}
+
+.skeleton {
+  min-height: 132px;
+  background: linear-gradient(90deg, #fff8e8, #fff, #fff8e8);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+  cursor: default;
+  pointer-events: none;
+}
+
+.skeleton::before {
+  display: none;
 }
 
 .statHeader {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: 0.7rem;
+  margin-bottom: 0.85rem;
   position: relative;
   z-index: 1;
 }
 
 .statIconWrapper {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -74,21 +96,21 @@
   flex-shrink: 0;
 }
 
-.primary .statIconWrapper {
-  background: rgba(251, 195, 0, 0.15);
-  color: var(--primary-dark);
+.gold .statIconWrapper {
+  background: rgba(251, 195, 0, 0.18);
+  color: var(--gold-dark);
 }
-.secondary .statIconWrapper {
-  background: rgba(0, 107, 207, 0.12);
-  color: var(--secondary);
+.amber .statIconWrapper {
+  background: rgba(251, 151, 0, 0.16);
+  color: #c27800;
 }
 .green .statIconWrapper {
-  background: rgba(52, 199, 89, 0.12);
+  background: rgba(52, 199, 89, 0.14);
   color: #2db84d;
 }
-.orange .statIconWrapper {
-  background: rgba(255, 149, 0, 0.12);
-  color: var(--macos-orange);
+.warm .statIconWrapper {
+  background: rgba(255, 149, 0, 0.14);
+  color: #e68600;
 }
 
 .statTitleWrapper {
@@ -100,8 +122,8 @@
 
 .statTitleWrapper h3 {
   font-size: 0.72rem;
-  color: #6b7280;
-  font-weight: 500;
+  color: var(--muted);
+  font-weight: 600;
   font-family: var(--font-iran);
   margin: 0;
   white-space: nowrap;
@@ -110,68 +132,70 @@
 }
 
 .statValue {
-  font-size: 1.5rem;
+  font-size: 1.45rem;
   font-weight: 800;
-  color: #1c1c1e;
+  color: var(--ink);
   font-family: var(--font-iran-bold);
   line-height: 1;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.03em;
 }
 
 .subItems {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  gap: 0.32rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--line);
+  position: relative;
+  z-index: 1;
 }
 
 .subItem {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
   font-size: 0.72rem;
-  color: #6b7280;
-  font-family: var(--font-iran);
+  color: var(--muted);
 }
 
 .subItem svg {
-  color: #8e8e93;
+  color: #a08960;
   flex-shrink: 0;
 }
 
-.subLabel {
-  flex: 1;
-}
+.subLabel { flex: 1; }
 
 .subValue {
   font-weight: 700;
-  color: #1c1c1e;
+  color: var(--ink);
   font-family: var(--font-iran-bold);
 }
 
 .extraStats {
   display: flex;
-  gap: 0.75rem;
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  gap: 0.7rem;
+  margin-top: 0.65rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--line);
+  position: relative;
+  z-index: 1;
 }
 
 .extraItem {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.28rem;
   font-size: 0.72rem;
-  color: #6b7280;
-  font-family: var(--font-iran);
+  color: var(--muted);
 }
 
-.extraItem svg {
-  color: #8e8e93;
+.extraItem svg { color: #a08960; }
+
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
 }
 
-/* ریسپانسیو */
 @media (max-width: 1024px) {
   .statsGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -180,14 +204,28 @@
 
 @media (max-width: 480px) {
   .statsGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .statValue {
-    font-size: 1.3rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
   }
 
   .statCard {
-    padding: 1rem;
+    padding: 0.9rem;
+  }
+
+  .statValue {
+    font-size: 1.2rem;
+  }
+
+  .subItems,
+  .extraStats {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statCard,
+  .skeleton {
+    transition: none !important;
+    animation: none !important;
   }
 }

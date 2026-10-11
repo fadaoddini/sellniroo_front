@@ -1,28 +1,41 @@
 .formWrapper {
   background: #ffffff;
-  border-radius: 16px;
-  padding: 28px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e2e8f0;
-   font-family: var(--font-iran);
+  border-radius: 20px;
+  padding: 1.35rem 1.4rem 1.5rem;
+  box-shadow: 0 8px 24px rgba(80, 50, 0, 0.06);
+  border: 1px solid rgba(90, 60, 20, 0.12);
+  font-family: var(--font-iran);
+  position: relative;
+  overflow: visible;
+}
+
+.formWrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 5px;
+  border-radius: 20px 20px 0 0;
+  background: linear-gradient(90deg, #ffd54a, #fbc300, #fb9700);
+  pointer-events: none;
 }
 
 .header {
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid rgba(90, 60, 20, 0.12);
 }
 
 .header h2 {
   margin: 0 0 6px 0;
-  font-size: 20px;
-  color: #1e293b;
+  font-size: 1.15rem;
+  color: #2a241c;
+  font-family: var(--font-edameh, var(--font-iran-bold));
 }
 
 .subtitle {
   margin: 0;
   font-size: 13px;
-  color: #64748b;
+  color: #6f675c;
 }
 
 /* استپر */
@@ -32,7 +45,7 @@
   flex-wrap: wrap;
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid rgba(90, 60, 20, 0.12);
 }
 
 .stepBtn {
@@ -40,31 +53,33 @@
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  border-radius: 8px;
-  background: #f8fafc;
-  color: #64748b;
-  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #fffaf1;
+  color: #6f675c;
+  border: 1px solid rgba(90, 60, 20, 0.12);
   font-family: inherit;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .stepBtn:hover {
-  background: #f1f5f9;
-  color: #334155;
+  background: #fff7ec;
+  color: #3a3228;
 }
 
 .activeStep {
-  background: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
+  background: linear-gradient(135deg, #ffd54a 0%, #fbc300 50%, #fb9700 100%);
+  color: #3a2a00;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(201, 120, 0, 0.25);
 }
 
 .activeStep:hover {
-  background: #2563eb;
-  color: white;
+  background: linear-gradient(135deg, #ffe082, #fbc300);
+  color: #3a2a00;
 }
 
 .stepContent {
@@ -79,7 +94,7 @@
   display: block;
   font-size: 13px;
   font-weight: 500;
-  color: #334155;
+  color: #3a3228;
   margin-bottom: 10px;
 }
 
@@ -91,25 +106,25 @@
 .uploadBox {
   width: 130px;
   height: 130px;
-  border: 2px dashed #cbd5e1;
+  border: 2px dashed rgba(194, 120, 0, 0.35);
   border-radius: 50%;
-  background: #f8fafc;
+  background: #fffaf1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 6px;
   cursor: pointer;
-  color: #64748b;
+  color: #6f675c;
   font-family: inherit;
   font-size: 12px;
   transition: all 0.2s;
 }
 
 .uploadBox:hover {
-  border-color: #3b82f6;
-  background: #eff6ff;
-  color: #3b82f6;
+  border-color: #c27800;
+  background: #fff8e0;
+  color: #c27800;
 }
 
 .imagePreviewWrapper {
@@ -121,7 +136,7 @@
   height: 130px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #e2e8f0;
+  border: 2px solid rgba(90, 60, 20, 0.12);
 }
 
 .removeImageBtn {
@@ -156,12 +171,12 @@
 .formGroup label {
   font-size: 13px;
   font-weight: 500;
-  color: #334155;
+  color: #3a3228;
 }
 
 .hint {
   font-size: 11px;
-  color: #94a3b8;
+  color: #9a8f7e;
   margin: 0;
 }
 
@@ -169,11 +184,11 @@
 .formGroup select,
 .formGroup textarea {
   padding: 10px 14px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(90, 60, 20, 0.12);
   border-radius: 8px;
   font-family: inherit;
   font-size: 14px;
-  color: #1e293b;
+  color: #2a241c;
   transition: border-color 0.2s, box-shadow 0.2s;
   background: #ffffff;
 }
@@ -182,8 +197,24 @@
 .formGroup select:focus,
 .formGroup textarea:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #c27800;
+  box-shadow: 0 0 0 3px rgba(251, 195, 0, 0.18);
+}
+
+/* تاریخ شمسی داخل فرم رزومه */
+.formGroup :global([class*="pickerInput"]) {
+  border-color: rgba(90, 60, 20, 0.12);
+  background: #fffaf1;
+  border-radius: 11px;
+  min-height: 42px;
+}
+
+.formGroup :global([class*="pickerInput"]:hover) {
+  border-color: rgba(194, 120, 0, 0.35);
+}
+
+.formGroup :global([class*="calendarIcon"]) {
+  color: #c27800;
 }
 
 .formGroup textarea {
@@ -195,7 +226,7 @@
 .footer {
   margin-top: 24px;
   padding-top: 16px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid rgba(90, 60, 20, 0.12);
 }
 
 .actions {
@@ -220,21 +251,22 @@
 }
 
 .cancelBtn {
-  background: #f1f5f9;
-  color: #475569;
+  background: #fff7ec;
+  color: #5c5348;
 }
 
 .cancelBtn:hover {
-  background: #e2e8f0;
+  background: rgba(90, 60, 20, 0.12);
 }
 
 .saveBtn {
-  background: #3b82f6;
-  color: white;
+  background: #3a2a00;
+  color: #fff8e7;
+  box-shadow: 0 6px 16px rgba(58, 42, 0, 0.2);
 }
 
 .saveBtn:hover:not(:disabled) {
-  background: #2563eb;
+  background: #241a00;
 }
 
 .saveBtn:disabled,
@@ -303,13 +335,13 @@
   justify-content: space-between;
   gap: 12px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid rgba(90, 60, 20, 0.12);
 }
 
 .sectionHeader h3 {
   margin: 0;
   font-size: 15px;
-  color: #1e293b;
+  color: #2a241c;
 }
 
 .addBtn {
@@ -317,19 +349,21 @@
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  background: #3b82f6;
-  color: white;
+  background: linear-gradient(135deg, #ffd54a, #fbc300);
+  color: #3a2a00;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-family: inherit;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 4px 12px rgba(201, 120, 0, 0.22);
 }
 
 .addBtn:hover {
-  background: #2563eb;
+  background: linear-gradient(135deg, #ffe082, #fbc300);
+  transform: translateY(-1px);
 }
 
 .itemsList {
@@ -344,14 +378,14 @@
   justify-content: space-between;
   gap: 12px;
   padding: 12px 16px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: #fffaf1;
+  border: 1px solid rgba(90, 60, 20, 0.12);
   border-radius: 10px;
   transition: all 0.2s;
 }
 
 .listItem:hover {
-  border-color: #cbd5e1;
+  border-color: rgba(194, 120, 0, 0.35);
   background: #ffffff;
 }
 
@@ -363,21 +397,21 @@
 .listItemContent h4 {
   margin: 0 0 4px 0;
   font-size: 14px;
-  color: #1e293b;
+  color: #2a241c;
   font-weight: 600;
 }
 
 .listItemContent p {
   margin: 0;
   font-size: 12px;
-  color: #64748b;
+  color: #6f675c;
 }
 
 .listItemDate {
   display: inline-block;
   margin-top: 4px;
   font-size: 11px;
-  color: #94a3b8;
+  color: #9a8f7e;
 }
 
 .listItemActions {
@@ -390,8 +424,8 @@
   height: 30px;
   border-radius: 6px;
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  color: #475569;
+  border: 1px solid rgba(90, 60, 20, 0.12);
+  color: #5c5348;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -400,9 +434,9 @@
 }
 
 .listItemActions button:hover {
-  background: #eff6ff;
-  border-color: #3b82f6;
-  color: #3b82f6;
+  background: #fff8e0;
+  border-color: #c27800;
+  color: #c27800;
 }
 
 .listItemActions button.deleteBtn:hover {
@@ -413,8 +447,8 @@
 
 .subForm {
   padding: 20px;
-  background: #f8fafc;
-  border: 1px dashed #cbd5e1;
+  background: #fffaf1;
+  border: 1px dashed rgba(194, 120, 0, 0.35);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -426,7 +460,7 @@
   justify-content: flex-end;
   gap: 8px;
   padding-top: 12px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid rgba(90, 60, 20, 0.12);
 }
 
 .subFormActions button {
@@ -441,21 +475,21 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-  background: #f1f5f9;
-  color: #475569;
+  background: #fff7ec;
+  color: #5c5348;
 }
 
 .subFormActions button:hover:not(:disabled) {
-  background: #e2e8f0;
+  background: rgba(90, 60, 20, 0.12);
 }
 
 .subFormActions button.saveBtn {
-  background: #3b82f6;
-  color: white;
+  background: #3a2a00;
+  color: #fff8e7;
 }
 
 .subFormActions button.saveBtn:hover:not(:disabled) {
-  background: #2563eb;
+  background: #241a00;
 }
 
 .subFormActions button:disabled {
@@ -470,10 +504,10 @@
   justify-content: center;
   gap: 8px;
   padding: 40px 20px;
-  background: #f8fafc;
-  border: 2px dashed #cbd5e1;
+  background: #fffaf1;
+  border: 2px dashed rgba(194, 120, 0, 0.35);
   border-radius: 12px;
-  color: #94a3b8;
+  color: #9a8f7e;
   text-align: center;
 }
 
@@ -490,7 +524,7 @@
 .addInlineForm input {
   flex: 1;
   padding: 10px 14px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(90, 60, 20, 0.12);
   border-radius: 8px;
   font-family: inherit;
   font-size: 14px;
@@ -498,8 +532,8 @@
 
 .addInlineForm input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #c27800;
+  box-shadow: 0 0 0 3px rgba(251, 195, 0, 0.18);
 }
 
 .addInlineForm button {
@@ -507,7 +541,7 @@
   align-items: center;
   gap: 6px;
   padding: 10px 18px;
-  background: #3b82f6;
+  background: #c27800;
   color: white;
   border: none;
   border-radius: 8px;
@@ -533,7 +567,7 @@
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: #eff6ff;
+  background: #fff8e0;
   color: #1e40af;
   border-radius: 16px;
   font-size: 12px;

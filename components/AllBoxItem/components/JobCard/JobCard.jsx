@@ -5,8 +5,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
-  Building2, MapPin, DollarSign, Clock, Phone, Heart, Eye,
-  ChevronLeft, ShieldCheck, User, Briefcase, Star,
+  Building2, MapPin, DollarSign, Clock, Phone, Heart,
+  BadgeCheck, User, Briefcase, Star, ChevronLeft,
 } from 'lucide-react';
 import JobFeatures from './JobFeatures';
 import jobisellApi from '@/services/jobisellApi';
@@ -20,51 +20,75 @@ const formatSalary = (amount) => {
 const formatDate = (dateStr) => {
   if (!dateStr) return '';
   try {
-    const d = new Date(dateStr);
-    return new Intl.DateTimeFormat('fa-IR').format(d);
+    return new Intl.DateTimeFormat('fa-IR').format(new Date(dateStr));
   } catch {
     return dateStr;
   }
 };
 
+const stop = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+};
+
+const CompanyLabel = ({ name, verified, size = 14, showText = true }) => (
+  <span className={`${styles.companyLabel} ${verified ? styles.companyVerified : ''}`}>
+    <span className={styles.companyLabelName}>{name || '—'}</span>
+    {verified && (
+      <span className={styles.verifiedMark} title="شرکت تاییدشده">
+        <BadgeCheck size={size} aria-hidden />
+        {showText && <em>تاییدشده</em>}
+      </span>
+    )}
+  </span>
+);
+
 const JobCard = ({ job, viewMode = 'grid-2' }) => {
   const [isLiked, setIsLiked] = useState(job.is_liked || false);
-  const [likesCount, setLikesCount] = useState(job.likes_count || 0);
   const [imageError, setImageError] = useState(false);
 
   const handleLike = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Optimistic UI
-    setIsLiked(!isLiked);
-    setLikesCount((c) => (isLiked ? c - 1 : c + 1));
-
+    stop(e);
+    const prev = isLiked;
+    setIsLiked(!prev);
     try {
       const res = await jobisellApi.toggleLike(job.id);
       setIsLiked(res.status === 'liked');
-      if (typeof res.likes_count === 'number') {
-        setLikesCount(res.likes_count);
-      }
-    } catch (err) {
-      // برگرداندن در صورت خطا
-      setIsLiked(isLiked);
-      setLikesCount((c) => (isLiked ? c + 1 : c - 1));
-      console.error('Like error:', err);
+    } catch {
+      setIsLiked(prev);
     }
   };
 
+  const handleContact = (e) => {
+    stop(e);
+    if (!job.contact_phone) return;
+    window.location.href = `tel:${job.contact_phone}`;
+  };
+
   const isHiring = job.type === 'hiring';
+  const isCompanyVerified = Boolean(
+    job.company_is_verified || (isHiring && job.is_verified)
+  );
+  const isCompact = viewMode === 'grid-3';
+  const detailHref = `/jobs/${job.id}`;
   const adTypeLabel = isHiring ? 'استخدام' : 'کارجو';
-  const adTypeIcon = isHiring ? <Briefcase size={14} /> : <User size={14} />;
-  const cardClass = isHiring ? styles.hiringCard : styles.seekingCard;
+  const adTypeIcon = isHiring ? <Briefcase size={13} /> : <User size={13} />;
 
-  // موقعیت (ساخت رشته از province + city + neighborhood)
-  const locationStr = [job.city_name, job.neighborhood_name]
+  const cardClass = [
+    styles.jobCard,
+    isHiring ? styles.hiringCard : styles.seekingCard,
+    isHiring && isCompanyVerified ? styles.verifiedHiringCard : '',
+    isCompact ? styles.compact : '',
+    viewMode === 'list' ? styles.listMode : '',
+    viewMode === 'image-left' ? styles.imageLeftMode : '',
+  ]
     .filter(Boolean)
-    .join('، ') || '—';
+    .join(' ');
 
-  const renderSalary = () => {
+  const locationStr =
+    [job.city_name, job.neighborhood_name].filter(Boolean).join('، ') || '—';
+
+  const salaryText = (() => {
     if (!isHiring) return null;
     if (job.min_salary && job.max_salary) {
       return `${formatSalary(job.min_salary)} - ${formatSalary(job.max_salary)} تومان`;
@@ -72,254 +96,258 @@ const JobCard = ({ job, viewMode = 'grid-2' }) => {
     if (job.min_salary) return `از ${formatSalary(job.min_salary)} تومان`;
     if (job.max_salary) return `تا ${formatSalary(job.max_salary)} تومان`;
     return null;
-  };
+  })();
 
-  // ============================================
-  // حالت لیستی
-  // ============================================
+  /* ---------- لیست ---------- */
   if (viewMode === 'list') {
     return (
-      <Link href={`/jobs/${job.id}`} className={`${styles.listItem} ${cardClass}`}>
-        <div className={styles.listItemContent}>
-          <div className={styles.listItemLeft}>
-            <div className={`${styles.listItemIcon} ${isHiring ? styles.hiringIcon : styles.seekingIcon}`}>
-              {adTypeIcon}
-            </div>
-            <div className={styles.listItemInfo}>
-              <span className={styles.listItemTitle}>{job.title}</span>
-              <span className={styles.listItemCompany}>
-                {job.company_name || 'بدون شرکت'}
+      <article className={cardClass}>
+        <Link href={detailHref} className={styles.stretchedLink} aria-label={job.title} />
+
+        <div className={styles.listRow}>
+          <div className={`${styles.listIcon} ${isHiring ? styles.hiringIcon : styles.seekingIcon}`}>
+            {adTypeIcon}
+          </div>
+
+          <div className={styles.listMain}>
+            <div className={styles.listTitleRow}>
+              <h3 className={styles.listTitle}>{job.title}</h3>
+              <span className={`${styles.typeChip} ${isHiring ? styles.hiringChip : styles.seekingChip}`}>
+                {adTypeLabel}
               </span>
+            </div>
+            <CompanyLabel
+              name={job.company_name || 'بدون شرکت'}
+              verified={isHiring && isCompanyVerified}
+              size={13}
+            />
+            <div className={styles.listMeta}>
+              <span><MapPin size={12} />{locationStr}</span>
+              {salaryText && <span><DollarSign size={12} />{salaryText}</span>}
             </div>
           </div>
-          <div className={styles.listItemRight}>
-            <span className={`${styles.adTypeBadge} ${isHiring ? styles.hiringBadge : styles.seekingBadge}`}>
-              {adTypeLabel}
-            </span>
-            {job.is_verified && <ShieldCheck size={14} className={styles.verifiedIcon} />}
-            <span className={styles.listItemLocation}>
-              <MapPin size={12} />
-              {locationStr}
-            </span>
-            {isHiring && renderSalary() && (
-              <span className={styles.listItemSalary}>
-                <DollarSign size={12} />
-                {renderSalary()}
-              </span>
-            )}
-            <ChevronLeft size={16} className={styles.listItemArrow} />
+
+          <div className={styles.listActions}>
+            {job.contact_phone ? (
+              <button
+                type="button"
+                className={styles.contactBtn}
+                onClick={handleContact}
+                aria-label="تماس"
+              >
+                <Phone size={14} />
+                تماس
+              </button>
+            ) : null}
+            <ChevronLeft size={18} className={styles.listChevron} aria-hidden />
           </div>
         </div>
-      </Link>
+      </article>
     );
   }
 
-  // ============================================
-  // حالت تصویر-چپ
-  // ============================================
+  /* ---------- تصویر چپ ---------- */
   if (viewMode === 'image-left') {
     return (
-      <div className={`${styles.jobCard} ${styles.imageLeftCard} ${cardClass}`}>
-        <div className={styles.imageLeftWrapper}>
-          <div className={styles.imageLeftImage}>
+      <article className={cardClass}>
+        <Link href={detailHref} className={styles.stretchedLink} aria-label={job.title} />
+
+        <div className={styles.imageLeftLayout}>
+          <div className={styles.thumb}>
             {job.image && !imageError ? (
-              <div className={styles.imageLeftImageWrapper}>
-                <Image
-                  src={job.image}
-                  alt={job.title}
-                  fill
-                  className={styles.imageLeftImg}
-                  onError={() => setImageError(true)}
-                />
-                {job.is_featured && <span className={styles.imageLeftBadge}>ویژه</span>}
-                <button className={styles.imageLeftLike} onClick={handleLike}>
-                  <Heart
-                    size={14}
-                    fill={isLiked ? '#e67e22' : 'none'}
-                    color={isLiked ? '#e67e22' : '#fff'}
-                  />
-                </button>
-              </div>
+              <Image
+                src={job.image}
+                alt=""
+                fill
+                className={styles.thumbImg}
+                onError={() => setImageError(true)}
+              />
             ) : (
-              <div className={styles.imageLeftPlaceholder}>
-                <Building2 size={28} />
+              <div className={styles.thumbPlaceholder}>
+                <Building2 size={26} />
               </div>
             )}
+            {job.is_featured && <span className={styles.featuredBadge}>ویژه</span>}
           </div>
 
-          <div className={styles.imageLeftContent}>
-            <div className={styles.imageLeftHeader}>
-              <div className={styles.imageLeftTitleRow}>
-                <h4 className={styles.imageLeftTitle}>{job.title}</h4>
-                <span className={`${styles.adTypeBadgeSmall} ${isHiring ? styles.hiringBadgeSmall : styles.seekingBadgeSmall}`}>
-                  {adTypeLabel}
-                </span>
-              </div>
-              <span className={styles.imageLeftCompany}>{job.company_name || '—'}</span>
+          <div className={styles.imageLeftBody}>
+            <div className={styles.listTitleRow}>
+              <h3 className={styles.imageLeftTitle}>{job.title}</h3>
+              <span className={`${styles.typeChip} ${isHiring ? styles.hiringChip : styles.seekingChip}`}>
+                {adTypeLabel}
+              </span>
+            </div>
+            <CompanyLabel
+              name={job.company_name || '—'}
+              verified={isHiring && isCompanyVerified}
+              size={12}
+              showText={false}
+            />
+            <div className={styles.listMeta}>
+              <span><MapPin size={12} />{locationStr}</span>
+              <span>{formatDate(job.published_at || job.created_at)}</span>
             </div>
 
-            <div className={styles.imageLeftDetails}>
-              <div className={styles.imageLeftDetail}>
-                <MapPin size={12} />
-                <span>{locationStr}</span>
-              </div>
-            </div>
-
-            <div className={styles.imageLeftFooter}>
-              <Link href={`/jobs/${job.id}`} className={styles.imageLeftViewBtn}>
-                <Eye size={12} />
-              </Link>
-              {job.contact_phone && (
-                <a href={`tel:${job.contact_phone}`} className={styles.imageLeftContactBtn}>
-                  <Phone size={12} />
-                </a>
-              )}
-              <span className={styles.imageLeftDate}>{formatDate(job.published_at || job.created_at)}</span>
+            <div className={styles.imageLeftActions}>
+              <button
+                type="button"
+                className={styles.likeBtnInline}
+                onClick={handleLike}
+                aria-label={isLiked ? 'حذف لایک' : 'لایک'}
+              >
+                <Heart size={14} fill={isLiked ? '#e67e22' : 'none'} color={isLiked ? '#e67e22' : 'currentColor'} />
+              </button>
+              {job.contact_phone ? (
+                <button
+                  type="button"
+                  className={styles.contactBtn}
+                  onClick={handleContact}
+                >
+                  <Phone size={13} />
+                  تماس
+                </button>
+              ) : null}
             </div>
           </div>
         </div>
-      </div>
+      </article>
     );
   }
 
-  // ============================================
-  // حالت گرید
-  // ============================================
-  const isCompact = viewMode === 'grid-3';
-
+  /* ---------- گرید ---------- */
   return (
-    <div className={`${styles.jobCard} ${cardClass}`}>
-      <div className={`${styles.cardImageWrapper} ${isCompact ? styles.compactImage : ''}`}>
+    <article className={cardClass}>
+      <Link href={detailHref} className={styles.stretchedLink} aria-label={`مشاهده ${job.title}`} />
+
+      <div className={`${styles.media} ${isCompact ? styles.mediaCompact : ''}`}>
         {job.image && !imageError ? (
-          <div className={styles.cardImage}>
-            <Image
-              src={job.image}
-              alt={job.title}
-              fill
-              className={styles.image}
-              onError={() => setImageError(true)}
-              priority={job.is_featured}
-            />
-            {job.is_featured && (
-              <span className={styles.featuredBadge}>
-                <Star size={12} fill="#fff" />
-                ویژه
-              </span>
-            )}
-            <button className={styles.likeBtn} onClick={handleLike}>
-              <Heart
-                size={isCompact ? 14 : 18}
-                fill={isLiked ? '#e67e22' : 'none'}
-                color={isLiked ? '#e67e22' : '#fff'}
-              />
-            </button>
-            <div className={`${styles.adTypeOverlay} ${isHiring ? styles.hiringOverlay : styles.seekingOverlay}`}>
-              {adTypeIcon}
-              <span>{adTypeLabel}</span>
-            </div>
-          </div>
+          <Image
+            src={job.image}
+            alt=""
+            fill
+            className={styles.mediaImg}
+            onError={() => setImageError(true)}
+            priority={job.is_featured}
+          />
         ) : (
-          <div className={styles.cardImagePlaceholder}>
-            <Building2 size={isCompact ? 24 : 40} />
-            <span>بدون تصویر</span>
+          <div className={styles.mediaPlaceholder}>
+            <Building2 size={isCompact ? 28 : 36} />
           </div>
         )}
-      </div>
 
-      <div className={styles.cardContent}>
-        <div className={styles.cardHeader}>
-          <div className={styles.companyInfo}>
-            {!isCompact && (
-              <div className={styles.companyLogo}>
-                {job.company_logo ? (
-                  <Image src={job.company_logo} alt={job.company_name} width={40} height={40} />
-                ) : (
-                  <Building2 size={20} />
-                )}
-              </div>
-            )}
-            <div>
-              <div className={styles.titleRow}>
-                <h4 className={`${styles.jobTitle} ${isCompact ? styles.compactTitle : ''}`}>
-                  {job.title}
-                </h4>
-                {!isCompact && (
-                  <span className={`${styles.adTypeBadge} ${isHiring ? styles.hiringBadge : styles.seekingBadge}`}>
-                    {adTypeLabel}
-                  </span>
-                )}
-              </div>
-              <span className={styles.companyName}>{job.company_name || '—'}</span>
-            </div>
-          </div>
-          <div className={styles.headerRight}>
-            {job.is_verified && (
-              <ShieldCheck size={isCompact ? 14 : 16} className={styles.verifiedIcon} />
-            )}
-            <span className={styles.jobDate}>{formatDate(job.published_at || job.created_at)}</span>
-          </div>
+        <div className={styles.mediaTop}>
+          <span className={`${styles.typeChip} ${isHiring ? styles.hiringChip : styles.seekingChip}`}>
+            {adTypeIcon}
+            {adTypeLabel}
+          </span>
+          {job.is_featured && (
+            <span className={styles.featuredBadge}>
+              <Star size={11} fill="#fff" />
+              ویژه
+            </span>
+          )}
         </div>
 
-        <div className={styles.cardBody}>
-          {!isCompact && job.description && (
-            <p className={styles.jobDescription}>{job.description}</p>
-          )}
+        {isHiring && isCompanyVerified && (
+          <span className={styles.verifiedRibbon}>
+            <BadgeCheck size={12} />
+            شرکت تاییدشده
+          </span>
+        )}
 
-          {isHiring && renderSalary() && (
-            <div className={styles.salaryDisplay}>
-              <DollarSign size={isCompact ? 14 : 16} className={styles.salaryIcon} />
-              <span className={styles.salaryText}>{renderSalary()}</span>
-            </div>
-          )}
+        <button
+          type="button"
+          className={styles.likeBtn}
+          onClick={handleLike}
+          aria-label={isLiked ? 'حذف لایک' : 'لایک'}
+        >
+          <Heart
+            size={isCompact ? 14 : 16}
+            fill={isLiked ? '#e67e22' : 'none'}
+            color={isLiked ? '#e67e22' : '#fff'}
+          />
+        </button>
+      </div>
 
-          {/* ✅ ویژگی‌ها از API */}
-          <JobFeatures features={job.features || []} isCompact={isCompact} />
-
-          {/* تگ‌ها */}
-          {job.tags?.length > 0 && (
-            <div className={`${styles.jobTags} ${isCompact ? styles.compactTags : ''}`}>
-              {job.tags.slice(0, isCompact ? 2 : 3).map((tag) => (
-                <span key={tag.id} className={styles.tag}>{tag.name}</span>
-              ))}
-              {isCompact && job.tags.length > 2 && (
-                <span className={styles.tagMore}>+{job.tags.length - 2}</span>
+      <div className={styles.body}>
+        <header className={styles.header}>
+          {!isCompact && (
+            <div className={`${styles.logo} ${isCompanyVerified && isHiring ? styles.logoVerified : ''}`}>
+              {job.company_logo ? (
+                <Image src={job.company_logo} alt="" width={40} height={40} />
+              ) : (
+                <Building2 size={18} />
               )}
             </div>
           )}
-
-          <div className={`${styles.jobDetails} ${isCompact ? styles.compactDetails : ''}`}>
-            <div className={styles.detailItem}>
-              <MapPin size={isCompact ? 12 : 14} />
-              <span>{isCompact ? job.city_name || locationStr : locationStr}</span>
-            </div>
-            {job.cooperation_type_name && (
-              <div className={styles.detailItem}>
-                <Clock size={isCompact ? 12 : 14} />
-                <span>{job.cooperation_type_name}</span>
-              </div>
-            )}
+          <div className={styles.headerText}>
+            <h3 className={styles.title}>{job.title}</h3>
+            <CompanyLabel
+              name={job.company_name || '—'}
+              verified={isHiring && isCompanyVerified}
+              size={isCompact ? 12 : 14}
+              showText={!isCompact}
+            />
           </div>
-        </div>
+          <time className={styles.date} dateTime={job.published_at || job.created_at}>
+            {formatDate(job.published_at || job.created_at)}
+          </time>
+        </header>
 
-        <div className={styles.cardFooter}>
-          <Link href={`/jobs/${job.id}`} className={styles.viewBtn}>
-            <Eye size={isCompact ? 12 : 14} />
-            {!isCompact && 'مشاهده جزئیات'}
-          </Link>
-          {job.contact_phone ? (
-            <a href={`tel:${job.contact_phone}`} className={styles.contactBtn}>
-              <Phone size={isCompact ? 12 : 14} />
-              {!isCompact && 'تماس'}
-            </a>
-          ) : (
-            <button className={styles.contactBtn} disabled>
-              <Phone size={isCompact ? 12 : 14} />
-              {!isCompact && 'تماس'}
-            </button>
+        {!isCompact && job.description && (
+          <p className={styles.desc}>{job.description}</p>
+        )}
+
+        {salaryText && (
+          <div className={styles.salary}>
+            <DollarSign size={isCompact ? 13 : 15} />
+            <span>{salaryText}</span>
+          </div>
+        )}
+
+        {!isCompact && (
+          <JobFeatures features={(job.features || []).slice(0, 4)} isCompact={false} />
+        )}
+
+        {job.tags?.length > 0 && (
+          <div className={styles.tags}>
+            {job.tags.slice(0, isCompact ? 2 : 3).map((tag) => (
+              <span key={tag.id} className={styles.tag}>{tag.name}</span>
+            ))}
+          </div>
+        )}
+
+        <div className={styles.metaRow}>
+          <span><MapPin size={13} />{isCompact ? job.city_name || locationStr : locationStr}</span>
+          {job.cooperation_type_name && (
+            <span><Clock size={13} />{job.cooperation_type_name}</span>
           )}
         </div>
       </div>
-    </div>
+
+      <footer className={styles.footer}>
+        <span className={styles.detailsHint}>
+          مشاهده جزئیات
+          <ChevronLeft size={14} />
+        </span>
+        {job.contact_phone ? (
+          <button
+            type="button"
+            className={styles.contactBtn}
+            onClick={handleContact}
+            aria-label={`تماس با ${job.company_name || 'کارفرما'}`}
+          >
+            <Phone size={isCompact ? 13 : 15} />
+            {!isCompact && 'تماس'}
+          </button>
+        ) : (
+          <span className={styles.contactDisabled} aria-hidden>
+            <Phone size={isCompact ? 13 : 15} />
+            {!isCompact && 'تماس'}
+          </span>
+        )}
+      </footer>
+    </article>
   );
 };
 

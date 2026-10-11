@@ -1,14 +1,22 @@
 // modules/profile/components/resume/ResumeTab.jsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import Config from "@/config/config";
 import { useAuth } from "@/contexts/AuthContext";
 import ResumeForm from "./ResumeForm";
 import ResumeView from "./ResumeView";
 import styles from "./ResumeTab.module.css";
-import { Loader2, FileText, AlertCircle } from "lucide-react";
+import {
+  Loader2,
+  FileText,
+  AlertCircle,
+  RefreshCw,
+  Download,
+  Share2,
+  Sparkles,
+} from "lucide-react";
 
 const ResumeTab = ({ onRefresh }) => {
   const { getAuthHeaders } = useAuth();
@@ -17,11 +25,10 @@ const ResumeTab = ({ onRefresh }) => {
   const [error, setError] = useState(null);
   const [mode, setMode] = useState("view"); // view | edit | create
 
-  const fetchResume = async () => {
+  const fetchResume = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-
       const res = await axios.get(Config.endpoints.jobisell.myResume.get(), {
         headers: getAuthHeaders(),
       });
@@ -41,16 +48,16 @@ const ResumeTab = ({ onRefresh }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [getAuthHeaders]);
 
   useEffect(() => {
     fetchResume();
-  }, []);
+  }, [fetchResume]);
 
-  const handleSaved = () => {
+  const handleSaved = useCallback(() => {
     fetchResume();
-    if (onRefresh) onRefresh();
-  };
+    onRefresh?.();
+  }, [fetchResume, onRefresh]);
 
   const handleCancel = () => {
     if (resume) setMode("view");
@@ -59,9 +66,9 @@ const ResumeTab = ({ onRefresh }) => {
 
   if (loading) {
     return (
-      <div className={styles.loading}>
+      <div className={styles.loading} role="status">
         <Loader2 className={styles.spinner} size={32} />
-        <p>در حال بارگذاری...</p>
+        <p>در حال بارگذاری رزومه...</p>
       </div>
     );
   }
@@ -71,7 +78,8 @@ const ResumeTab = ({ onRefresh }) => {
       <div className={styles.errorBox}>
         <AlertCircle size={28} />
         <p>{error}</p>
-        <button onClick={fetchResume} className={styles.retryBtn}>
+        <button type="button" onClick={fetchResume} className={styles.retryBtn}>
+          <RefreshCw size={14} />
           تلاش دوباره
         </button>
       </div>
@@ -83,13 +91,24 @@ const ResumeTab = ({ onRefresh }) => {
       <div className={styles.emptyWrapper}>
         <div className={styles.emptyCard}>
           <div className={styles.emptyIcon}>
-            <FileText size={48} />
+            <FileText size={40} />
           </div>
-          <h2>هنوز رزومه‌ای نساخته‌اید</h2>
+          <h2>رزومه حرفه‌ای خود را بسازید</h2>
           <p>
-            با ساخت رزومه حرفه‌ای، شانس خود را برای پیدا کردن شغل مناسب
-            چند برابر کنید. رزومه شما قابل دانلود PDF و اشتراک‌گذاری با لینک است.
+            با چند مرحله ساده، رزومه‌ای استاندارد، قابل دانلود PDF و قابل
+            اشتراک‌گذاری بسازید تا شانس استخدام‌تان بیشتر شود.
           </p>
+          <div className={styles.features}>
+            <span className={styles.featurePill}>
+              <Sparkles size={12} /> قالب‌های متنوع
+            </span>
+            <span className={styles.featurePill}>
+              <Download size={12} /> دانلود PDF
+            </span>
+            <span className={styles.featurePill}>
+              <Share2 size={12} /> لینک عمومی
+            </span>
+          </div>
         </div>
 
         <ResumeForm

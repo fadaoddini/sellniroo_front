@@ -1,11 +1,25 @@
-/* styles/modules/PersianDatePicker.module.css
-   پایه روشن و هماهنگ با تم فروش (sale-theme.css).
-   داخل مودال‌های فروش، اوِررایدهای :global ماژول‌ها
-   اعمال می‌شوند؛ این استایل پایه برای بقیه کاربردهاست. */
+/* PersianDatePicker — تقویم شمسی با پورتال و انتخاب سال/ماه */
 
 .pickerWrapper {
   position: relative;
   width: 100%;
+  --pd-ink: #2a241c;
+  --pd-muted: #6f675c;
+  --pd-line: rgba(90, 60, 20, 0.14);
+  --pd-gold: #fbc300;
+  --pd-gold-dark: #c27800;
+  --pd-cream: #fff7ec;
+  --pd-surface: #ffffff;
+}
+
+.disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.disabled .pickerInput {
+  cursor: not-allowed;
+  background: #f0ebe3;
 }
 
 .pickerInput {
@@ -14,185 +28,318 @@
   gap: 0.5rem;
   width: 100%;
   padding: 0.65rem 0.85rem;
-  border: 1.5px solid var(--sale-line, #e4e8f3);
-  border-radius: 10px;
-  background: var(--sale-surface-2, #f4f6fb);
-  color: var(--sale-ink, #23263b);
+  border: 1.5px solid var(--pd-line, var(--sale-line, #e4e8f3));
+  border-radius: 11px;
+  background: var(--pd-cream, var(--sale-surface-2, #f4f6fb));
+  color: var(--pd-ink, var(--sale-ink, #23263b));
   font-size: 0.85rem;
-  font-family: var(--sale-font, var(--font-iran, Tahoma, Arial, sans-serif));
+  font-family: var(--font-iran, Tahoma, Arial, sans-serif);
   cursor: pointer;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   min-height: 44px;
   user-select: none;
+  box-sizing: border-box;
 }
 
 .pickerInput:hover {
-  border-color: var(--sale-line-strong, #d3d9e9);
+  border-color: rgba(194, 120, 0, 0.4);
 }
 
-.pickerInput:focus-within {
-  border-color: var(--sale-primary, #4f46e5);
-  background: var(--sale-surface, #ffffff);
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+.open .pickerInput,
+.pickerInput:focus-visible {
+  border-color: var(--pd-gold, #fbc300);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(251, 195, 0, 0.18);
+  outline: none;
 }
 
 .calendarIcon {
-  color: var(--sale-primary, #4f46e5);
+  color: var(--pd-gold-dark, #c27800);
   flex-shrink: 0;
 }
 
 .selectedDate {
   flex: 1;
-  color: var(--sale-ink, #23263b);
-  font-weight: 500;
+  color: var(--pd-ink, #2a241c);
+  font-weight: 600;
+  text-align: start;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .placeholder {
   flex: 1;
-  color: var(--sale-faint, #9aa1bd);
+  color: #9a8f7e;
+  text-align: start;
 }
 
 .clearBtn {
   background: transparent;
   border: none;
   cursor: pointer;
-  color: var(--sale-faint, #9aa1bd);
-  padding: 0.2rem;
+  color: #9a8f7e;
+  padding: 0.25rem;
   border-radius: 6px;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, background 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .clearBtn:hover {
-  color: var(--sale-danger, #dc2626);
-  background: rgba(220, 38, 38, 0.08);
+  color: #c62828;
+  background: rgba(198, 40, 40, 0.08);
 }
 
+/* Dropdown — fixed via portal (روی body) */
 .pickerDropdown {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  right: 0;
-  background: var(--sale-surface, #ffffff);
-  border: 1px solid var(--sale-line, #e4e8f3);
-  border-radius: 14px;
-  padding: 0.8rem;
-  box-shadow: var(--sale-shadow-lg, 0 18px 50px rgba(35, 38, 59, 0.14));
-  z-index: 10001;
-  min-width: 280px;
+  position: fixed;
+  z-index: 10050;
+  background: var(--pd-surface, #fff);
+  border: 1px solid var(--pd-line);
+  border-radius: 16px;
+  padding: 0.85rem;
+  box-shadow:
+    0 18px 48px rgba(40, 28, 8, 0.18),
+    0 4px 12px rgba(80, 50, 0, 0.08);
+  box-sizing: border-box;
+  animation: pdFadeIn 0.16s ease-out;
+  font-family: var(--font-iran, Tahoma, Arial, sans-serif);
+}
+
+.openUp {
+  animation: pdFadeInUp 0.16s ease-out;
+}
+
+@keyframes pdFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pdFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .pickerHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.55rem;
-  direction: ltr;
+  gap: 0.4rem;
+  margin-bottom: 0.65rem;
 }
 
-.monthYear {
+.selectors {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+}
+
+.monthSelect,
+.yearSelect {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid var(--pd-line);
+  background: var(--pd-cream);
+  color: var(--pd-ink);
+  border-radius: 9px;
+  padding: 0.4rem 0.55rem;
   font-size: 0.78rem;
   font-weight: 700;
-  color: var(--sale-ink, #23263b);
-  font-family: var(--sale-font, var(--font-iran, Tahoma, Arial, sans-serif));
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  max-width: 100%;
+}
+
+.monthSelect {
+  flex: 1.2;
+  min-width: 0;
+}
+
+.yearSelect {
+  flex: 0.85;
+  min-width: 72px;
+  direction: ltr;
+  text-align: center;
+}
+
+.monthSelect:focus,
+.yearSelect:focus {
+  border-color: var(--pd-gold);
+  box-shadow: 0 0 0 3px rgba(251, 195, 0, 0.18);
+  background: #fff;
 }
 
 .navBtn {
-  background: var(--sale-surface-2, #f4f6fb);
-  border: 1px solid var(--sale-line, #e4e8f3);
-  border-radius: 8px;
-  color: var(--sale-muted, #68708f);
+  background: var(--pd-cream);
+  border: 1px solid var(--pd-line);
+  border-radius: 9px;
+  color: var(--pd-muted);
   cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  transition: all 0.2s ease;
+  padding: 0.35rem;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .navBtn:hover {
-  background: var(--sale-primary-soft, #edeeff);
-  color: var(--sale-primary, #4f46e5);
-  border-color: rgba(79, 70, 229, 0.35);
+  background: #fff3c4;
+  color: var(--pd-gold-dark);
+  border-color: rgba(194, 120, 0, 0.35);
 }
 
 .weekDays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 2px;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.35rem;
 }
 
 .weekDay {
   text-align: center;
-  font-size: 0.6rem;
-  font-weight: 600;
-  color: var(--sale-faint, #9aa1bd);
-  padding: 0.25rem 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #a08960;
+  padding: 0.3rem 0;
 }
 
 .daysGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 3px;
+  gap: 4px;
 }
 
 .dayBtn {
   background: transparent;
   border: none;
-  border-radius: 8px;
-  padding: 0.35rem 0;
-  font-size: 0.72rem;
-  font-weight: 500;
-  font-family: var(--sale-font, var(--font-iran, Tahoma, Arial, sans-serif));
-  color: var(--sale-ink, #23263b);
+  border-radius: 10px;
+  padding: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--pd-ink);
   cursor: pointer;
-  transition: all 0.15s ease;
-  text-align: center;
+  transition: background 0.12s ease, color 0.12s ease, transform 0.12s ease;
   aspect-ratio: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 34px;
 }
 
 .dayBtn:hover {
-  background: var(--sale-primary-soft, #edeeff);
-  color: var(--sale-primary, #4f46e5);
+  background: #fff3c4;
+  color: var(--pd-gold-dark);
 }
 
 .dayBtn.today {
-  color: var(--sale-primary, #4f46e5);
-  font-weight: 700;
-  box-shadow: inset 0 0 0 1.5px var(--sale-primary, #4f46e5);
+  color: var(--pd-gold-dark);
+  font-weight: 800;
+  box-shadow: inset 0 0 0 1.5px rgba(194, 120, 0, 0.55);
 }
 
 .dayBtn.selected {
-  background: linear-gradient(135deg, var(--sale-primary, #4f46e5), var(--sale-primary-strong, #4338ca));
-  color: #ffffff;
-  font-weight: 700;
-  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.4);
+  background: linear-gradient(135deg, #ffd54a 0%, #fbc300 50%, #fb9700 100%);
+  color: #3a2a00;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(201, 120, 0, 0.35);
+}
+
+.dayBtn.selected:hover {
+  background: linear-gradient(135deg, #ffe082, #fbc300);
+  color: #3a2a00;
 }
 
 .emptyDay {
-  padding: 0.25rem 0;
+  min-height: 34px;
 }
 
-/* RTL */
-[dir="rtl"] .pickerHeader {
-  direction: rtl;
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--pd-line);
 }
 
+.todayBtn,
+.closeFooterBtn {
+  border: none;
+  border-radius: 9px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.todayBtn {
+  background: #fff3c4;
+  color: var(--pd-gold-dark);
+}
+
+.todayBtn:hover {
+  background: #ffe082;
+}
+
+.closeFooterBtn {
+  background: #fff;
+  color: var(--pd-muted);
+  border: 1px solid var(--pd-line);
+}
+
+.closeFooterBtn:hover {
+  background: var(--pd-cream);
+  color: var(--pd-ink);
+}
+
+/* RTL nav arrows stay logical with ChevronRight/Left labels */
 [dir="rtl"] .navBtn svg {
-  transform: scaleX(-1);
+  transform: none;
 }
 
-/* Responsive */
 @media (max-width: 480px) {
   .pickerDropdown {
-    min-width: 200px;
-    left: -10px;
-    right: -10px;
+    max-width: calc(100vw - 24px);
+  }
+
+  .dayBtn {
+    min-height: 32px;
+    font-size: 0.76rem;
+  }
+
+  .monthSelect,
+  .yearSelect {
+    font-size: 0.72rem;
+    padding: 0.35rem 0.45rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pickerDropdown,
+  .openUp {
+    animation: none !important;
   }
 }

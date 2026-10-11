@@ -216,7 +216,7 @@ const FiltersSection = ({
             checked={filters.isVerified}
             onChange={(e) => onVerifiedToggle(e.target.checked)}
           />
-          <span>فقط آگهی‌های دارای تاییدیه</span>
+          <span>فقط شرکت‌های تاییدشده</span>
         </label>
       </div>
 

@@ -44,11 +44,11 @@
 }
 
 .backLink:hover {
-  color: #ffffff;
-  background: #0e8f59;
-  border-color: #0e8f59;
+  color: #3a2a00;
+  background: linear-gradient(135deg, #ffd54a, #fbc300, #fb9700);
+  border-color: transparent;
   transform: translateX(-4px);
-  box-shadow: 0 4px 16px rgba(14, 143, 89, 0.25);
+  box-shadow: 0 4px 16px rgba(201, 120, 0, 0.28);
 }
 
 .backLink svg {
@@ -64,24 +64,24 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #0e8f59;
+  color: var(--primary-dark);
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 600;
   padding: 0.5rem 1.2rem;
   border-radius: 10px;
-  background: rgba(14, 143, 89, 0.08);
-  border: 1px solid rgba(14, 143, 89, 0.2);
+  background: rgba(194, 120, 0, 0.08);
+  border: 1px solid rgba(194, 120, 0, 0.2);
   transition: all 0.3s ease;
   font-family: var(--font-iran, sans-serif);
 }
 
 .lsfLink:hover {
-  background: #0e8f59;
-  color: #ffffff;
-  border-color: #0e8f59;
+  background: linear-gradient(135deg, #ffd54a, #fbc300, #fb9700);
+  color: #3a2a00;
+  border-color: transparent;
   transform: translateX(-4px);
-  box-shadow: 0 4px 20px rgba(14, 143, 89, 0.25);
+  box-shadow: 0 4px 20px rgba(201, 120, 0, 0.28);
 }
 
 .lsfLinkArrow {
@@ -188,7 +188,7 @@
 }
 
 .thumbnailList::-webkit-scrollbar-thumb {
-  background: rgba(14, 143, 89, 0.3);
+  background: rgba(194, 120, 0, 0.3);
   border-radius: 10px;
 }
 
@@ -206,13 +206,13 @@
 }
 
 .thumbnail:hover {
-  border-color: rgba(14, 143, 89, 0.4);
+  border-color: rgba(194, 120, 0, 0.4);
   transform: scale(1.05);
 }
 
 .thumbnailActive {
-  border-color: #0e8f59;
-  box-shadow: 0 0 20px rgba(14, 143, 89, 0.2);
+  border-color: var(--primary-dark);
+  box-shadow: 0 0 20px rgba(194, 120, 0, 0.2);
 }
 
 .thumbnail img {
@@ -269,12 +269,12 @@
 }
 
 .metaItem svg {
-  color: #0e8f59;
+  color: var(--primary-dark);
   font-size: 0.85rem;
 }
 
 .sourceLink {
-  color: #0e8f59;
+  color: var(--primary-dark);
   text-decoration: none;
   margin-right: 0.3rem;
   font-size: 0.7rem;
@@ -282,7 +282,7 @@
 }
 
 .sourceLink:hover {
-  color: #0a6b42;
+  color: var(--primary-dark);
   text-decoration: underline;
 }
 
@@ -292,9 +292,9 @@
   line-height: 1.8;
   margin-bottom: 1.5rem;
   padding: 1rem 1.5rem;
-  background: rgba(14, 143, 89, 0.04);
+  background: rgba(194, 120, 0, 0.04);
   border-radius: 12px;
-  border-right: 3px solid #0e8f59;
+  border-right: 3px solid var(--primary-dark);
   font-family: var(--font-iran, sans-serif);
 }
 
@@ -335,9 +335,9 @@
 .detailContentText blockquote {
   padding: 0.75rem 1.5rem;
   margin: 1rem 0;
-  background: rgba(14, 143, 89, 0.04);
+  background: rgba(194, 120, 0, 0.04);
   border-radius: 8px;
-  border-right: 3px solid #0e8f59;
+  border-right: 3px solid var(--primary-dark);
   color: #4b5563;
 }
 
@@ -370,19 +370,19 @@
 .keywordTag {
   display: inline-block;
   padding: 0.15rem 0.6rem;
-  background: rgba(14, 143, 89, 0.08);
-  border: 1px solid rgba(14, 143, 89, 0.15);
+  background: rgba(194, 120, 0, 0.08);
+  border: 1px solid rgba(194, 120, 0, 0.15);
   border-radius: 12px;
   font-size: 0.65rem;
-  color: #0e8f59;
+  color: var(--primary-dark);
   font-family: var(--font-iran, sans-serif);
   transition: all 0.3s ease;
 }
 
 .keywordTag:hover {
-  background: #0e8f59;
-  color: #ffffff;
-  border-color: #0e8f59;
+  background: linear-gradient(135deg, #fff3c4, #ffe082);
+  color: #5a3d00;
+  border-color: rgba(194, 120, 0, 0.35);
 }
 
 /* ============================================
@@ -413,11 +413,11 @@
 }
 
 .interactionBtn:hover {
-  background: #0e8f59;
-  border-color: #0e8f59;
-  color: #ffffff;
+  background: linear-gradient(135deg, #ffd54a, #fbc300, #fb9700);
+  border-color: transparent;
+  color: #3a2a00;
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(14, 143, 89, 0.25);
+  box-shadow: 0 4px 16px rgba(201, 120, 0, 0.28);
 }
 
 .interactionBtnLiked {
@@ -444,7 +444,7 @@
   padding: 1.5rem;
   background: #f9fafb;
   border-radius: 12px;
-  border: 1px solid rgba(14, 143, 89, 0.15);
+  border: 1px solid rgba(194, 120, 0, 0.15);
 }
 
 .commentFormTitle {
@@ -459,7 +459,7 @@
 }
 
 .commentFormTitle svg {
-  color: #0e8f59;
+  color: var(--primary-dark);
 }
 
 .commentGuestFields {
@@ -482,8 +482,8 @@
 
 .commentInput:focus {
   outline: none;
-  border-color: #0e8f59;
-  box-shadow: 0 0 0 3px rgba(14, 143, 89, 0.1);
+  border-color: var(--primary-dark);
+  box-shadow: 0 0 0 3px rgba(194, 120, 0, 0.1);
 }
 
 .commentInput::placeholder {
@@ -505,8 +505,8 @@
 
 .commentTextarea:focus {
   outline: none;
-  border-color: #0e8f59;
-  box-shadow: 0 0 0 3px rgba(14, 143, 89, 0.1);
+  border-color: var(--primary-dark);
+  box-shadow: 0 0 0 3px rgba(194, 120, 0, 0.1);
 }
 
 .commentTextarea::placeholder {
@@ -534,14 +534,15 @@
 }
 
 .commentSubmitBtn {
-  background: #0e8f59;
-  color: #ffffff;
+  background: linear-gradient(135deg, #ffd54a, #fbc300, #fb9700);
+  color: #3a2a00;
+  font-weight: 700;
 }
 
 .commentSubmitBtn:hover:not(:disabled) {
-  background: #0a6b42;
+  background: linear-gradient(135deg, #ffe082, #fbc300, #fb9700);
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(14, 143, 89, 0.3);
+  box-shadow: 0 4px 16px rgba(201, 120, 0, 0.3);
 }
 
 .commentSubmitBtn:disabled {
@@ -580,7 +581,7 @@
 }
 
 .commentsTitle svg {
-  color: #0e8f59;
+  color: var(--primary-dark);
 }
 
 .commentsList {
@@ -602,12 +603,12 @@
 
 .commentItem:hover {
   background: #ffffff;
-  border-color: rgba(14, 143, 89, 0.15);
+  border-color: rgba(194, 120, 0, 0.15);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
 .commentNested {
-  border-right: 2px solid rgba(14, 143, 89, 0.2);
+  border-right: 2px solid rgba(194, 120, 0, 0.2);
   border-radius: 0 12px 12px 0;
 }
 
@@ -629,7 +630,7 @@
   height: 36px;
   border-radius: 50%;
   overflow: hidden;
-  background: rgba(14, 143, 89, 0.1);
+  background: rgba(194, 120, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -645,7 +646,7 @@
 .commentAvatar span {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #0e8f59;
+  color: var(--primary-dark);
   font-family: var(--font-edameh, sans-serif);
 }
 
@@ -727,12 +728,12 @@
 }
 
 .commentReplyBtn {
-  color: #0e8f59;
+  color: var(--primary-dark);
 }
 
 .commentReplyBtn:hover {
-  background: rgba(14, 143, 89, 0.08);
-  color: #0a6b42;
+  background: rgba(194, 120, 0, 0.08);
+  color: var(--primary-dark);
 }
 
 .commentDeleteBtn {
@@ -779,9 +780,9 @@
 
 .replyForm textarea:focus {
   outline: none;
-  border-color: #0e8f59;
+  border-color: var(--primary-dark);
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(14, 143, 89, 0.1);
+  box-shadow: 0 0 0 3px rgba(194, 120, 0, 0.1);
 }
 
 .replyFormActions {
@@ -805,12 +806,12 @@
 }
 
 .replySubmitBtn {
-  background: #0e8f59;
+  background: var(--primary-dark);
   color: #ffffff;
 }
 
 .replySubmitBtn:hover:not(:disabled) {
-  background: #0a6b42;
+  background: var(--primary-dark);
   transform: translateY(-1px);
 }
 
@@ -842,11 +843,11 @@
 .lsfBanner {
   margin-top: 2.5rem;
   padding: 1.5rem 2rem;
-  background: linear-gradient(135deg, #0e8f59 0%, #2da170 100%);
+  background: linear-gradient(135deg, #ffd54a 0%, #fbc300 45%, #fb9700 100%);
   border-radius: 16px;
   overflow: hidden;
-  border: 1px solid rgba(14, 143, 89, 0.2);
-  box-shadow: 0 8px 32px rgba(14, 143, 89, 0.15);
+  border: 1px solid rgba(194, 120, 0, 0.22);
+  box-shadow: 0 8px 32px rgba(201, 120, 0, 0.22);
 }
 
 .lsfBannerContent {
@@ -859,7 +860,7 @@
 
 .lsfBannerIcon {
   font-size: 2.5rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(58, 42, 0, 0.35);
   flex-shrink: 0;
 }
 
@@ -869,7 +870,7 @@
 }
 
 .lsfBannerText h3 {
-  color: #ffffff;
+  color: #3a2a00;
   font-size: 1.1rem;
   font-weight: 700;
   margin: 0 0 0.3rem 0;
@@ -877,7 +878,7 @@
 }
 
 .lsfBannerText p {
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(58, 42, 0, 0.78);
   font-size: 0.9rem;
   margin: 0;
   font-family: var(--font-iran, sans-serif);
@@ -888,8 +889,8 @@
   align-items: center;
   gap: 0.6rem;
   padding: 0.6rem 1.8rem;
-  background: #ffffff;
-  color: #0e8f59;
+  background: #3a2a00;
+  color: #fff8e7;
   font-weight: 700;
   border-radius: 10px;
   text-decoration: none;
@@ -902,9 +903,9 @@
 }
 
 .lsfBannerBtn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-  background: #f0fdf4;
+  transform: scale(1.03);
+  box-shadow: 0 8px 24px rgba(58, 42, 0, 0.28);
+  background: #241a00;
 }
 
 .lsfBannerBtn svg {
@@ -1106,11 +1107,11 @@
 }
 
 .toast.info {
-  border-color: rgba(14, 143, 89, 0.3);
+  border-color: rgba(194, 120, 0, 0.3);
 }
 
 .toast.info .toastIcon {
-  color: #0e8f59;
+  color: var(--primary-dark);
 }
 
 .toastIcon {
@@ -1306,12 +1307,12 @@
 
 [dir="rtl"] .detailExcerpt {
   border-right: none;
-  border-left: 3px solid #0e8f59;
+  border-left: 3px solid var(--primary-dark);
 }
 
 [dir="rtl"] .commentNested {
   border-right: none;
-  border-left: 2px solid rgba(14, 143, 89, 0.2);
+  border-left: 2px solid rgba(194, 120, 0, 0.2);
   border-radius: 12px 0 0 12px;
 }
 

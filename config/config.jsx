@@ -652,11 +652,26 @@ karmandan: {
           noVersion: true
         });
       },
-      types: () => {
-        return Config.getApiUrl({ 
-          segment: 'api/requser', 
+      types: (params = {}) => {
+        return Config.getApiUrl({
+          segment: 'api/requser',
           endpoint: 'types/',
-          noVersion: true
+          params,
+          noVersion: true,
+        });
+      },
+      typeDetail: (id) => {
+        return Config.getApiUrl({
+          segment: 'api/requser',
+          endpoint: `types/${id}/`,
+          noVersion: true,
+        });
+      },
+      typeToggleActive: (id) => {
+        return Config.getApiUrl({
+          segment: 'api/requser',
+          endpoint: `types/${id}/toggle-active/`,
+          noVersion: true,
         });
       },
       categories: () => {
@@ -775,6 +790,73 @@ news: {
       segment: 'api',
       endpoint: `tickers/${id}/toggle-active/`,
       noVersion: true
+    }),
+  },
+  heroSlides: {
+    list: (params = {}) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'hero-slides/',
+      params,
+      noVersion: true
+    }),
+    active: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'hero-slides/active/',
+      noVersion: true
+    }),
+    create: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'hero-slides/',
+      noVersion: true
+    }),
+    update: (id) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `hero-slides/${id}/`,
+      noVersion: true
+    }),
+    delete: (id) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `hero-slides/${id}/`,
+      noVersion: true
+    }),
+    toggleActive: (id) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `hero-slides/${id}/toggle-active/`,
+      noVersion: true
+    }),
+  },
+  siteSettings: {
+    get: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'site-settings/',
+      noVersion: true
+    }),
+    update: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'site-settings/update/',
+      noVersion: true
+    }),
+  },
+  platformConnections: {
+    list: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'platform-connections/',
+      noVersion: true,
+    }),
+    detail: (platform) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `platform-connections/${platform}/`,
+      noVersion: true,
+    }),
+    test: (platform) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `platform-connections/${platform}/test/`,
+      noVersion: true,
+    }),
+    toggleEnabled: (platform) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `platform-connections/${platform}/toggle-enabled/`,
+      noVersion: true,
     }),
   },
   hot: (limit = 10) => {
@@ -1534,6 +1616,13 @@ news: {
         like: (id) => `${Config.baseUrl}/api/jobisell/jobs/${id}/like/`,
         bookmark: (id) => `${Config.baseUrl}/api/jobisell/jobs/${id}/bookmark/`,
         apply: (id) => `${Config.baseUrl}/api/jobisell/jobs/${id}/apply/`,
+
+        adminStats: () => `${Config.baseUrl}/api/jobisell/jobs/admin-stats/`,
+        approve: (id) => `${Config.baseUrl}/api/jobisell/jobs/${id}/approve/`,
+        reject: (id) => `${Config.baseUrl}/api/jobisell/jobs/${id}/reject/`,
+        toggleFeatured: (id) => `${Config.baseUrl}/api/jobisell/jobs/${id}/toggle-featured/`,
+        toggleActive: (id) => `${Config.baseUrl}/api/jobisell/jobs/${id}/toggle-active/`,
+        setStatus: (id) => `${Config.baseUrl}/api/jobisell/jobs/${id}/set-status/`,
       },
 
       // ---------- درخواست‌ها ----------

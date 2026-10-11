@@ -34,12 +34,6 @@ export default function JobsPageClient() {
     };
   }, [searchParams]);
 
-  // ✅ کلید یکتا برای Force Remount
-  const remountKey = useMemo(
-    () => searchParams.toString(),
-    [searchParams]
-  );
-
   // ============================================
   // ✅ پاک کردن جستجو
   // ============================================
@@ -128,11 +122,8 @@ export default function JobsPageClient() {
       </div>
 
       <div className={styles.contentWrapper}>
-        {/* ✅ key={remountKey} → با تغییر URL، کامپوننت کامل remount می‌شود */}
-        <AllBoxItem
-          key={remountKey}
-          initialFilters={initialFilters}
-        />
+        {/* بدون remount روی URL — جلوگیری از رفرش/پرش مداوم لیست */}
+        <AllBoxItem initialFilters={initialFilters} />
       </div>
     </div>
   );

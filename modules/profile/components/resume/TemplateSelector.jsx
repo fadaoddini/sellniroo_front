@@ -17,7 +17,7 @@ const TEMPLATES = [
     description: "دو ستونی، رنگی، سایدبار",
     bestFor: "مهندس، برنامه‌نویس، طراح",
     component: ModernTemplate,
-    color: "#3b82f6",
+    color: "#c27800",
   },
   {
     key: "classic",
@@ -25,7 +25,7 @@ const TEMPLATES = [
     description: "تک ستونی، رسمی، ATS-friendly",
     bestFor: "فروش، بانک، اداری",
     component: ClassicTemplate,
-    color: "#0f172a",
+    color: "#3a2a00",
   },
   {
     key: "minimal",
@@ -33,7 +33,7 @@ const TEMPLATES = [
     description: "ساده، تمیز، بدون رنگ اضافی",
     bestFor: "همه‌کاره، مدرن",
     component: MinimalTemplate,
-    color: "#64748b",
+    color: "#6f675c",
   },
   {
     key: "creative",
@@ -41,7 +41,7 @@ const TEMPLATES = [
     description: "گرادیانت، رنگی، بولد",
     bestFor: "طراح، بازاریاب، محتوا",
     component: CreativeTemplate,
-    color: "#ec4899",
+    color: "#fb9700",
   },
   {
     key: "executive",
@@ -49,7 +49,7 @@ const TEMPLATES = [
     description: "شیک، تیره، حرفه‌ای",
     bestFor: "مدیر، C-level، مشاور",
     component: ExecutiveTemplate,
-    color: "#0f172a",
+    color: "#2a241c",
   },
 ];
 

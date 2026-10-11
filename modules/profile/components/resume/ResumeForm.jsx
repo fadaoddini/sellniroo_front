@@ -6,6 +6,7 @@ import axios from "axios";
 import Config from "@/config/config";
 import { useAuth } from "@/contexts/AuthContext";
 import { getFullImageUrl } from "@/utils/imageUrl";
+import PersianDatePicker from "@/components/common/PersianDatePicker";
 import styles from "./ResumeForm.module.css";
 import TemplateSelector from "./TemplateSelector";
 import {
@@ -13,9 +14,6 @@ import {
   User, Briefcase, GraduationCap, Award, Globe, FileText,
   Image as ImageIcon, Palette,
 } from "lucide-react";
-import moment from "moment-jalaali";
-
-moment.loadPersian({ dialect: "persian-modern" });
 
 // Section Components
 import WorkExperienceSection from "./sections/WorkExperienceSection";
@@ -241,7 +239,7 @@ const ResumeForm = ({ resume, onSaved, onCancel }) => {
       <div className={styles.header}>
         <h2>{isEdit ? "ویرایش رزومه" : "ساخت رزومه جدید"}</h2>
         <p className={styles.subtitle}>
-          اطلاعات را در بخش‌های مختلف وارد کنید. برای ذخیره هر بخش، دکمه ذخیره را بزنید.
+          از مراحل زیر بخش‌ها را کامل کنید. بعد از هر تغییر مهم، ذخیره را بزنید.
         </p>
       </div>
 
@@ -436,11 +434,12 @@ const ResumeForm = ({ resume, onSaved, onCancel }) => {
             <div className={styles.row}>
               <div className={styles.formGroup}>
                 <label>تاریخ تولد</label>
-                <input
-                  type="date"
+                <PersianDatePicker
                   value={formData.birth_date}
-                  onChange={(e) => handleChange("birth_date", e.target.value)}
-                  dir="ltr"
+                  onChange={(date) => handleChange("birth_date", date || "")}
+                  placeholder="انتخاب تاریخ تولد"
+                  minYear={1300}
+                  maxYear={1410}
                 />
               </div>
               <div className={styles.formGroup}>

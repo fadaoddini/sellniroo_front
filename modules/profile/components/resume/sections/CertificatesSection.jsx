@@ -6,6 +6,7 @@ import axios from "axios";
 import Config from "@/config/config";
 import { useAuth } from "@/contexts/AuthContext";
 import styles from "../ResumeForm.module.css";
+import PersianDatePicker from "@/components/common/PersianDatePicker";
 import { Plus, Trash2, Edit2, Check, X, Loader2, Award } from "lucide-react";
 import moment from "moment-jalaali";
 moment.loadPersian({ dialect: "persian-modern" });
@@ -161,11 +162,12 @@ const CertificatesSection = ({ resume, onRefresh }) => {
             </div>
             <div className={styles.formGroup}>
               <label>تاریخ صدور</label>
-              <input
-                type="date"
+              <PersianDatePicker
                 value={formData.issue_date}
-                onChange={(e) => setFormData({ ...formData, issue_date: e.target.value })}
-                dir="ltr"
+                onChange={(date) =>
+                  setFormData({ ...formData, issue_date: date || "" })
+                }
+                placeholder="تاریخ صدور"
               />
             </div>
           </div>

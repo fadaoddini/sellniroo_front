@@ -5,84 +5,49 @@
 import React, { useState, useMemo } from 'react'
 import { Briefcase } from 'lucide-react'
 import { useFilters } from './hooks/useFilters'
-import { usePagination } from './hooks/usePagination'
 import FiltersSection from './components/FiltersSection/FiltersSection'
 import JobListings from './components/JobListings/JobListings'
-import Pagination from './components/Pagination/Pagination'
 import ViewToggle from './components/ViewToggle/ViewToggle'
 import AdTypeTabs from './components/AdTypeTabs/AdTypeTabs'
 import styles from './AllBoxItem.module.css'
 
 const AllBoxItem = ({ initialFilters = {} }) => {
-  const ITEMS_PER_PAGE = 10
-
-  // ============================================
-  // ✅ State های نمایش
-  // ============================================
   const [viewMode, setViewMode] = useState('grid-2')
 
-  // ✅ تب فعال از URL یا 'all'
   const [activeTab, setActiveTab] = useState(() => {
     if (initialFilters.adType === 'hiring') return 'hiring'
     if (initialFilters.adType === 'seeking') return 'seeking'
     return 'all'
   })
 
-  // ============================================
-  // ✅ هوک فیلترها (داینامیک از API + آبشاری + URL)
-  // ============================================
   const {
-    // فیلترها
     filters,
     filterOptions,
     optionsLoading,
     activeFilterCount,
-
-    // ✅ آبشاری
     availableCities,
     availableNeighborhoods,
     allProvinces,
-
-    // آگهی‌ها
     filteredJobs,
     jobsLoading,
+    isLoadingMore,
     jobsError,
     totalCount,
-
-    // صفحه‌بندی
-    currentPage,
-    setCurrentPage,
-
-    // مرتب‌سازی
+    hasMore,
+    loadMore,
     sortBy,
     setSortBy,
-
-    // توابع
     updateFilter,
     clearFilter,
     clearAllFilters,
   } = useFilters(initialFilters)
 
-  // ============================================
-  // ✅ فیلتر بر اساس تب فعال
-  // ============================================
-  const tabFilteredJobs = useMemo(() => {
+  // وقتی تب از API فیلتر شده، لیست همان است؛ برای all همه را نشان بده
+  const visibleJobs = useMemo(() => {
     if (activeTab === 'all') return filteredJobs
     return filteredJobs.filter((job) => job.type === activeTab)
   }, [filteredJobs, activeTab])
 
-  // ============================================
-  // ✅ صفحه‌بندی
-  // ============================================
-  const { totalItems, totalPages, currentItems, goToPage } = usePagination(
-    tabFilteredJobs,
-    ITEMS_PER_PAGE,
-    currentPage
-  )
-
-  // ============================================
-  // ✅ آمار تب‌ها
-  // ============================================
   const hiringCount = useMemo(
     () => filteredJobs.filter((job) => job.type === 'hiring').length,
     [filteredJobs]
@@ -93,10 +58,6 @@ const AllBoxItem = ({ initialFilters = {} }) => {
     [filteredJobs]
   )
 
-  // ============================================
-  // ✅ هندلرها
-  // ============================================
-
   const handleFilterChange = (key, value) => {
     updateFilter(key, value)
   }
@@ -105,24 +66,15 @@ const AllBoxItem = ({ initialFilters = {} }) => {
     clearFilter(key)
   }
 
-  // ✅ تغییر تب + به‌روزرسانی URL
   const handleTabChange = (tabId) => {
     setActiveTab(tabId)
-    setCurrentPage(1)
-
-    // اگر تب hiring/seeking است، فیلتر type را ست کن
-    if (tabId === 'hiring') {
-      updateFilter('adType', 'hiring')
-    } else if (tabId === 'seeking') {
-      updateFilter('adType', 'seeking')
-    } else {
-      updateFilter('adType', '')
-    }
+    if (tabId === 'hiring') updateFilter('adType', 'hiring')
+    else if (tabId === 'seeking') updateFilter('adType', 'seeking')
+    else updateFilter('adType', '')
   }
 
   const handleSortChange = (value) => {
     setSortBy(value)
-    setCurrentPage(1)
   }
 
   const handleVerifiedToggle = (value) => {
@@ -139,45 +91,37 @@ const AllBoxItem = ({ initialFilters = {} }) => {
 
   const handleSearchSubmit = (value) => {
     updateFilter('q', value)
-    setCurrentPage(1)
   }
 
-  const handlePageChange = (page) => {
-    goToPage(page, setCurrentPage)
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
-  }
-
-  // ✅ حذف همه فیلترها + بازگشت تب به all
   const handleClearAll = () => {
     clearAllFilters()
     setActiveTab('all')
   }
 
-  // ============================================
-  // ✅ رندر
-  // ============================================
   return (
     <div className={styles.allBoxItem}>
       <div className={styles.container}>
-        <FiltersSection
-          filters={filters}
-          filterOptions={filterOptions}
-          optionsLoading={optionsLoading}
-          activeFilterCount={activeFilterCount}
-          allProvinces={allProvinces}
-          availableCities={availableCities}
-          availableNeighborhoods={availableNeighborhoods}
-          sortBy={sortBy}
-          onFilterChange={handleFilterChange}
-          onFilterClear={handleFilterClear}
-          onClearAll={handleClearAll}
-          onVerifiedToggle={handleVerifiedToggle}
-          onFeatureToggle={handleFeatureToggle}
-          onSortChange={handleSortChange}
-          onSearchSubmit={handleSearchSubmit}
-        />
+        <aside className={styles.filtersAside} aria-label="فیلترهای آگهی">
+          <div className={styles.filtersSticky}>
+            <FiltersSection
+              filters={filters}
+              filterOptions={filterOptions}
+              optionsLoading={optionsLoading}
+              activeFilterCount={activeFilterCount}
+              allProvinces={allProvinces}
+              availableCities={availableCities}
+              availableNeighborhoods={availableNeighborhoods}
+              sortBy={sortBy}
+              onFilterChange={handleFilterChange}
+              onFilterClear={handleFilterClear}
+              onClearAll={handleClearAll}
+              onVerifiedToggle={handleVerifiedToggle}
+              onFeatureToggle={handleFeatureToggle}
+              onSortChange={handleSortChange}
+              onSearchSubmit={handleSearchSubmit}
+            />
+          </div>
+        </aside>
 
         <div className={styles.mainContent}>
           <div className={styles.listingsHeader}>
@@ -189,7 +133,9 @@ const AllBoxItem = ({ initialFilters = {} }) => {
               <span className={styles.listingsCount}>
                 {totalCount > 0
                   ? `${totalCount.toLocaleString('fa-IR')} آگهی`
-                  : 'در حال بارگذاری...'}
+                  : jobsLoading
+                    ? 'در حال بارگذاری...'
+                    : '۰ آگهی'}
               </span>
             </div>
 
@@ -205,31 +151,25 @@ const AllBoxItem = ({ initialFilters = {} }) => {
           </div>
 
           <JobListings
-            jobs={currentItems}
-            totalItems={totalItems}
+            jobs={visibleJobs}
+            totalItems={totalCount}
             viewMode={viewMode}
             loading={jobsLoading}
+            loadingMore={isLoadingMore}
+            hasMore={hasMore}
+            onLoadMore={loadMore}
             error={jobsError}
           >
-            {!jobsLoading && currentItems.length === 0 && (
+            {!jobsLoading && visibleJobs.length === 0 && (
               <button
                 className={styles.emptyResetBtn}
                 onClick={handleClearAll}
+                type="button"
               >
                 حذف همه فیلترها
               </button>
             )}
           </JobListings>
-
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalItems}
-              itemsPerPage={ITEMS_PER_PAGE}
-              onPageChange={handlePageChange}
-            />
-          )}
         </div>
       </div>
     </div>

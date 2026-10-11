@@ -162,6 +162,9 @@ const CompanyForm = ({ company, onSaved, onCancel }) => {
     <div className={styles.formWrapper}>
       <div className={styles.header}>
         <h2>{isEdit ? "ویرایش شرکت" : "ثبت شرکت جدید"}</h2>
+        <p className={styles.subtitle}>
+          اطلاعات شرکت را کامل کنید؛ لوگو و مدارک به اعتبار پروفایل کمک می‌کنند.
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className={styles.form}>

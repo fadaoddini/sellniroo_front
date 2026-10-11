@@ -3,9 +3,8 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import jobisellApi from '@/services/jobisellApi';
 
-// ============================================
-// ✅ مقادیر پیش‌فرض
-// ============================================
+const PAGE_SIZE = 12;
+
 const DEFAULT_FILTERS = {
   adType: '',
   province: '',
@@ -19,13 +18,28 @@ const DEFAULT_FILTERS = {
   q: '',
 };
 
+const buildFiltersQuery = (filters, sortBy) => {
+  const params = new URLSearchParams();
+  if (filters.q) params.set('q', filters.q);
+  if (filters.province) params.set('province', String(filters.province));
+  if (filters.city) params.set('city', String(filters.city));
+  if (filters.neighborhood) params.set('neighborhood', String(filters.neighborhood));
+  if (filters.adType) params.set('type', filters.adType);
+  if (filters.cooperationType) {
+    params.set('cooperation_type', String(filters.cooperationType));
+  }
+  if (filters.jobTitle) params.set('job_title', String(filters.jobTitle));
+  if (filters.category) params.set('category', String(filters.category));
+  if (filters.isVerified) params.set('is_verified', 'true');
+  if (filters.features?.length) params.set('features', filters.features.join(','));
+  if (sortBy && sortBy !== '-created_at') params.set('ordering', sortBy);
+  return params.toString();
+};
+
 export const useFilters = (initialFilters = {}) => {
   const router = useRouter();
   const pathname = usePathname();
 
-  // ============================================
-  // ✅ State فیلترها (مقدار اولیه از initialFilters)
-  // ============================================
   const [filters, setFilters] = useState(() => ({
     adType: initialFilters.adType || '',
     province: initialFilters.province || '',
@@ -39,36 +53,41 @@ export const useFilters = (initialFilters = {}) => {
     q: initialFilters.q || '',
   }));
 
-  const [currentPage, setCurrentPage] = useState(
-    parseInt(initialFilters.page, 10) || 1
-  );
   const [sortBy, setSortBy] = useState(
     initialFilters.ordering || '-created_at'
   );
 
-  // ============================================
-  // ✅ داده‌های داینامیک
-  // ============================================
   const [allProvinces, setAllProvinces] = useState([]);
   const [allCities, setAllCities] = useState([]);
   const [allNeighborhoods, setAllNeighborhoods] = useState([]);
   const [filterOptions, setFilterOptions] = useState(null);
   const [optionsLoading, setOptionsLoading] = useState(true);
 
-  // ============================================
-  // ✅ آگهی‌ها
-  // ============================================
   const [filteredJobs, setFilteredJobs] = useState([]);
-  const [jobsLoading, setJobsLoading] = useState(false);
+  const [jobsLoading, setJobsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [jobsError, setJobsError] = useState(null);
   const [totalCount, setTotalCount] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
 
+  const pageRef = useRef(1);
   const abortRef = useRef(null);
-  const isFirstRender = useRef(true);
+  const isFirstUrlSync = useRef(true);
+  const requestIdRef = useRef(0);
+  const loadingMoreRef = useRef(false);
+  const hasMoreRef = useRef(true);
+  const jobsLoadingRef = useRef(true);
+  const filtersRef = useRef(filters);
+  const sortByRef = useRef(sortBy);
 
-  // ============================================
-  // ✅ بارگذاری گزینه‌های فیلتر
-  // ============================================
+  filtersRef.current = filters;
+  sortByRef.current = sortBy;
+
+  const queryKey = useMemo(
+    () => buildFiltersQuery(filters, sortBy),
+    [filters, sortBy]
+  );
+
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -86,12 +105,11 @@ export const useFilters = (initialFilters = {}) => {
         if (mounted) setOptionsLoading(false);
       }
     })();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  // ============================================
-  // ✅ شهرهای قابل نمایش (آبشاری)
-  // ============================================
   const availableCities = useMemo(() => {
     if (!filters.province) return [];
     return allCities.filter(
@@ -99,9 +117,6 @@ export const useFilters = (initialFilters = {}) => {
     );
   }, [allCities, filters.province]);
 
-  // ============================================
-  // ✅ محله‌های قابل نمایش (آبشاری)
-  // ============================================
   const availableNeighborhoods = useMemo(() => {
     if (!filters.city) return [];
     return allNeighborhoods.filter(
@@ -109,136 +124,183 @@ export const useFilters = (initialFilters = {}) => {
     );
   }, [allNeighborhoods, filters.city]);
 
-  // ============================================
-  // ✅ ساخت Query Params برای API
-  // ============================================
-  const buildQueryParams = useCallback(() => {
+  const buildQueryParams = useCallback((page = 1) => {
+    const f = filtersRef.current;
+    const ordering = sortByRef.current;
     const params = {
-      page: currentPage,
-      page_size: 10,
-      ordering: sortBy,
+      page,
+      page_size: PAGE_SIZE,
+      ordering,
     };
 
-    if (filters.adType && filters.adType !== 'all' && filters.adType !== 'همه') {
-      params.type = filters.adType;
+    if (f.adType && f.adType !== 'all' && f.adType !== 'همه') {
+      params.type = f.adType;
     }
-
-    if (filters.province) params.province = filters.province;
-    if (filters.city) params.city = filters.city;
-    if (filters.neighborhood) params.neighborhood = filters.neighborhood;
-
-    if (filters.cooperationType) params.cooperation_type = filters.cooperationType;
-    if (filters.jobTitle) params.job_title = filters.jobTitle;
-    if (filters.category) params.category = filters.category;
-
-    if (filters.isVerified === true) params.is_verified = true;
-
-    if (Array.isArray(filters.features) && filters.features.length > 0) {
-      params.features = filters.features.join(',');
+    if (f.province) params.province = f.province;
+    if (f.city) params.city = f.city;
+    if (f.neighborhood) params.neighborhood = f.neighborhood;
+    if (f.cooperationType) params.cooperation_type = f.cooperationType;
+    if (f.jobTitle) params.job_title = f.jobTitle;
+    if (f.category) params.category = f.category;
+    if (f.isVerified === true) params.is_verified = true;
+    if (Array.isArray(f.features) && f.features.length > 0) {
+      params.features = f.features.join(',');
     }
-
-    if (filters.q && filters.q.trim()) {
-      params.q = filters.q.trim();
-    }
+    if (f.q && f.q.trim()) params.q = f.q.trim();
 
     return params;
-  }, [filters, currentPage, sortBy]);
+  }, []);
 
-  // ============================================
-  // ✅ دریافت آگهی‌ها (Debounced)
-  // ============================================
-  useEffect(() => {
-    const timer = setTimeout(async () => {
-      try {
-        if (abortRef.current) abortRef.current.abort();
-        const controller = new AbortController();
-        abortRef.current = controller;
+  const fetchJobs = useCallback(async ({ page = 1, append = false } = {}) => {
+    if (!append && abortRef.current) {
+      abortRef.current.abort();
+    }
 
-        setJobsLoading(true);
-        setJobsError(null);
+    const controller = new AbortController();
+    if (!append) abortRef.current = controller;
 
-        const params = buildQueryParams();
-        const data = await jobisellApi.getJobs(params);
+    const reqId = append ? requestIdRef.current : ++requestIdRef.current;
 
-        const results = data.results || data;
-        setFilteredJobs(Array.isArray(results) ? results : []);
-        setTotalCount(data.count ?? (Array.isArray(results) ? results.length : 0));
-      } catch (err) {
-        if (err.name !== 'CanceledError' && err.name !== 'AbortError') {
-          console.error('Error fetching jobs:', err);
-          setJobsError(err);
-          setFilteredJobs([]);
-        }
-      } finally {
-        setJobsLoading(false);
+    if (append) {
+      if (loadingMoreRef.current) return;
+      loadingMoreRef.current = true;
+      setIsLoadingMore(true);
+    } else {
+      jobsLoadingRef.current = true;
+      loadingMoreRef.current = false;
+      setJobsLoading(true);
+      setIsLoadingMore(false);
+      setJobsError(null);
+    }
+
+    try {
+      const params = buildQueryParams(page);
+      const data = await jobisellApi.getJobs(params);
+
+      if (reqId !== requestIdRef.current) return;
+
+      const results = Array.isArray(data?.results)
+        ? data.results
+        : Array.isArray(data)
+          ? data
+          : [];
+
+      const count =
+        typeof data?.count === 'number' ? data.count : null;
+
+      let uniqueAdded = results.length;
+      if (!append) {
+        setFilteredJobs(results);
+      } else {
+        setFilteredJobs((prev) => {
+          const seen = new Set(prev.map((j) => j.id));
+          const merged = [...prev];
+          let added = 0;
+          results.forEach((job) => {
+            if (!seen.has(job.id)) {
+              seen.add(job.id);
+              merged.push(job);
+              added += 1;
+            }
+          });
+          uniqueAdded = added;
+          return merged;
+        });
       }
-    }, 300);
 
-    return () => clearTimeout(timer);
+      pageRef.current = page;
+      if (count != null) setTotalCount(count);
+      else if (!append) setTotalCount(results.length);
+
+      let more = false;
+      if (results.length === 0) {
+        more = false;
+      } else if (append && uniqueAdded === 0) {
+        // صفحه تکراری → توقف لوپ
+        more = false;
+      } else if (data?.next) {
+        more = true;
+      } else if (data?.next === null) {
+        more = false;
+      } else if (count != null) {
+        more = page * PAGE_SIZE < count;
+      } else {
+        more = results.length >= PAGE_SIZE;
+      }
+
+      hasMoreRef.current = more;
+      setHasMore(more);
+    } catch (err) {
+      if (err.name === 'CanceledError' || err.name === 'AbortError') return;
+      if (reqId !== requestIdRef.current) return;
+      console.error('Error fetching jobs:', err);
+      if (!append) {
+        setJobsError(err);
+        setFilteredJobs([]);
+        hasMoreRef.current = false;
+        setHasMore(false);
+        setTotalCount(0);
+      } else {
+        // خطا در صفحه بعد → توقف برای جلوگیری از لوپ
+        hasMoreRef.current = false;
+        setHasMore(false);
+      }
+    } finally {
+      if (reqId !== requestIdRef.current) return;
+      if (append) {
+        loadingMoreRef.current = false;
+        setIsLoadingMore(false);
+      } else {
+        jobsLoadingRef.current = false;
+        setJobsLoading(false);
+        setIsLoadingMore(false);
+      }
+    }
   }, [buildQueryParams]);
 
-  // ============================================
-  // ✅ Sync با URL (push در هر تغییر)
-  // ============================================
+  // فقط با تغییر واقعی فیلتر/مرتب‌سازی ریست کن
   useEffect(() => {
-    // ✅ اولین رندر را skip کن (چون خودمان از URL خوانده‌ایم)
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
+    pageRef.current = 1;
+    hasMoreRef.current = true;
+    setHasMore(true);
+    const timer = setTimeout(() => {
+      fetchJobs({ page: 1, append: false });
+    }, 200);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryKey]);
+
+  const loadMore = useCallback(() => {
+    if (
+      !hasMoreRef.current ||
+      jobsLoadingRef.current ||
+      loadingMoreRef.current
+    ) {
       return;
     }
+    fetchJobs({ page: pageRef.current + 1, append: true });
+  }, [fetchJobs]);
 
+  // Sync URL — بدون remount و بدون لوپ
+  useEffect(() => {
+    if (isFirstUrlSync.current) {
+      isFirstUrlSync.current = false;
+      return;
+    }
     if (typeof window === 'undefined') return;
 
-    const params = new URLSearchParams();
+    const nextQuery = queryKey;
+    const currentQuery = window.location.search.replace(/^\?/, '');
 
-    if (filters.q) params.set('q', filters.q);
-    if (filters.province) params.set('province', filters.province);
-    if (filters.city) params.set('city', filters.city);
-    if (filters.neighborhood) params.set('neighborhood', filters.neighborhood);
-    if (filters.adType) params.set('type', filters.adType);
-    if (filters.cooperationType) params.set('cooperation_type', filters.cooperationType);
-    if (filters.jobTitle) params.set('job_title', filters.jobTitle);
-    if (filters.category) params.set('category', filters.category);
-    if (filters.isVerified) params.set('is_verified', 'true');
-    if (filters.features?.length) params.set('features', filters.features.join(','));
-    if (sortBy && sortBy !== '-created_at') params.set('ordering', sortBy);
-    if (currentPage > 1) params.set('page', String(currentPage));
+    if (nextQuery === currentQuery) return;
 
-    const newQuery = params.toString();
-    const newUrl = newQuery ? `${pathname}?${newQuery}` : pathname;
+    const newUrl = nextQuery ? `${pathname}?${nextQuery}` : pathname;
+    router.replace(newUrl, { scroll: false });
+  }, [queryKey, pathname, router]);
 
-    // ✅ از window.location.search برای مقایسه استفاده کن (به‌جای searchParams)
-    // چون searchParams ممکن است stale باشد و باعث loop شود
-    const currentUrl = pathname + (window.location.search || '');
-
-    if (newUrl !== currentUrl) {
-      router.replace(newUrl, { scroll: false });
-    }
-  }, [
-    filters.q,
-    filters.province,
-    filters.city,
-    filters.neighborhood,
-    filters.adType,
-    filters.cooperationType,
-    filters.jobTitle,
-    filters.category,
-    filters.isVerified,
-    filters.features,
-    sortBy,
-    currentPage,
-    pathname,
-    router,
-  ]);
-
-  // ============================================
-  // ✅ updateFilter (منطق آبشاری)
-  // ============================================
   const updateFilter = useCallback((key, value) => {
     setFilters((prev) => {
       const next = { ...prev, [key]: value };
-
-      // آبشاری
       if (key === 'province') {
         next.city = '';
         next.neighborhood = '';
@@ -246,53 +308,31 @@ export const useFilters = (initialFilters = {}) => {
       if (key === 'city') {
         next.neighborhood = '';
       }
-
       return next;
     });
-    setCurrentPage(1);
   }, []);
 
-  // ============================================
-  // ✅ clearFilter (حذف یک فیلتر)
-  // ============================================
   const clearFilter = useCallback((key) => {
     setFilters((prev) => {
       const next = { ...prev };
+      if (key === 'isVerified') next.isVerified = false;
+      else if (key === 'features') next.features = [];
+      else next[key] = '';
 
-      if (key === 'isVerified') {
-        next.isVerified = false;
-      } else if (key === 'features') {
-        next.features = [];
-      } else {
-        next[key] = '';
-      }
-
-      // آبشاری
       if (key === 'province') {
         next.city = '';
         next.neighborhood = '';
       }
-      if (key === 'city') {
-        next.neighborhood = '';
-      }
-
+      if (key === 'city') next.neighborhood = '';
       return next;
     });
-    setCurrentPage(1);
   }, []);
 
-  // ============================================
-  // ✅ clearAllFilters
-  // ============================================
   const clearAllFilters = useCallback(() => {
     setFilters({ ...DEFAULT_FILTERS });
     setSortBy('-created_at');
-    setCurrentPage(1);
   }, []);
 
-  // ============================================
-  // ✅ تعداد فیلترهای فعال
-  // ============================================
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filters.adType) count++;
@@ -319,10 +359,11 @@ export const useFilters = (initialFilters = {}) => {
     allProvinces,
     filteredJobs,
     jobsLoading,
+    isLoadingMore,
     jobsError,
     totalCount,
-    currentPage,
-    setCurrentPage,
+    hasMore,
+    loadMore,
     sortBy,
     setSortBy,
     updateFilter,

@@ -10,7 +10,7 @@ import {
   MapPin, DollarSign, Clock, Phone, Heart, Building2, ArrowRight,
   Calendar, Briefcase, Users, CheckCircle, Share2, Bookmark, Mail,
   Globe, Instagram, Linkedin, Twitter, ChevronRight, Star, Eye,
-  MessageCircle, ShieldCheck, Truck, Utensils, Award, Wifi, User,
+  MessageCircle, ShieldCheck, BadgeCheck, Truck, Utensils, Award, Wifi, User,
   XCircle, MinusCircle, Coffee, Send, Loader2, AlertCircle
 } from 'lucide-react';
 import jobisellApi from '@/services/jobisellApi';
@@ -85,6 +85,8 @@ export default function JobDetailClient({ initialJob }) {
   const [showContact, setShowContact] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
   const [applicationStatus, setApplicationStatus] = useState(null);
+  const [hasApplied, setHasApplied] = useState(Boolean(initialJob?.has_applied));
+  const [coverLetter, setCoverLetter] = useState('');
   const [similarJobs, setSimilarJobs] = useState([]);
   const [similarLoading, setSimilarLoading] = useState(false);
 
@@ -99,6 +101,7 @@ export default function JobDetailClient({ initialJob }) {
       setIsLiked(data.is_liked || false);
       setLikesCount(data.likes_count || 0);
       setIsBookmarked(data.is_bookmarked || false);
+      setHasApplied(Boolean(data.has_applied));
     } catch (err) {
       console.error('Error refreshing job:', err);
       setError(err);
@@ -143,7 +146,7 @@ export default function JobDetailClient({ initialJob }) {
   // ============================================
   const requireAuth = (callback) => {
     if (!isAuthenticated) {
-      router.push(`/login?redirect=/jobs/${job.id}`);
+      router.push(`/login?next=/jobs/${job.id}`);
       return;
     }
     callback();
@@ -218,26 +221,50 @@ export default function JobDetailClient({ initialJob }) {
   // ============================================
   // ✅ ارسال درخواست
   // ============================================
+  const parseApplyError = (err) => {
+    const data = err?.response?.data;
+    if (!data) return 'خطا در ثبت درخواست. لطفاً دوباره تلاش کنید.';
+    if (typeof data === 'string') return data;
+    if (data.error) return data.error;
+    if (data.detail) return data.detail;
+    if (data.message) return data.message;
+
+    // خطاهای فیلدی DRF: { phone: ['...'], email: ['...'] }
+    const parts = Object.entries(data)
+      .filter(([, v]) => v != null)
+      .map(([key, v]) => {
+        const text = Array.isArray(v) ? v.join(' ') : String(v);
+        return text;
+      });
+    return parts.length ? parts.join(' — ') : 'خطا در ثبت درخواست. لطفاً دوباره تلاش کنید.';
+  };
+
   const handleApply = () => {
     requireAuth(async () => {
       setIsApplying(true);
       setApplicationStatus(null);
 
+      const fullName =
+        [user?.first_name, user?.last_name].filter(Boolean).join(' ').trim()
+        || user?.display_name
+        || '';
+
       try {
         await jobisellApi.applyToJob(job.id, {
-          full_name: user?.display_name || '',
+          full_name: fullName,
           phone: user?.mobile || '',
           email: user?.email || '',
-          cover_letter: '',
+          cover_letter: coverLetter.trim(),
         });
+        setHasApplied(true);
         setApplicationStatus('success');
-        // رفرش آمار
-        setTimeout(refreshJob, 1000);
+        setTimeout(refreshJob, 800);
       } catch (err) {
         console.error('Apply error:', err);
-        const msg = err.response?.data?.detail
-          || err.response?.data?.error
-          || 'خطا در ثبت درخواست. لطفاً دوباره تلاش کنید.';
+        const msg = parseApplyError(err);
+        if (msg.includes('قبلاً')) {
+          setHasApplied(true);
+        }
         setApplicationStatus({ error: msg });
       } finally {
         setIsApplying(false);
@@ -370,15 +397,19 @@ export default function JobDetailClient({ initialJob }) {
                       {adTypeLabel}
                     </span>
                   </div>
-                  <div className={styles.jobCompany}>
+                  <div className={`${styles.jobCompany} ${
+                    isHiring && (job.company_is_verified || job.is_verified)
+                      ? styles.jobCompanyVerified
+                      : ''
+                  }`}>
                     <Building2 size={18} className={styles.companyIcon} />
                     <span>{job.company_name || 'بدون شرکت'}</span>
-                    {job.is_verified && (
-                      <span className={styles.verifiedBadge}>
-                        <ShieldCheck size={14} />
-                        تایید شده
+                    {isHiring && (job.company_is_verified || job.is_verified) ? (
+                      <span className={styles.verifiedBadge} title="شرکت تاییدشده توسط سلنیرو">
+                        <BadgeCheck size={16} />
+                        شرکت تاییدشده
                       </span>
-                    )}
+                    ) : null}
                   </div>
                 </div>
 
@@ -533,17 +564,21 @@ export default function JobDetailClient({ initialJob }) {
 
           {/* ستون کناری */}
           <div className={styles.sideColumn}>
-            {/* کارت اقدامات */}
+            {/* کارت اقدامات — فقط استخدام */}
             <div className={styles.actionCard}>
-              <h3 className={styles.actionCardTitle}>ثبت درخواست</h3>
+              <h3 className={styles.actionCardTitle}>
+                {isHiring ? 'ثبت درخواست همکاری' : 'اطلاعات تماس'}
+              </h3>
 
               {!isAuthenticated ? (
                 <div className={styles.loginRequired}>
                   <p className={styles.loginMessage}>
-                    برای ثبت درخواست و مشاهده اطلاعات تماس، لطفاً وارد حساب کاربری خود شوید.
+                    {isHiring
+                      ? 'برای ثبت درخواست و مشاهده اطلاعات تماس وارد حساب کاربری شوید.'
+                      : 'برای مشاهده اطلاعات تماس وارد حساب کاربری شوید.'}
                   </p>
                   <Link
-                    href={`/login?redirect=/jobs/${job.id}`}
+                    href={`/login?next=/jobs/${job.id}`}
                     className={styles.loginBtn}
                   >
                     ورود به حساب کاربری
@@ -551,16 +586,31 @@ export default function JobDetailClient({ initialJob }) {
                 </div>
               ) : (
                 <>
-                  {/* وضعیت موفق */}
-                  {applicationStatus === 'success' ? (
+                  {isHiring && (hasApplied || applicationStatus === 'success') ? (
                     <div className={styles.applicationSuccess}>
                       <CheckCircle size={48} className={styles.successIcon} />
-                      <h4>درخواست شما با موفقیت ثبت شد!</h4>
-                      <p>به زودی با شما تماس گرفته خواهد شد.</p>
+                      <h4>درخواست شما ثبت شده است</h4>
+                      <p>کارفرما به‌زودی درخواست شما را بررسی می‌کند.</p>
                     </div>
-                  ) : (
+                  ) : isHiring ? (
                     <>
-                      {/* خطا */}
+                      <p className={styles.applyHint}>
+                        اطلاعات تماس از پروفایل شما ارسال می‌شود. در صورت تمایل توضیح کوتاه بنویسید.
+                      </p>
+
+                      <label className={styles.coverLabel} htmlFor="cover-letter">
+                        متن درخواست <span>(اختیاری)</span>
+                      </label>
+                      <textarea
+                        id="cover-letter"
+                        className={styles.coverInput}
+                        rows={3}
+                        maxLength={1000}
+                        value={coverLetter}
+                        onChange={(e) => setCoverLetter(e.target.value)}
+                        placeholder="مثلاً: سابقه کار مرتبط و دلیل علاقه‌مندی به این موقعیت..."
+                      />
+
                       {applicationStatus?.error && (
                         <div className={styles.applicationError}>
                           <AlertCircle size={16} />
@@ -572,6 +622,7 @@ export default function JobDetailClient({ initialJob }) {
                         onClick={handleApply}
                         disabled={isApplying}
                         className={styles.applyBtn}
+                        type="button"
                       >
                         {isApplying ? (
                           <>
@@ -585,43 +636,44 @@ export default function JobDetailClient({ initialJob }) {
                           </>
                         )}
                       </button>
-
-                      <button
-                        onClick={() => setShowContact(!showContact)}
-                        className={styles.contactBtn}
-                      >
-                        <Phone size={18} />
-                        {showContact ? 'بستن اطلاعات تماس' : 'مشاهده اطلاعات تماس'}
-                      </button>
-
-                      {showContact && (
-                        <div className={styles.contactInfo}>
-                          {job.contact_phone && (
-                            <a
-                              href={`tel:${job.contact_phone}`}
-                              className={styles.contactItem}
-                            >
-                              <Phone size={14} />
-                              <span>{job.contact_phone}</span>
-                            </a>
-                          )}
-                          {job.contact_email && (
-                            <a
-                              href={`mailto:${job.contact_email}`}
-                              className={styles.contactItem}
-                            >
-                              <Mail size={14} />
-                              <span>{job.contact_email}</span>
-                            </a>
-                          )}
-                          {!job.contact_phone && !job.contact_email && (
-                            <p className={styles.noContact}>
-                              اطلاعات تماس ثبت نشده است.
-                            </p>
-                          )}
-                        </div>
-                      )}
                     </>
+                  ) : null}
+
+                  <button
+                    onClick={() => setShowContact(!showContact)}
+                    className={styles.contactBtn}
+                    type="button"
+                  >
+                    <Phone size={18} />
+                    {showContact ? 'بستن اطلاعات تماس' : 'مشاهده اطلاعات تماس'}
+                  </button>
+
+                  {showContact && (
+                    <div className={styles.contactInfo}>
+                      {job.contact_phone && (
+                        <a
+                          href={`tel:${job.contact_phone}`}
+                          className={styles.contactItem}
+                        >
+                          <Phone size={14} />
+                          <span>{job.contact_phone}</span>
+                        </a>
+                      )}
+                      {job.contact_email && (
+                        <a
+                          href={`mailto:${job.contact_email}`}
+                          className={styles.contactItem}
+                        >
+                          <Mail size={14} />
+                          <span>{job.contact_email}</span>
+                        </a>
+                      )}
+                      {!job.contact_phone && !job.contact_email && (
+                        <p className={styles.noContact}>
+                          اطلاعات تماس ثبت نشده است.
+                        </p>
+                      )}
+                    </div>
                   )}
                 </>
               )}

@@ -21,14 +21,38 @@ const NewsManagementPage = () => {
   }, [isAuthenticated, loading, router])
 
   if (loading) {
-    return <div style={{ padding: 40, textAlign: 'center' }}>در حال بارگذاری...</div>
+    return (
+      <div dir={dir} style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'var(--macos-bg)',
+        color: '#6f675c',
+        fontFamily: 'var(--font-iran)',
+        fontSize: 13,
+      }}>
+        در حال بارگذاری...
+      </div>
+    )
   }
 
   if (!isAuthenticated) return null
 
   if (!canAccess) {
     return (
-      <div dir={dir} style={{ padding: 40, textAlign: 'center' }}>
+      <div dir={dir} style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'var(--macos-bg)',
+        color: '#6f675c',
+        fontFamily: 'var(--font-iran)',
+        fontSize: 13,
+        textAlign: 'center',
+        padding: 40,
+      }}>
         دسترسی به بخش اخبار برای شما فعال نیست.
       </div>
     )

@@ -1,3 +1,5 @@
 .homeContainer {
-  overflow: hidden;
+  /* overflow:hidden باعث از کار افتادن position:sticky فیلترها می‌شود */
+  overflow-x: clip;
+  overflow-y: visible;
 }

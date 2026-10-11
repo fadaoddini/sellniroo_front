@@ -1,9 +1,9 @@
 // modules/profile/components/ProfilePage.jsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import Config from "@/config/config";
 import ProfileHeader from "./ProfileHeader";
@@ -12,75 +12,93 @@ import ProfileStats from "./ProfileStats";
 import JobsList from "./JobsList";
 import ApplicationsList from "./ApplicationsList";
 import BookmarksList from "./BookmarksList";
-import EmptyState from "./EmptyState";
-import styles from "../styles/ProfilePage.module.css";
 import CompanyTab from "./company/CompanyTab";
-import { Loader2, Building2 } from "lucide-react";
 import ResumeTab from "./resume/ResumeTab";
+import styles from "../styles/ProfilePage.module.css";
+import { Loader2 } from "lucide-react";
 
 const TABS = [
-  { key: "hiring", label: "آگهی‌های استخدامی من", icon: "briefcase" },
-  { key: "seeking", label: "آگهی‌های کاریابی من", icon: "user" },
-  { key: "applications", label: "درخواست‌های ارسالی", icon: "send" },
+  { key: "hiring", label: "آگهی‌های استخدامی", icon: "briefcase" },
+  { key: "seeking", label: "آگهی‌های کاریابی", icon: "user" },
+  { key: "applications", label: "درخواست‌ها", icon: "send" },
   { key: "bookmarks", label: "ذخیره‌شده‌ها", icon: "bookmark" },
   { key: "company", label: "شرکت من", icon: "building" },
   { key: "resume", label: "رزومه من", icon: "file-text" },
 ];
 
-const ProfilePage = () => {
+const TAB_KEYS = new Set(TABS.map((t) => t.key));
+
+const EMPTY_STATS = {
+  hiring: { total: 0, approved: 0, pending: 0, rejected: 0, expired: 0, views: 0, likes: 0 },
+  seeking: { total: 0, approved: 0, pending: 0, rejected: 0, expired: 0, views: 0 },
+  applications: { total: 0, pending: 0, reviewed: 0, accepted: 0, rejected: 0 },
+  bookmarks: { total: 0 },
+};
+
+function ProfilePageInner() {
   const { user, isAuthenticated, loading: authLoading, getAuthHeaders } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const [activeTab, setActiveTab] = useState("hiring");
+  const initialTab = useMemo(() => {
+    const q = searchParams.get("tab");
+    return q && TAB_KEYS.has(q) ? q : "hiring";
+  }, [searchParams]);
+
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // ✅ هدایت به لاگین اگر کاربر لاگین نیست
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      router.replace("/login");
+      router.replace("/login?next=/profile");
     }
   }, [authLoading, isAuthenticated, router]);
 
-  // ✅ دریافت آمار
-const fetchStats = async () => {
-  try {
-    const headers = getAuthHeaders();
-    const res = await axios.get(
-      Config.endpoints.jobisell.jobs.myStats(),
-      { headers }
-    );
-    setStats(res.data);
-  } catch (err) {
-    console.error("Error fetching stats:", err);
-    // fallback: صفر بذار
-    setStats({
-      hiring: { total: 0, approved: 0, pending: 0, rejected: 0, expired: 0, views: 0, likes: 0 },
-      seeking: { total: 0, approved: 0, pending: 0, rejected: 0, expired: 0, views: 0 },
-      applications: { total: 0, pending: 0, reviewed: 0, accepted: 0, rejected: 0 },
-      bookmarks: { total: 0 },
-    });
-  }
-};
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
+
+  const fetchStats = useCallback(async () => {
+    try {
+      setStatsLoading(true);
+      const res = await axios.get(Config.endpoints.jobisell.jobs.myStats(), {
+        headers: getAuthHeaders(),
+      });
+      setStats(res.data || EMPTY_STATS);
+    } catch {
+      setStats(EMPTY_STATS);
+    } finally {
+      setStatsLoading(false);
+    }
+  }, [getAuthHeaders]);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      setLoading(true);
-      fetchStats().finally(() => setLoading(false));
-    }
-  }, [isAuthenticated, refreshKey]);
+    if (!isAuthenticated) return undefined;
+    fetchStats();
+  }, [isAuthenticated, refreshKey, fetchStats]);
 
-  // ✅ مدیریت رفرش بعد از حذف/ویرایش
-  const handleRefresh = () => {
+  const handleTabChange = useCallback(
+    (key) => {
+      if (!TAB_KEYS.has(key)) return;
+      setActiveTab(key);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("tab", key);
+      router.replace(`/profile?${params.toString()}`, { scroll: false });
+    },
+    [router, searchParams]
+  );
+
+  const handleRefresh = useCallback(() => {
     setRefreshKey((k) => k + 1);
-  };
+  }, []);
 
   if (authLoading || !isAuthenticated) {
     return (
-      <div className={styles.loadingContainer}>
-        <Loader2 className={styles.spinner} size={40} />
-        <p>در حال بارگذاری...</p>
+      <div className={styles.loadingContainer} role="status" aria-live="polite">
+        <Loader2 className={styles.spinner} size={36} />
+        <p>در حال بارگذاری پروفایل...</p>
       </div>
     );
   }
@@ -88,34 +106,27 @@ const fetchStats = async () => {
   return (
     <div className={styles.profilePage}>
       <div className={styles.container}>
-        {/* هدر پروفایل */}
         <ProfileHeader user={user} />
 
-        {/* آمار */}
-        {stats && <ProfileStats stats={stats} />}
+        <ProfileStats
+          stats={stats}
+          loading={statsLoading}
+          activeTab={activeTab}
+          onSelectTab={handleTabChange}
+        />
 
-        {/* تب‌ها */}
         <ProfileTabs
           tabs={TABS}
           activeTab={activeTab}
-          onChange={setActiveTab}
+          onChange={handleTabChange}
         />
 
-        {/* محتوای تب */}
-        <div className={styles.tabContent}>
+        <div className={styles.tabContent} role="tabpanel" id={`panel-${activeTab}`}>
           {activeTab === "hiring" && (
-            <JobsList
-              key={`hiring-${refreshKey}`}
-              type="hiring"
-              onRefresh={handleRefresh}
-            />
+            <JobsList key={`hiring-${refreshKey}`} type="hiring" onRefresh={handleRefresh} />
           )}
           {activeTab === "seeking" && (
-            <JobsList
-              key={`seeking-${refreshKey}`}
-              type="seeking"
-              onRefresh={handleRefresh}
-            />
+            <JobsList key={`seeking-${refreshKey}`} type="seeking" onRefresh={handleRefresh} />
           )}
           {activeTab === "applications" && (
             <ApplicationsList key={`apps-${refreshKey}`} />
@@ -124,16 +135,28 @@ const fetchStats = async () => {
             <BookmarksList key={`bm-${refreshKey}`} />
           )}
           {activeTab === "company" && (
-  <CompanyTab key={`company-${refreshKey}`} onRefresh={handleRefresh} />
-)}
-
-{activeTab === "resume" && (
-  <ResumeTab key={`resume-${refreshKey}`} onRefresh={handleRefresh} />
-)}
+            <CompanyTab key={`company-${refreshKey}`} onRefresh={handleRefresh} />
+          )}
+          {activeTab === "resume" && (
+            <ResumeTab key={`resume-${refreshKey}`} onRefresh={handleRefresh} />
+          )}
         </div>
       </div>
     </div>
   );
-};
+}
 
-export default ProfilePage;
+export default function ProfilePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className={styles.loadingContainer}>
+          <Loader2 className={styles.spinner} size={36} />
+          <p>در حال بارگذاری پروفایل...</p>
+        </div>
+      }
+    >
+      <ProfilePageInner />
+    </Suspense>
+  );
+}

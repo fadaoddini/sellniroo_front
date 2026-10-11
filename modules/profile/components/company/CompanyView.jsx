@@ -10,7 +10,7 @@ import {
   Globe,
   MapPin,
   Edit,
-  CheckCircle,
+  BadgeCheck,
   XCircle,
   Clock,
   ShieldAlert,
@@ -19,29 +19,35 @@ import {
 const STATUS_MAP = {
   verified: {
     label: "تایید شده",
-    icon: CheckCircle,
+    icon: BadgeCheck,
     className: "verified",
+    hint: "شرکت شما توسط سلنیرو تایید شده است.",
   },
   pending: {
     label: "در انتظار بررسی",
     icon: Clock,
     className: "pending",
+    hint: "درخواست تایید شرکت شما در حال بررسی است.",
   },
   rejected: {
     label: "رد شده",
     icon: XCircle,
     className: "rejected",
+    hint: "درخواست تایید رد شده است؛ مدارک را بررسی و دوباره ارسال کنید.",
   },
   unverified: {
     label: "تایید نشده",
     icon: ShieldAlert,
     className: "unverified",
+    hint: "این شرکت هنوز تایید نشده است. برای دریافت تیک آبی، درخواست تایید ثبت کنید.",
   },
 };
 
 const CompanyView = ({ company, onEdit }) => {
-  const status = STATUS_MAP[company.verification_status] || STATUS_MAP.unverified;
+  const statusKey = company.verification_status || "unverified";
+  const status = STATUS_MAP[statusKey] || STATUS_MAP.unverified;
   const StatusIcon = status.icon;
+  const isVerified = statusKey === "verified";
 
   const logoUrl = company.logo ? getFullImageUrl(company.logo) : null;
 
@@ -60,8 +66,19 @@ const CompanyView = ({ company, onEdit }) => {
           </div>
 
           <div className={styles.titleBox}>
+            <p className={styles.eyebrow}>شرکت من</p>
             <div className={styles.titleRow}>
-              <h2>{company.name}</h2>
+              <h2 className={styles.companyName}>
+                <span>{company.name}</span>
+                {isVerified && (
+                  <BadgeCheck
+                    size={22}
+                    className={styles.blueTick}
+                    aria-label="شرکت تایید شده"
+                    title="شرکت تایید شده"
+                  />
+                )}
+              </h2>
               <span
                 className={`${styles.statusBadge} ${styles[status.className]}`}
               >
@@ -69,13 +86,16 @@ const CompanyView = ({ company, onEdit }) => {
                 {status.label}
               </span>
             </div>
+            <p className={`${styles.statusHint} ${styles[`${status.className}Hint`]}`}>
+              {status.hint}
+            </p>
             {company.description && (
               <p className={styles.shortDesc}>{company.description}</p>
             )}
           </div>
 
-          <button className={styles.editBtn} onClick={onEdit} aria-label="ویرایش">
-            <Edit size={16} />
+          <button type="button" className={styles.editBtn} onClick={onEdit}>
+            <Edit size={15} />
             ویرایش
           </button>
         </div>

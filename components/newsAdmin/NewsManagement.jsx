@@ -2,6 +2,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
+import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import axios from 'axios'
@@ -14,7 +15,7 @@ import CommentManagement from './CommentManagement'
 import styles from '@/styles/modules/NewsManagement.module.css'
 import {
   Plus, RefreshCw, Newspaper, AlertCircle, CheckCircle, X,
-  FileText, MessageSquare
+  FileText, MessageSquare, LayoutDashboard, Radio,
 } from 'lucide-react'
 
 const NewsManagement = () => {
@@ -40,11 +41,13 @@ const NewsManagement = () => {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [editingItem, setEditingItem] = useState(null)
   const [toast, setToast] = useState(null)
+  const [readyPlatforms, setReadyPlatforms] = useState([])
 
   const texts = {
     fa: {
       title: 'مدیریت اخبار',
       subtitle: 'افزودن، ویرایش و مدیریت اخبار و کامنت‌ها',
+      back: 'داشبورد',
       newsTab: 'اخبار',
       commentsTab: 'کامنت‌ها',
       addNews: 'افزودن خبر',
@@ -60,10 +63,12 @@ const NewsManagement = () => {
       confirmDelete: 'آیا از حذف این خبر مطمئن هستید؟',
       noAccess: 'شما دسترسی به این بخش ندارید',
       detailError: 'خطا در بارگذاری جزئیات خبر',
+      platforms: 'اتصالات پیام‌رسان',
     },
     en: {
       title: 'News Management',
       subtitle: 'Add, edit and manage news & comments',
+      back: 'Dashboard',
       newsTab: 'News',
       commentsTab: 'Comments',
       addNews: 'Add News',
@@ -79,6 +84,7 @@ const NewsManagement = () => {
       confirmDelete: 'Are you sure you want to delete this news?',
       noAccess: 'You do not have access to this section',
       detailError: 'Error loading news details',
+      platforms: 'Messenger bots',
     }
   }
 
@@ -137,11 +143,24 @@ const NewsManagement = () => {
     }
   }, [getAuthHeaders])
 
+  const fetchReadyPlatforms = useCallback(async () => {
+    try {
+      const res = await axios.get(Config.endpoints.news.platformConnections.list(), {
+        headers: getAuthHeaders(),
+      })
+      const ready = Array.isArray(res.data?.ready) ? res.data.ready : []
+      setReadyPlatforms(ready)
+    } catch {
+      setReadyPlatforms([])
+    }
+  }, [getAuthHeaders])
+
   useEffect(() => {
     fetchNews()
     fetchStats()
     fetchCategories()
-  }, [fetchNews, fetchStats, fetchCategories])
+    fetchReadyPlatforms()
+  }, [fetchNews, fetchStats, fetchCategories, fetchReadyPlatforms])
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type })
@@ -245,62 +264,36 @@ const NewsManagement = () => {
   }
 
 
-  // ============================================
-// ✅ ارسال به همه پلتفرم‌ها (بله + روبیکا)
-// ============================================
-const handleSendToPlatforms = async (item) => {
-  try {
-    const url = Config.endpoints.news.sendToPlatforms(item.slug)
-    console.log('📤 Sending to platforms:', url)
-
-    const res = await axios.post(url, {
-      bale: true,
-      rubika: true,
-    }, { headers: getAuthHeaders() })
-
-    console.log('✅ Sent:', res.data)
-
-    // ✅ نمایش پیام موفقیت/خطا
-    const data = res.data?.data || {}
-    const baleStatus = data.bale?.success ? '✅ بله' : '❌ بله'
-    const rubikaStatus = data.rubika?.success ? '✅ روبیکا' : '❌ روبیکا'
-
-    if (data.bale?.success || data.rubika?.success) {
-      showToast(`ارسال شد → ${baleStatus} | ${rubikaStatus}`)
-    } else {
-      showToast('خطا در ارسال به همه پلتفرم‌ها', 'error')
-    }
-
-    await fetchNews()
-    await fetchStats()
-    return { success: true, data: res.data }
-  } catch (err) {
-    console.error('❌ Error sending:', err)
-    const msg = err.response?.data?.message || 'خطا در ارسال'
-    showToast(msg, 'error')
-    throw err
-  }
-}
-
-  // ============================================
-  // ✅ ارسال به بله
-  // ============================================
-  const handleSendToBale = async (item) => {
+  const handleSendToPlatforms = async (item, selected = null) => {
     try {
-      const url = Config.endpoints.news.sendToBale(item.slug)
-      console.log('📤 Sending to Bale:', url)
+      const url = Config.endpoints.news.sendToPlatforms(item.slug)
+      const labels = { bale: 'بله', eitaa: 'ایتا', rubika: 'روبیکا' }
+      let body = {}
+      if (selected && typeof selected === 'object') {
+        body = selected
+      } else if (readyPlatforms.length) {
+        readyPlatforms.forEach((p) => { body[p] = true })
+      } else {
+        body = { bale: true, eitaa: true, rubika: true }
+      }
 
-      const res = await axios.post(url, {}, { headers: getAuthHeaders() })
-
-      console.log('✅ Sent to Bale:', res.data)
-
-      showToast(t.successBale)
+      const res = await axios.post(url, body, { headers: getAuthHeaders() })
+      const data = res.data?.data || {}
+      const parts = Object.keys(data).map((key) => {
+        const ok = data[key]?.success
+        return `${ok ? '✅' : '❌'} ${labels[key] || key}`
+      })
+      const anyOk = Object.values(data).some((r) => r?.success)
+      showToast(
+        anyOk ? `ارسال شد → ${parts.join(' | ')}` : (res.data?.message || 'خطا در ارسال'),
+        anyOk ? 'success' : 'error'
+      )
       await fetchNews()
       await fetchStats()
-      return { success: true, data: res.data }
+      await fetchReadyPlatforms()
+      return { success: anyOk, data: res.data }
     } catch (err) {
-      console.error('❌ Error sending to Bale:', err)
-      const msg = err.response?.data?.message || t.errorBale
+      const msg = err.response?.data?.message || 'خطا در ارسال'
       showToast(msg, 'error')
       throw err
     }
@@ -361,12 +354,20 @@ const handleSendToPlatforms = async (item) => {
           </div>
         </div>
         <div className={styles.headerActions}>
+          <Link href="/dashboard" className={styles.refreshBtn}>
+            <LayoutDashboard size={16} />
+            {t.back}
+          </Link>
+          <Link href="/platform-connections" className={styles.refreshBtn}>
+            <Radio size={16} />
+            {t.platforms}
+          </Link>
           <button
             className={styles.refreshBtn}
-            onClick={() => { fetchNews(); fetchStats(); fetchCategories(); }}
+            onClick={() => { fetchNews(); fetchStats(); fetchCategories(); fetchReadyPlatforms(); }}
             disabled={loading || statsLoading}
           >
-            <RefreshCw size={18} className={(loading || statsLoading) ? styles.spinning : ''} />
+            <RefreshCw size={16} className={(loading || statsLoading) ? styles.spinning : ''} />
             {t.refresh}
           </button>
           {activeTab === 'news' && (
@@ -374,7 +375,7 @@ const handleSendToPlatforms = async (item) => {
               className={styles.addBtn}
               onClick={() => { setEditingItem(null); setIsFormOpen(true); }}
             >
-              <Plus size={18} />
+              <Plus size={16} />
               {t.addNews}
             </button>
           )}
@@ -421,7 +422,8 @@ const handleSendToPlatforms = async (item) => {
             error={error}
             onEdit={handleEdit}
             onDelete={handleDelete}
-            onSendToBale={handleSendToPlatforms}  // ✅ حالا هر دو رو می‌فرسته
+            onSendToBale={handleSendToPlatforms}
+            readyPlatforms={readyPlatforms}
             onRefresh={fetchNews}
           />
         </>

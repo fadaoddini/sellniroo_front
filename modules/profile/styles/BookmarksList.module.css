@@ -136,13 +136,13 @@
 }
 
 .viewBtn {
-  background: rgba(0, 122, 255, 0.1);
-  color: var(--macos-blue);
+  background: rgba(251, 195, 0, 0.16);
+  color: #c27800;
 }
 
 .viewBtn:hover {
-  background: var(--macos-blue);
-  color: #ffffff;
+  background: linear-gradient(135deg, #ffd54a, #fbc300);
+  color: #3a2a00;
 }
 
 .removeBtn {
