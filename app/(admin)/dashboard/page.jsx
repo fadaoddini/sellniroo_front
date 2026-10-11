@@ -12,7 +12,8 @@ import Config from '@/config/config'
 import {
   LayoutDashboard, ShoppingCart, Users, Shield,
   RefreshCw, Briefcase, TrendingUp, CheckCircle,
-  Newspaper, Zap, Eye
+  Newspaper, Zap, Eye, Settings, Warehouse, Headphones, Calendar,
+  BarChart3, Megaphone
 } from 'lucide-react'
 import styles from './Dashboard.module.css'
 
@@ -26,7 +27,8 @@ const Dashboard = () => {
     employeeData,
     hasPermission,
     getAuthHeaders,
-    permissions,
+    assignedSections,
+    canManageEmployees,
   } = useAuth()
   const { language, dir } = useLanguage()
 
@@ -40,12 +42,8 @@ const Dashboard = () => {
       title: 'داشبورد مدیریت',
       subtitle: 'خلاصه وضعیت و عملکرد',
       dashboard: 'داشبورد مدیریت',
-      inventory: 'انبارداری',
-      sales: 'بازاریابی',
-      tender: 'مزایده/مناقصه',
       employees: 'کارمندان',
-      newsManagement: 'مدیریت اخبار',
-      comments: 'کامنت‌ها',
+      ticker: 'نوار خبری',
       welcome: 'خوش آمدید',
       accessDenied: 'دسترسی محدود',
       dashboardAccess: 'برای دسترسی به داشبورد باید کارمند باشید',
@@ -56,30 +54,24 @@ const Dashboard = () => {
       totalLeads: 'کل لیدها',
       activeEmployees: 'کارمندان فعال',
       publishedNews: 'اخبار منتشر شده',
-      pendingComments: 'کامنت‌های در انتظار',
       totalViews: 'کل بازدید',
       employeeCode: 'کد پرسنلی',
-      department: 'بخش',
-      position: 'سمت',
-      leads: 'لیدها',
       followups: 'پیگیری‌ها',
       today: 'امروز',
-      thisWeek: 'این هفته',
       total: 'کل',
-      noAccess: 'دسترسی ندارید',
-      myProfile: 'پروفایل من',
-      leaveRequests: 'درخواست مرخصی',
+      refresh: 'بروزرسانی',
+      noStats: 'هنوز آماری برای نمایش وجود ندارد',
+      noQuick: 'بخشی با مسیر صفحه به شما اختصاص داده نشده است',
+      newLabel: 'جدید',
+      pending: 'در انتظار',
+      likes: 'لایک',
     },
     en: {
       title: 'Management Dashboard',
       subtitle: 'Overview and Performance',
       dashboard: 'Management Dashboard',
-      inventory: 'Inventory',
-      sales: 'Sales',
-      tender: 'Tender/Auction',
       employees: 'Employees',
-      newsManagement: 'News Management',
-      comments: 'Comments',
+      ticker: 'Ticker bar',
       welcome: 'Welcome',
       accessDenied: 'Access Denied',
       dashboardAccess: 'You must be an employee to access the dashboard',
@@ -90,29 +82,24 @@ const Dashboard = () => {
       totalLeads: 'Total Leads',
       activeEmployees: 'Active Employees',
       publishedNews: 'Published News',
-      pendingComments: 'Pending Comments',
       totalViews: 'Total Views',
       employeeCode: 'Employee Code',
-      department: 'Department',
-      position: 'Position',
-      leads: 'Leads',
       followups: 'Follow-ups',
       today: 'Today',
-      thisWeek: 'This Week',
       total: 'Total',
-      noAccess: 'No Access',
-      myProfile: 'My Profile',
-      leaveRequests: 'Leave Requests',
+      refresh: 'Refresh',
+      noStats: 'No statistics to show yet',
+      noQuick: 'No linked sections assigned to you',
+      newLabel: 'new',
+      pending: 'pending',
+      likes: 'likes',
     }
   }
 
   const t = texts[language] || texts.fa
 
-  // ============================================
-  // ✅ دریافت آمار داشبورد
-  // ============================================
   const fetchDashboardStats = useCallback(async () => {
-    if (!isEmployee) return
+    if (!isEmployee && !user?.is_superuser) return
     try {
       setLoadingData(true)
       const url = Config.endpoints.karmandan.dashboardStats()
@@ -123,13 +110,10 @@ const Dashboard = () => {
     } finally {
       setLoadingData(false)
     }
-  }, [isEmployee, getAuthHeaders])
+  }, [isEmployee, user, getAuthHeaders])
 
-  // ============================================
-  // ✅ دریافت آمار اخبار (فقط برای staff)
-  // ============================================
   const fetchNewsStats = useCallback(async () => {
-    if (!user?.is_staff && !user?.is_superuser) return
+    if (!user?.is_superuser && !user?.is_staff && !hasPermission('news')) return
     try {
       const url = Config.endpoints.news.stats()
       const res = await axios.get(url, { headers: getAuthHeaders() })
@@ -137,20 +121,25 @@ const Dashboard = () => {
     } catch (err) {
       console.error('Error fetching news stats:', err)
     }
-  }, [user, getAuthHeaders])
+  }, [user, getAuthHeaders, hasPermission])
 
-  // ============================================
-  // ✅ دریافت آمار کارمندان (فقط مدیر/سوپرکاربر — در صورت 403 نادیده گرفته می‌شود)
-  // ============================================
   const fetchEmployeeStats = useCallback(async () => {
     try {
       const url = Config.endpoints.karmandan.stats()
       const res = await axios.get(url, { headers: getAuthHeaders() })
       setEmployeeStats(res.data?.data || res.data)
-    } catch (err) {
+    } catch {
       setEmployeeStats(null)
     }
   }, [getAuthHeaders])
+
+  const refreshAll = useCallback(async () => {
+    const jobs = []
+    if (isEmployee || user?.is_superuser) jobs.push(fetchDashboardStats())
+    jobs.push(fetchNewsStats())
+    if (canManageEmployees) jobs.push(fetchEmployeeStats())
+    await Promise.allSettled(jobs)
+  }, [isEmployee, user, canManageEmployees, fetchDashboardStats, fetchNewsStats, fetchEmployeeStats])
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -159,65 +148,90 @@ const Dashboard = () => {
   }, [isAuthenticated, loading, router])
 
   useEffect(() => {
-    if (isAuthenticated && isEmployee) {
+    if (!isAuthenticated) return
+    if (isEmployee || user?.is_superuser) {
       fetchDashboardStats()
       fetchNewsStats()
     }
-    if (isAuthenticated && (user?.is_superuser || (employeeData?.access_level ?? 0) >= 3)) {
+    if (canManageEmployees) {
       fetchEmployeeStats()
     }
-  }, [isAuthenticated, isEmployee, user, employeeData, fetchDashboardStats, fetchNewsStats, fetchEmployeeStats])
+  }, [isAuthenticated, isEmployee, user, canManageEmployees, fetchDashboardStats, fetchNewsStats, fetchEmployeeStats])
 
-  // ============================================
-  // ✅ بررسی دسترسی‌ها
-  // ============================================
-  const canManageEmployees = user?.is_superuser ||
-    permissions?.includes('marketing') ||
-    permissions?.includes('all') ||
-    employeeData?.access_level >= 3
+  const sectionIcon = (icon) => {
+    const map = {
+      users: <Users />,
+      newspaper: <Newspaper />,
+      settings: <Settings />,
+      'shopping-cart': <ShoppingCart />,
+      briefcase: <Briefcase />,
+      warehouse: <Warehouse />,
+      headphones: <Headphones />,
+      calendar: <Calendar />,
+      shield: <Shield />,
+      layers: <Briefcase />,
+    }
+    return map[icon] || <Briefcase />
+  }
 
-  const canManageNews = user?.is_staff || user?.is_superuser
+  const hexToBg = (hex) => {
+    if (!hex) return '#fff3c4'
+    const h = hex.replace('#', '')
+    if (h.length !== 6) return '#fff3c4'
+    const r = parseInt(h.slice(0, 2), 16)
+    const g = parseInt(h.slice(2, 4), 16)
+    const b = parseInt(h.slice(4, 6), 16)
+    return `rgba(${r}, ${g}, ${b}, 0.14)`
+  }
 
-  const canAccessInventory = permissions?.includes('warehouse') || user?.is_superuser
-  const canAccessSales = permissions?.includes('sales') || user?.is_superuser
-  const canAccessSupport = permissions?.includes('support') || user?.is_superuser
-  const canAccessAttendance = permissions?.includes('attendance') || user?.is_superuser
+  const displayName = user?.display_name || user?.first_name || employeeData?.full_name || ''
 
-  // ============================================
-  // ✅ ساخت آیتم‌های دسترسی سریع
-  // ============================================
-  const quickActions = [
-    canManageEmployees && {
+  const initialsOf = () => {
+    const parts = String(displayName).trim().split(/\s+/).filter(Boolean)
+    if (!parts.length) return '؟'
+    return ((parts[0][0] || '') + (parts[1]?.[0] || '')).toUpperCase()
+  }
+
+  const linkedSections = (assignedSections || []).filter((d) => d.href)
+  const seenHrefs = new Set()
+  const quickActions = []
+
+  linkedSections.forEach((d) => {
+    if (!d.href || seenHrefs.has(d.href)) return
+    seenHrefs.add(d.href)
+    quickActions.push({
+      id: d.code,
+      icon: sectionIcon(d.icon),
+      label: language === 'en' && d.name_en ? d.name_en : d.name_fa,
+      href: d.href,
+      color: d.color || '#c27800',
+      bgColor: hexToBg(d.color),
+    })
+  })
+
+  if (canManageEmployees && !seenHrefs.has('/employees')) {
+    quickActions.unshift({
       id: 'employees',
       icon: <Users />,
       label: t.employees,
       href: '/employees',
       color: '#6a1b9a',
-      bgColor: '#f3e5f5'
-    },
-    canManageNews && {
-      id: 'news',
-      icon: <Newspaper />,
-      label: t.newsManagement,
-      href: '/news-management',
-      color: '#1976d2',
-      bgColor: '#e3f2fd'
-    },
-  
-    canAccessSales && {
-      id: 'sales',
-      icon: <ShoppingCart />,
-      label: t.sales,
-      href: '/sale',
-      color: '#2e7d32',
-      bgColor: '#e8f5e9'
-    },
-   
-  ].filter(Boolean)
+      bgColor: '#f3e5f5',
+    })
+  }
 
-  // ============================================
-  // ✅ ساخت آمار نمایشی
-  // ============================================
+  const canManageTicker = user?.is_superuser || user?.is_staff || canManageEmployees
+  if (canManageTicker && !seenHrefs.has('/ticker')) {
+    quickActions.push({
+      id: 'ticker',
+      icon: <Megaphone />,
+      label: t.ticker,
+      href: '/ticker',
+      color: '#c27800',
+      bgColor: '#fff3c4',
+    })
+  }
+
   const displayStats = []
 
   if (stats?.leads) {
@@ -226,10 +240,10 @@ const Dashboard = () => {
       icon: <TrendingUp />,
       value: stats.leads.total ?? 0,
       label: t.totalLeads,
-      change: `${stats.leads.new ?? 0} جدید`,
+      change: `${stats.leads.new ?? 0} ${t.newLabel}`,
       positive: true,
-      bgColor: '#e3f2fd',
-      color: '#1976d2'
+      bgColor: '#eef2ff',
+      color: '#5b6cff',
     })
   }
 
@@ -242,7 +256,7 @@ const Dashboard = () => {
       change: `${stats.followups.today ?? 0} ${t.today}`,
       positive: true,
       bgColor: '#e8f5e9',
-      color: '#2e7d32'
+      color: '#2e7d32',
     })
   }
 
@@ -255,7 +269,7 @@ const Dashboard = () => {
       change: `${t.total}: ${employeeStats.total ?? 0}`,
       positive: true,
       bgColor: '#f3e5f5',
-      color: '#6a1b9a'
+      color: '#6a1b9a',
     })
   }
 
@@ -265,10 +279,10 @@ const Dashboard = () => {
       icon: <Newspaper />,
       value: newsStats.published ?? 0,
       label: t.publishedNews,
-      change: `${newsStats.pending ?? 0} در انتظار`,
+      change: `${newsStats.pending ?? 0} ${t.pending}`,
       positive: true,
       bgColor: '#fff3e0',
-      color: '#e65100'
+      color: '#e65100',
     })
 
     displayStats.push({
@@ -276,17 +290,14 @@ const Dashboard = () => {
       icon: <Eye />,
       value: newsStats.total_views ?? 0,
       label: t.totalViews,
-      change: `${newsStats.total_likes ?? 0} لایک`,
+      change: `${newsStats.total_likes ?? 0} ${t.likes}`,
       positive: true,
-      bgColor: '#fce4ec',
-      color: '#c62828'
+      bgColor: '#fde8ea',
+      color: '#c62828',
     })
   }
 
-  // ============================================
-  // ✅ حالت‌های بارگذاری و خطا
-  // ============================================
-  if (loading || loadingData) {
+  if (loading) {
     return (
       <div className={styles.dashboardContainer}>
         <div className={styles.container}>
@@ -299,9 +310,7 @@ const Dashboard = () => {
     )
   }
 
-  if (!isAuthenticated) {
-    return null
-  }
+  if (!isAuthenticated) return null
 
   if (!isEmployee && !user?.is_staff && !user?.is_superuser) {
     return (
@@ -313,96 +322,117 @@ const Dashboard = () => {
             </div>
             <h3>{t.accessDenied}</h3>
             <p>{t.dashboardAccess}</p>
-            <Link href="/" className={styles.primaryBtn}>
-              {t.returnHome}
-            </Link>
+            <Link href="/" className={styles.primaryBtn}>{t.returnHome}</Link>
           </div>
         </div>
       </div>
     )
   }
 
-  // ============================================
-  // ✅ رندر اصلی
-  // ============================================
   return (
     <div className={styles.dashboardContainer} dir={dir}>
       <div className={styles.container}>
-        {/* هدر */}
         <div className={styles.dashboardHeader}>
           <div className={styles.headerLeft}>
             <div className={styles.headerIcon}>
-              <LayoutDashboard size={28} />
+              <LayoutDashboard size={26} />
             </div>
             <div>
-              <h1 className={styles.pageTitle}>
-                {t.dashboard}
-              </h1>
+              <h1 className={styles.pageTitle}>{t.dashboard}</h1>
               <p className={styles.pageDesc}>
-                {t.welcome} {user?.display_name || user?.first_name || ''} - {t.subtitle}
+                {t.welcome}{displayName ? ` ${displayName}` : ''} — {t.subtitle}
               </p>
             </div>
           </div>
+          <div className={styles.headerActions}>
+            <button
+              type="button"
+              className={styles.refreshBtn}
+              onClick={refreshAll}
+              disabled={loadingData}
+            >
+              <RefreshCw size={14} className={loadingData ? styles.spinner : undefined} />
+              {t.refresh}
+            </button>
+          </div>
         </div>
 
-        {/* اطلاعات کاربر */}
-        {employeeData && (
+        {(employeeData || user) && (
           <div className={styles.userInfoBar}>
-            <Briefcase size={18} />
-            <span className={styles.userInfoText}>
-              {employeeData.employee_code && (
-                <>
-                  {t.employeeCode}: <span className={styles.highlight}>{employeeData.employee_code}</span>
-                </>
-              )}
-              {employeeData.access_level_label && (
-                <>
-                  {' | '}
-                  <span className={styles.highlight}>{employeeData.access_level_label}</span>
-                </>
-              )}
-            </span>
-          </div>
-        )}
-
-        {/* آمار */}
-        {displayStats.length > 0 && (
-          <div className={styles.statsGrid}>
-            {displayStats.map((stat) => (
-              <div key={stat.id} className={styles.statCard}>
-                <div
-                  className={styles.statIconWrapper}
-                  style={{ background: stat.bgColor, color: stat.color }}
-                >
-                  {stat.icon}
-                </div>
-                <div className={styles.statInfo}>
-                  <span className={styles.statValue}>{stat.value}</span>
-                  <span className={styles.statLabel}>{stat.label}</span>
-                  <span className={`${styles.statChange} ${stat.positive ? styles.positive : styles.negative}`}>
-                    {stat.change}
+            <span className={styles.userAvatar}>{initialsOf()}</span>
+            <div className={styles.userMeta}>
+              <span className={styles.userName}>{displayName || '—'}</span>
+              <div className={styles.userChips}>
+                {employeeData?.employee_code && (
+                  <span className={`${styles.chip} ${styles.chipStrong}`}>
+                    {t.employeeCode}: {employeeData.employee_code}
                   </span>
-                </div>
+                )}
+                {employeeData?.access_level_label && (
+                  <span className={styles.chip}>{employeeData.access_level_label}</span>
+                )}
+                {(assignedSections || []).map((d) => (
+                  <span
+                    key={d.id || d.code}
+                    className={`${styles.chip} ${styles.sectionChip}`}
+                    style={{ '--chip-color': d.color || '#c27800' }}
+                  >
+                    <span className={styles.colorDot} />
+                    {language === 'en' && d.name_en ? d.name_en : d.name_fa}
+                  </span>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         )}
 
-        {/* دسترسی سریع */}
-        {quickActions.length > 0 && (
-          <div className={styles.quickActionsSection}>
+        <div className={styles.statsSection}>
+          <div className={styles.blockHeader}>
+            <h3 className={styles.sectionTitle}>
+              <BarChart3 size={18} />
+              {t.statistics}
+            </h3>
+          </div>
+          {displayStats.length > 0 ? (
+            <div className={styles.statsGrid}>
+              {displayStats.map((stat) => (
+                <div
+                  key={stat.id}
+                  className={styles.statCard}
+                  style={{ '--stat-accent': stat.color }}
+                >
+                  <div
+                    className={styles.statIconWrapper}
+                    style={{ background: stat.bgColor, color: stat.color }}
+                  >
+                    {stat.icon}
+                  </div>
+                  <div className={styles.statInfo}>
+                    <span className={styles.statValue}>{stat.value}</span>
+                    <span className={styles.statLabel}>{stat.label}</span>
+                    <span className={`${styles.statChange} ${stat.positive ? styles.positive : styles.negative}`}>
+                      {stat.change}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className={styles.emptyHint}>{t.noStats}</div>
+          )}
+        </div>
+
+        <div className={styles.quickActionsSection}>
+          <div className={styles.blockHeader}>
             <h3 className={styles.sectionTitle}>
               <Zap size={18} />
               {t.quickAccess}
             </h3>
-
+          </div>
+          {quickActions.length > 0 ? (
             <div className={styles.actionsGrid}>
               {quickActions.map((action) => (
-                <Link
-                  key={action.id}
-                  href={action.href}
-                  className={styles.actionCard}
-                >
+                <Link key={action.id} href={action.href} className={styles.actionCard}>
                   <div
                     className={styles.actionIcon}
                     style={{ background: action.bgColor, color: action.color }}
@@ -413,12 +443,13 @@ const Dashboard = () => {
                 </Link>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className={styles.emptyHint}>{t.noQuick}</div>
+          )}
+        </div>
 
-        {/* فوتر */}
         <div className={styles.dashboardFooter}>
-          {t.dashboard} - {new Date().toLocaleDateString('fa-IR')}
+          {t.dashboard} — {new Date().toLocaleDateString(language === 'en' ? 'en-US' : 'fa-IR')}
         </div>
       </div>
     </div>

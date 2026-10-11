@@ -1,71 +1,72 @@
 /* app/(admin)/sale/sale-theme.css
-   ============================================
-   Sale専用 globals — تم اختصاصی صفحه فروش (/sale)
-   این فایل فقط در همین صفحه import می‌شود و با
-   اسکوپ .saleScope هیچ صفحه دیگری را تحت تأثیر
-   قرار نمی‌دهد.
-   تم: Indigo Light — روشن، یکدست، راست‌به‌چپ
-   ============================================ */
+   تم صفحه فروش — هماهنگ با داشبورد و کارمندان (طلایی/کرم)
+   فقط داخل .saleScope اعمال می‌شود
+*/
 
 .saleScope {
-  /* ---------- پالت رنگ ---------- */
-  --sale-bg: #edf0f8;
-  --sale-bg-soft: #f6f8fd;
+  /* ---------- پالت ---------- */
+  --sale-bg: #fff4e7;
+  --sale-bg-soft: #fff7ec;
   --sale-surface: #ffffff;
-  --sale-surface-2: #f4f6fb;
-  --sale-ink: #23263b;
-  --sale-muted: #68708f;
-  --sale-faint: #9aa1bd;
-  --sale-line: #e4e8f3;
-  --sale-line-strong: #d3d9e9;
+  --sale-surface-2: #fff7ec;
+  --sale-ink: #2a241c;
+  --sale-muted: #6f675c;
+  --sale-faint: #a3988a;
+  --sale-line: rgba(90, 60, 20, 0.12);
+  --sale-line-strong: rgba(90, 60, 20, 0.2);
 
-  /* ---------- رنگ اصلی ---------- */
-  --sale-primary: #4f46e5;
-  --sale-primary-strong: #4338ca;
-  --sale-primary-soft: #edeeff;
-  --sale-primary-faint: #f5f5ff;
-  --sale-accent: #f59e0b;
+  /* ---------- رنگ اصلی (طلایی پنل) ---------- */
+  --sale-primary: #c27800;
+  --sale-primary-strong: #3a2a00;
+  --sale-primary-soft: #fff3c4;
+  --sale-primary-faint: #fff8e0;
+  --sale-accent: #fbc300;
+  --sale-gold: #fbc300;
+  --sale-gold-dark: #fb9700;
 
   /* ---------- وضعیت‌ها ---------- */
-  --sale-new: #6366f1;
+  --sale-new: #5b6cff;
   --sale-progress: #d97706;
-  --sale-success: #16a34a;
-  --sale-danger: #dc2626;
+  --sale-success: #2e7d32;
+  --sale-danger: #c62828;
   --sale-info: #0284c7;
 
   /* ---------- سایه و شعاع ---------- */
-  --sale-radius-lg: 18px;
-  --sale-radius-md: 14px;
-  --sale-radius-sm: 10px;
-  --sale-shadow: 0 4px 18px rgba(35, 38, 59, 0.06);
-  --sale-shadow-lg: 0 18px 50px rgba(35, 38, 59, 0.14);
+  --sale-radius-lg: 20px;
+  --sale-radius-md: 16px;
+  --sale-radius-sm: 11px;
+  --sale-shadow: 0 8px 24px rgba(80, 50, 0, 0.06);
+  --sale-shadow-lg: 0 18px 50px rgba(80, 50, 0, 0.14);
+  --sale-shadow-header: 0 14px 36px rgba(201, 120, 0, 0.28);
 
   /* ---------- تایپوگرافی ---------- */
   --sale-font: var(--font-iran, Tahoma, Arial, sans-serif);
   --sale-display: var(--font-edameh, Tahoma, Arial, sans-serif);
 
-  /* ---------- بدنه صفحه فروش ---------- */
   background:
-    radial-gradient(900px 320px at 85% -80px, rgba(79, 70, 229, 0.10), transparent 60%),
-    radial-gradient(700px 280px at 10% 0, rgba(245, 158, 11, 0.08), transparent 60%),
+    radial-gradient(1200px 420px at 100% -10%, rgba(251, 195, 0, 0.18), transparent 55%),
+    radial-gradient(900px 380px at -10% 0%, rgba(251, 151, 0, 0.12), transparent 50%),
     linear-gradient(180deg, var(--sale-bg) 0%, var(--sale-bg-soft) 100%);
   min-height: 100vh;
   color: var(--sale-ink);
   font-family: var(--sale-font);
 }
 
-/* انتخاب متن */
-.saleScope ::selection {
-  background: rgba(79, 70, 229, 0.18);
+.saleScope .container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
-/* فوکوس قابل مشاهده برای دسترس‌پذیری */
+.saleScope ::selection {
+  background: rgba(251, 195, 0, 0.28);
+}
+
 .saleScope :focus-visible {
-  outline: 2px solid var(--sale-primary);
+  outline: 2px solid var(--sale-gold);
   outline-offset: 2px;
 }
 
-/* اسکرول‌بار هماهنگ داخل صفحه فروش */
 .saleScope ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -74,19 +75,21 @@
   background: transparent;
 }
 .saleScope ::-webkit-scrollbar-thumb {
-  background: #c6cde6;
+  background: rgba(194, 120, 0, 0.28);
   border-radius: 99px;
 }
 .saleScope ::-webkit-scrollbar-thumb:hover {
   background: var(--sale-primary);
 }
 
-/* ورودی تاریخ native در تم روشن */
 .saleScope input[type="time"] {
   color-scheme: light;
 }
 
-/* کاهش حرکت برای کاربران حساس */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .saleScope *,
   .saleScope *::before,

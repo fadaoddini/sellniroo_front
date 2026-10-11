@@ -1,8 +1,15 @@
-// components/BreakingNews.jsx
+// components/common/breakingnews/BreakingNews.jsx
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+  memo,
+} from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import moment from "moment-jalaali";
@@ -21,141 +28,358 @@ import {
   HandCoins,
   Info,
 } from "lucide-react";
+import axios from "axios";
+import { useAuth } from "@/contexts/AuthContext";
+import Config from "@/config/config";
 import styles from "./BreakingNews.module.css";
 
-moment.loadPersian({ dialect: "persian-modern" });
+moment.loadPersian({ dialect: "persian-modern", usePersianDigits: false });
+
+const FALLBACK_NEWS = [
+  { id: 1, text: "بهترین فرصت‌های شغلی فروش و بازاریابی را با ما پیدا کنید" },
+  { id: 2, text: "رزومه خود را ارسال کنید و به تیم حرفه‌ای ما بپیوندید" },
+  { id: 3, text: "استخدام بازاریاب و فروشنده حرفه‌ای - شرایط عالی" },
+  { id: 4, text: "برای مشاوره شغلی رایگان با ما تماس بگیرید" },
+  { id: 5, text: "بیش از ۵۰۰ فرصت شغلی در سراسر کشور" },
+];
+
+const WEEK_DAYS = {
+  Saturday: "شنبه",
+  Sunday: "یکشنبه",
+  Monday: "دوشنبه",
+  Tuesday: "سه‌شنبه",
+  Wednesday: "چهارشنبه",
+  Thursday: "پنجشنبه",
+  Friday: "جمعه",
+};
+
+const MONTH_NAMES = [
+  "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور",
+  "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند",
+];
+
+const LABELS = {
+  login: "ورود",
+  consult: "مشاوره شغلی",
+  about: "درباره ما",
+  logout: "خروج",
+  profile: "پروفایل من",
+  settings: "تنظیمات",
+  dashboard: "داشبورد",
+  marketing: "بازاریابی",
+  challenge: "چالش مهندسین",
+  game: "بازی",
+  dearUser: "کاربر عزیز",
+};
+
+const PROFILE_LINKS = [
+  { href: "/dashboard", icon: LayoutDashboard, label: LABELS.dashboard },
+  { href: "/profile", icon: User, label: LABELS.profile },
+  { href: "/sale", icon: HandCoins, label: LABELS.marketing },
+  { href: "/quiz", icon: Brain, label: LABELS.challenge },
+  { href: "/game", icon: Gamepad2, label: LABELS.game },
+];
+
+const CONSULT_PHONE = typeof atob === "function" ? atob("MDkxNTEyNDQ4OTg=") : "";
+
+function formatPersianDate(short = false) {
+  const m = moment();
+  const day = WEEK_DAYS[m.format("dddd")] || m.format("dddd");
+  const date = m.jDate();
+  const month = MONTH_NAMES[m.jMonth()];
+  const year = m.jYear();
+  if (short) return `${date} ${month}`;
+  return `${day} ${date} ${month} ${year}`;
+}
+
+function prefersReducedMotion() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
+    const apply = () => setIsMobile(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, [breakpoint]);
+
+  return isMobile;
+}
+
+function usePersianDate(isMobile) {
+  const [full, setFull] = useState("");
+  const [short, setShort] = useState("");
+
+  useEffect(() => {
+    const tick = () => {
+      setFull(formatPersianDate(false));
+      setShort(formatPersianDate(true));
+    };
+    tick();
+
+    const now = new Date();
+    const msToMidnight =
+      new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() -
+      now.getTime() +
+      1000;
+
+    let dayTimer;
+    const start = setTimeout(() => {
+      tick();
+      dayTimer = setInterval(tick, 60 * 60 * 1000);
+    }, msToMidnight);
+
+    return () => {
+      clearTimeout(start);
+      if (dayTimer) clearInterval(dayTimer);
+    };
+  }, []);
+
+  return isMobile ? short : full;
+}
+
+function useTypewriter(items, enabled = true) {
+  const textRef = useRef(null);
+  const cursorRef = useRef(null);
+  const indexRef = useRef(0);
+  const timersRef = useRef({ interval: null, pause: null, raf: null });
+
+  const clearTimers = useCallback(() => {
+    const t = timersRef.current;
+    if (t.interval) clearInterval(t.interval);
+    if (t.pause) clearTimeout(t.pause);
+    if (t.raf) cancelAnimationFrame(t.raf);
+    t.interval = t.pause = t.raf = null;
+  }, []);
+
+  const setCursorVisible = useCallback((visible) => {
+    if (cursorRef.current) {
+      cursorRef.current.style.display = visible ? "inline-block" : "none";
+    }
+  }, []);
+
+  const writeText = useCallback(
+    (text) => {
+      const el = textRef.current;
+      if (!el) return;
+
+      clearTimers();
+
+      if (!enabled || prefersReducedMotion() || !text) {
+        el.textContent = text || "";
+        setCursorVisible(false);
+        timersRef.current.pause = setTimeout(() => {
+          indexRef.current = (indexRef.current + 1) % Math.max(items.length, 1);
+          writeText(items[indexRef.current]?.text || "");
+        }, 4000);
+        return;
+      }
+
+      el.textContent = "";
+      setCursorVisible(true);
+
+      let charIndex = 0;
+      const speed = Math.min(90, Math.max(35, 65 - text.length * 0.12));
+
+      timersRef.current.interval = setInterval(() => {
+        charIndex += 1;
+        el.textContent = text.slice(0, charIndex);
+
+        if (charIndex >= text.length) {
+          clearInterval(timersRef.current.interval);
+          timersRef.current.interval = null;
+          setCursorVisible(false);
+          timersRef.current.pause = setTimeout(() => {
+            indexRef.current = (indexRef.current + 1) % Math.max(items.length, 1);
+            writeText(items[indexRef.current]?.text || "");
+          }, 4000);
+        }
+      }, speed);
+    },
+    [clearTimers, enabled, items, setCursorVisible]
+  );
+
+  useEffect(() => {
+    if (!items.length) return undefined;
+    indexRef.current = 0;
+    writeText(items[0].text);
+    return clearTimers;
+  }, [items, writeText, clearTimers]);
+
+  return { textRef, cursorRef };
+}
+
+const Avatar = memo(function Avatar({ user, imageError, onImageError, size = 28, className, placeholderClass }) {
+  const initials = useMemo(() => {
+    if (!user) return "U";
+    const first = user.first_name?.[0] || "";
+    const last = user.last_name?.[0] || "";
+    return (first + last).toUpperCase() || user.mobile?.slice(0, 2) || "U";
+  }, [user]);
+
+  if (user?.image && !imageError) {
+    return (
+      <Image
+        src={user.image}
+        alt={LABELS.profile}
+        width={size}
+        height={size}
+        className={className}
+        unoptimized
+        onError={onImageError}
+      />
+    );
+  }
+
+  return <div className={placeholderClass}>{initials}</div>;
+});
+
+const ProfileMenu = memo(function ProfileMenu({
+  user,
+  imageError,
+  onImageError,
+  pathname,
+  isMobile,
+  onClose,
+  onLogout,
+}) {
+  const displayName =
+    user?.display_name ||
+    `${user?.first_name || ""} ${user?.last_name || ""}`.trim() ||
+    user?.mobile ||
+    LABELS.dearUser;
+
+  const isActive = (href) => {
+    if (!pathname) return false;
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
+  const iconSize = isMobile ? 20 : 16;
+
+  return (
+    <>
+      <div className={styles.profileHeader}>
+        <div className={styles.profileAvatar}>
+          <Avatar
+            user={user}
+            imageError={imageError}
+            onImageError={onImageError}
+            size={48}
+            className={styles.profileAvatarImage}
+            placeholderClass={styles.profileAvatarPlaceholder}
+          />
+        </div>
+        <div className={styles.profileInfo}>
+          <h4>{displayName}</h4>
+          <p>{user?.mobile}</p>
+        </div>
+        {isMobile && (
+          <button
+            type="button"
+            className={styles.closeDialogBtn}
+            onClick={onClose}
+            aria-label="بستن"
+          >
+            <X size={20} />
+          </button>
+        )}
+      </div>
+
+      <div className={styles.profileDivider} />
+
+      {PROFILE_LINKS.map((item) => {
+        const active = isActive(item.href);
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`${styles.profileMenuItem} ${active ? styles.activeMenuItem : ""}`}
+            onClick={onClose}
+          >
+            <item.icon size={iconSize} />
+            <span>{item.label}</span>
+            {active && <Check size={14} className={styles.activeCheck} />}
+          </Link>
+        );
+      })}
+
+      <div className={styles.profileDivider} />
+
+      <Link
+        href="/settings"
+        className={`${styles.profileMenuItem} ${isActive("/settings") ? styles.activeMenuItem : ""}`}
+        onClick={onClose}
+      >
+        <Settings size={iconSize} />
+        <span>{LABELS.settings}</span>
+      </Link>
+
+      <button
+        type="button"
+        className={`${styles.profileMenuItem} ${styles.logoutItem}`}
+        onClick={onLogout}
+      >
+        <LogOut size={iconSize} />
+        <span>{LABELS.logout}</span>
+      </button>
+    </>
+  );
+});
 
 const BreakingNews = () => {
   const { user, isAuthenticated, logout, loading } = useAuth();
+  const pathname = usePathname();
+  const isMobile = useIsMobile(768);
+  const currentDate = usePersianDate(isMobile);
 
-  const [displayText, setDisplayText] = useState("");
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTyping, setIsTyping] = useState(true);
-  const [currentDate, setCurrentDate] = useState("");
+  const [newsItems, setNewsItems] = useState(FALLBACK_NEWS);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [imageError, setImageError] = useState(false); // ✅ track خطای تصویر
+  const [imageError, setImageError] = useState(false);
 
-  const phoneNumberRef = useRef("");
-  const typingTimerRef = useRef(null);
-  const pauseTimerRef = useRef(null);
   const profileDropdownRef = useRef(null);
+  const { textRef, cursorRef } = useTypewriter(newsItems, true);
 
-  const news = [
-    { id: 1, text: "بهترین فرصت‌های شغلی فروش و بازاریابی را با ما پیدا کنید" },
-    { id: 2, text: "رزومه خود را ارسال کنید و به تیم حرفه‌ای ما بپیوندید" },
-    { id: 3, text: "استخدام بازاریاب و فروشنده حرفه‌ای - شرایط عالی" },
-    { id: 4, text: "برای مشاوره شغلی رایگان با ما تماس بگیرید: ۰۲۱-۱۲۳۴۵۶۷۸" },
-    { id: 5, text: "بیش از ۵۰۰ فرصت شغلی در سراسر کشور" },
-  ];
-
-  const t = {
-    login: "ورود",
-    consult: "مشاوره شغلی",
-    about: "درباره ما",
-    logout: "خروج",
-    profile: "پروفایل من",
-    settings: "تنظیمات",
-    dashboard: "داشبورد",
-    marketing: "بازاریابی",
-    challenge: "چالش مهندسین",
-    game: "بازی",
-    dearUser: "کاربر عزیز",
-  };
-
-  // تشخیص موبایل
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const res = await axios.get(Config.endpoints.news.tickers.active());
+        const list = Array.isArray(res.data?.data)
+          ? res.data.data
+          : Array.isArray(res.data)
+            ? res.data
+            : [];
+        if (cancelled || !list.length) return;
+        const mapped = list
+          .map((item, i) => ({
+            id: item.id ?? i,
+            text: String(item.text || "").trim(),
+          }))
+          .filter((item) => item.text);
+        if (mapped.length) setNewsItems(mapped);
+      } catch {
+        // fallback already set
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  // ✅ ریست خطای تصویر وقتی user عوض میشه
   useEffect(() => {
     setImageError(false);
   }, [user?.image]);
 
-  const getPersianDate = () => {
-    const now = new Date();
-    const m = moment(now);
-
-    const weekDays = {
-      Saturday: "شنبه",
-      Sunday: "یکشنبه",
-      Monday: "دوشنبه",
-      Tuesday: "سه‌شنبه",
-      Wednesday: "چهارشنبه",
-      Thursday: "پنجشنبه",
-      Friday: "جمعه",
-    };
-    const monthNames = [
-      "فروردین",
-      "اردیبهشت",
-      "خرداد",
-      "تیر",
-      "مرداد",
-      "شهریور",
-      "مهر",
-      "آبان",
-      "آذر",
-      "دی",
-      "بهمن",
-      "اسفند",
-    ];
-
-    const jYear = m.jYear();
-    const jMonth = m.jMonth();
-    const jDate = m.jDate();
-    const dayOfWeek = m.format("dddd");
-    const persianDay = weekDays[dayOfWeek] || dayOfWeek;
-    const persianMonth = monthNames[jMonth];
-
-    return `${persianDay} ${jDate} ${persianMonth} ${jYear}`;
-  };
-
-  const startTyping = (text) => {
-    setIsTyping(true);
-    setDisplayText("");
-
-    let charIndex = 0;
-    const fullText = text;
-
-    if (typingTimerRef.current) clearInterval(typingTimerRef.current);
-    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
-
-    const speed = Math.min(100, Math.max(40, 70 - fullText.length * 0.15));
-
-    typingTimerRef.current = setInterval(() => {
-      if (charIndex < fullText.length) {
-        setDisplayText(fullText.substring(0, charIndex + 1));
-        charIndex++;
-      } else {
-        clearInterval(typingTimerRef.current);
-        typingTimerRef.current = null;
-        setIsTyping(false);
-
-        pauseTimerRef.current = setTimeout(() => {
-          setCurrentIndex((prev) => (prev + 1) % news.length);
-        }, 4000);
-      }
-    }, speed);
-  };
-
   useEffect(() => {
-    const encoded = "MDkxNTEyNDQ4OTg=";
-    phoneNumberRef.current = atob(encoded);
-  }, []);
-
-  const handleConsultClick = () => {
-    if (phoneNumberRef.current) {
-      window.location.href = `tel:${phoneNumberRef.current}`;
-    }
-  };
-
-  // بستن با کلیک بیرون
-  useEffect(() => {
-    if (isMobile) return;
+    if (isMobile) return undefined;
 
     const handleClickOutside = (event) => {
       if (
@@ -170,239 +394,112 @@ const BreakingNews = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobile]);
 
-  // قفل اسکرول
   useEffect(() => {
-    if (isMobile && isProfileOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    if (!(isMobile && isProfileOpen)) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = prev;
     };
   }, [isMobile, isProfileOpen]);
 
-  // بستن با Escape
   useEffect(() => {
-    const handleEsc = (e) => {
+    if (!isProfileOpen) return undefined;
+    const onEsc = (e) => {
       if (e.key === "Escape") setIsProfileOpen(false);
     };
-    document.addEventListener("keydown", handleEsc);
-    return () => document.removeEventListener("keydown", handleEsc);
+    document.addEventListener("keydown", onEsc);
+    return () => document.removeEventListener("keydown", onEsc);
+  }, [isProfileOpen]);
+
+  const closeProfile = useCallback(() => setIsProfileOpen(false), []);
+
+  const handleImageError = useCallback(() => setImageError(true), []);
+
+  const handleConsultClick = useCallback(() => {
+    if (CONSULT_PHONE) window.location.href = `tel:${CONSULT_PHONE}`;
   }, []);
 
-  useEffect(() => {
-    const currentNews = news[currentIndex];
-    startTyping(currentNews.text);
-
-    return () => {
-      if (typingTimerRef.current) clearInterval(typingTimerRef.current);
-      if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
-    };
-  }, [currentIndex]);
-
-  useEffect(() => {
-    setCurrentDate(getPersianDate());
-    const dateInterval = setInterval(() => {
-      setCurrentDate(getPersianDate());
-    }, 60000);
-    return () => clearInterval(dateInterval);
-  }, []);
-
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     await logout();
     setIsProfileOpen(false);
-  };
+  }, [logout]);
 
-  const getUserDisplayName = () => {
-    if (!user) return t.dearUser;
-    return (
-      user.display_name ||
-      `${user.first_name} ${user.last_name}`.trim() ||
-      user.mobile
-    );
-  };
-
-  const getUserInitials = () => {
-    if (!user) return "U";
-    const first = user.first_name?.[0] || "";
-    const last = user.last_name?.[0] || "";
-    return (first + last).toUpperCase() || user.mobile?.slice(0, 2) || "U";
-  };
-
-  const isMenuItemActive = (href) => {
-    if (typeof window === "undefined") return false;
-    const pathname = window.location.pathname;
-    if (href === "/") return pathname === "/";
-    return pathname.startsWith(href) || pathname === href;
-  };
-
-  const profileMenuItems = [
-    { href: "/dashboard", icon: LayoutDashboard, label: t.dashboard },
-    { href: "/profile", icon: User, label: t.profile },
-    { href: "/sale", icon: HandCoins, label: t.marketing },
-    { href: "/quiz", icon: Brain, label: t.challenge },
-    { href: "/game", icon: Gamepad2, label: t.game },
-  ];
-
-  // ✅ نمایش تصویر یا placeholder
-  const renderAvatar = (size = 28) => {
-    const imageUrl = user?.image;
-    const showImage = imageUrl && !imageError;
-
-    if (showImage) {
-      return (
-        <Image
-          src={imageUrl}
-          alt={t.profile}
-          width={size}
-          height={size}
-          className={styles.avatarImage}
-          unoptimized
-          onError={() => setImageError(true)}
-        />
-      );
-    }
-
-    return (
-      <div className={styles.avatarPlaceholder}>{getUserInitials()}</div>
-    );
-  };
-
-  const renderProfileAvatar = (size = 48) => {
-    const imageUrl = user?.image;
-    const showImage = imageUrl && !imageError;
-
-    if (showImage) {
-      return (
-        <Image
-          src={imageUrl}
-          alt={t.profile}
-          width={size}
-          height={size}
-          className={styles.profileAvatarImage}
-          unoptimized
-          onError={() => setImageError(true)}
-        />
-      );
-    }
-
-    return (
-      <div className={styles.profileAvatarPlaceholder}>
-        {getUserInitials()}
-      </div>
-    );
-  };
-
-  const ProfileMenuContent = () => (
-    <>
-      <div className={styles.profileHeader}>
-        <div className={styles.profileAvatar}>{renderProfileAvatar(48)}</div>
-        <div className={styles.profileInfo}>
-          <h4>{getUserDisplayName()}</h4>
-          <p>{user.mobile}</p>
-        </div>
-        {isMobile && (
-          <button
-            className={styles.closeDialogBtn}
-            onClick={() => setIsProfileOpen(false)}
-            aria-label="بستن"
-          >
-            <X size={20} />
-          </button>
-        )}
-      </div>
-
-      <div className={styles.profileDivider} />
-
-      {profileMenuItems.map((item) => {
-        const isActive = isMenuItemActive(item.href);
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`${styles.profileMenuItem} ${
-              isActive ? styles.activeMenuItem : ""
-            }`}
-            onClick={() => setIsProfileOpen(false)}
-          >
-            <item.icon size={isMobile ? 20 : 16} />
-            <span>{item.label}</span>
-            {isActive && <Check size={14} className={styles.activeCheck} />}
-          </Link>
-        );
-      })}
-
-      <div className={styles.profileDivider} />
-
-      <Link
-        href="/settings"
-        className={`${styles.profileMenuItem} ${
-          isMenuItemActive("/settings") ? styles.activeMenuItem : ""
-        }`}
-        onClick={() => setIsProfileOpen(false)}
-      >
-        <Settings size={isMobile ? 20 : 16} />
-        <span>{t.settings}</span>
-      </Link>
-
-      <button
-        className={`${styles.profileMenuItem} ${styles.logoutItem}`}
-        onClick={handleLogout}
-      >
-        <LogOut size={isMobile ? 20 : 16} />
-        <span>{t.logout}</span>
-      </button>
-    </>
-  );
+  const toggleProfile = useCallback(() => {
+    setIsProfileOpen((open) => !open);
+  }, []);
 
   return (
     <div className={styles.breakingNews}>
       <div className={styles.container}>
-        {/* بخش چپ */}
         <div className={styles.newsLeft}>
-          <div className={styles.newsLabel}>
+          <div className={styles.newsLabel} aria-hidden="true">
             <Megaphone size={16} className={styles.labelIcon} />
           </div>
-          <div className={styles.newsContent}>
+          <div className={styles.newsContent} aria-live="polite">
             <span className={styles.newsText}>
-              {displayText}
-              {isTyping && <span className={styles.cursor}>|</span>}
+              <span ref={textRef} />
+              <span ref={cursorRef} className={styles.cursor} aria-hidden="true">
+                |
+              </span>
             </span>
           </div>
         </div>
 
-        {/* بخش راست */}
         <div className={styles.newsRight}>
-          <button className={styles.consultButton} onClick={handleConsultClick}>
+          <button
+            type="button"
+            className={styles.consultButton}
+            onClick={handleConsultClick}
+            aria-label={LABELS.consult}
+          >
             <Phone size={14} />
-            <span>{t.consult}</span>
+            <span>{LABELS.consult}</span>
           </button>
 
-          <Link href="/about" className={styles.aboutButton}>
+          <Link href="/about" className={styles.aboutButton} aria-label={LABELS.about}>
             <Info size={14} />
-            <span>{t.about}</span>
+            <span>{LABELS.about}</span>
           </Link>
 
           {loading ? (
-            <div className={styles.loginButton} style={{ opacity: 0.5 }}>
+            <div className={styles.loginButton} style={{ opacity: 0.5 }} aria-hidden="true">
               <span>...</span>
             </div>
           ) : isAuthenticated && user ? (
             <>
               <div className={styles.profileSection} ref={profileDropdownRef}>
                 <button
+                  type="button"
                   className={styles.profileButton}
-                  onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  aria-label="پروفایل"
+                  onClick={toggleProfile}
+                  aria-label={LABELS.profile}
                   aria-expanded={isProfileOpen}
+                  aria-haspopup="menu"
                 >
-                  <div className={styles.avatar}>{renderAvatar(28)}</div>
+                  <div className={styles.avatar}>
+                    <Avatar
+                      user={user}
+                      imageError={imageError}
+                      onImageError={handleImageError}
+                      size={28}
+                      className={styles.avatarImage}
+                      placeholderClass={styles.avatarPlaceholder}
+                    />
+                  </div>
                 </button>
 
                 {!isMobile && isProfileOpen && (
-                  <div className={styles.profileDropdown}>
-                    <ProfileMenuContent />
+                  <div className={styles.profileDropdown} role="menu">
+                    <ProfileMenu
+                      user={user}
+                      imageError={imageError}
+                      onImageError={handleImageError}
+                      pathname={pathname}
+                      isMobile={false}
+                      onClose={closeProfile}
+                      onLogout={handleLogout}
+                    />
                   </div>
                 )}
               </div>
@@ -410,25 +507,37 @@ const BreakingNews = () => {
               {isMobile && isProfileOpen && (
                 <div
                   className={styles.dialogOverlay}
-                  onClick={() => setIsProfileOpen(false)}
+                  onClick={closeProfile}
+                  role="presentation"
                 >
                   <div
                     className={styles.dialogBox}
                     onClick={(e) => e.stopPropagation()}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={LABELS.profile}
                   >
-                    <ProfileMenuContent />
+                    <ProfileMenu
+                      user={user}
+                      imageError={imageError}
+                      onImageError={handleImageError}
+                      pathname={pathname}
+                      isMobile
+                      onClose={closeProfile}
+                      onLogout={handleLogout}
+                    />
                   </div>
                 </div>
               )}
             </>
           ) : (
-            <Link href="/login" className={styles.loginButton}>
+            <Link href="/login" className={styles.loginButton} aria-label={LABELS.login}>
               <LogIn size={14} />
-              <span>{t.login}</span>
+              <span>{LABELS.login}</span>
             </Link>
           )}
 
-          <div className={styles.datetime}>
+          <div className={styles.datetime} title={currentDate}>
             <span className={styles.dateText}>{currentDate}</span>
           </div>
         </div>
@@ -437,4 +546,4 @@ const BreakingNews = () => {
   );
 };
 
-export default BreakingNews;
+export default memo(BreakingNews);

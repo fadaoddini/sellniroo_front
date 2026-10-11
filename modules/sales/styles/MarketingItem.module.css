@@ -5,33 +5,34 @@
 
 .item {
   --s-surface: var(--sale-surface, #ffffff);
-  --s-surface-2: var(--sale-surface-2, #f4f6fb);
-  --s-ink: var(--sale-ink, #23263b);
-  --s-muted: var(--sale-muted, #68708f);
-  --s-faint: var(--sale-faint, #9aa1bd);
-  --s-line: var(--sale-line, #e4e8f3);
-  --s-primary: var(--sale-primary, #4f46e5);
-  --s-primary-strong: var(--sale-primary-strong, #4338ca);
-  --s-primary-soft: var(--sale-primary-soft, #edeeff);
-  --s-new: var(--sale-new, #6366f1);
+  --s-surface-2: var(--sale-surface-2, #fff7ec);
+  --s-ink: var(--sale-ink, #2a241c);
+  --s-muted: var(--sale-muted, #6f675c);
+  --s-faint: var(--sale-faint, #a3988a);
+  --s-line: var(--sale-line, rgba(90, 60, 20, 0.12));
+  --s-primary: var(--sale-primary, #c27800);
+  --s-primary-strong: var(--sale-primary-strong, #3a2a00);
+  --s-primary-soft: var(--sale-primary-soft, #fff3c4);
+  --s-new: var(--sale-new, #5b6cff);
   --s-progress: var(--sale-progress, #d97706);
-  --s-success: var(--sale-success, #16a34a);
-  --s-danger: var(--sale-danger, #dc2626);
+  --s-success: var(--sale-success, #2e7d32);
+  --s-danger: var(--sale-danger, #c62828);
   --s-font: var(--sale-font, var(--font-iran, Tahoma, Arial, sans-serif));
 
   background: var(--s-surface);
   border: 1px solid var(--s-line);
   border-radius: 14px;
-  padding: 0.8rem 0.95rem;
+  padding: 0.85rem 0.95rem;
   cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   font-family: var(--s-font);
 }
 
 .item:hover {
-  border-color: rgba(79, 70, 229, 0.4);
-  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.14);
+  border-color: rgba(194, 120, 0, 0.35);
+  box-shadow: 0 8px 24px rgba(194, 120, 0, 0.14);
   transform: translateY(-2px);
+  background: #fffdf8;
 }
 
 .todayItem {
@@ -164,7 +165,7 @@
 .viewBtn:hover {
   color: var(--s-primary-strong);
   background: var(--s-primary-soft);
-  border-color: rgba(79, 70, 229, 0.3);
+  border-color: rgba(194, 120, 0, 0.3);
 }
 
 .itemMeta {

@@ -237,11 +237,24 @@ export const AuthProvider = ({ children }) => {
   // ============================================
   const hasPermission = useCallback(
     (permission) => {
+      if (!permission) return false;
       if (user?.is_superuser) return true;
+      if (permissions.includes("all")) return true;
       return permissions.includes(permission);
     },
     [permissions, user]
   );
+
+  const hasSection = hasPermission;
+
+  const assignedSections = Array.isArray(employeeData?.departments)
+    ? employeeData.departments
+    : [];
+
+  const canManageEmployees =
+    !!user?.is_superuser ||
+    hasPermission("users") ||
+    (employeeData?.access_level ?? 0) >= 3;
 
   // ============================================
   // ✅ اعتبارسنجی توکن‌ها
@@ -681,6 +694,9 @@ export const AuthProvider = ({ children }) => {
     checkEmployeeStatus,
     permissions,
     hasPermission,
+    hasSection,
+    assignedSections,
+    canManageEmployees,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

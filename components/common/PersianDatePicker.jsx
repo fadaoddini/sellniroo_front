@@ -148,6 +148,7 @@ const PersianDatePicker = ({ value, onChange, placeholder = 'تاریخ را ا�
         </span>
         {selectedDate && (
           <button 
+            type="button"
             className={styles.clearBtn}
             onClick={(e) => {
               e.stopPropagation()
@@ -163,13 +164,13 @@ const PersianDatePicker = ({ value, onChange, placeholder = 'تاریخ را ا�
       {isOpen && (
         <div className={styles.pickerDropdown}>
           <div className={styles.pickerHeader}>
-            <button onClick={() => changeMonth(-1)} className={styles.navBtn}>
+            <button type="button" onClick={() => changeMonth(-1)} className={styles.navBtn}>
               <ChevronRight size={18} />
             </button>
             <span className={styles.monthYear}>
               {persianYear} - {monthNames[persianMonth - 1]}
             </span>
-            <button onClick={() => changeMonth(1)} className={styles.navBtn}>
+            <button type="button" onClick={() => changeMonth(1)} className={styles.navBtn}>
               <ChevronLeft size={18} />
             </button>
           </div>
@@ -204,6 +205,7 @@ const PersianDatePicker = ({ value, onChange, placeholder = 'تاریخ را ا�
 
               return (
                 <button
+                  type="button"
                   key={index}
                   className={`${styles.dayBtn} ${isToday ? styles.today : ''} ${isSelected ? styles.selected : ''}`}
                   onClick={() => handleDateSelect(day)}

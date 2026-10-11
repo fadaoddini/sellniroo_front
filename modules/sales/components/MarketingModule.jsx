@@ -489,28 +489,28 @@ const MarketingModule = () => {
     )
   }
 
+  const statCards = [
+    { id: 'total', label: 'کل', value: stats?.total ?? items.length, icon: <ListFilter size={18} />, accent: '#c27800' },
+    { id: 'new', label: 'جدید', value: stats?.new ?? items.filter((i) => i.status === 'new').length, icon: <Sparkles size={18} />, accent: '#5b6cff' },
+    { id: 'progress', label: 'در حال پیگیری', value: stats?.in_progress ?? items.filter((i) => i.status === 'in_progress').length, icon: <CircleDot size={18} />, accent: '#d97706' },
+    { id: 'confirmed', label: 'قرارداد', value: stats?.confirmed ?? items.filter((i) => i.status === 'confirmed').length, icon: <CheckCircle2 size={18} />, accent: '#2e7d32' },
+    { id: 'cancelled', label: 'بسته شده', value: stats?.cancelled ?? items.filter((i) => i.status === 'cancelled').length, icon: <CircleX size={18} />, accent: '#c62828' },
+  ]
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <div>
-          <h1 className={styles.title}>
-            <ListFilter size={18} className={styles.headerIcon} />
-            بازاریابی و پیگیری
-          </h1>
-          <p className={styles.subtitle}>مدیریت موارد بازاریابی و پیگیری‌ها</p>
-          {stats && (
-            <div className={styles.statsBar}>
-              <span>کل: {stats.total || 0}</span>
-              <span>جدید: {stats.new || 0}</span>
-              <span>در حال پیگیری: {stats.in_progress || 0}</span>
-              <span>قرارداد: {stats.confirmed || 0}</span>
-              <span>بسته شده: {stats.cancelled || 0}</span>
-            </div>
-          )}
+        <div className={styles.headerMain}>
+          <span className={styles.headerIconWrap}>
+            <ListFilter size={24} className={styles.headerIcon} />
+          </span>
+          <div>
+            <h1 className={styles.title}>بازاریابی و پیگیری</h1>
+            <p className={styles.subtitle}>مدیریت لیدها، پیگیری‌ها و قراردادها</p>
+          </div>
         </div>
         <div className={styles.headerActions}>
           <button className={styles.addBtn} onClick={() => {
-            // supervisors have all permissions
             if (user?.is_superuser) {
               setShowForm(true)
               return
@@ -527,16 +527,30 @@ const MarketingModule = () => {
         </div>
       </div>
 
+      <div className={styles.statsGrid}>
+        {statCards.map((s) => (
+          <div key={s.id} className={styles.statCard} style={{ '--stat-accent': s.accent }}>
+            <span className={styles.statIcon}>{s.icon}</span>
+            <div className={styles.statMeta}>
+              <span className={styles.statValue}>{s.value}</span>
+              <span className={styles.statLabel}>{s.label}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
       <div className={styles.controls}>
-        <div className={styles.searchBox}>
-          <Search size={16} className={styles.searchIcon} />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="جستجو در موارد..."
-            className={styles.searchInput}
-          />
+        <div className={styles.controlsTop}>
+          <div className={styles.searchBox}>
+            <Search size={16} className={styles.searchIcon} />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="جستجو در موارد..."
+              className={styles.searchInput}
+            />
+          </div>
         </div>
         <div className={styles.tabs}>
           <button 

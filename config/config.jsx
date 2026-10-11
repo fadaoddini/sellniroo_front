@@ -129,11 +129,11 @@ karmandan: {
   // ============================================
   // ✅ جستجو و آمار
   // ============================================
-  search: (query) => {
+  search: (query, extra = {}) => {
     return Config.getApiUrl({
       segment: 'api/karmandan',
       endpoint: 'employees/search/',
-      params: { q: query },
+      params: { q: query, ...extra },
       noVersion: true
     });
   },
@@ -169,6 +169,30 @@ karmandan: {
       params: { q: query },
       noVersion: true
     });
+  },
+
+  departments: {
+    list: (params = {}) => Config.getApiUrl({
+      segment: 'api/karmandan',
+      endpoint: 'departments/',
+      params,
+      noVersion: true
+    }),
+    create: () => Config.getApiUrl({
+      segment: 'api/karmandan',
+      endpoint: 'departments/',
+      noVersion: true
+    }),
+    update: (id) => Config.getApiUrl({
+      segment: 'api/karmandan',
+      endpoint: `departments/${id}/`,
+      noVersion: true
+    }),
+    delete: (id) => Config.getApiUrl({
+      segment: 'api/karmandan',
+      endpoint: `departments/${id}/`,
+      noVersion: true
+    }),
   },
 
   // ============================================
@@ -719,6 +743,39 @@ news: {
       params: { limit },
       noVersion: true
     });
+  },
+  tickers: {
+    list: (params = {}) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'tickers/',
+      params,
+      noVersion: true
+    }),
+    active: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'tickers/active/',
+      noVersion: true
+    }),
+    create: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'tickers/',
+      noVersion: true
+    }),
+    update: (id) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `tickers/${id}/`,
+      noVersion: true
+    }),
+    delete: (id) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `tickers/${id}/`,
+      noVersion: true
+    }),
+    toggleActive: (id) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `tickers/${id}/toggle-active/`,
+      noVersion: true
+    }),
   },
   hot: (limit = 10) => {
     return Config.getApiUrl({

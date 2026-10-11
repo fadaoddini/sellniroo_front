@@ -1,144 +1,270 @@
-/* styles/modules/Dashboard.module.css */
+/* داشبورد — هماهنگ با کارمندان و فروش (طلایی/کرم) */
 
-/* ============================================
-   Container
-   ============================================ */
 .dashboardContainer {
-  padding: 2rem 0;
-  background: var(--macos-bg);
+  --dash-ink: #2a241c;
+  --dash-muted: #6f675c;
+  --dash-line: rgba(90, 60, 20, 0.12);
+  --dash-gold: #fbc300;
+  --dash-gold-dark: #c27800;
+  --dash-cream: #fff7ec;
+
+  padding: 1.75rem 0 3rem;
+  background:
+    radial-gradient(1200px 420px at 100% -10%, rgba(251, 195, 0, 0.18), transparent 55%),
+    radial-gradient(900px 380px at -10% 0%, rgba(251, 151, 0, 0.12), transparent 50%),
+    var(--macos-bg);
   min-height: 100vh;
   font-family: var(--font-iran);
+  color: var(--dash-ink);
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1180px;
   margin: 0 auto;
   padding: 0 1rem;
 }
 
-/* ============================================
-   Header (هماهنگ با EmployeeManagement)
-   ============================================ */
+/* ---------- هدر ---------- */
 .dashboardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: 16px;
-  margin-bottom: 24px;
-  padding: 20px 24px;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  color: #fff;
-  box-shadow: 0 8px 24px rgba(128, 0, 32, 0.25);
+  margin-bottom: 16px;
+  padding: 22px 26px;
+  background: linear-gradient(135deg, #ffd54a 0%, #fbc300 42%, #fb9700 100%);
+  border-radius: 22px;
+  color: #3a2a00;
+  box-shadow: 0 14px 36px rgba(201, 120, 0, 0.28);
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboardHeader::after {
+  content: "";
+  position: absolute;
+  inset: auto -40px -50px auto;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  pointer-events: none;
 }
 
 .headerLeft {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+  min-width: 0;
 }
 
 .headerIcon {
-  width: 56px;
-  height: 56px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 14px;
+  width: 54px;
+  height: 54px;
+  background: rgba(255, 255, 255, 0.38);
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(10px);
+  color: #5a3d00;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
   flex-shrink: 0;
 }
 
 .pageTitle {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   font-family: var(--font-edameh);
   margin: 0 0 4px 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #fff;
-}
-
-.pageTitle .titleIcon {
-  width: 22px;
-  height: 22px;
+  color: #3a2a00;
 }
 
 .pageDesc {
-  font-size: 11px;
-  opacity: 0.9;
+  font-size: 12px;
   margin: 0;
+  color: rgba(58, 42, 0, 0.78);
   font-family: var(--font-iran);
-  color: rgba(255, 255, 255, 0.9);
 }
 
-/* ============================================
-   User Info Bar
-   ============================================ */
-.userInfoBar {
-  background: var(--macos-card);
-  backdrop-filter: var(--macos-blur);
-  padding: 0.75rem 1.25rem;
+.headerActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
+}
+
+.refreshBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
   border-radius: 12px;
-  margin-bottom: 1.5rem;
-  border: 1px solid var(--macos-border);
+  background: rgba(255, 255, 255, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: #3a2a00;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.refreshBtn:hover {
+  background: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.refreshBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ---------- پروفایل کاربر ---------- */
+.userInfoBar {
+  background: #fff;
+  padding: 14px 16px;
+  border-radius: 18px;
+  margin-bottom: 16px;
+  border: 1px solid var(--dash-line);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  box-shadow: 0 8px 24px rgba(80, 50, 0, 0.05);
+}
+
+.userAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: #fff3c4;
+  color: #8a5a00;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  box-shadow: var(--macos-shadow);
-}
-
-.userInfoBar svg {
-  color: var(--primary);
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
   flex-shrink: 0;
 }
 
-.userInfoText {
-  font-family: var(--font-iran);
+.userMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.userName {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dash-ink);
+  font-family: var(--font-edameh);
+}
+
+.userChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: var(--dash-cream);
+  border: 1px solid var(--dash-line);
   font-size: 11px;
-  color: var(--macos-text);
-}
-
-.userInfoText .highlight {
-  color: var(--primary);
   font-weight: 600;
+  color: var(--dash-muted);
 }
 
-/* ============================================
-   Stats Cards (هماهنگ با EmployeeManagement)
-   ============================================ */
+.chipStrong {
+  background: #fff3c4;
+  border-color: rgba(194, 120, 0, 0.28);
+  color: #8a5a00;
+}
+
+.sectionChip {
+  background: color-mix(in srgb, var(--chip-color, #c27800) 12%, #fff);
+  border-color: color-mix(in srgb, var(--chip-color, #c27800) 35%, transparent);
+  color: var(--chip-color, #c27800);
+}
+
+.colorDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* ---------- آمار ---------- */
+.blockHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dash-ink);
+  margin: 0;
+  font-family: var(--font-edameh);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.sectionTitle svg {
+  color: var(--dash-gold-dark);
+  width: 18px;
+  height: 18px;
+}
+
+.statsSection {
+  margin-bottom: 18px;
+}
+
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 8px;
-  margin-bottom: 24px;
+  gap: 10px;
 }
 
 .statCard {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px;
-  background: var(--macos-card);
-  backdrop-filter: var(--macos-blur);
-  border-radius: 12px;
-  border: 1px solid var(--macos-border);
-  box-shadow: var(--macos-shadow);
-  transition: transform 0.2s, box-shadow 0.2s;
+  padding: 14px;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid var(--dash-line);
+  border-inline-start: 4px solid var(--stat-accent, var(--dash-gold));
+  box-shadow: 0 8px 24px rgba(80, 50, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .statCard:hover {
   transform: translateY(-2px);
-  box-shadow: var(--macos-shadow-hover);
+  box-shadow: 0 12px 28px rgba(80, 50, 0, 0.1);
 }
 
 .statIconWrapper {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,16 +283,17 @@
 }
 
 .statValue {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 700;
   font-family: var(--font-edameh);
-  color: var(--macos-text);
-  line-height: 1.2;
+  color: var(--dash-ink);
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
 }
 
 .statLabel {
-  font-size: 10px;
-  color: var(--macos-text-secondary);
+  font-size: 11px;
+  color: var(--dash-muted);
   margin-top: 2px;
   font-family: var(--font-iran);
 }
@@ -176,41 +303,32 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 10px;
-  font-weight: 600;
-  margin-top: 2px;
+  font-weight: 700;
+  margin-top: 3px;
   font-family: var(--font-iran);
 }
 
 .statChange.positive { color: #2e7d32; }
 .statChange.negative { color: #c62828; }
 
-/* ============================================
-   Quick Actions (هماهنگ با EmployeeManagement)
-   ============================================ */
+.emptyHint {
+  padding: 18px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1.5px dashed var(--dash-line);
+  color: var(--dash-muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ---------- دسترسی سریع ---------- */
 .quickActionsSection {
-  margin-bottom: 1.5rem;
-}
-
-.sectionTitle {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--macos-text);
-  margin-bottom: 0.75rem;
-  font-family: var(--font-edameh);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.sectionTitle svg {
-  color: var(--primary);
-  width: 18px;
-  height: 18px;
+  margin-bottom: 1.25rem;
 }
 
 .actionsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
   gap: 10px;
 }
 
@@ -220,40 +338,25 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 16px 12px;
-  background: var(--macos-card);
-  backdrop-filter: var(--macos-blur);
-  border: 1px solid var(--macos-border);
-  border-radius: 12px;
+  padding: 18px 12px;
+  background: #fff;
+  border: 1px solid var(--dash-line);
+  border-radius: 16px;
   text-decoration: none;
-  color: var(--macos-text);
+  color: var(--dash-ink);
   font-family: var(--font-iran);
-  font-size: 11px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: var(--macos-shadow);
+  font-size: 12px;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 8px 24px rgba(80, 50, 0, 0.05);
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-.actionCard::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent 50%, rgba(128, 0, 32, 0.03));
-  opacity: 0;
-  transition: opacity 0.3s ease;
 }
 
 .actionCard:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--macos-shadow-hover);
-  border-color: var(--primary);
-}
-
-.actionCard:hover::before {
-  opacity: 1;
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(80, 50, 0, 0.1);
+  border-color: rgba(194, 120, 0, 0.35);
+  background: #fffdf8;
 }
 
 .actionCard:active {
@@ -263,16 +366,16 @@
 .actionIcon {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: transform 0.2s ease;
   flex-shrink: 0;
 }
 
 .actionCard:hover .actionIcon {
-  transform: scale(1.05) rotate(-2deg);
+  transform: scale(1.06);
 }
 
 .actionIcon svg {
@@ -281,42 +384,25 @@
 }
 
 .actionLabel {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   font-family: var(--font-iran);
   text-align: center;
-  color: var(--macos-text);
+  color: var(--dash-ink);
 }
 
-.actionBadge {
-  position: absolute;
-  top: 8px;
-  inset-inline-end: 8px;
-  background: var(--primary);
-  color: white;
-  font-size: 9px;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-weight: 600;
-  font-family: var(--font-iran);
-}
-
-/* ============================================
-   Footer
-   ============================================ */
+/* ---------- فوتر ---------- */
 .dashboardFooter {
   text-align: center;
-  padding: 1.5rem;
-  color: var(--macos-text-secondary);
-  font-size: 10px;
+  padding: 1.25rem;
+  color: var(--dash-muted);
+  font-size: 11px;
   font-family: var(--font-iran);
-  border-top: 1px solid var(--macos-border);
+  border-top: 1px solid var(--dash-line);
   margin-top: 0.5rem;
 }
 
-/* ============================================
-   Loading & Error States
-   ============================================ */
+/* ---------- لودینگ و خطا ---------- */
 .loadingContainer {
   display: flex;
   flex-direction: column;
@@ -328,7 +414,7 @@
 
 .spinner {
   animation: spin 0.8s linear infinite;
-  color: var(--primary);
+  color: var(--dash-gold-dark);
 }
 
 @keyframes spin {
@@ -336,7 +422,7 @@
 }
 
 .loadingContainer p {
-  color: var(--macos-text-secondary);
+  color: var(--dash-muted);
   font-family: var(--font-iran);
   font-size: 13px;
 }
@@ -350,17 +436,33 @@
   gap: 0.75rem;
   text-align: center;
   padding: 2rem;
+  background: #fff;
+  border: 1px solid var(--dash-line);
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(80, 50, 0, 0.05);
+}
+
+.accessDeniedIcon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #fde8ea;
+  color: #c62828;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.35rem;
 }
 
 .errorContainer h3 {
-  font-size: 14px;
-  color: var(--macos-text);
+  font-size: 15px;
+  color: var(--dash-ink);
   font-family: var(--font-edameh);
   margin: 0;
 }
 
 .errorContainer p {
-  color: var(--macos-text-secondary);
+  color: var(--dash-muted);
   font-family: var(--font-iran);
   font-size: 12px;
   max-width: 400px;
@@ -371,36 +473,28 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 10px 22px;
+  padding: 10px 20px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
+  background: #3a2a00;
+  color: #fff8e7;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   font-family: var(--font-iran);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.2s ease, background 0.2s ease;
   text-decoration: none;
+  box-shadow: 0 8px 18px rgba(58, 42, 0, 0.22);
 }
 
 .primaryBtn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(128, 0, 32, 0.3);
-}
-
-/* ============================================
-   Responsive
-   ============================================ */
-@media (max-width: 1024px) {
-  .statsGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  background: #241a00;
+  transform: translateY(-1px);
 }
 
 @media (max-width: 768px) {
   .dashboardContainer {
-    padding: 1rem 0;
+    padding: 1rem 0 2rem;
   }
 
   .container {
@@ -410,132 +504,49 @@
   .dashboardHeader {
     flex-direction: column;
     align-items: stretch;
-    gap: 12px;
     padding: 16px;
+    border-radius: 18px;
   }
 
   .headerIcon {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
+    width: 46px;
+    height: 46px;
   }
 
   .pageTitle {
-    font-size: 14px;
+    font-size: 15px;
   }
 
+  .headerActions .refreshBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .statsGrid,
   .actionsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .statsGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-  }
-
-  .actionCard {
-    padding: 12px 10px;
-  }
-
-  .actionIcon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-  }
-
-  .actionIcon svg {
-    width: 18px;
-    height: 18px;
-  }
-
-  .userInfoBar {
-    padding: 0.5rem 0.75rem;
-    font-size: 10px;
-  }
-
-  .statCard {
-    padding: 10px;
-    gap: 8px;
-  }
-
-  .statIconWrapper {
-    width: 32px;
-    height: 32px;
-  }
-
-  .statIconWrapper svg {
-    width: 16px;
-    height: 16px;
-  }
-
   .statValue {
-    font-size: 14px;
-  }
-
-  .statLabel {
-    font-size: 9px;
-  }
-
-  .sectionTitle {
-    font-size: 12px;
+    font-size: 17px;
   }
 }
 
 @media (max-width: 480px) {
   .actionsGrid {
-    grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
 
   .actionCard {
-    padding: 10px 6px;
-    border-radius: 10px;
+    padding: 14px 8px;
   }
 
   .actionIcon {
-    width: 36px;
-    height: 36px;
-    border-radius: 9px;
-  }
-
-  .actionIcon svg {
-    width: 16px;
-    height: 16px;
+    width: 40px;
+    height: 40px;
   }
 
   .actionLabel {
-    font-size: 10px;
-  }
-
-  .userInfoBar {
-    padding: 0.5rem 0.75rem;
-    font-size: 10px;
-  }
-
-  .statCard {
-    padding: 10px;
-    gap: 8px;
-  }
-
-  .statIconWrapper {
-    width: 32px;
-    height: 32px;
-  }
-
-  .statIconWrapper svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  .statValue {
-    font-size: 14px;
-  }
-
-  .statLabel {
-    font-size: 9px;
-  }
-
-  .sectionTitle {
-    font-size: 12px;
+    font-size: 11px;
   }
 }

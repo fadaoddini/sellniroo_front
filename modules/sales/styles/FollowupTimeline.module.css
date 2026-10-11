@@ -2,13 +2,13 @@
 
 .timeline {
   --s-surface: var(--sale-surface, #ffffff);
-  --s-surface-2: var(--sale-surface-2, #f4f6fb);
-  --s-ink: var(--sale-ink, #23263b);
-  --s-muted: var(--sale-muted, #68708f);
-  --s-faint: var(--sale-faint, #9aa1bd);
-  --s-line: var(--sale-line, #e4e8f3);
-  --s-primary: var(--sale-primary, #4f46e5);
-  --s-primary-soft: var(--sale-primary-soft, #edeeff);
+  --s-surface-2: var(--sale-surface-2, #fff7ec);
+  --s-ink: var(--sale-ink, #2a241c);
+  --s-muted: var(--sale-muted, #6f675c);
+  --s-faint: var(--sale-faint, #a3988a);
+  --s-line: var(--sale-line, rgba(90, 60, 20, 0.12));
+  --s-primary: var(--sale-primary, #c27800);
+  --s-primary-soft: var(--sale-primary-soft, #fff3c4);
   --s-progress: var(--sale-progress, #d97706);
   --s-success: var(--sale-success, #16a34a);
   --s-danger: var(--sale-danger, #dc2626);

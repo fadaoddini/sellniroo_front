@@ -88,6 +88,28 @@
   50% { opacity: 0; }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .cursor {
+    animation: none;
+    opacity: 0;
+  }
+
+  .consultButton,
+  .aboutButton,
+  .loginButton,
+  .profileButton,
+  .profileMenuItem,
+  .closeDialogBtn {
+    transition: none;
+  }
+
+  .profileDropdown,
+  .dialogOverlay,
+  .dialogBox {
+    animation: none;
+  }
+}
+
 /* ============================================
    بخش راست - منو و ابزارها
    ============================================ */
@@ -474,14 +496,10 @@
   }
   
   .datetime {
-    font-size: 0.5rem;
-    padding: 0.1rem 0.5rem;
+    font-size: 0.58rem;
+    padding: 0.1rem 0.45rem;
   }
-  
-  .datetime span {
-    display: none;
-  }
-  
+
   .profileDropdown {
     min-width: 180px;
   }
@@ -508,7 +526,7 @@
   }
   
   .newsText {
-    font-size: 0.5rem;
+    font-size: 0.58rem;
   }
   
   .consultButton {
@@ -574,7 +592,7 @@
   }
   
   .datetime {
-    font-size: 0.4rem;
+    font-size: 0.52rem;
     padding: 0.05rem 0.3rem;
   }
 }
@@ -600,7 +618,7 @@
   }
   
   .newsText {
-    font-size: 0.45rem;
+    font-size: 0.55rem;
   }
   
   .consultButton {
@@ -666,7 +684,7 @@
   }
   
   .datetime {
-    font-size: 0.35rem;
+    font-size: 0.5rem;
     padding: 0.05rem 0.25rem;
   }
 }

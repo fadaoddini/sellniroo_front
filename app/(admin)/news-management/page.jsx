@@ -8,9 +8,11 @@ import { useRouter } from 'next/navigation'
 import NewsManagement from '@/components/newsAdmin/NewsManagement'
 
 const NewsManagementPage = () => {
-  const { isAuthenticated, loading, user } = useAuth()
+  const { isAuthenticated, loading, user, hasPermission } = useAuth()
   const { dir } = useLanguage()
   const router = useRouter()
+
+  const canAccess = user?.is_superuser || user?.is_staff || hasPermission('news')
 
   React.useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -23,6 +25,14 @@ const NewsManagementPage = () => {
   }
 
   if (!isAuthenticated) return null
+
+  if (!canAccess) {
+    return (
+      <div dir={dir} style={{ padding: 40, textAlign: 'center' }}>
+        دسترسی به بخش اخبار برای شما فعال نیست.
+      </div>
+    )
+  }
 
   return (
     <div dir={dir}>
