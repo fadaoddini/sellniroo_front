@@ -637,3 +637,91 @@
     padding: 6px 12px;
   }
 }
+
+.guestForm {
+  margin: 0 0 1.25rem;
+  padding: 1rem;
+  border-radius: 14px;
+  background: rgba(128, 0, 32, 0.05);
+  border: 1px solid rgba(128, 0, 32, 0.1);
+  text-align: right;
+}
+
+.guestForm label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-iran);
+  font-size: 0.85rem;
+  color: #14181f;
+}
+
+.guestRow {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.guestRow input {
+  flex: 1 1 180px;
+  min-width: 0;
+  padding: 0.7rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid rgba(20, 24, 31, 0.15);
+  font-family: var(--font-iran);
+  font-size: 0.9rem;
+}
+
+.leaderboardBox {
+  margin: 0 0 1.25rem;
+  text-align: right;
+}
+
+.leaderboardTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 0.75rem;
+  font-family: var(--font-edameh), var(--font-iran);
+  font-size: 0.95rem;
+}
+
+.leaderboardList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.leaderboardItem {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  padding: 0.5rem 0.7rem;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.03);
+  font-family: var(--font-iran);
+  font-size: 0.8rem;
+}
+
+.leaderboardRank {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  color: #800020;
+}
+
+.leaderboardName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leaderboardScore {
+  direction: ltr;
+  color: rgba(20, 24, 31, 0.65);
+  white-space: nowrap;
+}

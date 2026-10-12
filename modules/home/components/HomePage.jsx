@@ -1,23 +1,27 @@
 'use client'
 
 import React from 'react'
-import CTASection from './sections/CTASection'
-import AllBoxItem from '@/components/AllBoxItem/AllBoxItem'
+import JobListingsSlot from '@/components/modules/JobListingsSlot'
+import NewsSectionSlot from '@/components/modules/NewsSectionSlot'
+import CTASectionSlot from '@/components/modules/CTASectionSlot'
+import VideoInstaSlot from '@/components/modules/VideoInstaSlot'
+import CatalogSlot from '@/components/modules/CatalogSlot'
 
-import VideoArchiveSection from '@/components/Story/VideoArchiveSection'
 import styles from '../styles/HomePage.module.css'
-import NewsSection from './sections/news/NewsSection'
 
-const HomePage = () => {
+const HomePage = ({ seoSubtitle = '', siteName = '' }) => {
   return (
     <div className={styles.homeContainer}>
-      {/* ✅ h2 مخفی برای سئو - تکمیل کننده h1 در page.jsx */}
-      <h2 className="sr-only">
-        خدمات و پروژه‌های هلدینگ آریا استاد در زمینه سازه‌های سبک فولادی ال اس اف
-      </h2>
-      <NewsSection />
-      <AllBoxItem />
-      <CTASection />
+      {seoSubtitle ? (
+        <h2 className="sr-only">{seoSubtitle}</h2>
+      ) : siteName ? (
+        <h2 className="sr-only">{siteName}</h2>
+      ) : null}
+      <NewsSectionSlot />
+      <VideoInstaSlot variant="section" />
+      <CatalogSlot />
+      <JobListingsSlot />
+      <CTASectionSlot />
     </div>
   )
 }

@@ -2,19 +2,20 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { aboutData } from '../AboutData'
+import { fetchAboutPage, pickAboutContent } from '@/services/aboutPage'
 
 export const useAbout = (language) => {
-  const [data, setData] = useState(aboutData.fa)
+  const [data, setData] = useState(aboutData[language] || aboutData.fa)
   const [loading, setLoading] = useState(true)
 
-  const loadData = useCallback(() => {
+  const loadData = useCallback(async () => {
     setLoading(true)
     try {
-      const selectedData = aboutData[language] || aboutData.fa
-      setData(selectedData)
+      const page = await fetchAboutPage({ force: true, lang: language || 'fa' })
+      setData(pickAboutContent(page, language))
     } catch (error) {
       console.error('Error loading about data:', error)
-      setData(aboutData.fa)
+      setData(aboutData[language] || aboutData.fa)
     } finally {
       setLoading(false)
     }

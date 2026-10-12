@@ -3,7 +3,7 @@
 
 import { useRef, useEffect, useCallback } from "react";
 import styles from "../styles/ProfileTabs.module.css";
-import { Briefcase, User, Send, Bookmark, Building2, FileText } from "lucide-react";
+import { Briefcase, User, Send, Bookmark, Building2, FileText, Brain } from "lucide-react";
 
 const ICONS = {
   briefcase: Briefcase,
@@ -12,11 +12,13 @@ const ICONS = {
   bookmark: Bookmark,
   building: Building2,
   "file-text": FileText,
+  brain: Brain,
 };
 
-const ProfileTabs = ({ tabs, activeTab, onChange }) => {
+const ProfileTabs = ({ tabs, activeTab, onChange, tone = "job" }) => {
   const listRef = useRef(null);
   const btnRefs = useRef({});
+  const toneClass = tone === "basic" ? styles.toneBasic : styles.toneJob;
 
   useEffect(() => {
     const el = btnRefs.current[activeTab];
@@ -51,7 +53,7 @@ const ProfileTabs = ({ tabs, activeTab, onChange }) => {
   );
 
   return (
-    <div className={styles.tabsWrapper}>
+    <div className={`${styles.tabsWrapper} ${toneClass}`}>
       <div
         ref={listRef}
         className={styles.tabs}

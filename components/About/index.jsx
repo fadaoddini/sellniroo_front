@@ -105,8 +105,8 @@ const AboutContent = () => {
             </div>
             <div className={styles.imageWrapper}>
               <Image
-                src="/images/bglogo.jpeg"
-                alt="سلنیرو - کاریابی تخصصی فروش و بازاریابی"
+                src={data.section1?.image?.src || '/images/bglogo.jpeg'}
+                alt={data.section1?.image?.alt || data.section1?.title || 'سلنیرو'}
                 width={900}
                 height={650}
                 className={styles.contentImage}
@@ -119,8 +119,8 @@ const AboutContent = () => {
           <div className={`${styles.sectionBlock} ${styles.imageLeft}`}>
             <div className={styles.imageWrapper}>
               <Image
-                src="/images/sell.jpeg"
-                alt="تعهد به کیفیت و شفافیت سلنیرو"
+                src={data.section2?.image?.src || '/images/sell.jpeg'}
+                alt={data.section2?.image?.alt || data.section2?.title || 'سلنیرو'}
                 width={900}
                 height={650}
                 className={styles.contentImage}

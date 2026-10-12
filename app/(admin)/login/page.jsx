@@ -28,7 +28,10 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/");
+      const next = new URLSearchParams(window.location.search).get("next");
+      const safeNext =
+        next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
+      router.push(safeNext);
     }
   }, [isAuthenticated, router]);
 

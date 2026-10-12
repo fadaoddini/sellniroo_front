@@ -1,11 +1,62 @@
 /* styles/VideoArchiveSection.module.css */
 
-.videoArchiveSection {
-  padding: 3rem 0 2rem;
+.desktopOnly {
+  display: block;
+}
+
+@media (max-width: 767px) {
+  .desktopOnly {
+    display: none !important;
+  }
+}
+
+.videoArchiveSection,
+.section {
+  --va-accent: #be123c;
+  --va-accent-2: #f97316;
+  --va-bg-from: #1a1a2e;
+  --va-bg-to: #0a0a1a;
+  --va-accent-soft: color-mix(in srgb, var(--va-accent) 35%, transparent);
+  --va-accent-glow: color-mix(in srgb, var(--va-accent-2) 22%, transparent);
+  --va-ink: #f8fafc;
+  --va-muted: rgba(248, 250, 252, 0.55);
+  --va-faint: rgba(248, 250, 252, 0.12);
+  --va-line: rgba(255, 255, 255, 0.08);
+  --va-surface: rgba(255, 255, 255, 0.035);
+  --va-surface-2: rgba(255, 255, 255, 0.06);
+  --va-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --va-radius: 18px;
+  --va-radius-sm: 12px;
+
+  padding: 3.5rem 0 2.5rem;
   direction: rtl;
   position: relative;
-  background: #0a0a1a;
-  min-height: 100vh;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 80vh;
+  background:
+    radial-gradient(ellipse 70% 45% at 70% -10%, var(--va-accent-soft), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 10% 20%, var(--va-accent-glow), transparent 50%),
+    radial-gradient(circle at 50% 100%, var(--va-bg-from) 0%, var(--va-bg-to) 70%);
+  color: var(--va-ink);
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.45), transparent 75%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.section > :global(.container) {
+  position: relative;
+  z-index: 1;
 }
 
 /* ============================================
@@ -13,102 +64,105 @@
    ============================================ */
 .header {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: space-between;
   margin-bottom: 2rem;
   flex-wrap: wrap;
   gap: 1rem;
+  padding-bottom: 1.35rem;
+  border-bottom: 1px solid var(--va-line);
 }
 
-.headerLeft {
+.headerText {
   flex: 1;
   min-width: 200px;
 }
 
-.badge {
-  display: inline-block;
-  padding: 0.3rem 1rem;
-  background: rgba(128, 0, 32, 0.08);
-  color: var(--white);
-  border: 1px solid rgba(128, 0, 32, 0.25);
-  border-radius: 50px;
-  font-size: 0.7rem;
-  font-weight: 500;
-  font-family: var(--font-iran);
-  margin-bottom: 0.5rem;
-  letter-spacing: 0.3px;
-}
-
 .title {
-  font-size: 1.8rem;
+  font-size: clamp(1.45rem, 2.4vw, 2rem);
   font-weight: 800;
-  color: var(--white);
   font-family: var(--font-edameh);
-  margin-bottom: 0.25rem;
-  background: linear-gradient(135deg, #ffffff 0%, #f97316 100%);
+  margin: 0 0 0.4rem;
+  letter-spacing: -0.4px;
+  line-height: 1.2;
+  background: linear-gradient(
+    120deg,
+    #ffffff 10%,
+    var(--va-accent-2) 48%,
+    var(--va-accent) 100%
+  );
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.subtitle {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
-  font-family: var(--font-iran);
+.titleSolid {
+  background: none;
+  -webkit-text-fill-color: var(--va-title-solid, #fff);
+  color: var(--va-title-solid, #fff);
 }
 
-.totalCount {
-  display: block;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
-  margin-top: 0.25rem;
+.subtitle {
+  font-size: 0.875rem;
+  color: var(--va-muted);
+  font-family: var(--font-iran);
+  line-height: 1.7;
+  margin: 0;
+  max-width: 36rem;
 }
 
 .addBtn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 0.5rem 1.1rem;
-  background: linear-gradient(135deg, #800020 0%, #5a0016 100%);
+  gap: 7px;
+  padding: 0.65rem 1.2rem;
+  background: linear-gradient(135deg, var(--va-accent) 0%, color-mix(in srgb, var(--va-accent) 70%, #000) 100%);
   color: white;
-  border: none;
-  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
   font-size: 0.8rem;
   font-family: var(--font-iran);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s var(--va-ease), box-shadow 0.3s var(--va-ease),
+    filter 0.3s ease;
   flex-shrink: 0;
+  box-shadow: 0 8px 24px var(--va-accent-soft);
 }
 
-.addBtn:hover {
+.addBtn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(128, 0, 32, 0.4);
+  filter: brightness(1.08);
+  box-shadow: 0 12px 32px rgba(159, 18, 57, 0.45);
 }
 
 .addBtn:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
-  transform: none;
 }
 
 /* ============================================
    ADD FORM
    ============================================ */
 .addForm {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  border: 2px dashed rgba(128, 0, 32, 0.3);
-  border-radius: 16px;
-  padding: 1.5rem;
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.02)
+  );
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--va-line);
+  border-radius: var(--va-radius);
+  padding: 1.35rem 1.4rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
-  animation: slideDown 0.3s ease-out;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  animation: slideDown 0.35s var(--va-ease);
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-8px);
   }
   to {
     opacity: 1;
@@ -116,27 +170,54 @@
   }
 }
 
-.addForm h4 {
+.addFormHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.addFormHeader h4 {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 1rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.92);
   font-family: var(--font-edameh);
-  margin-bottom: 1rem;
+  margin: 0;
+}
+
+.closeAddBtn {
+  background: var(--va-surface-2);
+  border: 1px solid var(--va-line);
+  color: rgba(255, 255, 255, 0.65);
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.closeAddBtn:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
 }
 
 .formGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .formField {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .formFieldFull {
@@ -146,31 +227,31 @@
 .formField label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.62);
   font-family: var(--font-iran);
 }
 
-.formField input[type="text"] {
-  padding: 0.55rem 0.85rem;
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+.formField input[type='text'] {
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--va-line);
+  border-radius: 10px;
   font-size: 0.85rem;
   font-family: var(--font-iran);
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.06);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  background: rgba(0, 0, 0, 0.28);
   color: white;
   width: 100%;
 }
 
-.formField input[type="text"]:focus {
-  border-color: #800020;
+.formField input[type='text']:focus {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(128, 0, 32, 0.15);
-  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(190, 18, 60, 0.7);
+  box-shadow: 0 0 0 3px rgba(190, 18, 60, 0.18);
+  background: rgba(0, 0, 0, 0.4);
 }
 
-.formField input[type="text"]::placeholder {
-  color: rgba(255, 255, 255, 0.3);
+.formField input[type='text']::placeholder {
+  color: rgba(255, 255, 255, 0.28);
 }
 
 .fileInputWrapper {
@@ -185,26 +266,27 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0.55rem 0.85rem;
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
   font-size: 0.85rem;
   font-family: var(--font-iran);
   cursor: pointer;
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.25s ease;
+  background: rgba(0, 0, 0, 0.22);
+  color: rgba(255, 255, 255, 0.62);
 }
 
 .fileLabel:hover {
-  border-color: #800020;
-  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(190, 18, 60, 0.55);
+  background: rgba(190, 18, 60, 0.1);
+  color: white;
 }
 
 .formActions {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: 0.55rem;
+  margin-top: 1.1rem;
   flex-wrap: wrap;
 }
 
@@ -213,33 +295,33 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 0.5rem 1.25rem;
+  padding: 0.58rem 1.2rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 999px;
   font-size: 0.8rem;
   font-family: var(--font-iran);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.25s var(--va-ease), filter 0.25s ease;
 }
 
 .saveBtn {
-  background: #22c55e;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
   color: white;
 }
 
 .saveBtn:hover:not(:disabled) {
-  background: #16a34a;
-  transform: translateY(-2px);
+  filter: brightness(1.06);
+  transform: translateY(-1px);
 }
 
 .cancelBtn {
-  background: #ef4444;
+  background: rgba(239, 68, 68, 0.9);
   color: white;
 }
 
 .cancelBtn:hover:not(:disabled) {
-  background: #dc2626;
-  transform: translateY(-2px);
+  filter: brightness(1.06);
+  transform: translateY(-1px);
 }
 
 .saveBtn:disabled,
@@ -249,920 +331,1069 @@
 }
 
 .spinner {
-  animation: spin 1s linear infinite;
+  animation: spin 0.9s linear infinite;
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
   to {
     transform: rotate(360deg);
   }
 }
 
 /* ============================================
-   CAROUSEL
+   MAIN LAYOUT
    ============================================ */
-.carouselContainer {
-  position: relative;
-  padding: 2rem 0;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.carouselTrack {
-  display: flex;
-  gap: 2rem;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem 4rem;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  transition: all 0.3s ease;
-}
-
-.carouselTrack::-webkit-scrollbar {
-  display: none;
-}
-
-/* ============================================
-   CAROUSEL ITEM
-   ============================================ */
-.carouselItem {
-  flex-shrink: 0;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  position: relative;
-  will-change: transform, opacity;
-  aspect-ratio: 9 / 16;
-  width: 220px;
-  height: auto;
-}
-
-.carouselItem:hover {
-  filter: brightness(1.05);
-}
-
-.centerItem {
-  opacity: 1 !important;
-  z-index: 10;
-}
-
-.sideItem {
-  opacity: 0.6;
-  z-index: 5;
-}
-
-/* ============================================
-   دکمه‌های اسکرول - در موبایل هم نمایش داده می‌شوند
-   ============================================ */
-.scrollBtn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: white;
-  cursor: pointer;
-  z-index: 20;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.scrollBtn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-50%) scale(1.1);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 0 30px rgba(128, 0, 32, 0.3);
-}
-
-.scrollBtn:active:not(:disabled) {
-  transform: translateY(-50%) scale(0.95);
-}
-
-.scrollBtn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.scrollLeft {
-  left: 10px;
-}
-
-.scrollRight {
-  right: 10px;
-}
-
-/* ============================================
-   دکمه‌های لمسی برای موبایل (لبه‌های صفحه)
-   ============================================ */
-.touchLeft,
-.touchRight {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: 30%;
-  z-index: 15;
-  cursor: pointer;
-  display: none;
-}
-
-.touchLeft {
-  left: 0;
-}
-
-.touchRight {
-  right: 0;
-}
-
-/* ============================================
-   دکمه خروج از بزرگنمایی - بسیار واضح
-   ============================================ */
-.closeZoomBtn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 20px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
-  color: white;
-  font-size: 1rem;
-  font-family: var(--font-iran);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-}
-
-.closeZoomBtn:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: scale(1.05);
-}
-
-.closeZoomBtn svg {
-  color: #ff4757;
-}
-
-.closeZoomBtn span {
-  font-weight: 500;
-  letter-spacing: 0.5px;
-}
-
-/* ============================================
-   گوشی موبایل
-   ============================================ */
-.mobileFrame {
-  padding: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.phoneMockup {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background: #1a1a2e;
-  border-radius: 24px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.centerItem .phoneMockup {
-  border-color: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 0 60px rgba(128, 0, 32, 0.2);
-}
-
-.sideItem .phoneMockup {
-  border-color: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-.phoneNotch {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120px;
-  height: 28px;
-  background: #000;
-  border-radius: 0 0 16px 16px;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.notchCamera {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #1a1a3a;
-  border: 1px solid #333;
-}
-
-.phoneScreen {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #0a0a1a;
-  aspect-ratio: 9 / 16;
-}
-
-.phoneImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  background: #0a0a1a;
-}
-
-.phoneVideo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  background: #000;
-}
-
-.phonePlaceholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  color: rgba(255, 255, 255, 0.3);
-}
-
-/* ===== آیکون پلی ===== */
-.playOverlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  transition: all 0.3s ease;
-  pointer-events: none;
-}
-
-.carouselItem:hover .playOverlay {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translate(-50%, -50%) scale(1.1);
-}
-
-.playIconSmall {
-  color: white;
-}
-
-/* ===== اطلاعات پایین - همیشه نمایش داده می‌شود ===== */
-.phoneInfo {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 0.75rem 1rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 4;
-}
-
-.phoneTitle {
-  font-size: 0.7rem;
-  color: white;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 60%;
-  font-family: var(--font-iran);
-}
-
-.phoneViews {
-  font-size: 0.6rem;
-  color: rgba(255, 255, 255, 0.6);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-family: var(--font-iran);
-}
-
-.phoneHome {
-  position: absolute;
-  bottom: 6px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 30px;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 2px;
-}
-
-.centerBadge {
-  text-align: center;
-  margin-top: 0.5rem;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
-  font-family: var(--font-iran);
-  animation: pulseText 2s ease-in-out infinite;
-}
-
-@keyframes pulseText {
-  0%, 100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-/* ============================================
-   VIDEO CONTROLS
-   ============================================ */
-.videoControls {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 0.5rem 0.75rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
-  z-index: 10;
-}
-
-.progressBar {
-  width: 100%;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 2px;
-  margin-bottom: 0.4rem;
-  cursor: pointer;
+.mainLayout {
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) 1fr;
+  gap: 1.75rem;
+  align-items: start;
   position: relative;
 }
 
-.progressFill {
-  height: 100%;
-  background: linear-gradient(90deg, #ff6b6b, #ff4757);
-  border-radius: 2px;
-  transition: width 0.1s linear;
-}
-
-.controlsBottom {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.controlBtn {
-  background: transparent;
-  border: none;
-  color: white;
-  cursor: pointer;
-  padding: 0.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-}
-
-.controlBtn:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.zoomBtn {
-  color: rgba(255, 255, 255, 0.6);
-  transition: all 0.3s ease;
-}
-
-.zoomBtn:hover {
-  color: white;
-  background: rgba(255, 255, 255, 0.15);
-  transform: scale(1.1);
-}
-
-.timeText {
-  font-size: 0.6rem;
-  color: rgba(255, 255, 255, 0.7);
-  font-family: var(--font-iran);
-  direction: ltr;
-  flex: 1;
-  text-align: center;
-}
-
-.mobileCounter {
-  display: none;
-  text-align: center;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
-  font-family: var(--font-iran);
-  margin-top: 0.5rem;
-}
-
-/* ============================================
-   PAGE INDICATOR
-   ============================================ */
-.pageIndicator {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.pageDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255, 255, 255, 0.2);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.pageDot:hover {
-  background: rgba(255, 255, 255, 0.4);
-}
-
-.activeDot {
-  background: #800020;
-  width: 24px;
-  border-radius: 4px;
-}
-
-.pageDotsMore {
-  color: rgba(255, 255, 255, 0.3);
-  font-size: 0.8rem;
-  display: flex;
-  align-items: center;
-}
-
-/* ============================================
-   EMPTY & LOADING
-   ============================================ */
-.empty {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: rgba(255, 255, 255, 0.4);
-  font-family: var(--font-iran);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 1rem;
-  gap: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
-  font-family: var(--font-iran);
-}
-
-/* ============================================
-   ZOOM MODE
-   ============================================ */
-.carouselContainer.zoomed {
+.mainLayout.zoomedMode {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(0, 0, 0, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 1rem;
+  background: rgba(4, 4, 10, 0.96);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  padding: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: zoomIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
-  max-height: 100vh;
-  max-width: 100vw;
+  animation: zoomIn 0.35s var(--va-ease);
+}
+
+.mainLayout.zoomedMode .gridColumn {
+  display: none;
+}
+
+.mainLayout.zoomedMode .playerColumn {
+  max-width: 450px;
+  width: 100%;
 }
 
 @keyframes zoomIn {
   from {
     opacity: 0;
-    transform: scale(0.85) translateY(20px);
+    transform: scale(0.94);
   }
   to {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: scale(1);
   }
 }
 
-.carouselContainer.zoomed .carouselTrack {
-  justify-content: center;
-  align-items: center;
-  padding: 0;
-  gap: 0;
-  overflow: hidden;
+/* ============================================
+   PLAYER COLUMN
+   ============================================ */
+.playerColumn {
+  position: sticky;
+  top: 2rem;
+}
+
+.storyPlayer {
+  position: relative;
   width: 100%;
-  height: 100%;
-}
-
-.carouselContainer.zoomed .carouselItem {
-  opacity: 0 !important;
-  transform: scale(0.5) !important;
-  pointer-events: none;
-  width: 0 !important;
-  height: 0 !important;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-}
-
-.carouselContainer.zoomed .centerItem {
-  opacity: 1 !important;
-  transform: scale(1) !important;
-  pointer-events: auto;
-  width: auto !important;
-  height: auto !important;
-  overflow: visible;
-  margin: 0;
-  padding: 0;
-}
-
-.carouselContainer.zoomed .centerItem .phoneMockup {
-  width: min(90vh, 90vw);
-  max-width: 450px;
-  height: min(90vh, 90vw);
-  max-height: 800px;
   aspect-ratio: 9 / 16;
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 0 80px rgba(128, 0, 32, 0.3), 0 0 160px rgba(128, 0, 32, 0.1);
-  border-radius: 30px;
+  background: #000;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+    0 0 70px var(--va-accent-soft);
+  transition: box-shadow 0.4s var(--va-ease), transform 0.4s var(--va-ease);
+}
+
+.storyPlayer.zoomed {
+  aspect-ratio: 9 / 16;
+  max-height: 90vh;
+  width: auto;
+  box-shadow:
+    0 0 100px rgba(159, 18, 57, 0.35),
+    0 30px 80px rgba(0, 0, 0, 0.65);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.storyProgressBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 4px;
+  padding: 10px 12px;
+  z-index: 20;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
+}
+
+.storyProgressSegment {
+  flex: 1;
+  height: 2.5px;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
   overflow: hidden;
 }
 
-.carouselContainer.zoomed .centerItem .phoneVideo {
+.storyProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #fb7185, #fdba74);
+  border-radius: 999px;
+  transition: width 0.12s linear;
+  box-shadow: 0 0 10px rgba(251, 113, 133, 0.55);
+}
+
+.storyHeader {
+  position: absolute;
+  top: 22px;
+  left: 0;
+  right: 0;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 15;
+  pointer-events: none;
+}
+
+.storyUserInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+  min-width: 0;
+}
+
+.storyAvatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #be123c, #f97316);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.storyUserText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.storyUsername {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: white;
+  font-family: var(--font-iran);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+}
+
+.storyTime {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: var(--font-iran);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.65);
+  letter-spacing: 0.02em;
+}
+
+.storyHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.storyIconBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.storyIconBtn:hover {
+  background: rgba(0, 0, 0, 0.72);
+  transform: scale(1.06);
+}
+
+.closeZoomBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.closeZoomBtn:hover {
+  background: #dc2626;
+  transform: scale(1.08);
+}
+
+.storyVideoWrapper {
+  position: relative;
   width: 100%;
   height: 100%;
-  object-fit: contain;
   background: #000;
+}
+
+.storyVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
+  cursor: pointer;
 }
 
-.carouselContainer.zoomed .centerItem .phoneImage {
+.storyNavLayer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  z-index: 5;
+}
+
+.storyNavZone {
+  flex: 1;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bigPlayBtn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: rgba(8, 8, 14, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s var(--va-ease), background 0.3s ease,
+    border-color 0.3s ease;
+  z-index: 10;
+  animation: pulsePlay 2.4s ease-in-out infinite;
+}
+
+.bigPlayBtn:hover {
+  background: rgba(190, 18, 60, 0.78);
+  transform: translate(-50%, -50%) scale(1.08);
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+@keyframes pulsePlay {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(190, 18, 60, 0.45);
+  }
+  55% {
+    box-shadow: 0 0 0 18px rgba(190, 18, 60, 0);
+  }
+}
+
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.25s ease, transform 0.25s var(--va-ease),
+    background 0.25s ease;
+  z-index: 12;
+  opacity: 0;
+}
+
+.storyPlayer:hover .navBtn {
+  opacity: 1;
+}
+
+.navBtn:hover {
+  background: rgba(190, 18, 60, 0.85);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.navBtnPrev {
+  right: 12px;
+}
+
+.navBtnNext {
+  left: 12px;
+}
+
+.storyFooter {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 14px 14px 16px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.88) 10%, transparent);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 15;
+}
+
+.storyControlBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.storyControlBtn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: scale(1.05);
+}
+
+.storyTimeText {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.88);
+  font-family: var(--font-iran);
+  direction: ltr;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.storyProgressClickable {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.storyProgressClickableFill {
+  height: 100%;
+  background: linear-gradient(90deg, #fb7185, #fdba74);
+  border-radius: 999px;
+  transition: width 0.12s linear;
+}
+
+/* ============================================
+   GRID COLUMN
+   ============================================ */
+.gridColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  min-width: 0;
+}
+
+.gridHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--va-line);
+}
+
+.gridTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  font-family: var(--font-iran);
+  margin: 0;
+}
+
+.gridCount {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: var(--font-iran);
+  background: var(--va-surface);
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--va-line);
+  white-space: nowrap;
+}
+
+.videoGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.videoCard {
+  position: relative;
+  background: var(--va-surface);
+  border: 1px solid var(--va-line);
+  border-radius: var(--va-radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.35s var(--va-ease), border-color 0.35s ease,
+    box-shadow 0.35s ease, background 0.35s ease;
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 9 / 16;
+  animation: cardIn 0.45s var(--va-ease) both;
+}
+
+.videoCard:nth-child(1) { animation-delay: 0.02s; }
+.videoCard:nth-child(2) { animation-delay: 0.06s; }
+.videoCard:nth-child(3) { animation-delay: 0.1s; }
+.videoCard:nth-child(4) { animation-delay: 0.14s; }
+.videoCard:nth-child(5) { animation-delay: 0.18s; }
+.videoCard:nth-child(6) { animation-delay: 0.22s; }
+.videoCard:nth-child(7) { animation-delay: 0.26s; }
+.videoCard:nth-child(8) { animation-delay: 0.3s; }
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.videoCard:hover {
+  transform: translateY(-5px);
+  border-color: rgba(190, 18, 60, 0.45);
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(190, 18, 60, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.videoCardActive {
+  border-color: rgba(225, 29, 72, 0.75);
+  background: rgba(190, 18, 60, 0.08);
+  box-shadow:
+    0 12px 28px rgba(159, 18, 57, 0.28),
+    0 0 0 1px rgba(225, 29, 72, 0.25) inset;
+}
+
+.videoCardActive::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #fb7185, #fdba74, transparent);
+  z-index: 3;
+}
+
+.videoThumb {
+  position: relative;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  background: #000;
+  background: linear-gradient(145deg, #171528, #0c0c16);
+  overflow: hidden;
+  flex: 1;
 }
 
-.carouselContainer.zoomed .videoControls {
-  padding: 0.75rem 1rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+.videoThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s var(--va-ease);
 }
 
-.carouselContainer.zoomed .progressBar {
-  height: 4px;
-  margin-bottom: 0.6rem;
+.videoCard:hover .videoThumb img {
+  transform: scale(1.07);
 }
 
-.carouselContainer.zoomed .controlBtn {
+.thumbPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.16);
+  background: linear-gradient(145deg, #171528, #0c0c16);
+}
+
+.videoOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.12) 48%,
+    transparent 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.videoCard:hover .videoOverlay {
+  opacity: 1;
+}
+
+.videoPlayIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(190, 18, 60, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  transform: scale(0.82);
+  transition: transform 0.3s var(--va-ease);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.videoCard:hover .videoPlayIcon {
+  transform: scale(1);
+}
+
+.playingBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  background: rgba(190, 18, 60, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 999px;
+  font-size: 0.6rem;
+  color: white;
+  font-family: var(--font-iran);
+  font-weight: 600;
+  z-index: 4;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.playingDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fda4af;
+  animation: pulseDot 1.4s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.75);
+  }
+}
+
+.deleteBtn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.92);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.25s ease, transform 0.25s var(--va-ease),
+    background 0.2s ease;
+}
+
+.videoCard:hover .deleteBtn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.deleteBtn:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+}
+
+.videoMeta {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 22px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.92) 0%,
+    rgba(0, 0, 0, 0.55) 55%,
+    transparent 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+.videoTitle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ffffff;
+  font-family: var(--font-iran);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.35;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
+}
+
+.videoViews {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: var(--font-iran);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+}
+
+/* ============================================
+   PAGINATION
+   ============================================ */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 1.25rem;
+  padding: 0.75rem 0 0.25rem;
+  flex-wrap: wrap;
+}
+
+.pageNavBtn {
   width: 36px;
   height: 36px;
+  border-radius: 11px;
+  background: var(--va-surface);
+  border: 1px solid var(--va-line);
+  color: rgba(255, 255, 255, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s var(--va-ease);
 }
 
-.carouselContainer.zoomed .controlBtn svg {
-  width: 20px;
-  height: 20px;
+.pageNavBtn:hover:not(:disabled) {
+  background: rgba(190, 18, 60, 0.28);
+  border-color: rgba(190, 18, 60, 0.45);
+  color: white;
+  transform: translateY(-2px);
 }
 
-.carouselContainer.zoomed .timeText {
-  font-size: 0.75rem;
+.pageNavBtn:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
 }
 
-.carouselContainer.zoomed .phoneInfo {
-  padding: 1rem 1.25rem;
+.pageNumbers {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.carouselContainer.zoomed .phoneTitle {
-  font-size: 0.85rem;
+.pageNumber {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 11px;
+  background: var(--va-surface);
+  border: 1px solid var(--va-line);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s var(--va-ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.carouselContainer.zoomed .phoneViews {
-  font-size: 0.7rem;
+.pageNumber:hover {
+  background: rgba(190, 18, 60, 0.28);
+  border-color: rgba(190, 18, 60, 0.45);
+  color: white;
+  transform: translateY(-2px);
 }
 
-.carouselContainer.zoomed .centerBadge {
-  display: none;
+.pageNumberActive {
+  background: linear-gradient(135deg, #be123c, #7f1d1d);
+  border-color: rgba(225, 29, 72, 0.7);
+  color: white;
+  box-shadow: 0 6px 18px rgba(159, 18, 57, 0.4);
 }
 
-.carouselContainer.zoomed .scrollBtn {
-  display: none;
+.pageNumberActive:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
 }
 
-.carouselContainer.zoomed .touchLeft,
-.carouselContainer.zoomed .touchRight {
-  display: none !important;
-}
-
-body:has(.carouselContainer.zoomed) {
-  overflow: hidden;
-  position: fixed;
-  width: 100%;
-  height: 100%;
-}
-
-/* ============================================
-   RTL/LTR SUPPORT
-   ============================================ */
-[dir="ltr"] .videoArchiveSection {
-  direction: ltr;
-}
-
-[dir="ltr"] .scrollLeft {
-  left: auto;
-  right: 10px;
-}
-
-[dir="ltr"] .scrollRight {
-  right: auto;
-  left: 10px;
-}
-
-[dir="ltr"] .closeZoomBtn {
-  right: auto;
-  left: 20px;
-}
-
-[dir="ltr"] .touchLeft {
-  left: auto;
-  right: 0;
-}
-
-[dir="ltr"] .touchRight {
-  right: auto;
-  left: 0;
-}
-
-[dir="ltr"] .progressFill {
-  background: linear-gradient(270deg, #ff6b6b, #ff4757);
-}
-
-[dir="ltr"] .timeText {
-  direction: ltr;
-}
-
-[dir="ltr"] .phoneNotch {
-  left: 50%;
-  transform: translateX(-50%);
+.pageDots {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.8rem;
+  padding: 0 4px;
+  user-select: none;
 }
 
 /* ============================================
-   RESPONSIVE - MOBILE
+   EMPTY & LOADING
    ============================================ */
-@media (max-width: 767px) {
-  .videoArchiveSection {
-    padding: 1.5rem 0 1rem;
+.empty,
+.loading {
+  text-align: center;
+  padding: 4.5rem 1rem;
+  color: rgba(255, 255, 255, 0.42);
+  font-family: var(--font-iran);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.empty p,
+.loading span {
+  margin: 0;
+}
+
+/* ============================================
+   RTL/LTR
+   ============================================ */
+[dir='ltr'] .videoArchiveSection,
+[dir='ltr'] .section {
+  direction: ltr;
+}
+
+[dir='ltr'] .navBtnPrev {
+  right: auto;
+  left: 12px;
+}
+
+[dir='ltr'] .navBtnNext {
+  left: auto;
+  right: 12px;
+}
+
+[dir='ltr'] .storyUsername,
+[dir='ltr'] .storyTime {
+  text-align: left;
+}
+
+[dir='ltr'] .pageNavBtn svg {
+  transform: scaleX(-1);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1024px) {
+  .mainLayout {
+    grid-template-columns: minmax(240px, 320px) 1fr;
+    gap: 1.15rem;
+  }
+
+  .videoGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .navBtn {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .videoArchiveSection,
+  .section {
+    padding: 1.25rem 0 1.5rem;
+    min-height: auto;
+  }
+
+  .section::before {
+    background-size: 32px 32px;
+    opacity: 0.7;
   }
 
   .header {
     flex-direction: column;
     align-items: stretch;
-    padding: 0 0.5rem;
-  }
-
-  .addBtn {
-    align-self: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1.15rem;
+    padding-bottom: 0.9rem;
   }
 
   .title {
-    font-size: 1.4rem;
+    font-size: 1.35rem;
   }
 
   .subtitle {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
+    line-height: 1.6;
   }
 
-  /* ===== دکمه‌های لمسی برای موبایل ===== */
-  .touchLeft,
-  .touchRight {
-    display: block;
-  }
-
-  /* ===== دکمه‌های اسکرول در موبایل - کوچکتر اما قابل مشاهده ===== */
-  .scrollBtn {
-    width: 36px;
-    height: 36px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-    z-index: 20;
-  }
-
-  .scrollBtn svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  .scrollBtn:hover:not(:disabled) {
-    transform: translateY(-50%) scale(1.05);
-  }
-
-  .scrollLeft {
-    left: 5px;
-  }
-
-  .scrollRight {
-    right: 5px;
-  }
-
-  /* ===== دکمه خروج از بزرگنمایی در موبایل ===== */
-  .closeZoomBtn {
-    top: 16px;
-    right: 16px;
-    padding: 10px 16px;
-    font-size: 0.85rem;
-    border-radius: 12px;
-    gap: 8px;
-  }
-
-  .closeZoomBtn svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  .closeZoomBtn span {
-    font-size: 0.8rem;
-  }
-
-  /* ===== کاروسل در موبایل ===== */
-  .carouselTrack {
-    gap: 0;
-    padding: 0;
+  .addBtn {
+    align-self: stretch;
     justify-content: center;
-    overflow-x: hidden;
+    min-height: 44px;
+    padding: 0.7rem 1rem;
   }
 
-  .carouselItem {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    min-height: 65vh;
-    padding: 0 0.5rem;
-    opacity: 1 !important;
-    transform: scale(1) !important;
+  .mainLayout {
+    grid-template-columns: 1fr;
+    gap: 1.15rem;
   }
 
-  .sideItem {
-    display: none !important;
-  }
-
-  .mobileFrame {
-    padding: 0;
-  }
-
-  .phoneMockup {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    aspect-ratio: 9 / 16;
-    border-radius: 24px;
-    margin: 0 auto;
-    border-width: 2px;
-  }
-
-  .centerItem .phoneMockup {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    aspect-ratio: 9 / 16;
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  }
-
-  .phoneScreen {
-    aspect-ratio: 9 / 16;
-  }
-
-  .phoneImage,
-  .phoneVideo,
-  .phonePlaceholder {
+  .playerColumn {
+    position: relative;
+    top: 0;
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    display: flex;
+    justify-content: center;
   }
 
-  .phoneNotch {
-    width: 80px;
-    height: 20px;
-    border-radius: 0 0 12px 12px;
+  .storyPlayer {
+    /* روی موبایل ارتفاع را به ویوپورت محدود کن تا کل صفحه را نگیرد */
+    width: min(100%, calc(62dvh * 9 / 16), 380px);
+    max-height: 62dvh;
+    margin: 0 auto;
+    border-radius: 18px;
+    box-shadow:
+      0 16px 40px rgba(0, 0, 0, 0.5),
+      0 0 40px var(--va-accent-soft);
   }
 
-  .notchCamera {
-    width: 4px;
-    height: 4px;
+  /* دکمه‌های کناری روی موبایل شلوغ‌اند؛ زون لمسی + سوایپ کافی است */
+  .navBtn {
+    display: none;
   }
 
-  .phoneHome {
-    width: 20px;
-    height: 2px;
-    bottom: 4px;
+  .storyProgressBar {
+    padding: 8px 10px;
+    gap: 3px;
   }
 
-  /* ===== اطلاعات پایین در موبایل ===== */
-  .phoneInfo {
-    padding: 0.6rem 0.8rem;
+  .storyHeader {
+    padding: 0 10px;
+    top: 20px;
   }
 
-  .phoneTitle {
-    font-size: 0.65rem;
+  .storyAvatar {
+    width: 30px;
+    height: 30px;
   }
 
-  .phoneViews {
-    font-size: 0.55rem;
+  .storyUsername {
+    font-size: 0.7rem;
+    max-width: min(42vw, 140px);
   }
 
-  .playOverlay {
+  .storyTime {
+    font-size: 0.6rem;
+  }
+
+  .storyIconBtn,
+  .storyControlBtn,
+  .closeZoomBtn {
     width: 40px;
     height: 40px;
   }
 
-  .playIconSmall {
-    width: 20px;
-    height: 20px;
+  .bigPlayBtn {
+    width: 64px;
+    height: 64px;
   }
 
-  .videoControls {
-    padding: 0.4rem 0.6rem;
+  .storyFooter {
+    padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+    gap: 8px;
   }
 
-  .progressBar {
-    height: 2px;
-  }
-
-  .controlBtn {
-    width: 24px;
-    height: 24px;
-  }
-
-  .controlBtn svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  .timeText {
-    font-size: 0.55rem;
-  }
-
-  .mobileCounter {
-    display: block;
-    margin-top: 0.75rem;
-  }
-
-  .pageIndicator {
-    margin-top: 0.75rem;
-  }
-
-  .pageDot {
-    width: 6px;
+  .storyProgressClickable {
     height: 6px;
   }
 
-  .activeDot {
-    width: 18px;
+  .storyTimeText {
+    font-size: 0.65rem;
   }
 
-  .centerBadge {
-    font-size: 0.65rem;
-    margin-top: 0.3rem;
+  .gridColumn {
+    gap: 0.85rem;
+  }
+
+  .gridHeader {
+    padding-bottom: 0.65rem;
+  }
+
+  .gridTitle {
+    font-size: 0.88rem;
+  }
+
+  .gridCount {
+    font-size: 0.68rem;
+    padding: 4px 9px;
+  }
+
+  .videoGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .videoCard {
+    border-radius: 10px;
+    /* روی لمس، لیفت hover آزاردهنده است */
+    animation: none;
+  }
+
+  .videoCard:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .videoCard:active {
+    transform: scale(0.98);
+    border-color: rgba(190, 18, 60, 0.5);
+  }
+
+  .videoCard:hover .videoThumb img {
+    transform: none;
+  }
+
+  .videoCardActive {
+    box-shadow:
+      0 0 0 1.5px rgba(225, 29, 72, 0.65),
+      0 8px 20px rgba(159, 18, 57, 0.25);
+  }
+
+  .videoTitle {
+    font-size: 0.68rem;
+  }
+
+  .videoViews {
+    font-size: 0.58rem;
+  }
+
+  .videoMeta {
+    padding: 18px 8px 8px;
+  }
+
+  .videoPlayIcon {
+    width: 36px;
+    height: 36px;
+    opacity: 0.95;
+  }
+
+  /* روی موبایل آیکون پلی همیشه کمی دیده شود */
+  .videoOverlay {
+    opacity: 0.35;
+  }
+
+  .videoCardActive .videoOverlay,
+  .videoCard:active .videoOverlay {
+    opacity: 0.7;
+  }
+
+  .playingBadge {
+    font-size: 0.55rem;
+    padding: 4px 8px;
+    top: 6px;
+    right: 6px;
+  }
+
+  .deleteBtn {
+    opacity: 1;
+    transform: scale(1);
+    width: 32px;
+    height: 32px;
+    top: 6px;
+    left: 6px;
+  }
+
+  .pagination {
+    margin-top: 0.75rem;
+    gap: 6px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .pageNavBtn,
+  .pageNumber {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    font-size: 0.78rem;
+    border-radius: 10px;
   }
 
   .formGrid {
@@ -1171,212 +1402,103 @@ body:has(.carouselContainer.zoomed) {
 
   .addForm {
     padding: 1rem;
+    border-radius: 14px;
   }
 
-  /* ===== بزرگنمایی در موبایل ===== */
-  .carouselContainer.zoomed {
-    padding: 0.25rem;
+  .formActions {
+    flex-direction: column;
   }
 
-  .carouselContainer.zoomed .centerItem .phoneMockup {
-    width: 98vw !important;
-    max-width: 98vw !important;
-    height: 85vh !important;
-    max-height: 85vh !important;
-    aspect-ratio: 9 / 16;
-    border-radius: 16px;
+  .saveBtn,
+  .cancelBtn {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
   }
 
-  .carouselContainer.zoomed .centerItem .phoneMockup .phoneNotch {
-    width: 80px;
-    height: 20px;
+  .mainLayout.zoomedMode {
+    padding: env(safe-area-inset-top, 0.35rem) 0.35rem
+      env(safe-area-inset-bottom, 0.35rem);
+    align-items: center;
   }
 
-  .carouselContainer.zoomed .centerItem .phoneMockup .notchCamera {
-    width: 4px;
-    height: 4px;
+  .mainLayout.zoomedMode .playerColumn {
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    align-items: center;
   }
 
-  .carouselContainer.zoomed .centerItem .phoneMockup .phoneHome {
-    width: 20px;
-    height: 2px;
-    bottom: 4px;
-  }
-
-  .carouselContainer.zoomed .videoControls {
-    padding: 0.4rem 0.6rem;
-  }
-
-  .carouselContainer.zoomed .controlBtn {
-    width: 30px;
-    height: 30px;
-  }
-
-  .carouselContainer.zoomed .controlBtn svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  .carouselContainer.zoomed .timeText {
-    font-size: 0.6rem;
-  }
-
-  .carouselContainer.zoomed .phoneInfo {
-    padding: 0.5rem 0.75rem;
-  }
-
-  .carouselContainer.zoomed .phoneTitle {
-    font-size: 0.65rem;
-  }
-
-  .carouselContainer.zoomed .phoneViews {
-    font-size: 0.55rem;
+  .mainLayout.zoomedMode .storyPlayer {
+    width: min(100%, calc(92dvh * 9 / 16));
+    max-height: 92dvh;
+    border-radius: 14px;
   }
 }
 
-/* ============================================
-   RESPONSIVE - TABLET
-   ============================================ */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .carouselItem {
-    width: 200px !important;
-    height: auto !important;
-    aspect-ratio: 9 / 16;
+/* گوشی‌های کوتاه / افقی */
+@media (max-width: 768px) and (max-height: 700px) {
+  .storyPlayer {
+    width: min(100%, calc(54dvh * 9 / 16), 320px);
+    max-height: 54dvh;
+  }
+}
+
+/* فقط دستگاه‌های لمسی */
+@media (hover: none) and (pointer: coarse) {
+  .videoCard:hover {
+    transform: none;
   }
 
-  .carouselTrack {
-    gap: 1.5rem;
-    padding: 0.5rem 2rem;
+  .addBtn:hover:not(:disabled) {
+    transform: none;
   }
 
-  .scrollBtn {
-    width: 40px;
-    height: 40px;
-  }
-
-  .scrollBtn svg {
-    width: 22px;
-    height: 22px;
-  }
-
-  .touchLeft,
-  .touchRight {
+  .navBtn {
     display: none;
   }
+}
 
-  .title {
-    font-size: 1.6rem;
+@media (max-width: 400px) {
+  .videoGrid {
+    gap: 8px;
   }
 
-  .phoneNotch {
-    width: 100px;
-    height: 24px;
+  .storyUsername {
+    max-width: 38vw;
   }
 
-  .phoneHome {
-    width: 24px;
-    height: 2px;
-    bottom: 5px;
-  }
-
-  .phoneInfo {
-    padding: 0.6rem 0.8rem;
-  }
-
-  .phoneTitle {
-    font-size: 0.65rem;
-  }
-
-  .phoneViews {
-    font-size: 0.55rem;
-  }
-
-  .closeZoomBtn {
-    top: 18px;
-    right: 18px;
-    padding: 10px 18px;
-    font-size: 0.9rem;
-  }
-
-  .closeZoomBtn svg {
-    width: 26px;
-    height: 26px;
+  .playingBadge {
+    max-width: calc(100% - 48px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
-/* ============================================
-   RESPONSIVE - DESKTOP
-   ============================================ */
-@media (min-width: 1024px) {
-  .carouselTrack {
-    gap: 2rem;
-    padding: 1rem 4rem;
-  }
-
-  .scrollBtn {
-    width: 48px;
-    height: 48px;
-  }
-
-  .scrollBtn svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  .touchLeft,
-  .touchRight {
-    display: none;
-  }
-
-  .phoneMockup {
-    border-radius: 24px;
-  }
-
-  .phoneNotch {
-    width: 120px;
-    height: 28px;
-  }
-
-  .phoneHome {
-    width: 30px;
-    height: 3px;
-    bottom: 6px;
-  }
-}
-
-/* ============================================
-   RESPONSIVE - LARGE DESKTOP
-   ============================================ */
 @media (min-width: 1400px) {
-  .carouselItem {
-    width: 260px !important;
-    height: auto !important;
-    aspect-ratio: 9 / 16;
+  .mainLayout {
+    grid-template-columns: minmax(320px, 420px) 1fr;
+    gap: 2rem;
   }
 
-  .carouselTrack {
-    gap: 2.5rem;
-    padding: 1rem 5rem;
+  .videoGrid {
+    gap: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .videoCard,
+  .bigPlayBtn,
+  .playingDot,
+  .addForm,
+  .mainLayout.zoomedMode {
+    animation: none !important;
   }
 
-  .phoneNotch {
-    width: 140px;
-    height: 32px;
-  }
-
-  .phoneHome {
-    width: 36px;
-    height: 4px;
-    bottom: 8px;
-  }
-
-  .scrollBtn {
-    width: 56px;
-    height: 56px;
-  }
-
-  .scrollBtn svg {
-    width: 28px;
-    height: 28px;
+  .videoCard:hover,
+  .videoCard:hover .videoThumb img,
+  .addBtn:hover:not(:disabled) {
+    transform: none;
   }
 }

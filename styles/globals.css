@@ -145,6 +145,20 @@ body {
   body {
     overscroll-behavior-y: contain;
   }
+
+  body.has-corporate-mobile-nav {
+    --mobile-bottom-nav: calc(72px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: var(--mobile-bottom-nav);
+  }
+
+  /* دایره وسط بیرون‌زده است — فاصله بیشتر */
+  body.has-corporate-mobile-nav[data-corp-nav-style='center_circle'] {
+    --mobile-bottom-nav: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.has-corporate-mobile-nav[data-corp-nav-style='glow_dock'] {
+    --mobile-bottom-nav: calc(84px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 table {

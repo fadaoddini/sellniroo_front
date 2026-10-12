@@ -1,6 +1,7 @@
 // app/jobs/[id]/page.js
 import { notFound } from 'next/navigation';
 import JobDetailClient from './JobDetailClient';
+import JobsPageSlot from '@/components/modules/JobsPageSlot';
 import Config from '@/config/config';
 
 // دریافت جزئیات آگهی از سرور (SSR/SSG)
@@ -50,5 +51,9 @@ export default async function JobDetailPage({ params }) {
     notFound();
   }
 
-  return <JobDetailClient initialJob={job} />;
+  return (
+    <JobsPageSlot>
+      <JobDetailClient initialJob={job} />
+    </JobsPageSlot>
+  );
 }

@@ -1,52 +1,20 @@
-// app/about/page.jsx
+// app/(site)/about/page.jsx
+// داده از API /api/about/ — ماژول سایت: about_us
+import AboutSlot from '@/components/modules/AboutSlot'
+import {
+  fetchAboutPage,
+  buildAboutMetadata,
+  DEFAULT_ABOUT_SEO,
+} from '@/services/aboutPage'
 
-import AboutUs from '@/components/About'
-
-export const metadata = {
-  title: 'درباره ما',
-  
-  description: 'درباره سلنیرو - سایت کاریابی تخصصی فروش و بازاریابی؛ مشاهده جدیدترین آگهی‌های استخدام فروشنده، بازاریاب، ویزیتور و کارشناس فروش و ثبت آگهی استخدام برای شرکت‌ها و کارفرمایان.',
-  
-  keywords: [
-    'درباره سلنیرو',
-    'تاریخچه سلنیرو',
-    'ماموریت سلنیرو',
-    'چشم انداز سلنیرو',
-    'تیم سلنیرو',
-    'کاریابی تخصصی فروش',
-    'کاریابی بازاریابی',
-    'استخدام فروشنده',
-    'استخدام بازاریاب',
-    'استخدام ویزیتور',
-    'ثبت آگهی استخدام رایگان',
-    'جذب نیروی فروش',
-    'جذب بازاریاب'
-  ],
-  
-  openGraph: {
-    title: 'درباره ما | سلنیرو',
-    description: 'درباره سلنیرو - سایت کاریابی تخصصی فروش و بازاریابی؛ مشاهده جدیدترین آگهی‌های استخدام فروشنده، بازاریاب و ویزیتور و ثبت آگهی استخدام رایگان برای کارفرمایان.',
-    url: 'https://sellniroo.com/about',
-    images: [
-      {
-        url: 'https://sellniroo.com/images/logo.png',
-        width: 1200,
-        height: 630,
-        alt: 'درباره سلنیرو - کاریابی تخصصی فروش و بازاریابی',
-      },
-    ],
-  },
-  
-  twitter: {
-    title: 'درباره ما | سلنیرو',
-    description: 'درباره سلنیرو - سایت کاریابی تخصصی فروش و بازاریابی؛ جدیدترین آگهی‌های استخدام فروش، بازاریابی و ویزیتوری.',
-    images: ['https://sellniroo.com/images/logo.png'],
-  },
-  
-  alternates: {
-    canonical: 'https://sellniroo.com/about',
-  },
-};
+export async function generateMetadata() {
+  try {
+    const page = await fetchAboutPage({ force: false })
+    return buildAboutMetadata(page)
+  } catch {
+    return buildAboutMetadata(DEFAULT_ABOUT_SEO)
+  }
+}
 
 export default function About() {
   return (
@@ -54,8 +22,7 @@ export default function About() {
       <h1 className="sr-only">
         درباره سلنیرو | سایت کاریابی تخصصی فروش و بازاریابی در ایران
       </h1>
-      
-      <AboutUs />
+      <AboutSlot />
     </>
-  );
+  )
 }

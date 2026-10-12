@@ -1,4 +1,5 @@
 // components/common/Header.jsx
+// ماژول سایت: job_header — از /adminweb فعال/غیرفعال می‌شود
 "use client";
 
 import React, {

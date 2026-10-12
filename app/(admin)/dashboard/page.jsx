@@ -2,7 +2,7 @@
 
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -13,8 +13,16 @@ import {
   LayoutDashboard, ShoppingCart, Users, Shield,
   RefreshCw, Briefcase, TrendingUp, CheckCircle,
   Newspaper, Zap, Eye, Settings, Warehouse, Headphones, Calendar,
-  BarChart3, Megaphone, Images, Settings2, Tags, Radio
+  BarChart3, Megaphone, Images, Settings2, Tags, Radio, Info, PanelTop, BookOpen, Brain, HelpCircle,
 } from 'lucide-react'
+import {
+  fetchSiteModules,
+  clearSiteModulesCache,
+} from '@/services/siteModules'
+import {
+  isDashboardItemModuleActive,
+  SITE_MODULE_KEYS,
+} from '@/config/siteModules'
 import styles from './Dashboard.module.css'
 
 const Dashboard = () => {
@@ -36,6 +44,7 @@ const Dashboard = () => {
   const [newsStats, setNewsStats] = useState(null)
   const [employeeStats, setEmployeeStats] = useState(null)
   const [loadingData, setLoadingData] = useState(false)
+  const [moduleMap, setModuleMap] = useState({})
 
   const texts = {
     fa: {
@@ -46,6 +55,12 @@ const Dashboard = () => {
       ticker: 'نوار خبری',
       heroSlider: 'اسلایدر هیرو',
       siteSettings: 'تنظیمات سایت',
+      aboutManage: 'درباره ما',
+      headerMenu: 'منوی سیستم شرکتی',
+      videoInstaManage: 'آرشیو ویدیو / استوری',
+      catalogManage: 'کاتالوگ دیجیتال',
+      quizManage: 'مدیریت آزمون',
+      faqManage: 'سوالات متداول',
       requestTypes: 'انواع درخواست تماس',
       jobsManage: 'مدیریت آگهی‌ها',
       platformConnections: 'اتصالات پیام‌رسان',
@@ -79,6 +94,12 @@ const Dashboard = () => {
       ticker: 'Ticker bar',
       heroSlider: 'Hero slider',
       siteSettings: 'Site settings',
+      aboutManage: 'About page',
+      headerMenu: 'Corporate menu',
+      videoInstaManage: 'Video Insta / Stories',
+      catalogManage: 'Digital catalog',
+      quizManage: 'Quiz manage',
+      faqManage: 'FAQ manage',
       requestTypes: 'Contact request types',
       jobsManage: 'Job listings',
       platformConnections: 'Messenger bots',
@@ -107,6 +128,16 @@ const Dashboard = () => {
   }
 
   const t = texts[language] || texts.fa
+
+  const loadModuleMap = useCallback(async () => {
+    try {
+      clearSiteModulesCache()
+      const { map } = await fetchSiteModules({ force: true })
+      setModuleMap(map || {})
+    } catch {
+      setModuleMap({})
+    }
+  }, [])
 
   const fetchDashboardStats = useCallback(async () => {
     if (!isEmployee && !user?.is_superuser) return
@@ -144,12 +175,12 @@ const Dashboard = () => {
   }, [getAuthHeaders])
 
   const refreshAll = useCallback(async () => {
-    const jobs = []
+    const jobs = [loadModuleMap()]
     if (isEmployee || user?.is_superuser) jobs.push(fetchDashboardStats())
     jobs.push(fetchNewsStats())
     if (canManageEmployees) jobs.push(fetchEmployeeStats())
     await Promise.allSettled(jobs)
-  }, [isEmployee, user, canManageEmployees, fetchDashboardStats, fetchNewsStats, fetchEmployeeStats])
+  }, [isEmployee, user, canManageEmployees, fetchDashboardStats, fetchNewsStats, fetchEmployeeStats, loadModuleMap])
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -159,6 +190,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!isAuthenticated) return
+    loadModuleMap()
     if (isEmployee || user?.is_superuser) {
       fetchDashboardStats()
       fetchNewsStats()
@@ -166,7 +198,13 @@ const Dashboard = () => {
     if (canManageEmployees) {
       fetchEmployeeStats()
     }
-  }, [isAuthenticated, isEmployee, user, canManageEmployees, fetchDashboardStats, fetchNewsStats, fetchEmployeeStats])
+  }, [isAuthenticated, isEmployee, user, canManageEmployees, fetchDashboardStats, fetchNewsStats, fetchEmployeeStats, loadModuleMap])
+
+  useEffect(() => {
+    const onModulesChanged = () => loadModuleMap()
+    window.addEventListener('site-modules-changed', onModulesChanged)
+    return () => window.removeEventListener('site-modules-changed', onModulesChanged)
+  }, [loadModuleMap])
 
   const sectionIcon = (icon) => {
     const map = {
@@ -202,99 +240,200 @@ const Dashboard = () => {
     return ((parts[0][0] || '') + (parts[1]?.[0] || '')).toUpperCase()
   }
 
-  const linkedSections = (assignedSections || []).filter((d) => d.href)
-  const seenHrefs = new Set()
-  const quickActions = []
-
-  linkedSections.forEach((d) => {
-    if (!d.href || seenHrefs.has(d.href)) return
-    seenHrefs.add(d.href)
-    quickActions.push({
-      id: d.code,
-      icon: sectionIcon(d.icon),
-      label: language === 'en' && d.name_en ? d.name_en : d.name_fa,
-      href: d.href,
-      color: d.color || '#c27800',
-      bgColor: hexToBg(d.color),
-    })
-  })
-
-  if (canManageEmployees && !seenHrefs.has('/employees')) {
-    quickActions.unshift({
-      id: 'employees',
-      icon: <Users />,
-      label: t.employees,
-      href: '/employees',
-      color: '#6a1b9a',
-      bgColor: '#f3e5f5',
-    })
-  }
-
   const canManageTicker = user?.is_superuser || user?.is_staff || canManageEmployees
-  if (canManageTicker && !seenHrefs.has('/ticker')) {
-    quickActions.push({
-      id: 'ticker',
-      icon: <Megaphone />,
-      label: t.ticker,
-      href: '/ticker',
-      color: '#c27800',
-      bgColor: '#fff3c4',
+
+  const quickActions = useMemo(() => {
+    const linked = (assignedSections || []).filter((d) => d.href)
+    const seenHrefs = new Set()
+    const raw = []
+
+    linked.forEach((d) => {
+      if (!d.href || seenHrefs.has(d.href)) return
+      seenHrefs.add(d.href)
+      raw.push({
+        id: d.code,
+        icon: sectionIcon(d.icon),
+        label: language === 'en' && d.name_en ? d.name_en : d.name_fa,
+        href: d.href,
+        color: d.color || '#c27800',
+        bgColor: hexToBg(d.color),
+        sectionCode: d.code,
+      })
     })
-  }
-  if (canManageTicker && !seenHrefs.has('/hero-slider')) {
-    quickActions.push({
-      id: 'hero-slider',
-      icon: <Images />,
-      label: t.heroSlider,
-      href: '/hero-slider',
-      color: '#1565c0',
-      bgColor: '#e3f2fd',
-    })
-  }
-  if (canManageTicker && !seenHrefs.has('/site-settings')) {
-    quickActions.push({
-      id: 'site-settings',
-      icon: <Settings2 />,
-      label: t.siteSettings,
-      href: '/site-settings',
-      color: '#455a64',
-      bgColor: '#eceff1',
-    })
-  }
-  if (canManageTicker && !seenHrefs.has('/request-types')) {
-    quickActions.push({
-      id: 'request-types',
-      icon: <Tags />,
-      label: t.requestTypes,
-      href: '/request-types',
-      color: '#1565c0',
-      bgColor: '#e3f2fd',
-    })
-  }
-  if (canManageTicker && !seenHrefs.has('/jobs-manage')) {
-    quickActions.unshift({
-      id: 'jobs-manage',
-      icon: <Briefcase />,
-      label: t.jobsManage,
-      href: '/jobs-manage',
-      color: '#c27800',
-      bgColor: '#fff3c4',
-    })
-  }
-  if (canManageTicker && !seenHrefs.has('/platform-connections')) {
-    quickActions.push({
-      id: 'platform-connections',
-      icon: <Radio />,
-      label: t.platformConnections,
-      href: '/platform-connections',
-      color: '#1565c0',
-      bgColor: '#e3f2fd',
-    })
-  }
+
+    if (canManageEmployees && !seenHrefs.has('/employees')) {
+      raw.unshift({
+        id: 'employees',
+        icon: <Users />,
+        label: t.employees,
+        href: '/employees',
+        color: '#6a1b9a',
+        bgColor: '#f3e5f5',
+      })
+    }
+
+    if (canManageTicker && !seenHrefs.has('/ticker')) {
+      raw.push({
+        id: 'ticker',
+        icon: <Megaphone />,
+        label: t.ticker,
+        href: '/ticker',
+        color: '#c27800',
+        bgColor: '#fff3c4',
+      })
+    }
+    if (canManageTicker && !seenHrefs.has('/hero-slider')) {
+      raw.push({
+        id: 'hero-slider',
+        icon: <Images />,
+        label: t.heroSlider,
+        href: '/hero-slider',
+        color: '#1565c0',
+        bgColor: '#e3f2fd',
+      })
+    }
+    if (canManageTicker && !seenHrefs.has('/site-settings')) {
+      raw.push({
+        id: 'site-settings',
+        icon: <Settings2 />,
+        label: t.siteSettings,
+        href: '/site-settings',
+        color: '#455a64',
+        bgColor: '#eceff1',
+      })
+    }
+    if (canManageTicker && !seenHrefs.has('/about-manage')) {
+      raw.push({
+        id: 'about-manage',
+        icon: <Info />,
+        label: t.aboutManage,
+        href: '/about-manage',
+        color: '#6a1b9a',
+        bgColor: '#f3e5f5',
+      })
+    }
+    if (canManageTicker && !seenHrefs.has('/header-menu')) {
+      raw.push({
+        id: 'header-menu',
+        icon: <PanelTop />,
+        label: t.headerMenu,
+        href: '/header-menu',
+        color: '#212121',
+        bgColor: '#eeeeee',
+      })
+    }
+    if (canManageTicker && !seenHrefs.has('/videoinsta-manage')) {
+      raw.push({
+        id: 'videoinsta-manage',
+        icon: <Images />,
+        label: t.videoInstaManage,
+        href: '/videoinsta-manage',
+        color: '#9f1239',
+        bgColor: '#fce7f3',
+      })
+    }
+    if (canManageTicker && !seenHrefs.has('/catalog-manage')) {
+      raw.push({
+        id: 'catalog-manage',
+        icon: <BookOpen />,
+        label: t.catalogManage,
+        href: '/catalog-manage',
+        color: '#800020',
+        bgColor: '#fce7f3',
+      })
+    }
+    if (canManageTicker && !seenHrefs.has('/quiz-manage')) {
+      raw.push({
+        id: 'quiz-manage',
+        icon: <Brain />,
+        label: t.quizManage,
+        href: '/quiz-manage',
+        color: '#800020',
+        bgColor: '#fce7f3',
+      })
+    }
+    if (canManageTicker && !seenHrefs.has('/faq-manage')) {
+      raw.push({
+        id: 'faq-manage',
+        icon: <HelpCircle />,
+        label: t.faqManage,
+        href: '/faq-manage',
+        color: '#2d5a45',
+        bgColor: '#e8f2ec',
+      })
+    }
+    if (canManageTicker && !seenHrefs.has('/request-types')) {
+      raw.push({
+        id: 'request-types',
+        icon: <Tags />,
+        label: t.requestTypes,
+        href: '/request-types',
+        color: '#1565c0',
+        bgColor: '#e3f2fd',
+      })
+    }
+    if (canManageTicker && !seenHrefs.has('/jobs-manage')) {
+      raw.unshift({
+        id: 'jobs-manage',
+        icon: <Briefcase />,
+        label: t.jobsManage,
+        href: '/jobs-manage',
+        color: '#c27800',
+        bgColor: '#fff3c4',
+      })
+    }
+    if (canManageTicker && !seenHrefs.has('/platform-connections')) {
+      raw.push({
+        id: 'platform-connections',
+        icon: <Radio />,
+        label: t.platformConnections,
+        href: '/platform-connections',
+        color: '#1565c0',
+        bgColor: '#e3f2fd',
+      })
+    }
+
+    return raw.filter((action) =>
+      isDashboardItemModuleActive(
+        action.href,
+        moduleMap,
+        action.sectionCode || action.id
+      )
+    )
+  }, [
+    assignedSections,
+    canManageEmployees,
+    canManageTicker,
+    language,
+    moduleMap,
+    t.employees,
+    t.ticker,
+    t.heroSlider,
+    t.siteSettings,
+    t.aboutManage,
+    t.headerMenu,
+    t.videoInstaManage,
+    t.catalogManage,
+    t.quizManage,
+    t.faqManage,
+    t.requestTypes,
+    t.jobsManage,
+    t.platformConnections,
+  ])
+
+  const visibleSectionChips = useMemo(() => {
+    return (assignedSections || []).filter((d) =>
+      isDashboardItemModuleActive(d.href, moduleMap, d.code)
+    )
+  }, [assignedSections, moduleMap])
 
   const displayStats = []
 
-  if (stats?.leads) {
+  const salesModuleOn =
+    !Object.prototype.hasOwnProperty.call(moduleMap, SITE_MODULE_KEYS.SALES_MARKETING) ||
+    !!moduleMap[SITE_MODULE_KEYS.SALES_MARKETING]
+
+  if (stats?.leads && salesModuleOn) {
     displayStats.push({
       id: 'leads',
       icon: <TrendingUp />,
@@ -307,7 +446,7 @@ const Dashboard = () => {
     })
   }
 
-  if (stats?.followups) {
+  if (stats?.followups && salesModuleOn) {
     displayStats.push({
       id: 'followups',
       icon: <CheckCircle />,
@@ -333,7 +472,11 @@ const Dashboard = () => {
     })
   }
 
-  if (newsStats) {
+  const newsModuleOn =
+    !Object.prototype.hasOwnProperty.call(moduleMap, SITE_MODULE_KEYS.NEWS) ||
+    !!moduleMap[SITE_MODULE_KEYS.NEWS]
+
+  if (newsStats && newsModuleOn) {
     displayStats.push({
       id: 'news',
       icon: <Newspaper />,
@@ -431,7 +574,7 @@ const Dashboard = () => {
                 {employeeData?.access_level_label && (
                   <span className={styles.chip}>{employeeData.access_level_label}</span>
                 )}
-                {(assignedSections || []).map((d) => (
+                {visibleSectionChips.map((d) => (
                   <span
                     key={d.id || d.code}
                     className={`${styles.chip} ${styles.sectionChip}`}

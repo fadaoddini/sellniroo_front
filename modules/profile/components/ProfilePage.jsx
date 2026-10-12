@@ -1,4 +1,5 @@
 // modules/profile/components/ProfilePage.jsx
+// ماژول سایت: job_profile ⊂ job_board — از /adminweb فعال/غیرفعال می‌شود
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
@@ -14,10 +15,13 @@ import ApplicationsList from "./ApplicationsList";
 import BookmarksList from "./BookmarksList";
 import CompanyTab from "./company/CompanyTab";
 import ResumeTab from "./resume/ResumeTab";
+import QuizProfilePanel from "./QuizProfilePanel";
 import styles from "../styles/ProfilePage.module.css";
 import { Loader2 } from "lucide-react";
+import { isSiteModuleActive } from "@/services/siteModules";
+import { SITE_MODULE_KEYS } from "@/config/siteModules";
 
-const TABS = [
+const JOB_TABS = [
   { key: "hiring", label: "آگهی‌های استخدامی", icon: "briefcase" },
   { key: "seeking", label: "آگهی‌های کاریابی", icon: "user" },
   { key: "applications", label: "درخواست‌ها", icon: "send" },
@@ -26,7 +30,7 @@ const TABS = [
   { key: "resume", label: "رزومه من", icon: "file-text" },
 ];
 
-const TAB_KEYS = new Set(TABS.map((t) => t.key));
+const QUIZ_TAB = { key: "quiz", label: "آزمون‌ها", icon: "brain" };
 
 const EMPTY_STATS = {
   hiring: { total: 0, approved: 0, pending: 0, rejected: 0, expired: 0, views: 0, likes: 0 },
@@ -39,11 +43,18 @@ function ProfilePageInner() {
   const { user, isAuthenticated, loading: authLoading, getAuthHeaders } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [quizOn, setQuizOn] = useState(false);
+
+  const tabs = useMemo(
+    () => (quizOn ? [...JOB_TABS, QUIZ_TAB] : JOB_TABS),
+    [quizOn]
+  );
+  const tabKeys = useMemo(() => new Set(tabs.map((t) => t.key)), [tabs]);
 
   const initialTab = useMemo(() => {
     const q = searchParams.get("tab");
-    return q && TAB_KEYS.has(q) ? q : "hiring";
-  }, [searchParams]);
+    return q && tabKeys.has(q) ? q : "hiring";
+  }, [searchParams, tabKeys]);
 
   const [activeTab, setActiveTab] = useState(initialTab);
   const [stats, setStats] = useState(null);
@@ -57,8 +68,31 @@ function ProfilePageInner() {
   }, [authLoading, isAuthenticated, router]);
 
   useEffect(() => {
+    let cancelled = false;
+    isSiteModuleActive(SITE_MODULE_KEYS.QUIZ, { force: true }).then((v) => {
+      if (!cancelled) setQuizOn(!!v);
+    });
+    const onChanged = () => {
+      isSiteModuleActive(SITE_MODULE_KEYS.QUIZ, { force: true }).then((v) => {
+        if (!cancelled) setQuizOn(!!v);
+      });
+    };
+    window.addEventListener("site-modules-changed", onChanged);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("site-modules-changed", onChanged);
+    };
+  }, []);
+
+  useEffect(() => {
     setActiveTab(initialTab);
   }, [initialTab]);
+
+  useEffect(() => {
+    if (!tabKeys.has(activeTab)) {
+      setActiveTab("hiring");
+    }
+  }, [tabKeys, activeTab]);
 
   const fetchStats = useCallback(async () => {
     try {
@@ -81,13 +115,13 @@ function ProfilePageInner() {
 
   const handleTabChange = useCallback(
     (key) => {
-      if (!TAB_KEYS.has(key)) return;
+      if (!tabKeys.has(key)) return;
       setActiveTab(key);
       const params = new URLSearchParams(searchParams.toString());
       params.set("tab", key);
       router.replace(`/profile?${params.toString()}`, { scroll: false });
     },
-    [router, searchParams]
+    [router, searchParams, tabKeys]
   );
 
   const handleRefresh = useCallback(() => {
@@ -104,21 +138,24 @@ function ProfilePageInner() {
   }
 
   return (
-    <div className={styles.profilePage}>
+    <div className={`${styles.profilePage} ${styles.profilePageJob}`}>
       <div className={styles.container}>
-        <ProfileHeader user={user} />
+        <ProfileHeader user={user} variant="job" showJobShortcuts />
 
-        <ProfileStats
-          stats={stats}
-          loading={statsLoading}
-          activeTab={activeTab}
-          onSelectTab={handleTabChange}
-        />
+        {activeTab !== "quiz" ? (
+          <ProfileStats
+            stats={stats}
+            loading={statsLoading}
+            activeTab={activeTab}
+            onSelectTab={handleTabChange}
+          />
+        ) : null}
 
         <ProfileTabs
-          tabs={TABS}
+          tabs={tabs}
           activeTab={activeTab}
           onChange={handleTabChange}
+          tone="job"
         />
 
         <div className={styles.tabContent} role="tabpanel" id={`panel-${activeTab}`}>
@@ -139,6 +176,9 @@ function ProfilePageInner() {
           )}
           {activeTab === "resume" && (
             <ResumeTab key={`resume-${refreshKey}`} onRefresh={handleRefresh} />
+          )}
+          {activeTab === "quiz" && quizOn && (
+            <QuizProfilePanel key={`quiz-${refreshKey}`} variant="embedded" />
           )}
         </div>
       </div>

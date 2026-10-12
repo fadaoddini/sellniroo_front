@@ -1,4 +1,5 @@
 // components/common/SiteFooter.jsx — فوتر مشترک سایت و ادمین
+// ماژول سایت: site_footer — از /adminweb فعال/غیرفعال می‌شود (صفحات سایت)
 'use client'
 
 import React, { useEffect, useState } from 'react'

@@ -1,0 +1,126 @@
+/* ============================================
+   هدر منوی بالا — HeaderByMenuTop
+   ============================================ */
+.header {
+  background: var(--corp-header-bg, #000);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: sticky;
+  top: 30px;
+  z-index: 1000;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 1.5rem;
+  height: 50px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-family: var(--font-edameh);
+  color: var(--macos-text);
+}
+
+.logo a {
+  display: flex;
+  align-items: center;
+}
+
+.logoImage {
+  width: auto;
+  height: 42px;
+  object-fit: contain;
+  transition: all .3s ease;
+}
+
+.logoImage:hover {
+  transform: scale(1.03);
+}
+
+.desktopNav {
+  flex: 1;
+  display: flex;
+  justify-content: right;
+  margin: 0 1rem;
+}
+
+.navList {
+  display: flex;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--corp-header-text, #c8c8c8);
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.navLink svg {
+  color: var(--corp-header-icon, #fff);
+  flex-shrink: 0;
+}
+
+.navLink:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--corp-header-hover, #fff);
+}
+
+.navLink:hover svg {
+  color: var(--corp-header-hover, #fff);
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 2px;
+}
+
+.navLink:hover::after {
+  width: 60%;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 8px;
+}
+
+/* موبایل/تبلت: هیچ فضای بالایی اشغال نشود — منوی پایین جایگزین است */
+@media (max-width: 1023px) {
+  .header {
+    display: none !important;
+  }
+}

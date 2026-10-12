@@ -1,5 +1,3 @@
-// components/VideoArchiveSection.jsx
-
 'use client'
 
 import React, { useState, useEffect, useCallback, useRef } from 'react'
@@ -13,40 +11,38 @@ import {
   Video as VideoIcon,
   Pause,
   Play,
-  Clock,
   Upload,
   Image as ImageIcon,
   ChevronLeft,
   ChevronRight,
-  Heart,
-  MessageCircle,
-  Share2,
-  Bookmark,
   Volume2,
   VolumeX,
   Maximize2,
   Minimize2,
-  ArrowLeft,
-  ArrowRight
 } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useAuth } from '@/contexts/AuthContext'
 import styles from './styles/VideoArchiveSection.module.css'
 import videoArchiveService from './services/videoArchiveService'
 import Config from '@/config/config'
+import {
+  DEFAULT_VIDEO_INSTA_SETTINGS,
+  fetchVideoInstaSettings,
+  buildVideoInstaCssVars,
+} from '@/services/videoInstaSettings'
 
 const VideoArchiveSection = () => {
-  const { language, dir } = useLanguage()
+  const { language } = useLanguage()
   const { user } = useAuth()
 
-  // ============================================
-  // STATE
-  // ============================================
+  const [settings, setSettings] = useState(DEFAULT_VIDEO_INSTA_SETTINGS)
   const [videos, setVideos] = useState([])
   const [loading, setLoading] = useState(true)
   const [isInitialLoad, setIsInitialLoad] = useState(true)
-  
-  const [selectedVideo, setSelectedVideo] = useState(null)
+
+  const [activeVideo, setActiveVideo] = useState(null)
+  const [activeIndex, setActiveIndex] = useState(0)
+
   const [isPlaying, setIsPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
@@ -59,213 +55,156 @@ const VideoArchiveSection = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalItems, setTotalItems] = useState(0)
-  const [isLoadingMore, setIsLoadingMore] = useState(false)
-  const pageSize = 10
-
-  const [centerIndex, setCenterIndex] = useState(0)
+  const pageSize = 8
 
   const [newVideo, setNewVideo] = useState({
     title: '',
     video: null,
     thumbnail: null,
-    is_active: true
+    is_active: true,
   })
 
-  // ============================================
-  // REFS
-  // ============================================
   const videoRef = useRef(null)
-  const gridRef = useRef(null)
-  const progressIntervalRef = useRef(null)
   const touchStartX = useRef(0)
   const touchStartY = useRef(0)
   const isSwiping = useRef(false)
   const isFetchingRef = useRef(false)
+  const trackedViewsRef = useRef(new Set())
 
   const isAdmin = user?.is_staff || user?.is_superuser || false
   const isRTL = language === 'fa'
 
-  const [isMobile, setIsMobile] = useState(false)
-  const [isTablet, setIsTablet] = useState(false)
-
-  // ============================================
-  // تشخیص دستگاه
-  // ============================================
-  useEffect(() => {
-    const checkDevice = () => {
-      const width = window.innerWidth
-      setIsMobile(width < 768)
-      setIsTablet(width >= 768 && width < 1024)
-    }
-    checkDevice()
-    window.addEventListener('resize', checkDevice)
-    return () => window.removeEventListener('resize', checkDevice)
-  }, [])
-
-  const getVisibleCount = useCallback(() => {
-    if (isMobile) return 1
-    if (isTablet) return 3
-    return 5
-  }, [isMobile, isTablet])
-
-  // ============================================
-  // ساخت URL کامل
-  // ============================================
   const getFullUrl = useCallback((path) => {
     if (!path) return null
-    if (path.startsWith('http://') || path.startsWith('https://')) {
-      return path
-    }
-    if (path.startsWith('/media/')) {
-      return `${Config.baseUrl}${path}`
-    }
-    if (path.startsWith('media/')) {
-      return `${Config.baseUrl}/${path}`
-    }
+    if (path.startsWith('http://') || path.startsWith('https://')) return path
+    if (path.startsWith('/media/')) return `${Config.baseUrl}${path}`
+    if (path.startsWith('media/')) return `${Config.baseUrl}/${path}`
     return `${Config.baseUrl}/media/${path.replace(/^\/+/, '')}`
   }, [])
 
-  // ============================================
-  // دریافت ویدیوها
-  // ============================================
-  const fetchVideos = useCallback(async (page = 1, isInitial = false) => {
-    if (isFetchingRef.current) {
-      console.log('📹 [VideoArchive] ⚠️ درخواست قبلی هنوز در حال انجام است')
-      return
-    }
+  const trackVideoView = useCallback(async (videoId) => {
+    if (!videoId) return
+    if (trackedViewsRef.current.has(videoId)) return
 
-    if (isInitial && !isInitialLoad) {
-      console.log('📹 [VideoArchive] ⚠️ بارگذاری اولیه قبلاً انجام شده')
-      return
-    }
-    
-    isFetchingRef.current = true
-    
+    trackedViewsRef.current.add(videoId)
+
     try {
-      if (page === 1) {
-        setLoading(true)
-      } else {
-        setIsLoadingMore(true)
-      }
-      
-      const result = await videoArchiveService.getVideos(page, pageSize)
-      
-      if (result.success) {
-        let newItems = result.data?.items || []
-        const pagination = result.data?.pagination || {}
-        
-        const uniqueNewItems = newItems.filter(
-          (item, index, self) => 
-            index === self.findIndex((t) => t.id === item.id)
-        )
-        
-        if (page === 1) {
-          const existingIds = new Set(videos.map(v => v.id))
-          const reallyUnique = uniqueNewItems.filter(item => !existingIds.has(item.id))
-          
-          if (reallyUnique.length > 0) {
-            setVideos(reallyUnique)
-            setSelectedVideo(reallyUnique[0])
-          } else {
-            setVideos([])
-            setSelectedVideo(null)
-          }
-          
-          if (isInitial) {
-            setIsInitialLoad(false)
-          }
-        } else {
-          setVideos(prev => {
-            const existingIds = new Set(prev.map(v => v.id))
-            const itemsToAdd = uniqueNewItems.filter(item => !existingIds.has(item.id))
-            
-            if (itemsToAdd.length === 0) {
-              return prev
-            }
-            
-            return [...prev, ...itemsToAdd]
-          })
-        }
-        
-        setTotalPages(pagination.total_pages || 1)
-        setTotalItems(pagination.total_items || 0)
-        setCurrentPage(pagination.current_page || 1)
-        
-        if (page === 1) {
-          const currentVideos = page === 1 ? 
-            (videos.length > 0 ? videos : uniqueNewItems) : 
-            videos
-          
-          if (currentVideos.length > 0) {
-            const halfCount = Math.floor(getVisibleCount() / 2)
-            const newCenterIndex = Math.min(halfCount, currentVideos.length - 1)
-            setCenterIndex(newCenterIndex)
-          }
-        }
-      } else {
-        console.error('❌ [VideoArchive] خطا در دریافت ویدیوها:', result.error)
-      }
-    } catch (error) {
-      console.error('❌ [VideoArchive] خطای غیرمنتظره:', error)
-    } finally {
-      setLoading(false)
-      setIsLoadingMore(false)
-      isFetchingRef.current = false
-    }
-  }, [pageSize, getVisibleCount, videos, isInitialLoad])
+      const result = await videoArchiveService.trackView(videoId)
 
-  // ============================================
-  // بارگذاری اولیه
-  // ============================================
+      if (result.success && result.data?.views !== undefined) {
+        setVideos((prev) =>
+          prev.map((v) =>
+            v.id === videoId ? { ...v, views: result.data.views } : v
+          )
+        )
+        setActiveVideo((prev) =>
+          prev && prev.id === videoId
+            ? { ...prev, views: result.data.views }
+            : prev
+        )
+      }
+    } catch {
+      // silent fail
+    }
+  }, [])
+
+  const fetchVideos = useCallback(
+    async (page = 1, isInitial = false) => {
+      if (isFetchingRef.current) return
+
+      isFetchingRef.current = true
+      setLoading(true)
+
+      try {
+        const result = await videoArchiveService.getVideos(page, pageSize)
+
+        if (result.success) {
+          const newItems = result.data?.items || []
+          const pagination = result.data?.pagination || {}
+
+          const uniqueNewItems = newItems.filter(
+            (item, index, self) =>
+              index === self.findIndex((t) => t.id === item.id)
+          )
+
+          setVideos(uniqueNewItems)
+          setTotalPages(pagination.total_pages || 1)
+          setTotalItems(pagination.total_items || 0)
+          setCurrentPage(pagination.current_page || page)
+
+          if (uniqueNewItems.length > 0) {
+            setActiveVideo(uniqueNewItems[0])
+            setActiveIndex(0)
+            setIsPlaying(false)
+          } else {
+            setActiveVideo(null)
+          }
+
+          if (isInitial) setIsInitialLoad(false)
+        } else {
+          console.error('خطا در دریافت ویدیوها:', result.error)
+        }
+      } catch (error) {
+        console.error('خطای غیرمنتظره:', error)
+      } finally {
+        setLoading(false)
+        isFetchingRef.current = false
+      }
+    },
+    [pageSize]
+  )
+
   useEffect(() => {
     fetchVideos(1, true)
+    fetchVideoInstaSettings().then(setSettings)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // ============================================
-  // کنترل‌های پلیر
-  // ============================================
-  const playVideo = useCallback((video) => {
-    if (!video) return
-    
-    setSelectedVideo(video)
-    setIsPlaying(true)
-    setProgress(0)
-    setCurrentTime(0)
-    
-    if (videoRef.current) {
-      videoRef.current.load()
-      setTimeout(() => {
-        videoRef.current?.focus()
-        videoRef.current?.play().catch(() => {})
-      }, 100)
-    }
-  }, [])
+  const playVideo = useCallback(
+    (video, index) => {
+      if (!video) return
+      setActiveVideo(video)
+      setActiveIndex(index)
+      setIsPlaying(true)
+      setProgress(0)
+      setCurrentTime(0)
+
+      trackVideoView(video.id)
+
+      if (videoRef.current) {
+        videoRef.current.load()
+        setTimeout(() => {
+          videoRef.current?.play().catch(() => {})
+        }, 100)
+      }
+    },
+    [trackVideoView]
+  )
 
   const pauseVideo = useCallback(() => {
     setIsPlaying(false)
-    if (videoRef.current) {
-      videoRef.current.pause()
-    }
+    videoRef.current?.pause()
   }, [])
 
   const togglePlay = useCallback(() => {
+    if (!videoRef.current) return
     if (isPlaying) {
       pauseVideo()
     } else {
       setIsPlaying(true)
-      if (videoRef.current) {
-        videoRef.current.play().catch(() => {})
+      videoRef.current.play().catch(() => {})
+      if (activeVideo?.id) {
+        trackVideoView(activeVideo.id)
       }
     }
-  }, [isPlaying, pauseVideo])
+  }, [isPlaying, pauseVideo, activeVideo, trackVideoView])
 
   const toggleMute = useCallback(() => {
-    setIsMuted(!isMuted)
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted
-    }
-  }, [isMuted])
+    setIsMuted((prev) => {
+      if (videoRef.current) videoRef.current.muted = !prev
+      return !prev
+    })
+  }, [])
 
   const handleTimeUpdate = useCallback(() => {
     if (videoRef.current) {
@@ -273,342 +212,251 @@ const VideoArchiveSection = () => {
       const dur = videoRef.current.duration || 0
       setCurrentTime(current)
       setDuration(dur)
-      if (dur > 0) {
-        setProgress((current / dur) * 100)
-      }
+      if (dur > 0) setProgress((current / dur) * 100)
     }
   }, [])
 
-  // ============================================
-  // بزرگنمایی - با دکمه خروج واضح
-  // ============================================
+  const handleProgressClick = useCallback(
+    (e) => {
+      if (!videoRef.current || !duration) return
+      const rect = e.currentTarget.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const percent = x / rect.width
+      videoRef.current.currentTime = percent * duration
+    },
+    [duration]
+  )
+
   const toggleZoom = useCallback(() => {
-    const newZoomState = !isZoomed
-    setIsZoomed(newZoomState)
-    
-    if (newZoomState) {
-      document.body.style.overflow = 'hidden'
-      document.body.style.position = 'fixed'
-      document.body.style.width = '100%'
-      document.body.style.top = `-${window.scrollY}px`
-    } else {
-      const scrollY = document.body.style.top
+    setIsZoomed((prev) => {
+      const next = !prev
+      document.body.style.overflow = next ? 'hidden' : ''
+      return next
+    })
+  }, [])
+
+  useEffect(() => {
+    return () => {
       document.body.style.overflow = ''
-      document.body.style.position = ''
-      document.body.style.width = ''
-      document.body.style.top = ''
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || '0') * -1)
+    }
+  }, [])
+
+  const goToNext = useCallback(() => {
+    if (videos.length === 0) return
+    const nextIndex = (activeIndex + 1) % videos.length
+    playVideo(videos[nextIndex], nextIndex)
+  }, [activeIndex, videos, playVideo])
+
+  const goToPrev = useCallback(() => {
+    if (videos.length === 0) return
+    const prevIndex = (activeIndex - 1 + videos.length) % videos.length
+    playVideo(videos[prevIndex], prevIndex)
+  }, [activeIndex, videos, playVideo])
+
+  const handleCardClick = useCallback(
+    (video, index) => {
+      if (activeVideo?.id === video.id) {
+        toggleZoom()
+        return
       }
-    }
-  }, [isZoomed])
+      playVideo(video, index)
+    },
+    [activeVideo, playVideo, toggleZoom]
+  )
 
-  // ============================================
-  // جابجایی بین آیتم‌ها
-  // ============================================
-  const handleNext = useCallback(() => {
-    const total = videos.length
-    if (centerIndex < total - 1) {
-      const newIndex = centerIndex + 1
-      setCenterIndex(newIndex)
-      playVideo(videos[newIndex])
-      
-      if (gridRef.current && isMobile) {
-        gridRef.current.scrollTo({
-          left: gridRef.current.scrollWidth / total * newIndex,
-          behavior: 'smooth'
-        })
-      }
-    }
-  }, [centerIndex, videos, playVideo, isMobile])
-
-  const handlePrev = useCallback(() => {
-    if (centerIndex > 0) {
-      const newIndex = centerIndex - 1
-      setCenterIndex(newIndex)
-      playVideo(videos[newIndex])
-      
-      if (gridRef.current && isMobile) {
-        gridRef.current.scrollTo({
-          left: gridRef.current.scrollWidth / videos.length * newIndex,
-          behavior: 'smooth'
-        })
-      }
-    }
-  }, [centerIndex, videos, playVideo, isMobile])
-
-  // ============================================
-  // کلیک روی آیتم
-  // ============================================
-  const handleItemClick = useCallback((video, index) => {
-    if (centerIndex === index && selectedVideo?.id === video.id) {
-      toggleZoom()
-      return
-    }
-    
-    setCenterIndex(index)
-    playVideo(video)
-    
-    if (isZoomed) {
-      setIsZoomed(false)
-      document.body.style.overflow = ''
-      document.body.style.position = ''
-      document.body.style.width = ''
-      document.body.style.top = ''
-    }
-  }, [centerIndex, selectedVideo, playVideo, toggleZoom, isZoomed])
-
-  // ============================================
-  // کشیدن با انگشت (Swipe)
-  // ============================================
   const handleTouchStart = useCallback((e) => {
     touchStartX.current = e.touches[0].clientX
     touchStartY.current = e.touches[0].clientY
     isSwiping.current = false
   }, [])
 
-  const handleTouchMove = useCallback((e) => {
-    if (!touchStartX.current || isZoomed) return
-    
-    const diffX = e.touches[0].clientX - touchStartX.current
-    const diffY = e.touches[0].clientY - touchStartY.current
-    
-    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 30) {
-      isSwiping.current = true
-      e.preventDefault()
-      
-      if (diffX > 0) {
-        handlePrev()
-      } else {
-        handleNext()
+  const handleTouchMove = useCallback(
+    (e) => {
+      if (!touchStartX.current || isZoomed || isSwiping.current) return
+      const diffX = e.touches[0].clientX - touchStartX.current
+      const diffY = e.touches[0].clientY - touchStartY.current
+
+      // فقط وقتی حرکت افقی واضح است، اسکرول عمودی را قفل کن
+      if (Math.abs(diffX) > 18 && Math.abs(diffX) > Math.abs(diffY) * 1.2) {
+        e.preventDefault()
       }
-      
+    },
+    [isZoomed]
+  )
+
+  const handleTouchEnd = useCallback(
+    (e) => {
+      const startX = touchStartX.current
+      const startY = touchStartY.current
       touchStartX.current = 0
       touchStartY.current = 0
-    }
-  }, [handlePrev, handleNext, isZoomed])
 
-  const handleTouchEnd = useCallback(() => {
-    touchStartX.current = 0
-    touchStartY.current = 0
-    setTimeout(() => {
+      if (!startX || isZoomed) {
+        isSwiping.current = false
+        return
+      }
+
+      const end = e.changedTouches?.[0]
+      if (!end) {
+        isSwiping.current = false
+        return
+      }
+
+      const diffX = end.clientX - startX
+      const diffY = end.clientY - startY
+
+      if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY) * 1.15) {
+        isSwiping.current = true
+        if (diffX > 0) {
+          isRTL ? goToNext() : goToPrev()
+        } else {
+          isRTL ? goToPrev() : goToNext()
+        }
+        setTimeout(() => {
+          isSwiping.current = false
+        }, 220)
+        return
+      }
+
       isSwiping.current = false
-    }, 100)
-  }, [])
+    },
+    [goToNext, goToPrev, isRTL, isZoomed]
+  )
 
-  // ============================================
-  // مدیریت کلیدهای صفحه کلید
-  // ============================================
   useEffect(() => {
     const handleKeyDown = (e) => {
       const target = e.target
       if (
         target.tagName === 'INPUT' ||
         target.tagName === 'TEXTAREA' ||
-        target.isContentEditable ||
-        target.closest?.('input') ||
-        target.closest?.('textarea')
-      ) {
+        target.isContentEditable
+      )
         return
-      }
-
-      if (!selectedVideo) {
-        if (e.key === 'Escape' && isZoomed) {
-          toggleZoom()
-        }
-        return
-      }
 
       switch (e.key) {
         case 'Escape':
-          if (isZoomed) {
-            e.preventDefault()
-            toggleZoom()
-          }
+          if (isZoomed) toggleZoom()
           break
-
         case ' ':
           e.preventDefault()
-          e.stopPropagation()
           togglePlay()
           break
-
         case 'ArrowLeft':
           e.preventDefault()
-          e.stopPropagation()
-          if (isRTL) {
-            handleNext()
-          } else {
-            handlePrev()
-          }
+          isRTL ? goToNext() : goToPrev()
           break
-
         case 'ArrowRight':
           e.preventDefault()
-          e.stopPropagation()
-          if (isRTL) {
-            handlePrev()
-          } else {
-            handleNext()
-          }
+          isRTL ? goToPrev() : goToNext()
           break
-
         case 'f':
         case 'F':
-          e.preventDefault()
           toggleZoom()
           break
-
         case 'm':
         case 'M':
-          e.preventDefault()
           toggleMute()
-          break
-
-        default:
           break
       }
     }
-
     window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [selectedVideo, isZoomed, toggleZoom, togglePlay, toggleMute, handleNext, handlePrev, isRTL])
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isZoomed, toggleZoom, togglePlay, toggleMute, goToNext, goToPrev, isRTL])
 
-  // ============================================
-  // حذف و افزودن ویدیو
-  // ============================================
+  const goToPage = useCallback(
+    (page) => {
+      if (page === currentPage) return
+      if (page < 1 || page > totalPages) return
+      fetchVideos(page, false)
+    },
+    [currentPage, totalPages, fetchVideos]
+  )
+
   const deleteVideo = async (id) => {
-    if (!confirm(language === 'fa' ? 'آیا از حذف این ویدیو اطمینان دارید؟' : 'Delete this video?')) {
+    if (
+      !confirm(
+        language === 'fa'
+          ? 'آیا از حذف این ویدیو اطمینان دارید؟'
+          : 'Delete this video?'
+      )
+    )
       return
-    }
-    
+
     try {
       const result = await videoArchiveService.deleteVideo(id)
-      
       if (result.success) {
-        setVideos(prev => prev.filter(v => v.id !== id))
-        setTotalItems(prev => Math.max(0, prev - 1))
-        
-        setVideos(prev => {
-          if (prev.length > 0) {
-            if (selectedVideo?.id === id) {
-              setSelectedVideo(prev[0])
-              playVideo(prev[0])
-            }
-            if (centerIndex >= prev.length) {
-              setCenterIndex(prev.length - 1)
-            }
-          } else {
-            setSelectedVideo(null)
-            setIsPlaying(false)
-            setCenterIndex(0)
-          }
-          return prev
-        })
-        
-        await fetchVideos(1, true)
+        if (videos.length === 1 && currentPage > 1) {
+          await fetchVideos(currentPage - 1, false)
+        } else {
+          await fetchVideos(currentPage, false)
+        }
       } else {
         alert(result.error || 'خطا در حذف ویدیو')
       }
-    } catch (error) {
+    } catch {
       alert(language === 'fa' ? 'خطا در حذف ویدیو' : 'Error deleting video')
     }
   }
 
+  const resetForm = () => {
+    setNewVideo({ title: '', video: null, thumbnail: null, is_active: true })
+  }
+
   const addVideo = async () => {
     if (!newVideo.video) {
-      alert(language === 'fa' ? 'لطفاً فایل ویدیو را انتخاب کنید' : 'Please select a video file')
+      alert(
+        language === 'fa'
+          ? 'لطفاً فایل ویدیو را انتخاب کنید'
+          : 'Please select a video file'
+      )
       return
     }
-    
     setSubmitting(true)
-    
     try {
       const result = await videoArchiveService.createVideo(newVideo)
-      
       if (result.success) {
-        const newVideoData = result.data
-        
-        setVideos(prev => {
-          const exists = prev.some(v => v.id === newVideoData.id)
-          if (exists) return prev
-          return [newVideoData, ...prev]
-        })
-        
-        setSelectedVideo(newVideoData)
-        setCenterIndex(0)
-        setTotalItems(prev => prev + 1)
         setIsAdding(false)
         resetForm()
-        
-        setTimeout(() => {
-          playVideo(newVideoData)
-        }, 300)
+        await fetchVideos(1, false)
       } else {
         alert(result.error || 'خطا در ایجاد ویدیو')
       }
-    } catch (error) {
+    } catch {
       alert(language === 'fa' ? 'خطا در ایجاد ویدیو' : 'Error creating video')
     } finally {
       setSubmitting(false)
     }
   }
 
-  const resetForm = () => {
-    setNewVideo({ 
-      title: '', 
-      video: null, 
-      thumbnail: null, 
-      is_active: true 
-    })
-  }
-
-  // ============================================
-  // ترجمه‌ها
-  // ============================================
   const t = {
-    title: language === 'fa' ? 'آرشیو ویدیوها' : 'Video Archive',
-    subtitle: language === 'fa' ? 'آرشیو ویدیوهای منتخب ما' : 'Our selected video archive',
+    title:
+      language === 'fa'
+        ? settings.title_fa || 'آرشیو ویدیوها'
+        : settings.title_en || 'Video Archive',
+    subtitle:
+      language === 'fa'
+        ? settings.subtitle_fa || ''
+        : settings.subtitle_en || '',
     addNew: language === 'fa' ? 'ویدیو جدید' : 'New Video',
     empty: language === 'fa' ? 'هنوز ویدیویی وجود ندارد' : 'No videos yet',
     loading: language === 'fa' ? 'در حال بارگذاری...' : 'Loading...',
     addTitle: language === 'fa' ? 'عنوان (اختیاری)' : 'Title (optional)',
     addVideo: language === 'fa' ? 'فایل ویدیو (ضروری)' : 'Video file (required)',
-    addThumbnail: language === 'fa' ? 'تصویر شاخص (اختیاری)' : 'Thumbnail (optional)',
+    addThumbnail:
+      language === 'fa' ? 'تصویر شاخص (اختیاری)' : 'Thumbnail (optional)',
     save: language === 'fa' ? 'ذخیره' : 'Save',
     cancel: language === 'fa' ? 'لغو' : 'Cancel',
     views: language === 'fa' ? 'بازدید' : 'views',
-    pause: language === 'fa' ? 'مکث' : 'Pause',
-    play: language === 'fa' ? 'پخش' : 'Play',
-    zoomIn: language === 'fa' ? 'بزرگنمایی' : 'Zoom In',
-    zoomOut: language === 'fa' ? 'خروج از بزرگنمایی' : 'Zoom Out',
+    nowPlaying: language === 'fa' ? 'در حال پخش' : 'Now Playing',
+    allVideos: language === 'fa' ? 'همه ویدیوها' : 'All Videos',
     prev: language === 'fa' ? 'قبلی' : 'Previous',
     next: language === 'fa' ? 'بعدی' : 'Next',
-    closeZoom: language === 'fa' ? 'خروج از بزرگنمایی' : 'Exit Zoom',
-    tapToZoom: language === 'fa' ? '👆 کلیک برای بزرگنمایی' : '👆 Tap to zoom',
-    tapToClose: language === 'fa' ? '✕ خروج از بزرگنمایی' : '✕ Exit Zoom',
+    closeZoom: language === 'fa' ? 'خروج' : 'Exit',
+    page: language === 'fa' ? 'صفحه' : 'Page',
+    play: language === 'fa' ? 'پخش' : 'Play',
   }
 
-  // ============================================
-  // محاسبه آیتم‌های قابل نمایش
-  // ============================================
-  const visibleItems = React.useMemo(() => {
-    const total = videos.length
-    const visibleCount = getVisibleCount()
-    const halfCount = Math.floor(visibleCount / 2)
-    
-    const start = Math.max(0, centerIndex - halfCount)
-    const end = Math.min(total, centerIndex + halfCount + 1)
-    
-    return videos.slice(start, end).map((video, idx) => ({
-      ...video,
-      originalIndex: start + idx,
-      isCenter: start + idx === centerIndex,
-      position: start + idx - centerIndex
-    }))
-  }, [videos, centerIndex, getVisibleCount])
+  const themeStyle = buildVideoInstaCssVars(settings)
 
   const formatTime = (seconds) => {
     if (!seconds || isNaN(seconds)) return '0:00'
@@ -617,15 +465,49 @@ const VideoArchiveSection = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
-  // ============================================
-  // RENDER
-  // ============================================
+  const getPaginationRange = () => {
+    const total = totalPages
+    const current = currentPage
+    const delta = 2
+    const range = []
+    const rangeWithDots = []
+
+    for (let i = 1; i <= total; i++) {
+      if (
+        i === 1 ||
+        i === total ||
+        (i >= current - delta && i <= current + delta)
+      ) {
+        range.push(i)
+      }
+    }
+
+    let prev
+    for (const i of range) {
+      if (prev) {
+        if (i - prev === 2) {
+          rangeWithDots.push(prev + 1)
+        } else if (i - prev !== 1) {
+          rangeWithDots.push('...')
+        }
+      }
+      rangeWithDots.push(i)
+      prev = i
+    }
+    return rangeWithDots
+  }
+
+  if (settings.show_desktop_section === false) return null
+
   if (loading && videos.length === 0) {
     return (
-      <section className={styles.videoArchiveSection}>
+      <section
+        className={`${styles.section} ${styles.desktopOnly}`}
+        style={themeStyle}
+      >
         <div className="container">
           <div className={styles.loading}>
-            <Loader2 size={28} className={styles.spinner} />
+            <Loader2 size={32} className={styles.spinner} />
             <span>{t.loading}</span>
           </div>
         </div>
@@ -633,40 +515,74 @@ const VideoArchiveSection = () => {
     )
   }
 
+  const showHeader =
+    settings.show_title !== false ||
+    settings.show_subtitle !== false ||
+    (isAdmin && settings.show_add_button !== false)
+
   return (
-    <section className={styles.videoArchiveSection}>
+    <section
+      className={`${styles.section} ${styles.desktopOnly}`}
+      style={themeStyle}
+    >
       <div className="container">
-        {/* ===== HEADER ===== */}
-        <div className={styles.header}>
-          <div className={styles.headerLeft}>
-            <div className={styles.badge}>🎬 {language === 'fa' ? 'آرشیو' : 'Archive'}</div>
-            <h2 className={styles.title}>{t.title}</h2>
-            <p className={styles.subtitle}>{t.subtitle}</p>
-            {totalItems > 0 && (
-              <span className={styles.totalCount}>
-                {totalItems} {language === 'fa' ? 'ویدیو' : 'videos'}
-              </span>
+        {showHeader && (
+          <div className={styles.header}>
+            <div className={styles.headerText}>
+              {settings.show_title !== false && (
+                <h2
+                  className={`${styles.title} ${
+                    settings.title_color ? styles.titleSolid : ''
+                  }`}
+                >
+                  {t.title}
+                </h2>
+              )}
+              {settings.show_subtitle !== false && t.subtitle ? (
+                <p className={styles.subtitle}>{t.subtitle}</p>
+              ) : null}
+            </div>
+            {isAdmin && settings.show_add_button !== false && (
+              <button
+                className={styles.addBtn}
+                onClick={() => setIsAdding(true)}
+                disabled={isAdding}
+              >
+                <Plus size={16} /> {t.addNew}
+              </button>
             )}
           </div>
-          {isAdmin && (
-            <button className={styles.addBtn} onClick={() => setIsAdding(true)} disabled={isAdding}>
-              <Plus size={16} /> {t.addNew}
-            </button>
-          )}
-        </div>
+        )}
 
-        {/* ===== ADD FORM ===== */}
-        {isAdding && isAdmin && (
+        {isAdding && isAdmin && settings.show_add_button !== false && (
           <div className={styles.addForm}>
-            <h4><VideoIcon size={18} /> {language === 'fa' ? 'افزودن ویدیو جدید' : 'Add New Video'}</h4>
+            <div className={styles.addFormHeader}>
+              <h4>
+                <VideoIcon size={18} />{' '}
+                {language === 'fa' ? 'افزودن ویدیو جدید' : 'Add New Video'}
+              </h4>
+              <button
+                className={styles.closeAddBtn}
+                onClick={() => {
+                  setIsAdding(false)
+                  resetForm()
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
             <div className={styles.formGrid}>
               <div className={`${styles.formField} ${styles.formFieldFull}`}>
                 <label>{t.addTitle}</label>
                 <input
                   type="text"
                   value={newVideo.title}
-                  onChange={(e) => setNewVideo({ ...newVideo, title: e.target.value })}
-                  placeholder={language === 'fa' ? 'مثلاً: پروژه جدید' : 'e.g., New Project'}
+                  onChange={(e) =>
+                    setNewVideo({ ...newVideo, title: e.target.value })
+                  }
+                  placeholder={
+                    language === 'fa' ? 'مثلاً: پروژه جدید' : 'e.g., New Project'
+                  }
                 />
               </div>
               <div className={styles.formField}>
@@ -675,13 +591,19 @@ const VideoArchiveSection = () => {
                   <input
                     type="file"
                     accept="video/*"
-                    onChange={(e) => setNewVideo({ ...newVideo, video: e.target.files[0] })}
+                    onChange={(e) =>
+                      setNewVideo({ ...newVideo, video: e.target.files[0] })
+                    }
                     className={styles.fileInput}
                     id="videoFile"
                   />
                   <label htmlFor="videoFile" className={styles.fileLabel}>
                     <Upload size={16} />
-                    {newVideo.video ? newVideo.video.name : language === 'fa' ? 'انتخاب فایل' : 'Choose file'}
+                    {newVideo.video
+                      ? newVideo.video.name
+                      : language === 'fa'
+                        ? 'انتخاب فایل'
+                        : 'Choose file'}
                   </label>
                 </div>
               </div>
@@ -691,234 +613,351 @@ const VideoArchiveSection = () => {
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => setNewVideo({ ...newVideo, thumbnail: e.target.files[0] })}
+                    onChange={(e) =>
+                      setNewVideo({ ...newVideo, thumbnail: e.target.files[0] })
+                    }
                     className={styles.fileInput}
                     id="thumbnailFile"
                   />
                   <label htmlFor="thumbnailFile" className={styles.fileLabel}>
                     <ImageIcon size={16} />
-                    {newVideo.thumbnail ? newVideo.thumbnail.name : language === 'fa' ? 'انتخاب تصویر' : 'Choose image'}
+                    {newVideo.thumbnail
+                      ? newVideo.thumbnail.name
+                      : language === 'fa'
+                        ? 'انتخاب تصویر'
+                        : 'Choose image'}
                   </label>
                 </div>
               </div>
             </div>
             <div className={styles.formActions}>
-              <button className={styles.saveBtn} onClick={addVideo} disabled={submitting || !newVideo.video}>
-                {submitting ? <Loader2 size={16} className={styles.spinner} /> : <Save size={16} />}
+              <button
+                className={styles.saveBtn}
+                onClick={addVideo}
+                disabled={submitting || !newVideo.video}
+              >
+                {submitting ? (
+                  <Loader2 size={16} className={styles.spinner} />
+                ) : (
+                  <Save size={16} />
+                )}
                 {t.save}
               </button>
-              <button className={styles.cancelBtn} onClick={() => { setIsAdding(false); resetForm() }} disabled={submitting}>
+              <button
+                className={styles.cancelBtn}
+                onClick={() => {
+                  setIsAdding(false)
+                  resetForm()
+                }}
+                disabled={submitting}
+              >
                 <X size={16} /> {t.cancel}
               </button>
             </div>
           </div>
         )}
 
-        {/* ===== CAROUSEL ===== */}
-        {videos.length > 0 && selectedVideo ? (
-          <div 
-            className={`${styles.carouselContainer} ${isZoomed ? styles.zoomed : ''}`}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
+        {videos.length > 0 && activeVideo ? (
+          <div
+            className={`${styles.mainLayout} ${
+              isZoomed ? styles.zoomedMode : ''
+            }`}
           >
-            {/* ===== دکمه خروج از بزرگنمایی - بسیار واضح ===== */}
-            {isZoomed && (
-              <button 
-                className={styles.closeZoomBtn}
-                onClick={toggleZoom}
-                aria-label={t.closeZoom}
+            <div
+              className={styles.playerColumn}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              <div
+                className={`${styles.storyPlayer} ${
+                  isZoomed ? styles.zoomed : ''
+                }`}
               >
-                <X size={isMobile ? 28 : 32} />
-                <span>{t.closeZoom}</span>
-              </button>
-            )}
-
-            {/* ===== دکمه‌های قبلی/بعدی - در موبایل هم نمایش داده می‌شوند ===== */}
-            {!isZoomed && centerIndex > 0 && (
-              <button 
-                className={`${styles.scrollBtn} ${styles.scrollLeft}`}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handlePrev()
-                }}
-                aria-label={t.prev}
-              >
-                <ChevronLeft size={isMobile ? 24 : 28} />
-              </button>
-            )}
-
-            {!isZoomed && centerIndex < videos.length - 1 && (
-              <button 
-                className={`${styles.scrollBtn} ${styles.scrollRight}`}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleNext()
-                }}
-                aria-label={t.next}
-              >
-                <ChevronRight size={isMobile ? 24 : 28} />
-              </button>
-            )}
-
-            {/* ===== دکمه‌های لمسی برای موبایل (لبه‌های صفحه) ===== */}
-            {isMobile && !isZoomed && (
-              <>
-                <div 
-                  className={styles.touchLeft}
-                  onClick={handlePrev}
-                  aria-label={t.prev}
-                />
-                <div 
-                  className={styles.touchRight}
-                  onClick={handleNext}
-                  aria-label={t.next}
-                />
-              </>
-            )}
-
-            {/* ===== TRACK ===== */}
-            <div className={styles.carouselTrack} ref={gridRef}>
-              {visibleItems.map((item, index) => (
-                <div 
-                  key={`video-${item.id}-${index}`}
-                  className={`${styles.carouselItem} ${item.isCenter ? styles.centerItem : styles.sideItem}`}
-                  onClick={() => handleItemClick(item, item.originalIndex)}
-                >
-                  <div className={styles.mobileFrame}>
-                    <div className={`${styles.phoneMockup} ${item.isCenter && isZoomed ? styles.zoomedPhone : ''}`}>
-                      <div className={styles.phoneNotch}>
-                        <div className={styles.notchCamera}></div>
-                      </div>
-                      
-                      <div className={styles.phoneScreen}>
-                        {item.isCenter && selectedVideo ? (
-                          <>
-                            <video
-                              ref={videoRef}
-                              src={getFullUrl(selectedVideo.video_url)}
-                              className={styles.phoneVideo}
-                              poster={getFullUrl(selectedVideo.thumbnail_url)}
-                              playsInline
-                              tabIndex={0}
-                              onTimeUpdate={handleTimeUpdate}
-                              onPlay={() => setIsPlaying(true)}
-                              onPause={() => setIsPlaying(false)}
-                              onEnded={() => handleNext()}
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                            
-                            <div className={styles.videoControls} onClick={(e) => e.stopPropagation()}>
-                              <div className={styles.progressBar}>
-                                <div 
-                                  className={styles.progressFill} 
-                                  style={{ width: `${progress}%` }}
-                                />
-                              </div>
-                              
-                              <div className={styles.controlsBottom}>
-                                <button 
-                                  className={styles.controlBtn}
-                                  onClick={togglePlay}
-                                  aria-label={isPlaying ? t.pause : t.play}
-                                >
-                                  {isPlaying ? <Pause size={isMobile ? 14 : 18} /> : <Play size={isMobile ? 14 : 18} />}
-                                </button>
-                                
-                                <span className={styles.timeText}>
-                                  {formatTime(currentTime)} / {formatTime(duration)}
-                                </span>
-                                
-                                <button 
-                                  className={styles.controlBtn}
-                                  onClick={toggleMute}
-                                  aria-label={isMuted ? 'Unmute' : 'Mute'}
-                                >
-                                  {isMuted ? <VolumeX size={isMobile ? 14 : 18} /> : <Volume2 size={isMobile ? 14 : 18} />}
-                                </button>
-                                
-                                <button 
-                                  className={`${styles.controlBtn} ${styles.zoomBtn}`}
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    toggleZoom()
-                                  }}
-                                  title={isZoomed ? t.zoomOut : t.zoomIn}
-                                  aria-label={isZoomed ? t.zoomOut : t.zoomIn}
-                                >
-                                  {isZoomed ? <Minimize2 size={isMobile ? 14 : 18} /> : <Maximize2 size={isMobile ? 14 : 18} />}
-                                </button>
-                              </div>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            {item.thumbnail_url ? (
-                              <img
-                                src={getFullUrl(item.thumbnail_url)}
-                                alt={item.title || 'Video'}
-                                className={styles.phoneImage}
-                                loading="lazy"
-                              />
-                            ) : (
-                              <div className={styles.phonePlaceholder}>
-                                <VideoIcon size={isMobile ? 32 : 48} />
-                              </div>
-                            )}
-                            
-                            <div className={styles.playOverlay}>
-                              <Play size={isMobile ? 20 : 28} className={styles.playIconSmall} />
-                            </div>
-                          </>
-                        )}
-                        
-                        {/* ===== عنوان و بازدید - همیشه نمایش داده می‌شود ===== */}
-                        <div className={styles.phoneInfo}>
-                          <span className={styles.phoneTitle}>
-                            {item.title || (language === 'fa' ? 'بدون عنوان' : 'Untitled')}
-                          </span>
-                          <span className={styles.phoneViews}>
-                            <Eye size={isMobile ? 10 : 14} /> {(item.views || 0).toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <div className={styles.phoneHome}></div>
+                <div className={styles.storyProgressBar}>
+                  {videos.map((v, i) => (
+                    <div
+                      key={v.id}
+                      className={`${styles.storyProgressSegment} ${
+                        i < activeIndex
+                          ? styles.completed
+                          : i === activeIndex
+                            ? styles.active
+                            : ''
+                      }`}
+                    >
+                      <div
+                        className={styles.storyProgressFill}
+                        style={{
+                          width:
+                            i === activeIndex
+                              ? `${progress}%`
+                              : i < activeIndex
+                                ? '100%'
+                                : '0%',
+                        }}
+                      />
                     </div>
-                    
-                    {item.isCenter && !isZoomed && (
-                      <div className={styles.centerBadge}>
-                        {t.tapToZoom}
-                      </div>
+                  ))}
+                </div>
+
+                <div className={styles.storyHeader}>
+                  <div className={styles.storyUserInfo}>
+                    <div className={styles.storyAvatar}>
+                      <VideoIcon size={16} />
+                    </div>
+                    <div className={styles.storyUserText}>
+                      <span className={styles.storyUsername}>
+                        {activeVideo.title ||
+                          (language === 'fa' ? 'بدون عنوان' : 'Untitled')}
+                      </span>
+                      <span className={styles.storyTime}>
+                        {activeIndex + 1} / {videos.length}
+                      </span>
+                    </div>
+                  </div>
+                  <div className={styles.storyHeaderActions}>
+                    <button
+                      className={styles.storyIconBtn}
+                      onClick={toggleMute}
+                      aria-label={isMuted ? 'Unmute' : 'Mute'}
+                    >
+                      {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                    </button>
+                    <button
+                      className={styles.storyIconBtn}
+                      onClick={toggleZoom}
+                      aria-label={isZoomed ? 'Exit zoom' : 'Zoom'}
+                    >
+                      {isZoomed ? (
+                        <Minimize2 size={18} />
+                      ) : (
+                        <Maximize2 size={18} />
+                      )}
+                    </button>
+                    {isZoomed && (
+                      <button
+                        className={styles.closeZoomBtn}
+                        onClick={toggleZoom}
+                        aria-label={t.closeZoom}
+                      >
+                        <X size={20} />
+                      </button>
                     )}
                   </div>
                 </div>
-              ))}
+
+                <div className={styles.storyVideoWrapper}>
+                  <video
+                    ref={videoRef}
+                    src={getFullUrl(activeVideo.video_url)}
+                    poster={getFullUrl(activeVideo.thumbnail_url)}
+                    className={styles.storyVideo}
+                    playsInline
+                    onTimeUpdate={handleTimeUpdate}
+                    onPlay={() => setIsPlaying(true)}
+                    onPause={() => setIsPlaying(false)}
+                    onEnded={goToNext}
+                    onClick={togglePlay}
+                  />
+
+                  <div className={styles.storyNavLayer}>
+                    <button
+                      className={`${styles.storyNavZone} ${styles.storyNavLeft}`}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        isRTL ? goToNext() : goToPrev()
+                      }}
+                      aria-label={isRTL ? t.next : t.prev}
+                    />
+                    <button
+                      className={`${styles.storyNavZone} ${styles.storyNavRight}`}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        isRTL ? goToPrev() : goToNext()
+                      }}
+                      aria-label={isRTL ? t.prev : t.next}
+                    />
+                  </div>
+
+                  {!isPlaying && (
+                    <button
+                      className={styles.bigPlayBtn}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        togglePlay()
+                      }}
+                      aria-label={t.play}
+                    >
+                      <Play size={32} fill="white" />
+                    </button>
+                  )}
+
+                  <button
+                    className={`${styles.navBtn} ${styles.navBtnPrev}`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      isRTL ? goToNext() : goToPrev()
+                    }}
+                    aria-label={t.prev}
+                  >
+                    <ChevronLeft size={22} />
+                  </button>
+                  <button
+                    className={`${styles.navBtn} ${styles.navBtnNext}`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      isRTL ? goToPrev() : goToNext()
+                    }}
+                    aria-label={t.next}
+                  >
+                    <ChevronRight size={22} />
+                  </button>
+                </div>
+
+                <div className={styles.storyFooter}>
+                  <button
+                    className={styles.storyControlBtn}
+                    onClick={togglePlay}
+                  >
+                    {isPlaying ? <Pause size={18} /> : <Play size={18} />}
+                  </button>
+                  <span className={styles.storyTimeText}>
+                    {formatTime(currentTime)} / {formatTime(duration)}
+                  </span>
+                  <div
+                    className={styles.storyProgressClickable}
+                    onClick={handleProgressClick}
+                  >
+                    <div
+                      className={styles.storyProgressClickableFill}
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* ===== شمارنده موبایل ===== */}
-            {isMobile && (
-              <div className={styles.mobileCounter}>
-                {centerIndex + 1} / {videos.length}
+            <div className={styles.gridColumn}>
+              <div className={styles.gridHeader}>
+                <h3 className={styles.gridTitle}>
+                  <VideoIcon size={16} /> {t.allVideos}
+                </h3>
+                <span className={styles.gridCount}>
+                  {totalItems} {language === 'fa' ? 'ویدیو' : 'videos'}
+                </span>
               </div>
-            )}
 
-            {/* ===== PAGE INDICATOR ===== */}
-            <div className={styles.pageIndicator}>
-              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => (
-                <button
-                  key={`page-${i}`}
-                  className={`${styles.pageDot} ${currentPage === i + 1 ? styles.activeDot : ''}`}
-                  onClick={() => {
-                    if (currentPage !== i + 1) {
-                      fetchVideos(i + 1)
-                    }
-                  }}
-                  aria-label={`صفحه ${i + 1}`}
-                />
-              ))}
-              {totalPages > 5 && (
-                <span className={styles.pageDotsMore}>...</span>
+              <div className={styles.videoGrid}>
+                {videos.map((video, index) => (
+                  <div
+                    key={video.id}
+                    className={`${styles.videoCard} ${
+                      activeVideo?.id === video.id
+                        ? styles.videoCardActive
+                        : ''
+                    }`}
+                    onClick={() => handleCardClick(video, index)}
+                  >
+                    <div className={styles.videoThumb}>
+                      {video.thumbnail_url ? (
+                        <img
+                          src={getFullUrl(video.thumbnail_url)}
+                          alt={video.title || 'Video'}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className={styles.thumbPlaceholder}>
+                          <VideoIcon size={28} />
+                        </div>
+                      )}
+
+                      <div className={styles.videoOverlay}>
+                        <div className={styles.videoPlayIcon}>
+                          <Play size={20} fill="white" />
+                        </div>
+                      </div>
+
+                      {activeVideo?.id === video.id && (
+                        <div className={styles.playingBadge}>
+                          <span className={styles.playingDot} />
+                          {t.nowPlaying}
+                        </div>
+                      )}
+
+                      {isAdmin && (
+                        <button
+                          className={styles.deleteBtn}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            deleteVideo(video.id)
+                          }}
+                          aria-label="Delete"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+
+                      <div className={styles.videoMeta}>
+                        <span className={styles.videoTitle}>
+                          {video.title ||
+                            (language === 'fa' ? 'بدون عنوان' : 'Untitled')}
+                        </span>
+                        {settings.show_views !== false && (
+                          <span className={styles.videoViews}>
+                            <Eye size={12} />{' '}
+                            {(video.views || 0).toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {totalPages > 1 && (
+                <div className={styles.pagination}>
+                  <button
+                    className={styles.pageNavBtn}
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1 || loading}
+                    aria-label={t.prev}
+                  >
+                    <ChevronRight size={18} />
+                  </button>
+
+                  <div className={styles.pageNumbers}>
+                    {getPaginationRange().map((page, idx) =>
+                      page === '...' ? (
+                        <span key={`dots-${idx}`} className={styles.pageDots}>
+                          ...
+                        </span>
+                      ) : (
+                        <button
+                          key={page}
+                          className={`${styles.pageNumber} ${
+                            currentPage === page
+                              ? styles.pageNumberActive
+                              : ''
+                          }`}
+                          onClick={() => goToPage(page)}
+                          disabled={loading}
+                        >
+                          {page}
+                        </button>
+                      )
+                    )}
+                  </div>
+
+                  <button
+                    className={styles.pageNavBtn}
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages || loading}
+                    aria-label={t.next}
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
+                </div>
               )}
             </div>
           </div>

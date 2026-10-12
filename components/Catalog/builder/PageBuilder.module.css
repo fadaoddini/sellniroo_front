@@ -1,0 +1,368 @@
+.builder {
+  display: grid;
+  grid-template-columns: 200px 1fr 280px;
+  gap: 12px;
+  min-height: 560px;
+  background: #eef0f4;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+@media (max-width: 1100px) {
+  .builder {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background: #fff;
+  border-inline-end: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 12px;
+  overflow: auto;
+  max-height: 70vh;
+}
+
+.panelRight {
+  border-inline-end: none;
+  border-inline-start: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.panelTitle {
+  margin: 0 0 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.layoutGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.layoutBtn {
+  border: 1px solid #e5e7eb;
+  background: #fafafa;
+  border-radius: 10px;
+  padding: 8px 6px;
+  cursor: pointer;
+  text-align: center;
+  font-family: var(--font-iran);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.layoutBtn:hover {
+  border-color: #800020;
+  box-shadow: 0 4px 12px rgba(128, 0, 32, 0.12);
+}
+
+.layoutIcon {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  color: #9ca3af;
+  margin-bottom: 4px;
+  font-family: monospace;
+}
+
+.layoutLabel {
+  font-size: 0.68rem;
+  color: #374151;
+}
+
+.widgetList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.widgetChip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px dashed #d1d5db;
+  border-radius: 10px;
+  background: #fff;
+  cursor: grab;
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  user-select: none;
+}
+
+.widgetChip:active {
+  cursor: grabbing;
+}
+
+.widgetIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #800020;
+}
+
+.canvas {
+  padding: 16px;
+  overflow: auto;
+  max-height: 70vh;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-color: #e8eaef;
+}
+
+.pageMeta {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.pageMeta input {
+  flex: 1;
+  min-width: 140px;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-family: var(--font-iran);
+  font-size: 0.85rem;
+}
+
+.sectionCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+}
+
+.sectionToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #f9fafb;
+  border-bottom: 1px solid #eee;
+  flex-wrap: wrap;
+}
+
+.sectionToolbar span {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #6b7280;
+}
+
+.toolBtns {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.toolBtns button {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  font-family: var(--font-iran);
+}
+
+.sectionBody {
+  padding: 10px;
+}
+
+.columns {
+  display: grid;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.column {
+  min-height: 80px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 8px;
+  background: #f8fafc;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.columnDragOver {
+  border-color: #800020;
+  background: #fff1f2;
+}
+
+.columnLabel {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.blockItem {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  cursor: grab;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.blockItem:hover {
+  border-color: #80002055;
+}
+
+.blockSelected {
+  border-color: #800020;
+  box-shadow: 0 0 0 2px rgba(128, 0, 32, 0.15);
+}
+
+.blockHandle {
+  color: #9ca3af;
+  font-size: 0.85rem;
+  line-height: 1;
+  padding-top: 2px;
+}
+
+.blockBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.blockType {
+  font-size: 0.65rem;
+  color: #800020;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.blockPreview {
+  font-size: 0.78rem;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.emptyCol {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  text-align: center;
+  padding: 18px 8px;
+}
+
+.inspectorEmpty {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  text-align: center;
+  padding: 2rem 0.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.formGroup label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.formGroup input,
+.formGroup textarea,
+.formGroup select {
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-family: var(--font-iran);
+  font-size: 0.82rem;
+}
+
+.formGroup textarea {
+  min-height: 72px;
+  resize: vertical;
+}
+
+.inspectorActions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.dangerBtn {
+  border: none;
+  background: #fee2e2;
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-family: var(--font-iran);
+}
+
+.fileBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.45rem 0.7rem;
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  background: #fff;
+}
+
+.fileInput {
+  display: none;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.saveBtn,
+.cancelBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
+  font-size: 0.84rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  border: none;
+}
+
+.saveBtn {
+  background: #800020;
+  color: #fff;
+  font-weight: 700;
+}
+
+.cancelBtn {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}

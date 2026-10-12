@@ -150,91 +150,75 @@
   padding: 12px;
   position: relative;
 
-  border-radius: 44px;
-
-  
-  /* border اصلی به عنوان نوار پیشرفت */
-  border: 6px solid transparent;
-  transition: border-image 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 28px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  --progress: 100%;
+  --ring-color: #34c759;
+  --ring-track: rgba(20, 24, 31, 0.08);
 }
 
-/* برای پشتیبانی از border-radius با border-image */
+/* حاشیه زمانی — از بالا شروع می‌شود و با کم شدن زمان خالی می‌شود */
 .cardQuestion::before {
   content: '';
   position: absolute;
-  inset: -6px;
-  border-radius: 44px;
-  padding: 10px;
+  inset: -4px;
+  border-radius: 32px;
+  padding: 5px;
   background: conic-gradient(
-    from 0deg,
-    #34c759 0%,
-    #34c759 var(--progress, 0%),
-    #e5e5ea var(--progress, 0%),
-    #e5e5ea 100%
+    from -90deg,
+    var(--ring-color) 0%,
+    var(--ring-color) var(--progress),
+    var(--ring-track) var(--progress),
+    var(--ring-track) 100%
   );
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) content-box, 
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
-  mask: 
-    linear-gradient(#fff 0 0) content-box, 
+  mask:
+    linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
   z-index: 0;
-  transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background 0.35s linear;
 }
 
-/* حالت هشدار (نارنجی) - 10 تا 5 ثانیه */
+.cardQuestion.warning {
+  --ring-color: #ff9500;
+}
+
 .cardQuestion.warning::before {
-  background: conic-gradient(
-    from 0deg,
-    #ff9500 0%,
-    #ff9500 var(--progress, 0%),
-    #e5e5ea var(--progress, 0%),
-    #e5e5ea 100%
-  ) !important;
-  animation: pulse 0.8s ease-in-out infinite;
-}
-
-/* حالت خطر (قرمز) - 5 تا 3 ثانیه */
-.cardQuestion.danger::before {
-  background: conic-gradient(
-    from 0deg,
-    #ff3b30 0%,
-    #ff3b30 var(--progress, 0%),
-    #e5e5ea var(--progress, 0%),
-    #e5e5ea 100%
-  ) !important;
-  animation: borderPulse 0.6s ease-in-out infinite;
+  animation: pulse 0.9s ease-in-out infinite;
 }
 
 .cardQuestion.danger {
-  box-shadow: 0 0 30px rgba(255, 59, 48, 0.15);
+  --ring-color: #ff3b30;
+  box-shadow: 0 0 28px rgba(255, 59, 48, 0.16);
 }
 
-/* حالت ضربان قوی - 3 ثانیه آخر (فقط border بدون لرزش صفحه) */
-.cardQuestion.heartbeat::before {
-  background: conic-gradient(
-    from 0deg,
-    #ff3b30 0%,
-    #ff3b30 var(--progress, 0%),
-    #e5e5ea var(--progress, 0%),
-    #e5e5ea 100%
-  ) !important;
-  animation: borderPulseFast 0.4s ease-in-out infinite;
+.cardQuestion.danger::before {
+  animation: borderPulse 0.65s ease-in-out infinite;
 }
 
 .cardQuestion.heartbeat {
-  box-shadow: 0 0 40px rgba(255, 59, 48, 0.25);
-  animation: borderGlow 0.4s ease-in-out infinite;
+  --ring-color: #ff3b30;
+  box-shadow: 0 0 36px rgba(255, 59, 48, 0.28);
+  animation: borderGlow 0.45s ease-in-out infinite;
+}
+
+.cardQuestion.heartbeat::before {
+  animation: borderPulseFast 0.4s ease-in-out infinite;
 }
 
 /* محتوای سوال - بالاتر از border */
 .questionContent {
   position: relative;
   z-index: 1;
-  padding: 5rem;
+  padding: 1.25rem 1.1rem 1.35rem;
+  background: #fff;
+  border-radius: 24px;
 }
 
 /* هدر */
@@ -338,59 +322,134 @@
 .timer {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-family: var(--font-iran);
-  background: rgba(0, 0, 0, 0.04);
-  padding: 4px 12px;
-  border-radius: 20px;
-  transition: all 0.3s ease;
+  background: rgba(0, 0, 0, 0.035);
+  padding: 4px 10px 4px 4px;
+  border-radius: 999px;
+  transition: background 0.3s ease;
 }
 
 .timerWarning {
-  background: rgba(255, 149, 0, 0.15);
-  animation: pulse 0.8s ease-in-out infinite;
+  background: rgba(255, 149, 0, 0.12);
 }
 
 .timerDanger {
-  background: rgba(255, 59, 48, 0.15);
+  background: rgba(255, 59, 48, 0.12);
   animation: heartbeat 0.6s ease-in-out infinite;
 }
 
+/* حلقه کوچک کنار عدد ثانیه */
+.timerRing {
+  --progress: 100%;
+  --ring-color: #34c759;
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: conic-gradient(
+    from -90deg,
+    var(--ring-color) 0%,
+    var(--ring-color) var(--progress),
+    rgba(20, 24, 31, 0.1) var(--progress),
+    rgba(20, 24, 31, 0.1) 100%
+  );
+  display: grid;
+  place-items: center;
+  transition: background 0.35s linear;
+}
+
+.timerWarning .timerRing {
+  --ring-color: #ff9500;
+}
+
+.timerDanger .timerRing {
+  --ring-color: #ff3b30;
+}
+
+.timerRingInner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 0 0 1px rgba(20, 24, 31, 0.04);
+}
+
 .timerText {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 800;
   transition: color 0.3s ease;
-  min-width: 40px;
+  min-width: 1.4rem;
   text-align: center;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.timerTotal {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #6b7280);
+  white-space: nowrap;
 }
 
 .timerTextGreen {
-  color: #34c759;
+  color: #1f9d4d;
 }
 
 .timerTextOrange {
-  color: #ff9500;
+  color: #e88900;
 }
 
 .timerTextRed {
-  color: #ff3b30;
+  color: #e0342b;
 }
 
-/* بار پیشرفت خطی */
+/* نوار زمان باقی‌مانده */
+.timeTrack {
+  width: 100%;
+  height: 8px;
+  background: rgba(20, 24, 31, 0.08);
+  border-radius: 999px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.timeFill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.35s linear, background 0.3s ease;
+  min-width: 0;
+}
+
+.timeFillOk {
+  background: linear-gradient(90deg, #2da170, #34c759);
+}
+
+.timeFillWarn {
+  background: linear-gradient(90deg, #ff9500, #ffb347);
+}
+
+.timeFillDanger {
+  background: linear-gradient(90deg, #ff3b30, #ff6b6b);
+}
+
+/* بار پیشرفت سوالات */
 .progressBar {
   width: 100%;
   height: 4px;
-  background: #e5e5ea;
-  border-radius: 2px;
-  margin-bottom: 24px;
+  background: rgba(128, 0, 32, 0.08);
+  border-radius: 999px;
+  margin-bottom: 20px;
   overflow: hidden;
 }
 
 .progressFill {
   height: 100%;
   background: linear-gradient(90deg, #800020, #a8324a);
-  border-radius: 2px;
-  transition: width 0.5s ease;
+  border-radius: 999px;
+  transition: width 0.45s ease;
 }
 
 /* دسته‌بندی سوال */
@@ -715,23 +774,24 @@
    ============================================ */
 @media (max-width: 640px) {
   .cardQuestion {
-    padding: 16px;
-    border-radius: 18px;
+    padding: 10px;
+    border-radius: 20px;
     max-width: 100%;
   }
 
   .cardQuestion::before {
-    inset: -4px;
-    border-radius: 18px;
+    inset: -3px;
+    border-radius: 22px;
     padding: 4px;
   }
 
   .questionContent {
-    padding: 0.5rem;
+    padding: 0.85rem 0.75rem 1rem;
+    border-radius: 16px;
   }
 
   .questionHeader {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     gap: 6px;
   }
 
@@ -740,22 +800,37 @@
   }
 
   .timer {
-    padding: 3px 10px;
-    gap: 4px;
+    padding: 3px 8px 3px 3px;
+    gap: 6px;
+  }
+
+  .timerRing {
+    width: 38px;
+    height: 38px;
+  }
+
+  .timerRingInner {
+    width: 28px;
+    height: 28px;
   }
 
   .timerText {
-    font-size: 16px;
-    min-width: 30px;
+    font-size: 0.82rem;
+    min-width: 1.2rem;
   }
 
-  .timerIcon {
-    font-size: 12px;
+  .timerTotal {
+    font-size: 0.68rem;
+  }
+
+  .timeTrack {
+    height: 6px;
+    margin-bottom: 8px;
   }
 
   .progressBar {
     height: 3px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
 
   .category {
@@ -908,18 +983,29 @@
   }
 
   .cardQuestion {
-    padding: 12px;
-    border-radius: 14px;
+    padding: 8px;
+    border-radius: 16px;
   }
 
   .cardQuestion::before {
     inset: -3px;
-    border-radius: 14px;
+    border-radius: 18px;
     padding: 3px;
   }
 
   .questionContent {
-    padding: 0.25rem;
+    padding: 0.7rem 0.6rem 0.85rem;
+    border-radius: 12px;
+  }
+
+  .timerRing {
+    width: 34px;
+    height: 34px;
+  }
+
+  .timerRingInner {
+    width: 24px;
+    height: 24px;
   }
 
   .questionText {
@@ -960,4 +1046,72 @@
   .specialtyName {
     font-size: 9px;
   }
+}
+
+/* Leaderboard on intro */
+.leaderboardBox {
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  text-align: right;
+  width: 100%;
+}
+
+.leaderboardTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 0.85rem;
+  font-family: var(--font-edameh), var(--font-iran);
+  font-size: 1rem;
+  color: #14181f;
+}
+
+.leaderboardList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.leaderboardItem {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 0.55rem 0.75rem;
+  border-radius: 12px;
+  background: rgba(128, 0, 32, 0.04);
+  border: 1px solid rgba(128, 0, 32, 0.08);
+  font-family: var(--font-iran);
+  font-size: 0.82rem;
+}
+
+.leaderboardRank {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #800020;
+  font-weight: 700;
+  min-width: 2.2rem;
+}
+
+.leaderboardName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leaderboardName small {
+  color: rgba(20, 24, 31, 0.55);
+  font-size: 0.75em;
+}
+
+.leaderboardScore {
+  color: rgba(20, 24, 31, 0.7);
+  white-space: nowrap;
+  direction: ltr;
 }

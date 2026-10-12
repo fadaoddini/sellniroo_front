@@ -5,7 +5,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useMemo, useCallback } from 'react';
 import { Search, X, SlidersHorizontal, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import AllBoxItem from '@/components/AllBoxItem';
+import JobListingsSlot from '@/components/modules/JobListingsSlot';
+import JobsPageSlot from '@/components/modules/JobsPageSlot';
 import styles from './Jobs.module.css';
 
 export default function JobsPageClient() {
@@ -65,66 +66,68 @@ export default function JobsPageClient() {
   }, [initialFilters]);
 
   return (
-    <div className={styles.jobsPage}>
-      <div className={styles.pageHeader}>
-        <div className={styles.container}>
-          <nav className={styles.breadcrumb} aria-label="مسیر یابی">
-            <Link href="/" className={styles.breadcrumbLink}>خانه</Link>
-            <ArrowRight size={14} className={styles.breadcrumbSeparator} />
-            <span className={styles.breadcrumbCurrent}>آگهی‌های شغلی</span>
-          </nav>
+    <JobsPageSlot>
+      <div className={styles.jobsPage}>
+        <div className={styles.pageHeader}>
+          <div className={styles.container}>
+            <nav className={styles.breadcrumb} aria-label="مسیر یابی">
+              <Link href="/" className={styles.breadcrumbLink}>خانه</Link>
+              <ArrowRight size={14} className={styles.breadcrumbSeparator} />
+              <span className={styles.breadcrumbCurrent}>آگهی‌های شغلی</span>
+            </nav>
 
-          <div className={styles.headerContent}>
-            <div className={styles.headerLeft}>
-              <h1 className={styles.pageTitle}>
-                {initialFilters.q ? (
-                  <>
-                    <Search size={24} className={styles.titleIcon} />
-                    نتایج جستجو برای «{initialFilters.q}»
-                  </>
-                ) : (
-                  <>
-                    <SlidersHorizontal size={24} className={styles.titleIcon} />
-                    همه آگهی‌های شغلی
-                  </>
+            <div className={styles.headerContent}>
+              <div className={styles.headerLeft}>
+                <h1 className={styles.pageTitle}>
+                  {initialFilters.q ? (
+                    <>
+                      <Search size={24} className={styles.titleIcon} />
+                      نتایج جستجو برای «{initialFilters.q}»
+                    </>
+                  ) : (
+                    <>
+                      <SlidersHorizontal size={24} className={styles.titleIcon} />
+                      همه آگهی‌های شغلی
+                    </>
+                  )}
+                </h1>
+
+                {filterSummary.length > 0 && (
+                  <div className={styles.filterSummary}>
+                    {filterSummary.map((item, idx) => (
+                      <span key={idx} className={styles.filterSummaryChip}>
+                        {item}
+                      </span>
+                    ))}
+                    <button
+                      className={styles.clearAllChip}
+                      onClick={handleClearAll}
+                    >
+                      <X size={12} />
+                      پاک کردن همه
+                    </button>
+                  </div>
                 )}
-              </h1>
+              </div>
 
-              {filterSummary.length > 0 && (
-                <div className={styles.filterSummary}>
-                  {filterSummary.map((item, idx) => (
-                    <span key={idx} className={styles.filterSummaryChip}>
-                      {item}
-                    </span>
-                  ))}
-                  <button
-                    className={styles.clearAllChip}
-                    onClick={handleClearAll}
-                  >
-                    <X size={12} />
-                    پاک کردن همه
-                  </button>
-                </div>
+              {initialFilters.q && (
+                <button
+                  onClick={handleClearSearch}
+                  className={styles.clearSearchBtn}
+                >
+                  <X size={16} />
+                  حذف جستجو
+                </button>
               )}
             </div>
-
-            {initialFilters.q && (
-              <button
-                onClick={handleClearSearch}
-                className={styles.clearSearchBtn}
-              >
-                <X size={16} />
-                حذف جستجو
-              </button>
-            )}
           </div>
         </div>
-      </div>
 
-      <div className={styles.contentWrapper}>
-        {/* بدون remount روی URL — جلوگیری از رفرش/پرش مداوم لیست */}
-        <AllBoxItem initialFilters={initialFilters} />
+        <div className={styles.contentWrapper}>
+          {/* بدون remount روی URL — جلوگیری از رفرش/پرش مداوم لیست */}
+          <JobListingsSlot initialFilters={initialFilters} />
+        </div>
       </div>
-    </div>
+    </JobsPageSlot>
   );
 }

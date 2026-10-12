@@ -1,4 +1,5 @@
 // components/slider/HeroSlider.jsx
+// ماژول سایت: hero_slider — از /adminweb فعال/غیرفعال می‌شود
 'use client'
 
 import React, {

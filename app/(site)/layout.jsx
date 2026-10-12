@@ -2,12 +2,15 @@
 import React from "react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
-import Header from "@/components/common/Header";
-import MobileBottomNav from "@/components/common/MobileBottomNav";
-import SiteFooter from "@/components/common/SiteFooter";
+import HeaderSlot from "@/components/modules/HeaderSlot";
+import HeaderByMenuTopSlot from "@/components/modules/HeaderByMenuTopSlot";
+import CorporateMobileNavSlot from "@/components/modules/CorporateMobileNavSlot";
+import MobileBottomNavSlot from "@/components/modules/MobileBottomNavSlot";
+import SiteFooterSlot from "@/components/modules/SiteFooterSlot";
 import "@/styles/globals.css";
-import BreakingNews from "@/components/common/breakingnews/BreakingNews";
-import HeroSlider from "@/components/slider";
+import BreakingNewsSlot from "@/components/modules/BreakingNewsSlot";
+import VideoInstaSlot from "@/components/modules/VideoInstaSlot";
+import HeroSliderSlot from "@/components/modules/HeroSliderSlot";
 import {
   fetchSiteSettings,
   buildMetadataFromSettings,
@@ -35,12 +38,15 @@ async function LayoutContent({ children }) {
   return (
     <html lang="fa" dir="rtl" suppressHydrationWarning>
       <body suppressHydrationWarning className="siteBody">
-        <BreakingNews />
-        <HeroSlider />
-        <Header />
+        <BreakingNewsSlot />
+        <VideoInstaSlot variant="rail" />
+        <HeroSliderSlot />
+        <HeaderByMenuTopSlot />
+        <HeaderSlot />
         <main className="siteMain">{children}</main>
-        <SiteFooter siteName={siteName} />
-        <MobileBottomNav />
+        <SiteFooterSlot siteName={siteName} />
+        <CorporateMobileNavSlot />
+        <MobileBottomNavSlot />
       </body>
     </html>
   );

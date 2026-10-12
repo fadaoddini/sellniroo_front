@@ -792,6 +792,51 @@ news: {
       noVersion: true
     }),
   },
+  headerMenu: {
+    list: (params = {}) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'header-menu/',
+      params,
+      noVersion: true
+    }),
+    active: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'header-menu/active/',
+      noVersion: true
+    }),
+    create: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'header-menu/',
+      noVersion: true
+    }),
+    update: (id) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `header-menu/${id}/`,
+      noVersion: true
+    }),
+    delete: (id) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `header-menu/${id}/`,
+      noVersion: true
+    }),
+    toggleActive: (id) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `header-menu/${id}/toggle-active/`,
+      noVersion: true
+    }),
+  },
+  corporateAppearance: {
+    get: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'corporate-appearance/',
+      noVersion: true
+    }),
+    update: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'corporate-appearance/update/',
+      noVersion: true
+    }),
+  },
   heroSlides: {
     list: (params = {}) => Config.getApiUrl({
       segment: 'api',
@@ -835,6 +880,40 @@ news: {
       segment: 'api',
       endpoint: 'site-settings/update/',
       noVersion: true
+    }),
+  },
+  about: {
+    get: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'about/',
+      noVersion: true
+    }),
+    update: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'about/update/',
+      noVersion: true
+    }),
+  },
+  siteModules: {
+    list: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'site-modules/',
+      noVersion: true,
+    }),
+    map: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'site-modules/map/',
+      noVersion: true,
+    }),
+    toggle: (key) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `site-modules/${key}/toggle/`,
+      noVersion: true,
+    }),
+    update: (key) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `site-modules/${key}/`,
+      noVersion: true,
     }),
   },
   platformConnections: {
@@ -1322,6 +1401,20 @@ news: {
           noVersion: true
         });
       },
+      trackView: (id) => {
+        return Config.getApiUrl({
+          segment: 'api',
+          endpoint: `v1/video-archive/${id}/view/`,
+          noVersion: true
+        });
+      },
+      settings: () => {
+        return Config.getApiUrl({
+          segment: 'api',
+          endpoint: 'v1/video-archive/settings/',
+          noVersion: true
+        });
+      },
       stats: () => {
         return Config.getApiUrl({
           segment: 'api',
@@ -1336,6 +1429,149 @@ news: {
           noVersion: true
         });
       },
+    },
+
+    // ============================================
+    // CATALOG FLIPBOOK
+    // ============================================
+    catalog: {
+      bundle: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/catalog/',
+        noVersion: true,
+      }),
+      settings: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/catalog/settings/',
+        noVersion: true,
+      }),
+      pages: (params = {}) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/catalog/pages/',
+        params,
+        noVersion: true,
+      }),
+      page: (id) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: `v1/catalog/pages/${id}/`,
+        noVersion: true,
+      }),
+      reorder: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/catalog/pages/reorder/',
+        noVersion: true,
+      }),
+      upload: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/catalog/upload/',
+        noVersion: true,
+      }),
+    },
+
+    // ============================================
+    // QUIZ MODULE
+    // ============================================
+    quiz: {
+      bundle: (params = {}) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/quiz/',
+        params,
+        noVersion: true,
+      }),
+      settings: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/quiz/settings/',
+        noVersion: true,
+      }),
+      specialties: (params = {}) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/quiz/specialties/',
+        params,
+        noVersion: true,
+      }),
+      specialty: (id) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: `v1/quiz/specialties/${id}/`,
+        noVersion: true,
+      }),
+      questions: (params = {}) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/quiz/questions/',
+        params,
+        noVersion: true,
+      }),
+      question: (id) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: `v1/quiz/questions/${id}/`,
+        noVersion: true,
+      }),
+      start: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/quiz/start/',
+        noVersion: true,
+      }),
+      submit: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/quiz/submit/',
+        noVersion: true,
+      }),
+      leaderboard: (params = {}) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/quiz/leaderboard/',
+        params,
+        noVersion: true,
+      }),
+      scores: (params = {}) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/quiz/scores/',
+        params,
+        noVersion: true,
+      }),
+      my: (params = {}) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/quiz/my/',
+        params,
+        noVersion: true,
+      }),
+    },
+
+    // ============================================
+    // FAQ MODULE
+    // ============================================
+    faq: {
+      bundle: (params = {}) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/faq/',
+        params,
+        noVersion: true,
+      }),
+      settings: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/faq/settings/',
+        noVersion: true,
+      }),
+      categories: (params = {}) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/faq/categories/',
+        params,
+        noVersion: true,
+      }),
+      category: (id) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: `v1/faq/categories/${id}/`,
+        noVersion: true,
+      }),
+      items: (params = {}) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/faq/items/',
+        params,
+        noVersion: true,
+      }),
+      item: (id) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: `v1/faq/items/${id}/`,
+        noVersion: true,
+      }),
     },
 
     // ============================================

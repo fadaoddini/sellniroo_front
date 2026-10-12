@@ -1,4 +1,5 @@
 // components/common/breakingnews/BreakingNews.jsx
+// ماژول سایت: breaking_news — از /adminweb فعال/غیرفعال می‌شود
 "use client";
 
 import React, {

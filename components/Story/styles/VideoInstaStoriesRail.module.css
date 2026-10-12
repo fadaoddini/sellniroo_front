@@ -1,0 +1,347 @@
+/* Instagram-like stories rail — mobile only */
+
+.rail {
+  --va-rail-bg: #0a0a0c;
+  --va-ring-1: #f09433;
+  --va-ring-2: #dc2743;
+  --va-ring-3: #bc1888;
+  display: none;
+  width: 100%;
+  background: var(--va-rail-bg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 10px 0 8px;
+  position: relative;
+  z-index: 20;
+}
+
+@media (max-width: 767px) {
+  .rail {
+    display: block;
+  }
+}
+
+.railScroll {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 14px 6px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.railScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.storyItem {
+  flex: 0 0 auto;
+  width: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  scroll-snap-align: start;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ring {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  padding: 2.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.storyItem:active .ring {
+  transform: scale(0.94);
+}
+
+.ringNew {
+  background: linear-gradient(
+    135deg,
+    var(--va-ring-1) 0%,
+    var(--va-ring-2) 50%,
+    var(--va-ring-3) 100%
+  );
+}
+
+.ringSeen {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #111;
+  border: 2.5px solid #0a0a0c;
+  display: block;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatarFallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.45);
+  background: linear-gradient(145deg, #1a1a24, #0d0d14);
+}
+
+.storyLabel {
+  max-width: 74px;
+  font-size: 0.68rem;
+  line-height: 1.25;
+  color: rgba(255, 255, 255, 0.88);
+  font-family: var(--font-iran), Tahoma, sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+/* skeleton */
+.skeletonItem {
+  flex: 0 0 auto;
+  width: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.skeletonRing {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.skeletonLabel {
+  width: 48px;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ========== Fullscreen viewer ========== */
+.viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  background: #000;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
+  animation: fadeIn 0.22s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.viewerInner {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+}
+
+.progressRow {
+  position: absolute;
+  top: calc(8px + env(safe-area-inset-top, 0px));
+  left: 8px;
+  right: 8px;
+  display: flex;
+  gap: 3px;
+  z-index: 30;
+}
+
+.progressSeg {
+  flex: 1;
+  height: 2.5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.28);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: #fff;
+  border-radius: inherit;
+  transition: width 0.1s linear;
+}
+
+.viewerHeader {
+  position: absolute;
+  top: calc(18px + env(safe-area-inset-top, 0px));
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  pointer-events: none;
+}
+
+.viewerUser {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  pointer-events: auto;
+}
+
+.viewerAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #dc2743, #f09433);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+}
+
+.viewerAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.viewerMeta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.viewerTitle {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fff;
+  font-family: var(--font-iran), Tahoma, sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 46vw;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+.viewerCount {
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: var(--font-iran), Tahoma, sans-serif;
+}
+
+.viewerActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: auto;
+}
+
+.iconBtn,
+.closeBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.closeBtn:active,
+.iconBtn:active {
+  opacity: 0.7;
+}
+
+.videoWrap {
+  position: absolute;
+  inset: 0;
+  background: #000;
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.tapZones {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  z-index: 10;
+}
+
+.tapZone {
+  flex: 1;
+  border: none;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.centerPlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 15;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}

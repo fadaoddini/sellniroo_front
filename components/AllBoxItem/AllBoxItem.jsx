@@ -1,4 +1,5 @@
-// src/components/AllBoxItem/AllBoxItem.jsx
+// components/AllBoxItem/AllBoxItem.jsx
+// ماژول سایت: job_listings ⊂ job_board — از /adminweb فعال/غیرفعال می‌شود
 
 'use client'
 

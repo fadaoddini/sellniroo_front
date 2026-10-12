@@ -442,6 +442,49 @@ button.metaItem:hover .copyIcon {
   border: 1px solid #f5b7b1;
 }
 
+/* حالت حساب شخصی */
+.headerBasic {
+  --ink: #1c1410;
+  --muted: #6a5f58;
+  --line: rgba(128, 0, 32, 0.12);
+  --cream: #faf6f4;
+}
+
+.coverBasic {
+  height: 100px;
+  background:
+    linear-gradient(125deg, #5c0a1f 0%, #800020 42%, #a31d3a 78%, #c9a227 130%);
+}
+
+.headerBasic .completeHead strong {
+  color: #800020;
+}
+
+.progressFillBasic {
+  background: linear-gradient(90deg, #800020, #a31d3a, #c9a227);
+}
+
+.bottomBarSolo {
+  grid-template-columns: 1fr;
+}
+
+.headerBasic .completeBox {
+  background: linear-gradient(180deg, #fff 0%, #faf6f4 100%);
+}
+
+.headerBasic .editBtn {
+  background: #800020;
+  color: #fff;
+  border-color: #800020;
+}
+
+.headerBasic .editBtn:hover {
+  background: #9a1530;
+  color: #fff;
+  border-color: #9a1530;
+  filter: none;
+}
+
 /* نوار پایین: تکمیل + میانبر */
 .bottomBar {
   display: grid;

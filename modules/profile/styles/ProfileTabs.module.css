@@ -75,6 +75,37 @@
   color: #5a3d00;
 }
 
+/* تب‌های حساب شخصی */
+.toneBasic {
+  --ink: #1c1410;
+  --muted: #6a5f58;
+  --line: rgba(128, 0, 32, 0.12);
+  --cream: #faf6f4;
+  box-shadow: 0 8px 22px rgba(40, 10, 20, 0.05);
+}
+
+.toneBasic .tab:hover {
+  background: rgba(128, 0, 32, 0.05);
+}
+
+.toneBasic .tab:hover svg {
+  color: #800020;
+}
+
+.toneBasic .tab.active {
+  background: linear-gradient(135deg, #5c0a1f 0%, #800020 55%, #a31d3a 100%);
+  color: #fff8f0;
+  box-shadow: 0 8px 18px rgba(128, 0, 32, 0.28);
+}
+
+.toneBasic .tab.active svg {
+  color: #f5d78a;
+}
+
+.toneBasic .tab:focus-visible {
+  outline-color: #800020;
+}
+
 @media (max-width: 480px) {
   .tab {
     padding: 0.58rem 0.85rem;

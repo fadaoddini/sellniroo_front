@@ -37,7 +37,14 @@ const getGreeting = () => {
   return "شب بخیر";
 };
 
-const ProfileHeader = memo(function ProfileHeader({ user }) {
+const ProfileHeader = memo(function ProfileHeader({
+  user,
+  /** job = کاریابی | basic = حساب شخصی */
+  variant = 'job',
+  /** میانبرهای رزومه/شرکت/آگهی — فقط در پروفایل کاریابی */
+  showJobShortcuts = true,
+}) {
+  const isBasic = variant === 'basic'
   const { getAuthHeaders, refreshTokens } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -203,8 +210,13 @@ const ProfileHeader = memo(function ProfileHeader({ user }) {
   };
 
   return (
-    <header className={styles.header}>
-      <div className={styles.cover} aria-hidden>
+    <header
+      className={`${styles.header} ${isBasic ? styles.headerBasic : styles.headerJob}`}
+    >
+      <div
+        className={`${styles.cover} ${isBasic ? styles.coverBasic : ''}`}
+        aria-hidden
+      >
         <div className={styles.coverGlow} />
         <div className={styles.coverPattern} />
       </div>
@@ -280,7 +292,11 @@ const ProfileHeader = memo(function ProfileHeader({ user }) {
                       {greeting}
                     </p>
                     <h1 className={styles.name}>{displayName}</h1>
-                    <p className={styles.welcome}>پنل کاربری شما در سلنیرو</p>
+                    <p className={styles.welcome}>
+                      {isBasic
+                        ? 'حساب کاربری شخصی شما'
+                        : 'پنل کاریابی و مدیریت آگهی‌ها'}
+                    </p>
                   </div>
 
                   <div className={styles.headerActions}>
@@ -452,7 +468,11 @@ const ProfileHeader = memo(function ProfileHeader({ user }) {
         </div>
 
         {!isEditing && (
-          <div className={styles.bottomBar}>
+          <div
+            className={`${styles.bottomBar} ${
+              showJobShortcuts ? '' : styles.bottomBarSolo
+            }`}
+          >
             <div className={styles.completeBox}>
               <div className={styles.completeHead}>
                 <span>تکمیل پروفایل</span>
@@ -460,7 +480,9 @@ const ProfileHeader = memo(function ProfileHeader({ user }) {
               </div>
               <div className={styles.progressTrack} aria-hidden>
                 <div
-                  className={styles.progressFill}
+                  className={`${styles.progressFill} ${
+                    isBasic ? styles.progressFillBasic : ''
+                  }`}
                   style={{ width: `${completeness.percent}%` }}
                 />
               </div>
@@ -477,23 +499,28 @@ const ProfileHeader = memo(function ProfileHeader({ user }) {
               </div>
             </div>
 
-            <nav className={styles.quickNav} aria-label="میانبرهای پروفایل">
-              <Link href="/profile?tab=resume" className={styles.quickLink}>
-                <FileText size={15} />
-                رزومه من
-              </Link>
-              <Link href="/profile?tab=company" className={styles.quickLink}>
-                <Building2 size={15} />
-                شرکت من
-              </Link>
-              <Link href="/profile?tab=hiring" className={styles.quickLink}>
-                <Briefcase size={15} />
-                آگهی‌ها
-              </Link>
-              <Link href="/post-job" className={`${styles.quickLink} ${styles.quickPrimary}`}>
-                ثبت آگهی
-              </Link>
-            </nav>
+            {showJobShortcuts ? (
+              <nav className={styles.quickNav} aria-label="میانبرهای کاریابی">
+                <Link href="/profile?tab=resume" className={styles.quickLink}>
+                  <FileText size={15} />
+                  رزومه من
+                </Link>
+                <Link href="/profile?tab=company" className={styles.quickLink}>
+                  <Building2 size={15} />
+                  شرکت من
+                </Link>
+                <Link href="/profile?tab=hiring" className={styles.quickLink}>
+                  <Briefcase size={15} />
+                  آگهی‌ها
+                </Link>
+                <Link
+                  href="/post-job"
+                  className={`${styles.quickLink} ${styles.quickPrimary}`}
+                >
+                  ثبت آگهی
+                </Link>
+              </nav>
+            ) : null}
           </div>
         )}
       </div>

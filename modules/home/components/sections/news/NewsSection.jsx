@@ -1,4 +1,5 @@
-// components/NewsSection.jsx
+// modules/home/components/sections/news/NewsSection.jsx
+// ماژول سایت: news_section ⊂ news — از /adminweb فعال/غیرفعال می‌شود
 
 'use client'
 

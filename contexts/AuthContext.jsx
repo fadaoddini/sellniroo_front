@@ -373,7 +373,12 @@ export const AuthProvider = ({ children }) => {
             await checkEmployeeStatus(accessToken);
 
             setLoading(false);
-            router.push("/");
+            {
+              const next = new URLSearchParams(window.location.search).get("next");
+              const safeNext =
+                next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
+              router.push(safeNext);
+            }
             return { success: true, user: userProfile };
           } catch (profileError) {
             console.error("Error fetching profile after login:", profileError);
@@ -392,7 +397,12 @@ export const AuthProvider = ({ children }) => {
             await checkEmployeeStatus(accessToken);
 
             setLoading(false);
-            router.push("/");
+            {
+              const next = new URLSearchParams(window.location.search).get("next");
+              const safeNext =
+                next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
+              router.push(safeNext);
+            }
             return { success: true };
           }
         }

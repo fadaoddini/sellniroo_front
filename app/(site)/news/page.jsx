@@ -1,7 +1,9 @@
 // app/news/page.jsx
+// ماژول سایت: news — با خاموش شدن، صفحه /news در دسترس نیست
 
 import { Suspense } from 'react';
 import NewsList from '@/components/News/NewsList';
+import NewsPageSlot from '@/components/modules/NewsPageSlot';
 import styles from '@/components/News/News.module.css';
 
 export const metadata = {
@@ -51,15 +53,15 @@ export const metadata = {
 
 export default function NewsPage() {
   return (
-    <>
+    <NewsPageSlot>
       <h1 className="sr-only">
         اخبار کاریابی و استخدام | سلنیرو - مرجع تخصصی فرصت‌های شغلی فروش و بازاریابی در ایران
       </h1>
-      
+
       <Suspense fallback={<NewsLoading />}>
         <NewsList />
       </Suspense>
-    </>
+    </NewsPageSlot>
   );
 }
 

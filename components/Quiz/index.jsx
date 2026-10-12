@@ -7,11 +7,5 @@ export { default as QuizIntro } from './QuizIntro';
 export { default as QuizQuestion } from './QuizQuestion';
 export { default as QuizResult } from './QuizResult';
 
-export {
-  specialtyQuestions,
-  getQuestionsBySpecialty,
-  getQuestionCountBySpecialty,
-  specialtiesInfo,
-} from './quizData';
-
-export { specialties } from './specialties';
+export { specialtyIconMap, specialties } from './specialties';
+export { default as quizService } from './services/quizService';

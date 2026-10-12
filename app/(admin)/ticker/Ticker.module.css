@@ -301,7 +301,8 @@
 }
 
 .formGroup input,
-.formGroup textarea {
+.formGroup textarea,
+.formGroup select {
   width: 100%;
   padding: 0.65rem 0.85rem;
   border: 1.5px solid var(--line);
@@ -315,7 +316,8 @@
 }
 
 .formGroup input:focus,
-.formGroup textarea:focus {
+.formGroup textarea:focus,
+.formGroup select:focus {
   background: #fff;
   border-color: var(--gold);
   box-shadow: 0 0 0 4px rgba(251, 195, 0, 0.18);

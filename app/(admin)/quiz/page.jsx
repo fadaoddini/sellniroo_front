@@ -1,7 +1,7 @@
 // app/quiz/page.jsx
 
 import { Suspense } from 'react';
-import Quiz from '@/components/Quiz';
+import QuizSlot from '@/components/modules/QuizSlot';
 import styles from '@/components/Quiz/Quiz.module.css';
 
 /* ============================================
@@ -99,7 +99,7 @@ export default function QuizPage() {
       </h1>
 
       <Suspense fallback={<QuizLoading />}>
-        <Quiz />
+        <QuizSlot />
       </Suspense>
     </>
   );

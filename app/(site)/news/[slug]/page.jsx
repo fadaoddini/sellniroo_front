@@ -1,6 +1,8 @@
 // app/news/[slug]/page.jsx
+// ماژول سایت: news — با خاموش شدن، جزئیات خبر هم در دسترس نیست
 import { Suspense } from 'react';
 import NewsDetail from '@/components/News/NewsDetail';
+import NewsPageSlot from '@/components/modules/NewsPageSlot';
 import { notFound } from 'next/navigation';
 
 /* ============================================
@@ -120,14 +122,13 @@ export default async function NewsDetailPage({ params }) {
   }
 
   return (
-    <>
-      {/* h1 اختصاصی برای SEO */}
+    <NewsPageSlot>
       <h1 className="sr-only">جزئیات خبر | سلنیرو — کاریابی تخصصی فروش و بازاریابی</h1>
 
       <Suspense fallback={<NewsDetailLoading />}>
         <NewsDetail slug={slug} />
       </Suspense>
-    </>
+    </NewsPageSlot>
   );
 }
 

@@ -1,0 +1,95 @@
+.page {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.25rem;
+  direction: rtl;
+  background:
+    radial-gradient(700px 280px at 50% 0%, rgba(20, 24, 31, 0.06), transparent 55%),
+    #f7f5f2;
+  font-family: var(--font-iran);
+}
+
+.card {
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  padding: 2.25rem 1.5rem 1.75rem;
+  border-radius: 20px;
+  background: #fff;
+  border: 1px solid rgba(20, 24, 31, 0.08);
+  box-shadow: 0 16px 40px rgba(20, 24, 31, 0.06);
+}
+
+.code {
+  margin: 0;
+  font-family: var(--font-edameh), var(--font-iran);
+  font-size: clamp(4rem, 12vw, 5.5rem);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, #2a241c 0%, #6f675c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.title {
+  margin: 0.85rem 0 0.45rem;
+  font-family: var(--font-edameh), var(--font-iran);
+  font-size: 1.25rem;
+  color: #14181f;
+}
+
+.text {
+  margin: 0 0 1.35rem;
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: #6b7380;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: center;
+}
+
+.btnPrimary,
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0.65rem 1.15rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  font-family: var(--font-iran);
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+.btnPrimary {
+  background: linear-gradient(135deg, #f0c014, #c99400);
+  color: #1a1508;
+}
+
+.btnGhost {
+  background: #fff;
+  color: #14181f;
+  border: 1px solid rgba(20, 24, 31, 0.14);
+}
+
+.btnPrimary:hover,
+.btnGhost:hover {
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btnPrimary,
+  .btnGhost {
+    transition: none;
+  }
+}

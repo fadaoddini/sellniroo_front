@@ -14,7 +14,7 @@ export const aboutData = {
         'کارفرمایان و شرکت‌ها نیز می‌توانند با ثبت آگهی استخدام رایگان، در سریع‌ترین زمان ممکن نیروی فروش و بازاریابی مورد نیاز خود را جذب کنند. سلنیرو با ارائه ابزارهای پیشرفته جستجو و دسته‌بندی دقیق مشاغل، فرآیند استخدام را برای هر دو طرف ساده‌تر و سریع‌تر کرده است.'
       ],
       image: {
-        src: '/images/about/sellniroo-team.jpg',
+        src: '/images/bglogo.jpeg',
         alt: 'تیم سلنیرو',
         caption: 'تیم متخصص سلنیرو'
       }
@@ -27,7 +27,7 @@ export const aboutData = {
         'سلنیرو با تعهد به شفافیت، اعتبار و کیفیت، تمامی آگهی‌های استخدام را بررسی و اعتبارسنجی می‌کند تا کارجویان با اطمینان بیشتری اقدام به ارسال رزومه کنند. ما معتقدیم که پیدا کردن شغل مناسب و جذب نیروی کارآمد باید ساده، سریع و قابل اعتماد باشد.'
       ],
       image: {
-        src: '/images/about/sellniroo-quality.jpg',
+        src: '/images/sell.jpeg',
         alt: 'کیفیت و شفافیت سلنیرو',
         caption: 'تعهد به شفافیت و کیفیت'
       }
@@ -91,7 +91,7 @@ export const aboutData = {
         'Employers and companies can also post free job ads and recruit the sales and marketing workforce they need in the shortest possible time. Sellniroo simplifies and accelerates the recruitment process for both parties with advanced search tools and precise job categorization.'
       ],
       image: {
-        src: '/images/about/sellniroo-team.jpg',
+        src: '/images/bglogo.jpeg',
         alt: 'Sellniroo Team',
         caption: 'Sellniroo Expert Team'
       }
@@ -104,7 +104,7 @@ export const aboutData = {
         'Sellniroo is committed to transparency, credibility, and quality by reviewing and validating all job postings so that job seekers can apply with greater confidence. We believe that finding the right job and recruiting efficient staff should be simple, fast, and reliable.'
       ],
       image: {
-        src: '/images/about/sellniroo-quality.jpg',
+        src: '/images/sell.jpeg',
         alt: 'Sellniroo Quality & Transparency',
         caption: 'Commitment to Transparency & Quality'
       }

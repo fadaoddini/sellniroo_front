@@ -1,4 +1,5 @@
 // modules/home/components/sections/CTASection.jsx — بخش تماس (تم آبی تیره + دیالوگ نوع درخواست)
+// ماژول سایت: cta_section ⊂ sales_marketing — از /adminweb فعال/غیرفعال می‌شود
 'use client';
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';

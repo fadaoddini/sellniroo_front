@@ -1,0 +1,321 @@
+/* منوی پایین سیستم شرکتی — ۴ استایل بهینه */
+
+.bar {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .bar {
+    --nav-h: 64px;
+    --fab-size: 56px;
+    --fab-rise: 22px;
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1200;
+    background: var(--corp-mobile-bg, #0a0a0a);
+    backdrop-filter: blur(22px) saturate(1.25);
+    -webkit-backdrop-filter: blur(22px) saturate(1.25);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 -10px 32px rgba(0, 0, 0, 0.28);
+    font-family: var(--font-iran);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    overflow: visible;
+  }
+
+  .inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: var(--nav-h);
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 6px 8px 8px;
+    gap: 4px;
+    overflow: visible;
+  }
+
+  .link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 96px;
+    min-height: 48px;
+    padding: 6px 4px;
+    text-decoration: none;
+    color: var(--corp-mobile-text, #9a9a9a);
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      color 0.22s ease,
+      background 0.22s ease,
+      transform 0.22s cubic-bezier(0.34, 1.2, 0.64, 1),
+      box-shadow 0.22s ease;
+    border-radius: 14px;
+    position: relative;
+  }
+
+  .iconWrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    color: var(--corp-mobile-icon, #9a9a9a);
+    transition: inherit;
+    flex-shrink: 0;
+  }
+
+  .label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    line-height: 1.15;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    letter-spacing: -0.01em;
+  }
+
+  /* ══════════ ۱) کلاسیک ══════════ */
+  .classic .link:hover,
+  .classic .active {
+    color: var(--corp-mobile-active, #fff);
+    background: rgba(255, 255, 255, 0.07);
+  }
+
+  .classic .active {
+    transform: translateY(-1px);
+  }
+
+  .classic .link:hover .iconWrap,
+  .classic .active .iconWrap {
+    color: var(--corp-mobile-active, #fff);
+  }
+
+  .classic .active .iconWrap {
+    transform: scale(1.08);
+  }
+
+  /* ══════════ ۲) دایره وسط ══════════ */
+  .center_circle {
+    --nav-h: 58px;
+    background: transparent;
+    border-top: none;
+    box-shadow: none;
+    /* فضای بالا برای دایره بیرون‌زده */
+    padding-top: calc(var(--fab-rise) + 10px);
+    padding-inline: 10px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    pointer-events: none;
+  }
+
+  .center_circle .inner {
+    pointer-events: auto;
+    height: var(--nav-h);
+    align-items: flex-end;
+    padding: 0 10px 8px;
+    border-radius: 22px;
+    background: color-mix(in srgb, var(--corp-mobile-bg, #0a0a0a) 94%, transparent);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 12px 36px rgba(0, 0, 0, 0.38),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(22px) saturate(1.3);
+    -webkit-backdrop-filter: blur(22px) saturate(1.3);
+    overflow: visible;
+  }
+
+  .center_circle .link {
+    justify-content: flex-end;
+    gap: 3px;
+    min-height: 0;
+    height: 100%;
+    padding: 0 2px 2px;
+    border-radius: 16px;
+    z-index: 1;
+  }
+
+  .center_circle .link:not(.centerLink):hover,
+  .center_circle .link:not(.centerLink).active {
+    color: var(--corp-mobile-active, #fff);
+    background: transparent;
+  }
+
+  .center_circle .link:not(.centerLink):hover .iconWrap,
+  .center_circle .link:not(.centerLink).active .iconWrap {
+    color: var(--corp-mobile-active, #fff);
+    transform: translateY(-2px);
+  }
+
+  .center_circle .centerLink {
+    z-index: 3;
+    max-width: 88px;
+    justify-content: flex-end;
+    gap: 6px;
+    color: var(--corp-mobile-text, #9a9a9a);
+  }
+
+  .center_circle .centerIcon {
+    width: var(--fab-size);
+    height: var(--fab-size);
+    margin-top: calc(var(--fab-rise) * -1 - 6px);
+    margin-bottom: 0;
+    border-radius: 50%;
+    background: linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--corp-mobile-active, #fff) 100%, #fff) 0%,
+      var(--corp-mobile-active, #fff) 100%
+    );
+    color: var(--corp-mobile-bg, #0a0a0a);
+    box-shadow:
+      0 8px 22px color-mix(in srgb, var(--corp-mobile-active, #fff) 35%, transparent),
+      0 4px 12px rgba(0, 0, 0, 0.35),
+      0 0 0 4px color-mix(in srgb, var(--corp-mobile-bg, #0a0a0a) 92%, transparent);
+  }
+
+  .center_circle .centerLink .label {
+    font-weight: 700;
+    font-size: 0.65rem;
+    color: var(--corp-mobile-text, #9a9a9a);
+  }
+
+  .center_circle .centerLink.active .label,
+  .center_circle .centerLink:hover .label {
+    color: var(--corp-mobile-active, #fff);
+  }
+
+  .center_circle .centerLink:hover .centerIcon,
+  .center_circle .centerLink.active .centerIcon {
+    transform: scale(1.06);
+    box-shadow:
+      0 10px 26px color-mix(in srgb, var(--corp-mobile-active, #fff) 45%, transparent),
+      0 4px 14px rgba(0, 0, 0, 0.4),
+      0 0 0 4px color-mix(in srgb, var(--corp-mobile-bg, #0a0a0a) 92%, transparent);
+  }
+
+  /* ══════════ ۳) مربع گرد ══════════ */
+  .rounded_square {
+    --nav-h: 68px;
+  }
+
+  .rounded_square .inner {
+    padding: 8px 10px 10px;
+    gap: 6px;
+  }
+
+  .rounded_square .link {
+    gap: 5px;
+    padding: 4px 2px;
+    background: transparent;
+  }
+
+  .rounded_square .iconWrap {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .rounded_square .link:hover .iconWrap,
+  .rounded_square .active .iconWrap {
+    background: color-mix(in srgb, var(--corp-mobile-active, #fff) 20%, transparent);
+    border-color: color-mix(in srgb, var(--corp-mobile-active, #fff) 50%, transparent);
+    color: var(--corp-mobile-active, #fff);
+    transform: translateY(-2px);
+    box-shadow:
+      0 6px 14px rgba(0, 0, 0, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .rounded_square .link:hover,
+  .rounded_square .active {
+    color: var(--corp-mobile-active, #fff);
+    background: transparent;
+  }
+
+  .rounded_square .active .label {
+    font-weight: 700;
+  }
+
+  /* ══════════ ۴) داک درخشان ══════════ */
+  .glow_dock {
+    background: transparent;
+    border-top: none;
+    box-shadow: none;
+    padding: 0 12px calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .glow_dock .inner {
+    height: 60px;
+    margin: 0 auto;
+    padding: 6px 10px;
+    border-radius: 22px;
+    background: color-mix(in srgb, var(--corp-mobile-bg, #0a0a0a) 90%, transparent);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+      0 14px 40px rgba(0, 0, 0, 0.42),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(24px) saturate(1.35);
+    -webkit-backdrop-filter: blur(24px) saturate(1.35);
+  }
+
+  .glow_dock .link {
+    border-radius: 16px;
+    gap: 3px;
+  }
+
+  .glow_dock .iconWrap {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+  }
+
+  .glow_dock .label {
+    font-size: 0.6rem;
+    opacity: 0.85;
+  }
+
+  .glow_dock .link:hover,
+  .glow_dock .active {
+    color: var(--corp-mobile-active, #fff);
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-3px);
+  }
+
+  .glow_dock .active .label {
+    opacity: 1;
+    font-weight: 700;
+  }
+
+  .glow_dock .active .iconWrap {
+    color: var(--corp-mobile-active, #fff);
+    background: color-mix(in srgb, var(--corp-mobile-active, #fff) 16%, transparent);
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--corp-mobile-active, #fff) 30%, transparent),
+      0 0 18px color-mix(in srgb, var(--corp-mobile-active, #fff) 50%, transparent);
+  }
+
+  .glow_dock .link:hover .iconWrap {
+    color: var(--corp-mobile-active, #fff);
+  }
+}
+
+@media (max-width: 380px) {
+  .label {
+    font-size: 0.58rem;
+  }
+
+  .center_circle {
+    --fab-size: 50px;
+    --fab-rise: 18px;
+  }
+}
