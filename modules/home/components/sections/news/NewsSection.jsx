@@ -2,7 +2,8 @@
 
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
+import dynamic from 'next/dynamic'
 import { 
   Calendar, 
   ChevronLeft, 
@@ -14,7 +15,11 @@ import {
   Trash2, 
   Plus,
   Image as ImageIcon,
-  Loader2
+  Loader2,
+  Upload,
+  Link2,
+  FileText,
+  Settings2,
 } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useAuth } from '@/contexts/AuthContext'
@@ -22,42 +27,93 @@ import styles from './NewsSection.module.css'
 import newsService from '@/services/newsService'
 import Config from '@/config/config'
 
+const CKEditorWrapper = dynamic(
+  () => import('@/components/newsAdmin/CKEditorWrapper'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className={styles.editorLoading}>
+        در حال بارگذاری ادیتور...
+      </div>
+    ),
+  }
+)
+
+const INITIAL_NEWS_FORM = {
+  title: '',
+  subtitle: '',
+  lid: '',
+  excerpt: '',
+  content: '',
+  featured_image: null,
+  image_url: '',
+  source_name: '',
+  source_link: '',
+  publish_date: new Date().toISOString().slice(0, 16),
+  category: null,
+  status: 'published',
+  is_active: true,
+  is_featured: false,
+  is_breaking: false,
+  is_exclusive: false,
+  language: 'fa',
+}
+
 const NewsSection = () => {
   const { language } = useLanguage()
-  const { user } = useAuth()
+  const { user, getAuthHeaders } = useAuth()
   const [news, setNews] = useState([])
   const [loading, setLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
   const [editData, setEditData] = useState(null)
   const [isAdding, setIsAdding] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [imagePreview, setImagePreview] = useState(null)
+  const [dragOver, setDragOver] = useState(false)
+  const [imageTab, setImageTab] = useState('upload') // upload | url
+  const fileInputRef = useRef(null)
   
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 8
 
-  // State for new news
-  const [newNewsData, setNewNewsData] = useState({
-    title: '',
-    subtitle: '',
-    lid: '',
-    excerpt: '',
-    content: '',
-    featured_image: null,
-    image_url: '',
-    source_name: '',
-    source_link: '',
-    publish_date: new Date().toISOString().slice(0, 16),
-    category: null,
-    status: 'published',
-    is_active: true,
-    is_featured: false,
-    is_breaking: false,
-    is_exclusive: false,
-    language: 'fa'
-  })
+  const [newNewsData, setNewNewsData] = useState(INITIAL_NEWS_FORM)
 
   const isAdmin = user?.is_staff || user?.is_superuser || false
+
+  const setField = (key, value) => {
+    setNewNewsData((prev) => ({ ...prev, [key]: value }))
+  }
+
+  const clearImage = () => {
+    setNewNewsData((prev) => ({ ...prev, featured_image: null, image_url: '' }))
+    setImagePreview(null)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  const applyImageFile = (file) => {
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      alert(language === 'fa' ? 'فقط فایل تصویری مجاز است' : 'Only image files are allowed')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert(language === 'fa' ? 'حجم تصویر حداکثر ۵ مگابایت باشد' : 'Max image size is 5MB')
+      return
+    }
+    setNewNewsData((prev) => ({ ...prev, featured_image: file, image_url: '' }))
+    const reader = new FileReader()
+    reader.onloadend = () => setImagePreview(reader.result)
+    reader.readAsDataURL(file)
+  }
+
+  const handleDrop = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setDragOver(false)
+    const file = e.dataTransfer?.files?.[0]
+    if (file) applyImageFile(file)
+  }
 
   // 🔹 تابع ساخت آدرس کامل تصویر
   const getFullImageUrl = (imagePath) => {
@@ -175,7 +231,7 @@ const NewsSection = () => {
       subtitle: item.subtitle || '',
       lid: item.lid || '',
       excerpt: item.excerpt || '',
-      content: item.content || '',
+      content: item.description || item.content || '',
       image_url: item.featured_image_url || '',
       source_name: item.source_name || '',
       source_link: item.source_link || '',
@@ -200,6 +256,7 @@ const NewsSection = () => {
           subtitle: editData.subtitle,
           lid: editData.lid,
           excerpt: editData.excerpt,
+          description: editData.content,
           content: editData.content,
           featured_image_url: editData.image_url,
           source_name: editData.source_name,
@@ -235,48 +292,57 @@ const NewsSection = () => {
   // 🔹 افزودن خبر جدید
   const addNews = async () => {
     if (!newNewsData.title.trim()) {
-      alert('لطفاً عنوان خبر را وارد کنید')
+      alert(language === 'fa' ? 'لطفاً عنوان خبر را وارد کنید' : 'Please enter a title')
       return
     }
-    
+
     setSubmitting(true)
-    
+
     try {
-      const newItem = {
-        id: Date.now(),
-        slug: newNewsData.title
-          .trim()
-          .replace(/\s+/g, '-')
-          .replace(/[^a-zA-Z0-9\u0600-\u06FF\-]/g, '')
-          .toLowerCase(),
-        title: newNewsData.title,
-        subtitle: newNewsData.subtitle || '',
-        lid: newNewsData.lid || '',
-        excerpt: newNewsData.excerpt || '',
-        content: newNewsData.content || '',
-        featured_image_url: newNewsData.image_url || '',
-        featured_image_display: newNewsData.image_url || '',
-        source_name: newNewsData.source_name || '',
-        source_link: newNewsData.source_link || '',
-        publish_date: newNewsData.publish_date || new Date().toISOString(),
-        status: newNewsData.status || 'published',
-        is_active: newNewsData.is_active,
-        is_featured: newNewsData.is_featured,
-        is_breaking: newNewsData.is_breaking,
-        is_exclusive: newNewsData.is_exclusive,
-        images: [],
-        view_count: 0,
-        like_count: 0,
-        comment_count: 0,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+      const fd = new FormData()
+      fd.append('title', newNewsData.title.trim())
+      if (newNewsData.subtitle) fd.append('subtitle', newNewsData.subtitle)
+      if (newNewsData.lid) fd.append('lid', newNewsData.lid)
+      if (newNewsData.excerpt) fd.append('excerpt', newNewsData.excerpt)
+      // بک‌اند معمولاً description دارد
+      fd.append('description', newNewsData.content || newNewsData.excerpt || newNewsData.title)
+      if (newNewsData.content) fd.append('content', newNewsData.content)
+      fd.append('status', newNewsData.status || 'published')
+      fd.append('is_active', newNewsData.is_active ? 'true' : 'false')
+      fd.append('is_featured', newNewsData.is_featured ? 'true' : 'false')
+      fd.append('is_breaking', newNewsData.is_breaking ? 'true' : 'false')
+      fd.append('is_exclusive', newNewsData.is_exclusive ? 'true' : 'false')
+      fd.append('language', newNewsData.language || 'fa')
+      if (newNewsData.source_name) fd.append('source_name', newNewsData.source_name)
+      if (newNewsData.source_link) fd.append('source_link', newNewsData.source_link)
+      if (newNewsData.publish_date) {
+        const iso = new Date(newNewsData.publish_date).toISOString()
+        fd.append('publish_date', iso)
       }
-      setNews(prev => [newItem, ...prev])
+      if (newNewsData.featured_image instanceof File) {
+        fd.append('featured_image', newNewsData.featured_image)
+      } else if (newNewsData.image_url?.trim()) {
+        fd.append('featured_image_url', newNewsData.image_url.trim())
+      }
+
+      const result = await newsService.createNews(fd, getAuthHeaders())
+      if (!result.success) {
+        alert(result.error || 'خطا در افزودن خبر')
+        return
+      }
+
+      const created = result.data
+      if (created) {
+        setNews((prev) => [created, ...prev])
+      } else {
+        await fetchNews()
+      }
       setIsAdding(false)
       resetNewNewsForm()
+      setCurrentPage(1)
     } catch (error) {
       console.error('Error adding news:', error)
-      alert('خطا در افزودن خبر')
+      alert(language === 'fa' ? 'خطا در افزودن خبر' : 'Error adding news')
     } finally {
       setSubmitting(false)
     }
@@ -284,24 +350,13 @@ const NewsSection = () => {
 
   const resetNewNewsForm = () => {
     setNewNewsData({
-      title: '',
-      subtitle: '',
-      lid: '',
-      excerpt: '',
-      content: '',
-      featured_image: null,
-      image_url: '',
-      source_name: '',
-      source_link: '',
+      ...INITIAL_NEWS_FORM,
       publish_date: new Date().toISOString().slice(0, 16),
-      category: null,
-      status: 'published',
-      is_active: true,
-      is_featured: false,
-      is_breaking: false,
-      is_exclusive: false,
-      language: 'fa'
     })
+    setImagePreview(null)
+    setImageTab('upload')
+    setDragOver(false)
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   // 🔹 دریافت وضعیت نمایشی
@@ -368,164 +423,289 @@ const NewsSection = () => {
         {/* فرم افزودن خبر جدید */}
         {isAdding && isAdmin && (
           <div className={styles.addNewsForm}>
-            <h4>
-              {language === 'fa' ? '✏️ افزودن خبر جدید' : '✏️ Add New News'}
-            </h4>
-            <div className={styles.formGrid}>
-              <div className={styles.formField}>
-                <label>{language === 'fa' ? 'عنوان خبر (ضروری)' : 'Title (Required)'}</label>
+            <div className={styles.formHead}>
+              <div>
+                <h4>{language === 'fa' ? 'افزودن خبر جدید' : 'Add New News'}</h4>
+                <p className={styles.formHeadHint}>
+                  {language === 'fa'
+                    ? 'تصویر را بکشید و رها کنید یا از گالری انتخاب کنید'
+                    : 'Drag & drop an image or pick from gallery'}
+                </p>
+              </div>
+              <button
+                type="button"
+                className={styles.formHeadClose}
+                onClick={() => { setIsAdding(false); resetNewNewsForm() }}
+                aria-label="close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className={styles.formLayout}>
+              {/* ستون تصویر */}
+              <div className={styles.mediaCol}>
+                <div className={styles.sectionLabel}>
+                  <ImageIcon size={14} />
+                  {language === 'fa' ? 'تصویر شاخص' : 'Featured image'}
+                </div>
+
+                <div className={styles.imageTabs}>
+                  <button
+                    type="button"
+                    className={`${styles.imageTab} ${imageTab === 'upload' ? styles.imageTabActive : ''}`}
+                    onClick={() => setImageTab('upload')}
+                  >
+                    <Upload size={14} />
+                    {language === 'fa' ? 'آپلود' : 'Upload'}
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.imageTab} ${imageTab === 'url' ? styles.imageTabActive : ''}`}
+                    onClick={() => setImageTab('url')}
+                  >
+                    <Link2 size={14} />
+                    {language === 'fa' ? 'لینک' : 'URL'}
+                  </button>
+                </div>
+
+                {imageTab === 'upload' ? (
+                  imagePreview ? (
+                    <div className={styles.imagePreviewBox}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={imagePreview} alt="preview" className={styles.imagePreviewImg} />
+                      <div className={styles.imagePreviewActions}>
+                        <button
+                          type="button"
+                          className={styles.imageChangeBtn}
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          {language === 'fa' ? 'تعویض تصویر' : 'Change'}
+                        </button>
+                        <button type="button" className={styles.imageRemoveBtn} onClick={clearImage}>
+                          <X size={14} />
+                          {language === 'fa' ? 'حذف' : 'Remove'}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className={`${styles.dropZone} ${dragOver ? styles.dropZoneActive : ''}`}
+                      onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+                      onDragLeave={() => setDragOver(false)}
+                      onDrop={handleDrop}
+                      onClick={() => fileInputRef.current?.click()}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') fileInputRef.current?.click()
+                      }}
+                    >
+                      <Upload size={28} />
+                      <strong>
+                        {language === 'fa' ? 'تصویر را اینجا رها کنید' : 'Drop image here'}
+                      </strong>
+                      <span>
+                        {language === 'fa'
+                          ? 'یا برای انتخاب از گالری کلیک کنید · JPG, PNG, WEBP تا ۵MB'
+                          : 'or click to browse · JPG, PNG, WEBP up to 5MB'}
+                      </span>
+                    </div>
+                  )
+                ) : (
+                  <div className={styles.urlImageBox}>
+                    <div className={styles.formField}>
+                      <label>{language === 'fa' ? 'آدرس تصویر' : 'Image URL'}</label>
+                      <input
+                        type="url"
+                        value={newNewsData.image_url}
+                        onChange={(e) => {
+                          const url = e.target.value
+                          setNewNewsData((prev) => ({ ...prev, featured_image: null, image_url: url }))
+                          setImagePreview(url.trim() || null)
+                        }}
+                        placeholder="https://example.com/image.jpg"
+                        dir="ltr"
+                      />
+                    </div>
+                    {imagePreview && (
+                      <div className={styles.imagePreviewBox}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={imagePreview}
+                          alt="preview"
+                          className={styles.imagePreviewImg}
+                          onError={() => setImagePreview(null)}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <input
-                  type="text"
-                  value={newNewsData.title}
-                  onChange={(e) => setNewNewsData({...newNewsData, title: e.target.value})}
-                  placeholder={language === 'fa' ? 'عنوان خبر را وارد کنید' : 'Enter news title'}
-                  required
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className={styles.hiddenFile}
+                  onChange={(e) => applyImageFile(e.target.files?.[0])}
                 />
               </div>
-              
-              <div className={styles.formField}>
-                <label>{language === 'fa' ? 'زیر عنوان (روتیر)' : 'Subtitle'}</label>
-                <input
-                  type="text"
-                  value={newNewsData.subtitle}
-                  onChange={(e) => setNewNewsData({...newNewsData, subtitle: e.target.value})}
-                  placeholder={language === 'fa' ? 'زیر عنوان خبر' : 'News subtitle'}
-                />
-              </div>
-              
-              <div className={styles.formField}>
-                <label>{language === 'fa' ? 'لید (تیزر کوتاه)' : 'Lid'}</label>
-                <input
-                  type="text"
-                  value={newNewsData.lid}
-                  onChange={(e) => setNewNewsData({...newNewsData, lid: e.target.value})}
-                  placeholder={language === 'fa' ? 'لید خبر' : 'News lid'}
-                />
-              </div>
-              
-              <div className={styles.formField}>
-                <label>{language === 'fa' ? 'لینک تصویر شاخص' : 'Featured Image URL'}</label>
-                <input
-                  type="url"
-                  value={newNewsData.image_url}
-                  onChange={(e) => setNewNewsData({...newNewsData, image_url: e.target.value})}
-                  placeholder="https://example.com/image.jpg"
-                />
-              </div>
-              
-              <div className={styles.formField}>
-                <label>{language === 'fa' ? 'خلاصه خبر' : 'Excerpt'}</label>
-                <textarea
-                  value={newNewsData.excerpt}
-                  onChange={(e) => setNewNewsData({...newNewsData, excerpt: e.target.value})}
-                  placeholder={language === 'fa' ? 'خلاصه خبر را وارد کنید' : 'Enter news excerpt'}
-                  rows="2"
-                />
-              </div>
-              
-              <div className={styles.formField}>
-                <label>{language === 'fa' ? 'متن کامل خبر' : 'Content'}</label>
-                <textarea
-                  value={newNewsData.content}
-                  onChange={(e) => setNewNewsData({...newNewsData, content: e.target.value})}
-                  placeholder={language === 'fa' ? 'متن کامل خبر را وارد کنید' : 'Enter full content'}
-                  rows="4"
-                />
-              </div>
-              
-              <div className={styles.formField}>
-                <label>{language === 'fa' ? 'وضعیت' : 'Status'}</label>
-                <select
-                  value={newNewsData.status}
-                  onChange={(e) => setNewNewsData({...newNewsData, status: e.target.value})}
-                >
-                  <option value="draft">پیش‌نویس</option>
-                  <option value="pending">در انتظار بررسی</option>
-                  <option value="review">در حال بررسی</option>
-                  <option value="published">منتشر شده</option>
-                  <option value="scheduled">برنامه‌ریزی شده</option>
-                  <option value="archived">بایگانی شده</option>
-                  <option value="rejected">رد شده</option>
-                </select>
-              </div>
-              
-              <div className={styles.formField}>
-                <label>{language === 'fa' ? 'فعال' : 'Active'}</label>
-                <select
-                  value={newNewsData.is_active ? 'active' : 'inactive'}
-                  onChange={(e) => setNewNewsData({...newNewsData, is_active: e.target.value === 'active'})}
-                >
-                  <option value="active">{language === 'fa' ? 'فعال' : 'Active'}</option>
-                  <option value="inactive">{language === 'fa' ? 'غیرفعال' : 'Inactive'}</option>
-                </select>
-              </div>
-              
-              <div className={styles.formField}>
-                <label>{language === 'fa' ? 'خبر ویژه' : 'Featured'}</label>
-                <select
-                  value={newNewsData.is_featured ? 'yes' : 'no'}
-                  onChange={(e) => setNewNewsData({...newNewsData, is_featured: e.target.value === 'yes'})}
-                >
-                  <option value="no">{language === 'fa' ? 'خیر' : 'No'}</option>
-                  <option value="yes">{language === 'fa' ? 'بله' : 'Yes'}</option>
-                </select>
-              </div>
-              
-              <div className={styles.formField}>
-                <label>{language === 'fa' ? 'خبر فوری' : 'Breaking'}</label>
-                <select
-                  value={newNewsData.is_breaking ? 'yes' : 'no'}
-                  onChange={(e) => setNewNewsData({...newNewsData, is_breaking: e.target.value === 'yes'})}
-                >
-                  <option value="no">{language === 'fa' ? 'خیر' : 'No'}</option>
-                  <option value="yes">{language === 'fa' ? 'بله' : 'Yes'}</option>
-                </select>
-              </div>
-              
-              <div className={styles.formField}>
-                <label>{language === 'fa' ? 'اختصاصی' : 'Exclusive'}</label>
-                <select
-                  value={newNewsData.is_exclusive ? 'yes' : 'no'}
-                  onChange={(e) => setNewNewsData({...newNewsData, is_exclusive: e.target.value === 'yes'})}
-                >
-                  <option value="no">{language === 'fa' ? 'خیر' : 'No'}</option>
-                  <option value="yes">{language === 'fa' ? 'بله' : 'Yes'}</option>
-                </select>
-              </div>
-              
-              <div className={styles.formField}>
-                <label>{language === 'fa' ? 'نام منبع' : 'Source Name'}</label>
-                <input
-                  type="text"
-                  value={newNewsData.source_name}
-                  onChange={(e) => setNewNewsData({...newNewsData, source_name: e.target.value})}
-                  placeholder={language === 'fa' ? 'نام منبع' : 'Source name'}
-                />
-              </div>
-              
-              <div className={styles.formField}>
-                <label>{language === 'fa' ? 'لینک منبع' : 'Source Link'}</label>
-                <input
-                  type="url"
-                  value={newNewsData.source_link}
-                  onChange={(e) => setNewNewsData({...newNewsData, source_link: e.target.value})}
-                  placeholder="https://example.com"
-                />
-              </div>
-              
-              <div className={styles.formField}>
-                <label>{language === 'fa' ? 'تاریخ انتشار' : 'Publish Date'}</label>
-                <input
-                  type="datetime-local"
-                  value={newNewsData.publish_date}
-                  onChange={(e) => setNewNewsData({...newNewsData, publish_date: e.target.value})}
-                />
+
+              {/* ستون محتوا */}
+              <div className={styles.fieldsCol}>
+                <div className={styles.sectionLabel}>
+                  <FileText size={14} />
+                  {language === 'fa' ? 'محتوا' : 'Content'}
+                </div>
+
+                <div className={styles.formGrid}>
+                  <div className={`${styles.formField} ${styles.full}`}>
+                    <label>{language === 'fa' ? 'عنوان خبر *' : 'Title *'}</label>
+                    <input
+                      type="text"
+                      value={newNewsData.title}
+                      onChange={(e) => setField('title', e.target.value)}
+                      placeholder={language === 'fa' ? 'عنوان خبر را وارد کنید' : 'Enter news title'}
+                    />
+                  </div>
+
+                  <div className={styles.formField}>
+                    <label>{language === 'fa' ? 'زیر عنوان' : 'Subtitle'}</label>
+                    <input
+                      type="text"
+                      value={newNewsData.subtitle}
+                      onChange={(e) => setField('subtitle', e.target.value)}
+                      placeholder={language === 'fa' ? 'روتیر' : 'Subtitle'}
+                    />
+                  </div>
+
+                  <div className={styles.formField}>
+                    <label>{language === 'fa' ? 'لید' : 'Lid'}</label>
+                    <input
+                      type="text"
+                      value={newNewsData.lid}
+                      onChange={(e) => setField('lid', e.target.value)}
+                      placeholder={language === 'fa' ? 'تیزر کوتاه' : 'Short teaser'}
+                    />
+                  </div>
+
+                  <div className={`${styles.formField} ${styles.full}`}>
+                    <label>{language === 'fa' ? 'خلاصه خبر' : 'Excerpt'}</label>
+                    <textarea
+                      value={newNewsData.excerpt}
+                      onChange={(e) => setField('excerpt', e.target.value)}
+                      placeholder={language === 'fa' ? 'خلاصه کوتاه برای کارت خبر' : 'Short excerpt'}
+                      rows={2}
+                    />
+                  </div>
+
+                  <div className={`${styles.formField} ${styles.full}`}>
+                    <label>{language === 'fa' ? 'متن کامل خبر' : 'Full content'}</label>
+                    <div className={styles.editorWrap}>
+                      <CKEditorWrapper
+                        key={isAdding ? 'add-editor' : 'idle'}
+                        value={newNewsData.content}
+                        onChange={(data) => setField('content', data)}
+                        placeholder={
+                          language === 'fa'
+                            ? 'متن کامل خبر را اینجا بنویسید...'
+                            : 'Write the full news content...'
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.sectionLabel}>
+                  <Settings2 size={14} />
+                  {language === 'fa' ? 'تنظیمات انتشار' : 'Publish settings'}
+                </div>
+
+                <div className={styles.formGrid}>
+                  <div className={styles.formField}>
+                    <label>{language === 'fa' ? 'وضعیت' : 'Status'}</label>
+                    <select
+                      value={newNewsData.status}
+                      onChange={(e) => setField('status', e.target.value)}
+                    >
+                      <option value="draft">پیش‌نویس</option>
+                      <option value="pending">در انتظار بررسی</option>
+                      <option value="published">منتشر شده</option>
+                      <option value="scheduled">برنامه‌ریزی شده</option>
+                    </select>
+                  </div>
+
+                  <div className={styles.formField}>
+                    <label>{language === 'fa' ? 'تاریخ انتشار' : 'Publish date'}</label>
+                    <input
+                      type="datetime-local"
+                      value={newNewsData.publish_date}
+                      onChange={(e) => setField('publish_date', e.target.value)}
+                    />
+                  </div>
+
+                  <div className={styles.formField}>
+                    <label>{language === 'fa' ? 'نام منبع' : 'Source'}</label>
+                    <input
+                      type="text"
+                      value={newNewsData.source_name}
+                      onChange={(e) => setField('source_name', e.target.value)}
+                    />
+                  </div>
+
+                  <div className={styles.formField}>
+                    <label>{language === 'fa' ? 'لینک منبع' : 'Source link'}</label>
+                    <input
+                      type="url"
+                      value={newNewsData.source_link}
+                      onChange={(e) => setField('source_link', e.target.value)}
+                      dir="ltr"
+                      placeholder="https://"
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.flagRow}>
+                  <label className={`${styles.flagChip} ${newNewsData.is_featured ? styles.flagOn : ''}`}>
+                    <input
+                      type="checkbox"
+                      checked={newNewsData.is_featured}
+                      onChange={(e) => setField('is_featured', e.target.checked)}
+                    />
+                    {language === 'fa' ? 'ویژه' : 'Featured'}
+                  </label>
+                  <label className={`${styles.flagChip} ${newNewsData.is_breaking ? styles.flagOn : ''}`}>
+                    <input
+                      type="checkbox"
+                      checked={newNewsData.is_breaking}
+                      onChange={(e) => setField('is_breaking', e.target.checked)}
+                    />
+                    {language === 'fa' ? 'فوری' : 'Breaking'}
+                  </label>
+                  <label className={`${styles.flagChip} ${newNewsData.is_exclusive ? styles.flagOn : ''}`}>
+                    <input
+                      type="checkbox"
+                      checked={newNewsData.is_exclusive}
+                      onChange={(e) => setField('is_exclusive', e.target.checked)}
+                    />
+                    {language === 'fa' ? 'اختصاصی' : 'Exclusive'}
+                  </label>
+                  <label className={`${styles.flagChip} ${newNewsData.is_active ? styles.flagOn : ''}`}>
+                    <input
+                      type="checkbox"
+                      checked={newNewsData.is_active}
+                      onChange={(e) => setField('is_active', e.target.checked)}
+                    />
+                    {language === 'fa' ? 'فعال' : 'Active'}
+                  </label>
+                </div>
               </div>
             </div>
-            
+
             <div className={styles.formActions}>
-              <button 
-                className={styles.saveBtn} 
+              <button
+                type="button"
+                className={styles.saveBtn}
                 onClick={addNews}
                 disabled={submitting || !newNewsData.title.trim()}
               >
@@ -534,17 +714,14 @@ const NewsSection = () => {
                 ) : (
                   <Save size={16} />
                 )}
-                {submitting 
+                {submitting
                   ? (language === 'fa' ? 'در حال ذخیره...' : 'Saving...')
-                  : (language === 'fa' ? 'ذخیره' : 'Save')
-                }
+                  : (language === 'fa' ? 'انتشار خبر' : 'Publish')}
               </button>
-              <button 
-                className={styles.cancelBtn} 
-                onClick={() => {
-                  setIsAdding(false)
-                  resetNewNewsForm()
-                }}
+              <button
+                type="button"
+                className={styles.cancelBtn}
+                onClick={() => { setIsAdding(false); resetNewNewsForm() }}
                 disabled={submitting}
               >
                 <X size={16} />
@@ -650,13 +827,20 @@ const NewsSection = () => {
                           rows="2"
                         />
                       </div>
-                      <div className={styles.formField}>
-                        <textarea
-                          value={editData.content || ''}
-                          onChange={(e) => setEditData({...editData, content: e.target.value})}
-                          placeholder="متن کامل خبر"
-                          rows="3"
-                        />
+                      <div className={`${styles.formField} ${styles.full}`}>
+                        <label>{language === 'fa' ? 'متن کامل خبر' : 'Full content'}</label>
+                        <div className={`${styles.editorWrap} ${styles.editorCompact}`}>
+                          <CKEditorWrapper
+                            key={`edit-${editData.id || editData.slug}`}
+                            value={editData.content || ''}
+                            onChange={(data) => setEditData({ ...editData, content: data })}
+                            placeholder={
+                              language === 'fa'
+                                ? 'متن کامل خبر را اینجا بنویسید...'
+                                : 'Write the full news content...'
+                            }
+                          />
+                        </div>
                       </div>
                       <div className={styles.editActions}>
                         <button 

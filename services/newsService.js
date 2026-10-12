@@ -426,21 +426,40 @@ const newsService = {
 
   /**
    * ایجاد خبر جدید (فقط ادمین)
+   * data می‌تواند object معمولی یا FormData باشد
    */
-  async createNews(data) {
+  async createNews(data, headers = {}) {
     try {
       const url = Config.endpoints.news.create();
-      const response = await axios.post(url, data);
-      
+      const isFormData = typeof FormData !== 'undefined' && data instanceof FormData;
+      // برای FormData هدر Content-Type را ست نکن تا boundary درست ساخته شود
+      const requestHeaders = { ...headers };
+      if (isFormData && requestHeaders['Content-Type']) {
+        delete requestHeaders['Content-Type'];
+      }
+      const response = await axios.post(url, data, {
+        headers: requestHeaders,
+      });
+
       return {
         success: true,
         data: response.data.data || response.data,
       };
     } catch (error) {
       console.error('❌ Error creating news:', error);
+      const errData = error.response?.data;
+      let message = 'خطا در ایجاد خبر';
+      if (typeof errData === 'string') message = errData;
+      else if (errData?.message) message = errData.message;
+      else if (errData?.detail) message = errData.detail;
+      else if (errData && typeof errData === 'object') {
+        const key = Object.keys(errData)[0];
+        const val = errData[key];
+        message = `${key}: ${Array.isArray(val) ? val[0] : val}`;
+      }
       return {
         success: false,
-        error: error.response?.data?.message || 'خطا در ایجاد خبر',
+        error: message,
       };
     }
   },
