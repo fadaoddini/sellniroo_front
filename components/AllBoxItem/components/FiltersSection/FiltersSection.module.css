@@ -276,46 +276,7 @@
   color: #c49200;
 }
 
-.filterSelect,
-.sortSelect {
-  width: 100%;
-  padding: 0.65rem 0.75rem;
-  border: 1.5px solid var(--line);
-  border-radius: 11px;
-  font-family: inherit;
-  font-size: 0.78rem;
-  background-color: #fff;
-  color: var(--ink);
-  cursor: pointer;
-  transition: border-color 0.18s, box-shadow 0.18s;
-  direction: rtl;
-  outline: none;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a6a10' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: left 0.75rem center;
-  padding-left: 2rem;
-}
-
-.filterSelect:hover:not(:disabled),
-.sortSelect:hover {
-  border-color: rgba(232, 160, 0, 0.45);
-}
-
-.filterSelect:focus,
-.sortSelect:focus {
-  border-color: rgba(232, 160, 0, 0.65);
-  box-shadow: 0 0 0 3px var(--gold-soft);
-}
-
-.filterSelect:disabled {
-  background-color: #f3efe6;
-  color: #aaa;
-  cursor: not-allowed;
-  opacity: 0.85;
-  background-image: none;
-}
+/* تریگرهای انتخاب از FilterDialog.module.css می‌آیند */
 
 /* ── Verified ── */
 .verifiedFilter {
@@ -422,9 +383,6 @@
   padding-top: 0.15rem;
 }
 
-.sortSelect {
-  background-color: var(--surface);
-}
 
 /* موبایل: دکمه/چیپ — دسکتاپ مخفی */
 .mobileOpenBtn,
@@ -634,9 +592,7 @@
     filter: brightness(0.98);
   }
 
-  .filterSelect,
-  .searchFilterInput,
-  .sortSelect {
+  .searchFilterInput {
     font-size: 0.85rem;
   }
 

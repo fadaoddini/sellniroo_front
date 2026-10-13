@@ -16,6 +16,7 @@ import BookmarksList from "./BookmarksList";
 import CompanyTab from "./company/CompanyTab";
 import ResumeTab from "./resume/ResumeTab";
 import QuizProfilePanel from "./QuizProfilePanel";
+import SchoolProfilePanel from "@/components/School/SchoolProfilePanel";
 import styles from "../styles/ProfilePage.module.css";
 import { Loader2 } from "lucide-react";
 import { isSiteModuleActive } from "@/services/siteModules";
@@ -31,6 +32,7 @@ const JOB_TABS = [
 ];
 
 const QUIZ_TAB = { key: "quiz", label: "آزمون‌ها", icon: "brain" };
+const SCHOOL_TAB = { key: "school", label: "مدرسه", icon: "school" };
 
 const EMPTY_STATS = {
   hiring: { total: 0, approved: 0, pending: 0, rejected: 0, expired: 0, views: 0, likes: 0 },
@@ -44,11 +46,14 @@ function ProfilePageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [quizOn, setQuizOn] = useState(false);
+  const [schoolOn, setSchoolOn] = useState(false);
 
-  const tabs = useMemo(
-    () => (quizOn ? [...JOB_TABS, QUIZ_TAB] : JOB_TABS),
-    [quizOn]
-  );
+  const tabs = useMemo(() => {
+    const list = [...JOB_TABS];
+    if (quizOn) list.push(QUIZ_TAB);
+    if (schoolOn) list.push(SCHOOL_TAB);
+    return list;
+  }, [quizOn, schoolOn]);
   const tabKeys = useMemo(() => new Set(tabs.map((t) => t.key)), [tabs]);
 
   const initialTab = useMemo(() => {
@@ -69,18 +74,21 @@ function ProfilePageInner() {
 
   useEffect(() => {
     let cancelled = false;
-    isSiteModuleActive(SITE_MODULE_KEYS.QUIZ, { force: true }).then((v) => {
-      if (!cancelled) setQuizOn(!!v);
-    });
-    const onChanged = () => {
-      isSiteModuleActive(SITE_MODULE_KEYS.QUIZ, { force: true }).then((v) => {
-        if (!cancelled) setQuizOn(!!v);
+    const refresh = () => {
+      Promise.all([
+        isSiteModuleActive(SITE_MODULE_KEYS.QUIZ, { force: true }),
+        isSiteModuleActive(SITE_MODULE_KEYS.SCHOOL, { force: true }),
+      ]).then(([quiz, school]) => {
+        if (cancelled) return;
+        setQuizOn(!!quiz);
+        setSchoolOn(!!school);
       });
     };
-    window.addEventListener("site-modules-changed", onChanged);
+    refresh();
+    window.addEventListener("site-modules-changed", refresh);
     return () => {
       cancelled = true;
-      window.removeEventListener("site-modules-changed", onChanged);
+      window.removeEventListener("site-modules-changed", refresh);
     };
   }, []);
 
@@ -179,6 +187,9 @@ function ProfilePageInner() {
           )}
           {activeTab === "quiz" && quizOn && (
             <QuizProfilePanel key={`quiz-${refreshKey}`} variant="embedded" />
+          )}
+          {activeTab === "school" && schoolOn && (
+            <SchoolProfilePanel key={`school-${refreshKey}`} />
           )}
         </div>
       </div>

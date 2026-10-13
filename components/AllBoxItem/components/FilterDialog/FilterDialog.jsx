@@ -1,166 +1,250 @@
-// src/components/AllBoxItem/components/FilterDialog/FilterDialog.jsx
-'use client';
+// FilterDialog — دیالوگ انتخاب فیلتر (تم طلایی سلنیرو)
+'use client'
 
-import React, { useState, useEffect } from 'react';
-import { X, Check, Search } from 'lucide-react';
-import jobisellApi from '@/services/jobisellApi';
-import styles from './FilterDialog.module.css';
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { X, Check, Search, ChevronDown } from 'lucide-react'
+import styles from './FilterDialog.module.css'
 
-const FilterDialog = ({
+/**
+ * @param {object} props
+ * @param {boolean} props.isOpen
+ * @param {string} props.title
+ * @param {Array<{id:string|number, name?:string, title?:string, label?:string}>} props.options
+ * @param {string|number} props.value
+ * @param {string} [props.emptyLabel] — گزینه «همه»
+ * @param {boolean} [props.loading]
+ * @param {(value: string) => void} props.onChange
+ * @param {() => void} props.onClose
+ * @param {boolean} [props.searchable]
+ */
+export default function FilterDialog({
   isOpen,
-  selectedKey,
-  tempValue,
-  filterOptions,
-  onSelectOption,
-  onConfirm,
-  onClear,
+  title,
+  options = [],
+  value = '',
+  emptyLabel = 'همه',
+  showEmpty = true,
+  loading = false,
+  onChange,
   onClose,
-}) => {
-  const [dynamicOptions, setDynamicOptions] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  searchable = true,
+}) {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [mounted, setMounted] = useState(false)
+  const searchRef = useRef(null)
+  const listRef = useRef(null)
 
-  // ✅ بارگذاری گزینه‌ها بر اساس فیلتر انتخاب‌شده
   useEffect(() => {
-    if (!isOpen || !selectedKey) return;
+    setMounted(true)
+  }, [])
 
-    const loadOptions = async () => {
-      setLoading(true);
-      try {
-        let options = [];
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchTerm('')
+      return undefined
+    }
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose?.()
+    }
+    window.addEventListener('keydown', onKey)
+    const t = window.setTimeout(() => {
+      if (searchable && searchRef.current) searchRef.current.focus()
+    }, 80)
+    return () => {
+      document.body.style.overflow = prev
+      window.removeEventListener('keydown', onKey)
+      window.clearTimeout(t)
+    }
+  }, [isOpen, onClose, searchable])
 
-        // اگر در filterOptions موجود است، از آن استفاده کن
-        const map = {
-          province: filterOptions?.provinces,
-          city: filterOptions?.cities,
-          neighborhood: filterOptions?.neighborhoods,
-          cooperationType: filterOptions?.cooperation_types,
-          jobTitle: filterOptions?.job_titles,
-          category: filterOptions?.categories,
-        };
+  const filtered = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase()
+    if (!q) return options
+    return options.filter((opt) => {
+      const label = String(opt.name || opt.title || opt.label || '')
+      return label.toLowerCase().includes(q)
+    })
+  }, [options, searchTerm])
 
-        if (map[selectedKey]) {
-          options = map[selectedKey];
-        } else {
-          // وگرنه از API جدا بگیر
-          switch (selectedKey) {
-            case 'province':
-              options = await jobisellApi.getProvinces();
-              break;
-            case 'city':
-              options = await jobisellApi.getCities();
-              break;
-            case 'neighborhood':
-              options = await jobisellApi.getNeighborhoods();
-              break;
-            case 'cooperationType':
-              options = await jobisellApi.getCooperationTypes();
-              break;
-            case 'jobTitle':
-              options = await jobisellApi.getJobTitles();
-              break;
-            case 'category':
-              options = await jobisellApi.getCategories();
-              break;
-            default:
-              options = [];
-          }
-        }
+  const showSearch = searchable && (options.length > 6 || searchTerm.length > 0)
 
-        setDynamicOptions(Array.isArray(options) ? options : []);
-      } catch (err) {
-        console.error('Error loading filter options:', err);
-        setDynamicOptions([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const pick = (next) => {
+    onChange?.(String(next ?? ''))
+    onClose?.()
+  }
 
-    loadOptions();
-  }, [isOpen, selectedKey, filterOptions]);
+  if (!mounted || !isOpen) return null
 
-  // فیلتر جستجو
-  const filteredOptions = searchTerm
-    ? dynamicOptions.filter((opt) =>
-        (opt.name || opt.title || '').toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : dynamicOptions;
+  const content = (
+    <div
+      className={styles.overlay}
+      role="presentation"
+      onClick={onClose}
+    >
+      <div
+        className={styles.sheet}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="filter-picker-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className={styles.handle} aria-hidden />
 
-  const filterLabels = {
-    province: 'استان',
-    city: 'شهر',
-    neighborhood: 'محله',
-    cooperationType: 'نوع همکاری',
-    jobTitle: 'عنوان شغلی',
-    category: 'دسته‌بندی',
-  };
-
-  if (!isOpen || !selectedKey) return null;
-
-  return (
-    <div className={styles.dialogOverlay} onClick={onClose}>
-      <div className={styles.dialogContent} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.dialogHeader}>
-          <h4 className={styles.dialogTitle}>{filterLabels[selectedKey] || selectedKey}</h4>
-          <button className={styles.dialogCloseBtn} onClick={onClose} aria-label="بستن">
-            <X size={20} />
+        <header className={styles.header}>
+          <h4 id="filter-picker-title" className={styles.title}>
+            {title}
+          </h4>
+          <button
+            type="button"
+            className={styles.closeBtn}
+            onClick={onClose}
+            aria-label="بستن"
+          >
+            <X size={18} />
           </button>
-        </div>
+        </header>
 
-        {/* جستجو */}
-        <div className={styles.dialogSearch}>
-          <Search size={16} />
-          <input
-            type="text"
-            placeholder="جستجو..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+        {showSearch ? (
+          <div className={styles.search}>
+            <Search size={16} className={styles.searchIcon} aria-hidden />
+            <input
+              ref={searchRef}
+              type="search"
+              placeholder="جستجو…"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={styles.searchInput}
+              enterKeyHint="search"
+              autoComplete="off"
+            />
+            {searchTerm ? (
+              <button
+                type="button"
+                className={styles.searchClear}
+                onClick={() => setSearchTerm('')}
+                aria-label="پاک کردن جستجو"
+              >
+                <X size={14} />
+              </button>
+            ) : null}
+          </div>
+        ) : null}
 
-        <div className={styles.dialogBody}>
+        <div className={styles.body} ref={listRef}>
           {loading ? (
-            <div className={styles.dialogLoading}>در حال بارگذاری...</div>
-          ) : filteredOptions.length === 0 ? (
-            <div className={styles.dialogEmpty}>گزینه‌ای یافت نشد</div>
+            <div className={styles.state}>در حال بارگذاری…</div>
           ) : (
-            <div className={styles.dialogOptions}>
-              {filteredOptions.map((option) => {
-                const value = option.id;
-                const label = option.name || option.title;
-                const isSelected = String(tempValue) === String(value);
-
-                return (
+            <ul className={styles.list} role="listbox" aria-label={title}>
+              {showEmpty ? (
+                <li>
                   <button
-                    key={option.id}
-                    className={`${styles.dialogOption} ${isSelected ? styles.dialogOptionSelected : ''}`}
-                    onClick={() => onSelectOption(value)}
+                    type="button"
+                    role="option"
+                    aria-selected={!value}
+                    className={`${styles.option} ${!value ? styles.optionSelected : ''}`}
+                    onClick={() => pick('')}
                   >
-                    <span>{label}</span>
-                    {isSelected && <Check size={16} />}
+                    <span className={styles.optionLabel}>{emptyLabel}</span>
+                    {!value ? (
+                      <span className={styles.check}>
+                        <Check size={16} strokeWidth={2.5} />
+                      </span>
+                    ) : (
+                      <span className={styles.radio} aria-hidden />
+                    )}
                   </button>
-                );
-              })}
-            </div>
+                </li>
+              ) : null}
+              {filtered.length === 0 ? (
+                <li className={styles.state}>گزینه‌ای یافت نشد</li>
+              ) : (
+                filtered.map((opt) => {
+                  const id = String(opt.id)
+                  const label = opt.name || opt.title || opt.label || id
+                  const selected = String(value) === id
+                  return (
+                    <li key={id}>
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={selected}
+                        className={`${styles.option} ${selected ? styles.optionSelected : ''}`}
+                        onClick={() => pick(id)}
+                      >
+                        <span className={styles.optionLabel}>{label}</span>
+                        {selected ? (
+                          <span className={styles.check}>
+                            <Check size={16} strokeWidth={2.5} />
+                          </span>
+                        ) : (
+                          <span className={styles.radio} aria-hidden />
+                        )}
+                      </button>
+                    </li>
+                  )
+                })
+              )}
+            </ul>
           )}
         </div>
 
-        <div className={styles.dialogFooter}>
-          <button className={styles.dialogClearBtn} onClick={onClear}>
-            پاک کردن
+        <footer className={styles.footer}>
+          {value ? (
+            <button
+              type="button"
+              className={styles.clearBtn}
+              onClick={() => pick('')}
+            >
+              پاک کردن انتخاب
+            </button>
+          ) : (
+            <span className={styles.footerHint}>یک گزینه را لمس کنید</span>
+          )}
+          <button type="button" className={styles.doneBtn} onClick={onClose}>
+            بستن
           </button>
-          <div className={styles.dialogActions}>
-            <button className={styles.dialogCancelBtn} onClick={onClose}>
-              لغو
-            </button>
-            <button className={styles.dialogConfirmBtn} onClick={onConfirm}>
-              تایید
-            </button>
-          </div>
-        </div>
+        </footer>
       </div>
     </div>
-  );
-};
+  )
 
-export default FilterDialog;
+  return createPortal(content, document.body)
+}
+
+/**
+ * دکمهٔ تریگر شبیه select — بازکننده دیالوگ
+ */
+export function FilterSelectTrigger({
+  label,
+  displayValue,
+  placeholder,
+  disabled = false,
+  onClick,
+  icon: Icon,
+}) {
+  return (
+    <div className={styles.triggerGroup}>
+      {label ? (
+        <span className={styles.triggerLabel}>
+          {Icon ? <Icon size={12} /> : null}
+          {label}
+        </span>
+      ) : null}
+      <button
+        type="button"
+        className={`${styles.trigger} ${displayValue ? styles.triggerFilled : ''} ${disabled ? styles.triggerDisabled : ''}`}
+        onClick={onClick}
+        disabled={disabled}
+        aria-haspopup="dialog"
+      >
+        <span className={styles.triggerText}>
+          {displayValue || placeholder}
+        </span>
+        <ChevronDown size={16} className={styles.triggerChevron} aria-hidden />
+      </button>
+    </div>
+  )
+}

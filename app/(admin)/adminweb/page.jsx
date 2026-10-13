@@ -8,6 +8,7 @@ import {
   Shield,
   ShieldOff,
   LayoutDashboard,
+  LayoutList,
   Newspaper,
   Briefcase,
   Settings2,
@@ -22,6 +23,7 @@ import {
   BookOpen,
   Brain,
   HelpCircle,
+  GraduationCap,
   ExternalLink,
   Phone,
   Code2,
@@ -31,6 +33,7 @@ import {
   RefreshCw,
   Boxes,
   ArrowUpLeft,
+  FileCode2,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import {
@@ -44,6 +47,9 @@ import {
   clearSiteModulesCache,
 } from '@/services/siteModules'
 import AdminWebModules from './AdminWebModules'
+import LocalSettingsEditor from './LocalSettingsEditor'
+import JobBoardDataPanel from './JobBoardDataPanel'
+import HomepageOrderPanel from './HomepageOrderPanel'
 import styles from './AdminWeb.module.css'
 
 const QUICK_LINKS = [
@@ -61,6 +67,7 @@ const QUICK_LINKS = [
   { href: '/catalog-manage', label: 'کاتالوگ دیجیتال', desc: 'صفحات، جلد و چیدمان فلیپ‌بوک', icon: BookOpen },
   { href: '/quiz-manage', label: 'آزمون تخصصی', desc: 'سوالات، امتیاز و نفرات برتر', icon: Brain },
   { href: '/faq-manage', label: 'سوالات متداول', desc: 'سوال، پاسخ و دسته‌بندی', icon: HelpCircle },
+  { href: '/school-manage', label: 'مدرسه', desc: 'معلمان، دانش‌آموزان، دروس و آزمون', icon: GraduationCap },
   { href: '/request-types', label: 'انواع درخواست', desc: 'فرم تماس', icon: Tags },
   { href: '/employees', label: 'کارمندان', desc: 'دسترسی‌ها', icon: Users },
   { href: '/sale', label: 'فروش و لید', desc: 'پیگیری مشتری', icon: ShoppingCart },
@@ -179,6 +186,18 @@ export default function AdminWebPage() {
                 <Boxes size={13} />
                 ماژول‌ها
               </a>
+              <a href="#homepage-order">
+                <LayoutList size={13} />
+                چیدمان
+              </a>
+              <a href="#job-board-data">
+                <Briefcase size={13} />
+                کاریابی
+              </a>
+              <a href="#local-settings">
+                <FileCode2 size={13} />
+                local_settings
+              </a>
               <a href="#quick">
                 <Sparkles size={13} />
                 دسترسی سریع
@@ -225,6 +244,12 @@ export default function AdminWebPage() {
         <div id="modules">
           <AdminWebModules onStatsChange={setModuleStats} />
         </div>
+
+        <HomepageOrderPanel />
+
+        <JobBoardDataPanel />
+
+        <LocalSettingsEditor />
 
         <section className={styles.section} id="quick">
           <div className={styles.sectionHead}>

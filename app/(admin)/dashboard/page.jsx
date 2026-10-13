@@ -13,7 +13,7 @@ import {
   LayoutDashboard, ShoppingCart, Users, Shield,
   RefreshCw, Briefcase, TrendingUp, CheckCircle,
   Newspaper, Zap, Eye, Settings, Warehouse, Headphones, Calendar,
-  BarChart3, Megaphone, Images, Settings2, Tags, Radio, Info, PanelTop, BookOpen, Brain, HelpCircle,
+  BarChart3, Megaphone, Images, Settings2, Tags, Radio, Info, PanelTop, BookOpen, Brain, HelpCircle, GraduationCap,
 } from 'lucide-react'
 import {
   fetchSiteModules,
@@ -61,6 +61,7 @@ const Dashboard = () => {
       catalogManage: 'کاتالوگ دیجیتال',
       quizManage: 'مدیریت آزمون',
       faqManage: 'سوالات متداول',
+      schoolManage: 'مدرسه',
       requestTypes: 'انواع درخواست تماس',
       jobsManage: 'مدیریت آگهی‌ها',
       platformConnections: 'اتصالات پیام‌رسان',
@@ -100,6 +101,7 @@ const Dashboard = () => {
       catalogManage: 'Digital catalog',
       quizManage: 'Quiz manage',
       faqManage: 'FAQ manage',
+      schoolManage: 'School',
       requestTypes: 'Contact request types',
       jobsManage: 'Job listings',
       platformConnections: 'Messenger bots',
@@ -362,6 +364,16 @@ const Dashboard = () => {
         bgColor: '#e8f2ec',
       })
     }
+    if (canManageTicker && !seenHrefs.has('/school-manage')) {
+      raw.push({
+        id: 'school-manage',
+        icon: <GraduationCap />,
+        label: t.schoolManage,
+        href: '/school-manage',
+        color: '#1e4d6b',
+        bgColor: '#e8f1f6',
+      })
+    }
     if (canManageTicker && !seenHrefs.has('/request-types')) {
       raw.push({
         id: 'request-types',
@@ -416,6 +428,7 @@ const Dashboard = () => {
     t.catalogManage,
     t.quizManage,
     t.faqManage,
+    t.schoolManage,
     t.requestTypes,
     t.jobsManage,
     t.platformConnections,

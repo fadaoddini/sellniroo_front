@@ -21,6 +21,7 @@ export const SITE_MODULE_KEYS = {
   CATALOG: 'catalog',
   QUIZ: 'quiz',
   FAQ: 'faq',
+  SCHOOL: 'school',
 }
 
 /** متادیتای فرانت برای نمایش در adminweb (در صورت نبود رکورد API) */
@@ -231,10 +232,72 @@ export const SITE_MODULES_CATALOG = [
     componentPath: 'components/Faq/FaqPage.jsx',
     defaultActive: true,
   },
+  {
+    key: SITE_MODULE_KEYS.SCHOOL,
+    name: 'مدرسه',
+    name_en: 'School',
+    description: 'معلمان، دانش‌آموزان، دروس، تکالیف و آزمون',
+    category: 'pages',
+    parentKey: null,
+    componentPath: 'components/School/SchoolHub.jsx',
+    defaultActive: true,
+  },
 ]
 
 export const getCatalogMeta = (key) =>
   SITE_MODULES_CATALOG.find((m) => m.key === key) || null
+
+/**
+ * سکشن‌های قابل جابه‌جایی در بدنهٔ صفحه اصلی (HomePage)
+ * ترتیب پیش‌فرض = ترتیب فعلی JSX
+ */
+export const HOMEPAGE_ORDERABLE_MODULES = [
+  {
+    key: SITE_MODULE_KEYS.NEWS_SECTION,
+    name: 'بخش اخبار',
+    defaultOrder: 10,
+  },
+  {
+    key: SITE_MODULE_KEYS.VIDEOINSTA,
+    name: 'آرشیو ویدیو / استوری',
+    defaultOrder: 20,
+  },
+  {
+    key: SITE_MODULE_KEYS.CATALOG,
+    name: 'کاتالوگ دیجیتال',
+    defaultOrder: 30,
+  },
+  {
+    key: SITE_MODULE_KEYS.JOB_LISTINGS,
+    name: 'لیست آگهی‌ها',
+    defaultOrder: 40,
+  },
+  {
+    key: SITE_MODULE_KEYS.CTA_SECTION,
+    name: 'تماس و درخواست',
+    defaultOrder: 50,
+  },
+]
+
+export const HOMEPAGE_ORDERABLE_KEYS = HOMEPAGE_ORDERABLE_MODULES.map((m) => m.key)
+
+/** مرتب‌سازی کلیدهای صفحه اصلی بر اساس home_order از API */
+export function sortHomepageModuleKeys(list) {
+  const byKey = Object.fromEntries(
+    (list || [])
+      .filter((m) => HOMEPAGE_ORDERABLE_KEYS.includes(m.key))
+      .map((m) => [m.key, m])
+  )
+  const defaults = Object.fromEntries(
+    HOMEPAGE_ORDERABLE_MODULES.map((m) => [m.key, m.defaultOrder])
+  )
+  return [...HOMEPAGE_ORDERABLE_KEYS].sort((a, b) => {
+    const ao = byKey[a]?.home_order ?? defaults[a] ?? 999
+    const bo = byKey[b]?.home_order ?? defaults[b] ?? 999
+    if (ao !== bo) return ao - bo
+    return a.localeCompare(b)
+  })
+}
 
 /**
  * مسیرهای داشبورد / ادمین که به ماژول سایت وابسته‌اند.
@@ -261,6 +324,10 @@ export const DASHBOARD_ROUTE_MODULES = {
   '/quiz-manage': SITE_MODULE_KEYS.QUIZ,
   '/faq': SITE_MODULE_KEYS.FAQ,
   '/faq-manage': SITE_MODULE_KEYS.FAQ,
+  '/school': SITE_MODULE_KEYS.SCHOOL,
+  '/school-manage': SITE_MODULE_KEYS.SCHOOL,
+  '/school/teacher': SITE_MODULE_KEYS.SCHOOL,
+  '/school/student': SITE_MODULE_KEYS.SCHOOL,
 }
 
 /** کد بخش‌های کارمندی که به ماژول سایت وابسته‌اند */
@@ -294,6 +361,8 @@ export const DASHBOARD_SECTION_MODULES = {
   'quiz-manage': SITE_MODULE_KEYS.QUIZ,
   faq: SITE_MODULE_KEYS.FAQ,
   'faq-manage': SITE_MODULE_KEYS.FAQ,
+  school: SITE_MODULE_KEYS.SCHOOL,
+  'school-manage': SITE_MODULE_KEYS.SCHOOL,
 }
 
 export function getModuleKeyForDashboardHref(href) {

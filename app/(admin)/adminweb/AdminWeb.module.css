@@ -775,3 +775,349 @@
 
   .brand { font-size: 1.35rem; }
 }
+
+/* local_settings editor */
+.lsBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.65rem;
+}
+
+.lsMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.72rem;
+  color: var(--aw-muted);
+}
+
+.lsDirty {
+  color: #b45309;
+  font-weight: 700;
+}
+
+.lsActions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.lsAlert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin-bottom: 0.55rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  background: rgba(198, 40, 40, 0.08);
+  color: var(--aw-danger);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.lsOk {
+  margin-bottom: 0.55rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  background: var(--aw-ok-soft);
+  color: var(--aw-ok);
+  font-size: 0.78rem;
+}
+
+.lsEditor {
+  width: 100%;
+  min-height: 420px;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--aw-line);
+  border-radius: 12px;
+  background: #12161d;
+  color: #e8eaed;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  resize: vertical;
+  tab-size: 4;
+}
+
+.lsEditor:focus {
+  outline: 2px solid rgba(232, 184, 0, 0.35);
+  outline-offset: 1px;
+}
+
+.lsEditor:disabled {
+  opacity: 0.65;
+}
+
+/* job board base data */
+.jbReady {
+  color: var(--aw-ok);
+  font-weight: 700;
+}
+
+.jbPending {
+  color: #b45309;
+  font-weight: 700;
+}
+
+.jbProgress {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  margin: 0 0 0.85rem;
+  overflow: hidden;
+}
+
+.jbProgressFill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #c49200, #e8b800);
+  transition: width 0.35s ease;
+}
+
+.jbProgressOk {
+  background: linear-gradient(90deg, #2e7d32, #43a047);
+}
+
+.jbList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.jbRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--aw-line);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.jbRowOk {
+  border-color: rgba(46, 125, 50, 0.22);
+  background: rgba(46, 125, 50, 0.05);
+}
+
+.jbRowMiss {
+  border-color: rgba(180, 83, 9, 0.2);
+  background: rgba(180, 83, 9, 0.04);
+}
+
+.jbIcon {
+  display: flex;
+  color: var(--aw-muted);
+}
+
+.jbRowOk .jbIcon {
+  color: var(--aw-ok);
+}
+
+.jbRowMiss .jbIcon {
+  color: #b45309;
+}
+
+.jbText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.jbText strong {
+  font-size: 0.84rem;
+  font-weight: 650;
+  color: var(--aw-ink);
+}
+
+.jbText small {
+  font-size: 0.7rem;
+  color: var(--aw-muted);
+  line-height: 1.4;
+}
+
+.jbCount {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--aw-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.jbCount em {
+  font-style: normal;
+  font-weight: 500;
+  color: var(--aw-muted);
+  font-size: 0.72rem;
+}
+
+.jbMissing {
+  color: #b45309;
+  font-weight: 600;
+  font-size: 0.68rem;
+}
+
+.jbRowSkeleton {
+  height: 48px;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.04),
+    rgba(0, 0, 0, 0.08),
+    rgba(0, 0, 0, 0.04)
+  );
+  background-size: 200% 100%;
+  animation: awShimmer 1.2s ease infinite;
+}
+
+@keyframes awShimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* homepage order */
+.homeOrderList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.homeOrderRow {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto auto;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--aw-line);
+  background: rgba(255, 255, 255, 0.65);
+  cursor: grab;
+  transition: border-color 0.15s, box-shadow 0.15s, opacity 0.15s;
+  user-select: none;
+}
+
+.homeOrderRow:active {
+  cursor: grabbing;
+}
+
+.homeOrderDragging {
+  opacity: 0.72;
+  border-color: rgba(232, 160, 0, 0.45);
+  box-shadow: 0 8px 22px rgba(40, 28, 8, 0.1);
+}
+
+.homeOrderOff {
+  opacity: 0.72;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.homeOrderGrip {
+  display: flex;
+  color: var(--aw-muted);
+  opacity: 0.7;
+}
+
+.homeOrderIndex {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(251, 195, 0, 0.18);
+  color: #8a6a10;
+}
+
+.homeOrderText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.homeOrderText strong {
+  font-size: 0.86rem;
+  font-weight: 650;
+  color: var(--aw-ink);
+}
+
+.homeOrderText code {
+  font-size: 0.68rem;
+  color: var(--aw-muted);
+  background: transparent;
+}
+
+.homeOrderMove {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.homeOrderBtn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--aw-line);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--aw-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.homeOrderBtn:hover:not(:disabled) {
+  background: rgba(251, 195, 0, 0.14);
+  color: var(--aw-ink);
+}
+
+.homeOrderBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.homeOrderSkeleton {
+  height: 56px;
+  border-radius: 12px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.04),
+    rgba(0, 0, 0, 0.08),
+    rgba(0, 0, 0, 0.04)
+  );
+  background-size: 200% 100%;
+  animation: awShimmer 1.2s ease infinite;
+}
+
+@media (max-width: 640px) {
+  .homeOrderRow {
+    grid-template-columns: auto auto 1fr;
+    grid-template-rows: auto auto;
+    gap: 0.4rem 0.5rem;
+  }
+
+  .homeOrderMove {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+
+  .homeOrderRow > .jbReady,
+  .homeOrderRow > .jbPending {
+    display: none;
+  }
+}

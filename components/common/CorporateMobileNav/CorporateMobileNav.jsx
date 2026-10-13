@@ -6,7 +6,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  Home, Info, Briefcase, Newspaper, PlusCircle, HelpCircle,
+  Home, Info, Briefcase, Newspaper, PlusCircle, HelpCircle, GraduationCap,
   Building2, Users, Phone, Search, LayoutDashboard,
   Calculator, Target, Zap, Award, Shield, User as UserIcon,
 } from 'lucide-react'
@@ -31,6 +31,7 @@ const ICON_MAP = {
   Newspaper,
   PlusCircle,
   HelpCircle,
+  GraduationCap,
   Building2,
   Users,
   Phone,

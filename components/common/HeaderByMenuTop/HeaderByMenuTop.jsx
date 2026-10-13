@@ -6,7 +6,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import {
-  Home, Info, Briefcase, Newspaper, PlusCircle, HelpCircle,
+  Home, Info, Briefcase, Newspaper, PlusCircle, HelpCircle, GraduationCap,
   Building2, Users, Phone, Search, LayoutDashboard,
   Calculator, Container, LibraryBig, Mountain, Layers,
   DollarSign, CheckSquare, Palette, User as UserIcon, Target, Zap, Award, Shield,
@@ -32,6 +32,7 @@ const ICON_MAP = {
   Newspaper,
   PlusCircle,
   HelpCircle,
+  GraduationCap,
   Building2,
   Users,
   Phone,

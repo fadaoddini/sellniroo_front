@@ -915,6 +915,23 @@ news: {
       endpoint: `site-modules/${key}/`,
       noVersion: true,
     }),
+    reorderHome: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'site-modules/reorder-home/',
+      noVersion: true,
+    }),
+  },
+  localSettings: {
+    get: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'platform/local-settings/',
+      noVersion: true,
+    }),
+    save: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'platform/local-settings/',
+      noVersion: true,
+    }),
   },
   platformConnections: {
     list: () => Config.getApiUrl({
@@ -1575,6 +1592,52 @@ news: {
     },
 
     // ============================================
+    // SCHOOL MODULE
+    // ============================================
+    school: {
+      me: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/me/', noVersion: true }),
+      settings: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/settings/', noVersion: true }),
+      overview: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/overview/', noVersion: true }),
+      tree: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/tree/', params, noVersion: true }),
+      upload: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/upload/', noVersion: true }),
+      teachers: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/teachers/', params, noVersion: true }),
+      teacher: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/teachers/${id}/`, noVersion: true }),
+      students: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/students/', params, noVersion: true }),
+      student: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/students/${id}/`, noVersion: true }),
+      subjects: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/subjects/', params, noVersion: true }),
+      subject: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/subjects/${id}/`, noVersion: true }),
+      chapters: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/chapters/', params, noVersion: true }),
+      chapter: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/chapters/${id}/`, noVersion: true }),
+      lessons: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/lessons/', params, noVersion: true }),
+      lesson: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/lessons/${id}/`, noVersion: true }),
+      attachments: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/attachments/', noVersion: true }),
+      attachment: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/attachments/${id}/`, noVersion: true }),
+      exercises: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/exercises/', params, noVersion: true }),
+      exercise: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/exercises/${id}/`, noVersion: true }),
+      exerciseSubmit: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/exercises/${id}/submit/`, noVersion: true }),
+      submissions: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/submissions/', params, noVersion: true }),
+      submissionReview: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/submissions/${id}/review/`, noVersion: true }),
+      quizzes: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/quizzes/', params, noVersion: true }),
+      quiz: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/quizzes/${id}/`, noVersion: true }),
+      quizQuestions: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/quiz-questions/', params, noVersion: true }),
+      quizQuestion: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/quiz-questions/${id}/`, noVersion: true }),
+      quizStart: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/quiz/start/', noVersion: true }),
+      quizSubmit: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/quiz/submit/', noVersion: true }),
+      quizAttempts: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/quiz/attempts/', params, noVersion: true }),
+      bankQuestions: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/bank-questions/', params, noVersion: true }),
+      bankQuestion: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/bank-questions/${id}/`, noVersion: true }),
+      bankAvailability: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/bank-availability/', params, noVersion: true }),
+      exams: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/exams/', params, noVersion: true }),
+      exam: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/exams/${id}/`, noVersion: true }),
+      examStart: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/exam/start/', noVersion: true }),
+      examSubmit: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/exam/submit/', noVersion: true }),
+      examPapers: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/exam-papers/', params, noVersion: true }),
+      examPaper: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/exam-papers/${id}/`, noVersion: true }),
+      teacherDashboard: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/dashboard/teacher/', params, noVersion: true }),
+      studentDashboard: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/dashboard/student/', params, noVersion: true }),
+    },
+
+    // ============================================
     // ATTENDANCE (حضور و غیاب)
     // ============================================
     attendance: {
@@ -1873,6 +1936,12 @@ news: {
 
       // ---------- فیلترها (ادمین) ----------
       filterConfigs: () => `${Config.baseUrl}/api/jobisell/filter-configs/`,
+
+      // ---------- داده‌های پایه (مالک پلتفرم / adminweb) ----------
+      baseData: {
+        status: () => `${Config.baseUrl}/api/jobisell/base-data/`,
+        import: () => `${Config.baseUrl}/api/jobisell/base-data/import/`,
+      },
       // ---------- شرکت من (My Company) ----------  ⬅️ اینجا داخل jobisell
   myCompany: {
   get: () => `${Config.baseUrl}/api/jobisell/my-company/`,

@@ -25,7 +25,7 @@ import styles from '../ticker/Ticker.module.css'
 import local from './HeaderMenu.module.css'
 
 const ICON_OPTIONS = [
-  'Home', 'Info', 'Briefcase', 'Newspaper', 'PlusCircle', 'HelpCircle',
+  'Home', 'Info', 'Briefcase', 'Newspaper', 'PlusCircle', 'HelpCircle', 'GraduationCap',
   'Building2', 'Users', 'Phone', 'Search', 'LayoutDashboard',
   'Calculator', 'Target', 'Zap', 'Award', 'Shield', 'User',
 ]

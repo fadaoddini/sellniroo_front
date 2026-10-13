@@ -1,41 +1,46 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState, Suspense } from 'react'
-import Link from 'next/link'
+import { useCallback, useEffect, useMemo, useState, Suspense, lazy } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import {
-  Loader2,
-  Brain,
-  Mail,
-  Phone,
-  Calendar,
-  ChevronLeft,
-  ShieldCheck,
-} from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import moment from 'moment-jalaali'
 import { useAuth } from '@/contexts/AuthContext'
 import { isSiteModuleActive } from '@/services/siteModules'
 import { SITE_MODULE_KEYS } from '@/config/siteModules'
 import ProfileHeader from './ProfileHeader'
 import ProfileTabs from './ProfileTabs'
-import QuizProfilePanel from './QuizProfilePanel'
 import styles from '../styles/ProfilePage.module.css'
 
 moment.loadPersian({ dialect: 'persian-modern', usePersianDigits: false })
 
-const BASE_TABS = [{ key: 'account', label: 'اطلاعات من', icon: 'user' }]
-const QUIZ_TAB = { key: 'quiz', label: 'آزمون‌ها', icon: 'brain' }
+const QuizProfilePanel = lazy(() => import('./QuizProfilePanel'))
+const SchoolProfilePanel = lazy(() => import('@/components/School/SchoolProfilePanel'))
+
+const BASE_TABS = [{ key: 'account', label: 'حساب', icon: 'user' }]
+const QUIZ_TAB = { key: 'quiz', label: 'آزمون', icon: 'brain' }
+const SCHOOL_TAB = { key: 'school', label: 'مدرسه', icon: 'school' }
+
+function PanelFallback() {
+  return (
+    <div className={styles.panelFallback} role="status">
+      <Loader2 className={styles.spinner} size={22} />
+    </div>
+  )
+}
 
 function BasicProfileInner() {
   const { user, isAuthenticated, loading: authLoading } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [quizOn, setQuizOn] = useState(false)
+  const [schoolOn, setSchoolOn] = useState(false)
 
-  const tabs = useMemo(
-    () => (quizOn ? [...BASE_TABS, QUIZ_TAB] : BASE_TABS),
-    [quizOn]
-  )
+  const tabs = useMemo(() => {
+    const list = [...BASE_TABS]
+    if (quizOn) list.push(QUIZ_TAB)
+    if (schoolOn) list.push(SCHOOL_TAB)
+    return list
+  }, [quizOn, schoolOn])
   const tabKeys = useMemo(() => new Set(tabs.map((t) => t.key)), [tabs])
 
   const initialTab = useMemo(() => {
@@ -54,18 +59,21 @@ function BasicProfileInner() {
 
   useEffect(() => {
     let cancelled = false
-    isSiteModuleActive(SITE_MODULE_KEYS.QUIZ, { force: true }).then((v) => {
-      if (!cancelled) setQuizOn(!!v)
-    })
-    const onChanged = () => {
-      isSiteModuleActive(SITE_MODULE_KEYS.QUIZ, { force: true }).then((v) => {
-        if (!cancelled) setQuizOn(!!v)
+    const refresh = () => {
+      Promise.all([
+        isSiteModuleActive(SITE_MODULE_KEYS.QUIZ, { force: true }),
+        isSiteModuleActive(SITE_MODULE_KEYS.SCHOOL, { force: true }),
+      ]).then(([quiz, school]) => {
+        if (cancelled) return
+        setQuizOn(!!quiz)
+        setSchoolOn(!!school)
       })
     }
-    window.addEventListener('site-modules-changed', onChanged)
+    refresh()
+    window.addEventListener('site-modules-changed', refresh)
     return () => {
       cancelled = true
-      window.removeEventListener('site-modules-changed', onChanged)
+      window.removeEventListener('site-modules-changed', refresh)
     }
   }, [])
 
@@ -74,9 +82,7 @@ function BasicProfileInner() {
   }, [initialTab])
 
   useEffect(() => {
-    if (!tabKeys.has(activeTab)) {
-      setActiveTab('account')
-    }
+    if (!tabKeys.has(activeTab)) setActiveTab('account')
   }, [tabKeys, activeTab])
 
   const handleTabChange = useCallback(
@@ -87,7 +93,7 @@ function BasicProfileInner() {
       params.set('tab', key)
       router.replace(`/profile?${params.toString()}`, { scroll: false })
     },
-    [router, searchParams, tabKeys]
+    [router, searchParams, tabKeys],
   )
 
   const joinDate = user?.date_joined
@@ -97,8 +103,7 @@ function BasicProfileInner() {
   if (authLoading || !isAuthenticated) {
     return (
       <div className={`${styles.loadingContainer} ${styles.loadingBasic}`} role="status">
-        <Loader2 className={styles.spinner} size={36} />
-        <p>در حال بارگذاری حساب کاربری...</p>
+        <Loader2 className={styles.spinner} size={28} />
       </div>
     )
   }
@@ -106,11 +111,7 @@ function BasicProfileInner() {
   return (
     <div className={`${styles.profilePage} ${styles.profilePageBasic}`}>
       <div className={`${styles.container} ${styles.containerBasic}`}>
-        <ProfileHeader
-          user={user}
-          variant="basic"
-          showJobShortcuts={false}
-        />
+        <ProfileHeader user={user} variant="basic" showJobShortcuts={false} />
 
         {tabs.length > 1 ? (
           <ProfileTabs
@@ -121,84 +122,36 @@ function BasicProfileInner() {
           />
         ) : null}
 
-        <div
-          className={styles.tabContent}
-          role="tabpanel"
-          id={`panel-${activeTab}`}
-        >
+        <div className={styles.tabContent} role="tabpanel" id={`panel-${activeTab}`}>
           {activeTab === 'account' ? (
-            <div className={styles.basicGrid}>
-              <section className={styles.basicCard}>
-                <div className={styles.basicCardHead}>
-                  <ShieldCheck size={18} />
-                  <h2>اطلاعات تماس</h2>
-                </div>
-                <ul className={styles.basicInfoList}>
-                  <li>
-                    <Phone size={15} aria-hidden />
-                    <div>
-                      <span>موبایل</span>
-                      <strong dir="ltr">{user?.mobile || '—'}</strong>
-                    </div>
-                  </li>
-                  <li>
-                    <Mail size={15} aria-hidden />
-                    <div>
-                      <span>ایمیل</span>
-                      <strong dir="ltr">{user?.email || 'ثبت نشده'}</strong>
-                    </div>
-                  </li>
-                  <li>
-                    <Calendar size={15} aria-hidden />
-                    <div>
-                      <span>عضویت</span>
-                      <strong>{joinDate}</strong>
-                    </div>
-                  </li>
-                </ul>
-                <p className={styles.basicNote}>
-                  برای ویرایش نام، ایمیل یا تصویر از دکمه «ویرایش پروفایل» در کارت
-                  بالا استفاده کنید.
-                </p>
-              </section>
-
-              {quizOn ? (
-                <section className={`${styles.basicCard} ${styles.basicQuizCard}`}>
-                  <div className={styles.basicCardHead}>
-                    <Brain size={18} />
-                    <h2>آزمون تخصصی</h2>
-                  </div>
-                  <p className={styles.basicQuizText}>
-                    تاریخچه آزمون‌ها، امتیازها و رتبه‌های خود را ببینید یا یک آزمون
-                    جدید شروع کنید.
-                  </p>
-                  <div className={styles.basicQuizActions}>
-                    <button
-                      type="button"
-                      className={styles.basicBtnPrimary}
-                      onClick={() => handleTabChange('quiz')}
-                    >
-                      مشاهده نتایج من
-                      <ChevronLeft size={16} />
-                    </button>
-                    <Link href="/quiz" className={styles.basicBtnGhost}>
-                      شروع آزمون
-                    </Link>
-                  </div>
-                </section>
-              ) : (
-                <section className={`${styles.basicCard} ${styles.basicQuietCard}`}>
-                  <h2>حساب شخصی</h2>
-                  <p>
-                    از این صفحه می‌توانید اطلاعات شخصی خود را مدیریت کنید.
-                  </p>
-                </section>
-              )}
-            </div>
+            <section className={styles.basicCard}>
+              <ul className={styles.basicInfoList}>
+                <li>
+                  <span>موبایل</span>
+                  <strong dir="ltr">{user?.mobile || '—'}</strong>
+                </li>
+                <li>
+                  <span>ایمیل</span>
+                  <strong dir="ltr">{user?.email || '—'}</strong>
+                </li>
+                <li>
+                  <span>عضویت</span>
+                  <strong>{joinDate}</strong>
+                </li>
+              </ul>
+            </section>
           ) : null}
 
           {activeTab === 'quiz' && quizOn ? (
-            <QuizProfilePanel variant="standalone" />
+            <Suspense fallback={<PanelFallback />}>
+              <QuizProfilePanel variant="standalone" />
+            </Suspense>
+          ) : null}
+
+          {activeTab === 'school' && schoolOn ? (
+            <Suspense fallback={<PanelFallback />}>
+              <SchoolProfilePanel />
+            </Suspense>
           ) : null}
         </div>
       </div>
@@ -211,8 +164,7 @@ export default function BasicProfilePage() {
     <Suspense
       fallback={
         <div className={`${styles.loadingContainer} ${styles.loadingBasic}`}>
-          <Loader2 className={styles.spinner} size={36} />
-          <p>در حال بارگذاری حساب کاربری...</p>
+          <Loader2 className={styles.spinner} size={28} />
         </div>
       }
     >

@@ -443,46 +443,53 @@ button.metaItem:hover .copyIcon {
 }
 
 /* حالت حساب شخصی */
+.headerContentBasic {
+  margin-top: 0;
+  padding: 1rem 1.1rem 1rem;
+  gap: 0.75rem;
+}
+
+.avatarBasic {
+  width: 64px;
+  height: 64px;
+  border-width: 2px;
+  box-shadow: none;
+}
+
 .headerBasic {
-  --ink: #1c1410;
-  --muted: #6a5f58;
-  --line: rgba(128, 0, 32, 0.12);
-  --cream: #faf6f4;
+  --ink: #1a1a1a;
+  --muted: #6b6b6b;
+  --line: rgba(0, 0, 0, 0.08);
+  --cream: #f0f0ee;
+  border-radius: 14px;
+  box-shadow: none;
 }
 
-.coverBasic {
-  height: 100px;
-  background:
-    linear-gradient(125deg, #5c0a1f 0%, #800020 42%, #a31d3a 78%, #c9a227 130%);
+.headerBasic .name {
+  font-size: 1.15rem;
+  margin: 0;
 }
 
-.headerBasic .completeHead strong {
-  color: #800020;
+.headerBasic .cameraBtn {
+  width: 1.6rem;
+  height: 1.6rem;
 }
 
-.progressFillBasic {
-  background: linear-gradient(90deg, #800020, #a31d3a, #c9a227);
+.headerBasic .editBtn {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.headerBasic .editBtn:hover {
+  background: #f0f0ee;
+  color: var(--ink);
+  border-color: rgba(0, 0, 0, 0.14);
+  filter: none;
 }
 
 .bottomBarSolo {
   grid-template-columns: 1fr;
-}
-
-.headerBasic .completeBox {
-  background: linear-gradient(180deg, #fff 0%, #faf6f4 100%);
-}
-
-.headerBasic .editBtn {
-  background: #800020;
-  color: #fff;
-  border-color: #800020;
-}
-
-.headerBasic .editBtn:hover {
-  background: #9a1530;
-  color: #fff;
-  border-color: #9a1530;
-  filter: none;
 }
 
 /* نوار پایین: تکمیل + میانبر */

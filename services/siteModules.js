@@ -95,6 +95,37 @@ export async function isSiteModuleActive(key, { force = false } = {}) {
   return true
 }
 
+export async function reorderHomepageModules(keys, headers = {}) {
+  const url = Config.endpoints.news.siteModules.reorderHome()
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...headers,
+    },
+    body: JSON.stringify({ keys }),
+  })
+  const json = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error(json?.detail || json?.message || `reorder failed ${res.status}`)
+  }
+  clearSiteModulesCache()
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('site-modules-changed', {
+        detail: { type: 'reorder-home', keys: json?.home_order || keys },
+      })
+    )
+  }
+  return {
+    homeOrder: json?.home_order || keys,
+    list: Array.isArray(json?.data) ? json.data : null,
+    map: json?.map || null,
+    raw: json,
+  }
+}
+
 export async function toggleSiteModule(key, headers = {}) {
   const url = Config.endpoints.news.siteModules.toggle(key)
   const res = await fetch(url, {

@@ -213,15 +213,14 @@ const ProfileHeader = memo(function ProfileHeader({
     <header
       className={`${styles.header} ${isBasic ? styles.headerBasic : styles.headerJob}`}
     >
-      <div
-        className={`${styles.cover} ${isBasic ? styles.coverBasic : ''}`}
-        aria-hidden
-      >
-        <div className={styles.coverGlow} />
-        <div className={styles.coverPattern} />
-      </div>
+      {!isBasic ? (
+        <div className={styles.cover} aria-hidden>
+          <div className={styles.coverGlow} />
+          <div className={styles.coverPattern} />
+        </div>
+      ) : null}
 
-      <div className={styles.headerContent}>
+      <div className={`${styles.headerContent} ${isBasic ? styles.headerContentBasic : ''}`}>
         <div className={styles.topRow}>
           <div className={styles.avatarWrapper}>
             <button
@@ -231,13 +230,13 @@ const ProfileHeader = memo(function ProfileHeader({
               disabled={uploadingImage}
               aria-label="تغییر تصویر پروفایل"
             >
-              <div className={styles.avatar}>
+              <div className={`${styles.avatar} ${isBasic ? styles.avatarBasic : ''}`}>
                 {showImage ? (
                   <Image
                     src={profileImageUrl}
                     alt={displayName}
-                    width={120}
-                    height={120}
+                    width={isBasic ? 72 : 120}
+                    height={isBasic ? 72 : 120}
                     className={styles.avatarImage}
                     unoptimized
                     onError={() => setImageError(true)}
@@ -252,7 +251,7 @@ const ProfileHeader = memo(function ProfileHeader({
                   ) : (
                     <>
                       <Camera size={16} />
-                      <span>تغییر عکس</span>
+                      {!isBasic ? <span>تغییر عکس</span> : null}
                     </>
                   )}
                 </span>
@@ -287,16 +286,16 @@ const ProfileHeader = memo(function ProfileHeader({
               <>
                 <div className={styles.nameRow}>
                   <div className={styles.nameBlock}>
-                    <p className={styles.greeting}>
-                      <UserRound size={13} aria-hidden />
-                      {greeting}
-                    </p>
+                    {!isBasic ? (
+                      <p className={styles.greeting}>
+                        <UserRound size={13} aria-hidden />
+                        {greeting}
+                      </p>
+                    ) : null}
                     <h1 className={styles.name}>{displayName}</h1>
-                    <p className={styles.welcome}>
-                      {isBasic
-                        ? 'حساب کاربری شخصی شما'
-                        : 'پنل کاریابی و مدیریت آگهی‌ها'}
-                    </p>
+                    {!isBasic ? (
+                      <p className={styles.welcome}>پنل کاریابی و مدیریت آگهی‌ها</p>
+                    ) : null}
                   </div>
 
                   <div className={styles.headerActions}>
@@ -306,65 +305,67 @@ const ProfileHeader = memo(function ProfileHeader({
                       type="button"
                     >
                       <Pencil size={14} />
-                      ویرایش پروفایل
+                      {isBasic ? 'ویرایش' : 'ویرایش پروفایل'}
                     </button>
                   </div>
                 </div>
 
-                <div className={styles.metaRow}>
-                  {user?.mobile ? (
-                    <button
-                      type="button"
-                      className={styles.metaItem}
-                      onClick={() => handleCopy("mobile", user.mobile)}
-                      title="کپی شماره"
-                    >
-                      <Phone size={14} aria-hidden />
-                      <span dir="ltr">{user.mobile}</span>
-                      {copied === "mobile" ? (
-                        <CheckCheck size={13} className={styles.copyOk} />
-                      ) : (
-                        <Copy size={13} className={styles.copyIcon} />
-                      )}
-                    </button>
-                  ) : (
-                    <span className={`${styles.metaItem} ${styles.metaMuted}`}>
-                      <Phone size={14} aria-hidden />
-                      موبایل ثبت نشده
+                {!isBasic ? (
+                  <div className={styles.metaRow}>
+                    {user?.mobile ? (
+                      <button
+                        type="button"
+                        className={styles.metaItem}
+                        onClick={() => handleCopy("mobile", user.mobile)}
+                        title="کپی شماره"
+                      >
+                        <Phone size={14} aria-hidden />
+                        <span dir="ltr">{user.mobile}</span>
+                        {copied === "mobile" ? (
+                          <CheckCheck size={13} className={styles.copyOk} />
+                        ) : (
+                          <Copy size={13} className={styles.copyIcon} />
+                        )}
+                      </button>
+                    ) : (
+                      <span className={`${styles.metaItem} ${styles.metaMuted}`}>
+                        <Phone size={14} aria-hidden />
+                        موبایل ثبت نشده
+                      </span>
+                    )}
+
+                    {user?.email ? (
+                      <button
+                        type="button"
+                        className={styles.metaItem}
+                        onClick={() => handleCopy("email", user.email)}
+                        title="کپی ایمیل"
+                      >
+                        <Mail size={14} aria-hidden />
+                        <span dir="ltr">{user.email}</span>
+                        {copied === "email" ? (
+                          <CheckCheck size={13} className={styles.copyOk} />
+                        ) : (
+                          <Copy size={13} className={styles.copyIcon} />
+                        )}
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className={`${styles.metaItem} ${styles.metaWarn}`}
+                        onClick={() => setIsEditing(true)}
+                      >
+                        <Mail size={14} aria-hidden />
+                        افزودن ایمیل
+                      </button>
+                    )}
+
+                    <span className={styles.metaItem}>
+                      <Calendar size={14} aria-hidden />
+                      عضویت از {joinDate}
                     </span>
-                  )}
-
-                  {user?.email ? (
-                    <button
-                      type="button"
-                      className={styles.metaItem}
-                      onClick={() => handleCopy("email", user.email)}
-                      title="کپی ایمیل"
-                    >
-                      <Mail size={14} aria-hidden />
-                      <span dir="ltr">{user.email}</span>
-                      {copied === "email" ? (
-                        <CheckCheck size={13} className={styles.copyOk} />
-                      ) : (
-                        <Copy size={13} className={styles.copyIcon} />
-                      )}
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className={`${styles.metaItem} ${styles.metaWarn}`}
-                      onClick={() => setIsEditing(true)}
-                    >
-                      <Mail size={14} aria-hidden />
-                      افزودن ایمیل
-                    </button>
-                  )}
-
-                  <span className={styles.metaItem}>
-                    <Calendar size={14} aria-hidden />
-                    عضویت از {joinDate}
-                  </span>
-                </div>
+                  </div>
+                ) : null}
               </>
             ) : (
               <div className={styles.editForm}>
@@ -467,7 +468,7 @@ const ProfileHeader = memo(function ProfileHeader({
           </div>
         </div>
 
-        {!isEditing && (
+        {!isEditing && !isBasic ? (
           <div
             className={`${styles.bottomBar} ${
               showJobShortcuts ? '' : styles.bottomBarSolo
@@ -480,9 +481,7 @@ const ProfileHeader = memo(function ProfileHeader({
               </div>
               <div className={styles.progressTrack} aria-hidden>
                 <div
-                  className={`${styles.progressFill} ${
-                    isBasic ? styles.progressFillBasic : ''
-                  }`}
+                  className={styles.progressFill}
                   style={{ width: `${completeness.percent}%` }}
                 />
               </div>
@@ -522,7 +521,7 @@ const ProfileHeader = memo(function ProfileHeader({
               </nav>
             ) : null}
           </div>
-        )}
+        ) : null}
       </div>
     </header>
   );

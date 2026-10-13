@@ -16,7 +16,18 @@ import {
   SlidersHorizontal,
   Check,
 } from 'lucide-react'
+import FilterDialog, {
+  FilterSelectTrigger,
+} from '../FilterDialog/FilterDialog'
 import styles from './FiltersSection.module.css'
+
+const SORT_OPTIONS = [
+  { id: '-created_at', name: 'جدیدترین' },
+  { id: 'created_at', name: 'قدیمی‌ترین' },
+  { id: '-min_salary', name: 'بیشترین حقوق' },
+  { id: 'min_salary', name: 'کمترین حقوق' },
+  { id: '-views_count', name: 'پربازدیدترین' },
+]
 
 const FiltersSection = ({
   filters,
@@ -36,6 +47,7 @@ const FiltersSection = ({
 }) => {
   const [searchValue, setSearchValue] = useState(filters.q || '')
   const [sheetOpen, setSheetOpen] = useState(false)
+  const [picker, setPicker] = useState(null)
 
   useEffect(() => {
     setSearchValue(filters.q || '')
@@ -45,17 +57,20 @@ const FiltersSection = ({
     if (!sheetOpen) return undefined
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    const onKey = (e) => {
-      if (e.key === 'Escape') setSheetOpen(false)
-    }
-    window.addEventListener('keydown', onKey)
     return () => {
       document.body.style.overflow = prev
-      window.removeEventListener('keydown', onKey)
     }
   }, [sheetOpen])
 
-  // اگر به دسکتاپ رسیدیم دیالوگ بسته شود
+  useEffect(() => {
+    if (!sheetOpen) return undefined
+    const onKey = (e) => {
+      if (e.key === 'Escape' && !picker) setSheetOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [sheetOpen, picker])
+
   useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return undefined
     const mq = window.matchMedia('(min-width: 901px)')
@@ -73,6 +88,28 @@ const FiltersSection = ({
   }
 
   const nameOf = (list, id) => list?.find((o) => String(o.id) === String(id))?.name
+
+  const openPicker = ({
+    key,
+    title,
+    options,
+    value,
+    emptyLabel,
+    onPick,
+    showEmpty = true,
+  }) => {
+    setPicker({
+      key,
+      title,
+      options: options || [],
+      value: value ?? '',
+      emptyLabel: emptyLabel || 'همه',
+      showEmpty,
+      onPick,
+    })
+  }
+
+  const closePicker = () => setPicker(null)
 
   const activeChips = useMemo(() => {
     const chips = []
@@ -130,7 +167,6 @@ const FiltersSection = ({
     filterOptions,
   ])
 
-  // روی دکمه موبایل، جستجو را جدا حساب نکن
   const sheetFilterCount = useMemo(
     () => activeChips.filter((c) => c.key !== 'q').length,
     [activeChips]
@@ -173,6 +209,14 @@ const FiltersSection = ({
     )
   }
 
+  const provinceName = nameOf(allProvinces, filters.province)
+  const cityName = nameOf(availableCities, filters.city)
+  const neighborhoodName = nameOf(availableNeighborhoods, filters.neighborhood)
+  const coopName = nameOf(filterOptions?.cooperation_types, filters.cooperationType)
+  const jobTitleName = nameOf(filterOptions?.job_titles, filters.jobTitle)
+  const categoryName = nameOf(filterOptions?.categories, filters.category)
+  const sortName = nameOf(SORT_OPTIONS, sortBy) || 'جدیدترین'
+
   const filtersBody = (
     <>
       <section className={styles.block}>
@@ -181,57 +225,61 @@ const FiltersSection = ({
           موقعیت مکانی
         </h4>
         <div className={styles.cascadingFilters}>
-          <div className={styles.filterGroup}>
-            <label className={styles.filterGroupLabel}>استان</label>
-            <select
-              value={filters.province}
-              onChange={(e) => onFilterChange('province', e.target.value)}
-              className={styles.filterSelect}
-              disabled={optionsLoading}
-            >
-              <option value="">همه استان‌ها</option>
-              {allProvinces.map((p) => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
-          </div>
+          <FilterSelectTrigger
+            label="استان"
+            displayValue={provinceName}
+            placeholder={optionsLoading ? 'در حال بارگذاری…' : 'همه استان‌ها'}
+            disabled={optionsLoading}
+            onClick={() =>
+              openPicker({
+                key: 'province',
+                title: 'انتخاب استان',
+                options: allProvinces,
+                value: filters.province,
+                emptyLabel: 'همه استان‌ها',
+                onPick: (v) => onFilterChange('province', v),
+              })
+            }
+          />
 
-          <div className={styles.filterGroup}>
-            <label className={styles.filterGroupLabel}>
-              <Building2 size={12} />
-              شهر
-            </label>
-            <select
-              value={filters.city}
-              onChange={(e) => onFilterChange('city', e.target.value)}
-              className={styles.filterSelect}
-              disabled={!filters.province || optionsLoading}
-            >
-              <option value="">
-                {!filters.province ? 'اول استان را انتخاب کنید' : 'همه شهرها'}
-              </option>
-              {availableCities.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          </div>
+          <FilterSelectTrigger
+            label="شهر"
+            icon={Building2}
+            displayValue={cityName}
+            placeholder={
+              !filters.province ? 'اول استان را انتخاب کنید' : 'همه شهرها'
+            }
+            disabled={!filters.province || optionsLoading}
+            onClick={() =>
+              openPicker({
+                key: 'city',
+                title: 'انتخاب شهر',
+                options: availableCities,
+                value: filters.city,
+                emptyLabel: 'همه شهرها',
+                onPick: (v) => onFilterChange('city', v),
+              })
+            }
+          />
 
-          <div className={styles.filterGroup}>
-            <label className={styles.filterGroupLabel}>محله</label>
-            <select
-              value={filters.neighborhood}
-              onChange={(e) => onFilterChange('neighborhood', e.target.value)}
-              className={styles.filterSelect}
-              disabled={!filters.city || optionsLoading}
-            >
-              <option value="">
-                {!filters.city ? 'اول شهر را انتخاب کنید' : 'همه محله‌ها'}
-              </option>
-              {availableNeighborhoods.map((n) => (
-                <option key={n.id} value={n.id}>{n.name}</option>
-              ))}
-            </select>
-          </div>
+          <FilterSelectTrigger
+            label="محله"
+            displayValue={neighborhoodName}
+            placeholder={
+              !filters.city ? 'اول شهر را انتخاب کنید' : 'همه محله‌ها'
+            }
+            disabled={!filters.city || optionsLoading}
+            onClick={() =>
+              openPicker({
+                key: 'neighborhood',
+                title: 'انتخاب محله',
+                options: availableNeighborhoods,
+                value: filters.neighborhood,
+                emptyLabel: 'همه محله‌ها',
+                onPick: (v) => onFilterChange('neighborhood', v),
+              })
+            }
+          />
         </div>
       </section>
 
@@ -241,50 +289,54 @@ const FiltersSection = ({
           جزئیات شغلی
         </h4>
         <div className={styles.filtersList}>
-          <div className={styles.filterGroup}>
-            <label className={styles.filterGroupLabel}>نوع همکاری</label>
-            <select
-              value={filters.cooperationType}
-              onChange={(e) => onFilterChange('cooperationType', e.target.value)}
-              className={styles.filterSelect}
-            >
-              <option value="">همه</option>
-              {filterOptions?.cooperation_types?.map((o) => (
-                <option key={o.id} value={o.id}>{o.name}</option>
-              ))}
-            </select>
-          </div>
+          <FilterSelectTrigger
+            label="نوع همکاری"
+            displayValue={coopName}
+            placeholder="همه"
+            onClick={() =>
+              openPicker({
+                key: 'cooperationType',
+                title: 'نوع همکاری',
+                options: filterOptions?.cooperation_types || [],
+                value: filters.cooperationType,
+                emptyLabel: 'همه انواع همکاری',
+                onPick: (v) => onFilterChange('cooperationType', v),
+              })
+            }
+          />
 
-          <div className={styles.filterGroup}>
-            <label className={styles.filterGroupLabel}>عنوان شغلی</label>
-            <select
-              value={filters.jobTitle}
-              onChange={(e) => onFilterChange('jobTitle', e.target.value)}
-              className={styles.filterSelect}
-            >
-              <option value="">همه</option>
-              {filterOptions?.job_titles?.map((o) => (
-                <option key={o.id} value={o.id}>{o.name}</option>
-              ))}
-            </select>
-          </div>
+          <FilterSelectTrigger
+            label="عنوان شغلی"
+            displayValue={jobTitleName}
+            placeholder="همه"
+            onClick={() =>
+              openPicker({
+                key: 'jobTitle',
+                title: 'عنوان شغلی',
+                options: filterOptions?.job_titles || [],
+                value: filters.jobTitle,
+                emptyLabel: 'همه عناوین',
+                onPick: (v) => onFilterChange('jobTitle', v),
+              })
+            }
+          />
 
-          <div className={styles.filterGroup}>
-            <label className={styles.filterGroupLabel}>
-              <Layers size={12} />
-              دسته‌بندی
-            </label>
-            <select
-              value={filters.category}
-              onChange={(e) => onFilterChange('category', e.target.value)}
-              className={styles.filterSelect}
-            >
-              <option value="">همه</option>
-              {filterOptions?.categories?.map((o) => (
-                <option key={o.id} value={o.id}>{o.name}</option>
-              ))}
-            </select>
-          </div>
+          <FilterSelectTrigger
+            label="دسته‌بندی"
+            icon={Layers}
+            displayValue={categoryName}
+            placeholder="همه"
+            onClick={() =>
+              openPicker({
+                key: 'category',
+                title: 'دسته‌بندی',
+                options: filterOptions?.categories || [],
+                value: filters.category,
+                emptyLabel: 'همه دسته‌ها',
+                onPick: (v) => onFilterChange('category', v),
+              })
+            }
+          />
         </div>
       </section>
 
@@ -330,17 +382,20 @@ const FiltersSection = ({
           <ArrowUpDown size={14} />
           مرتب‌سازی
         </h4>
-        <select
-          value={sortBy}
-          onChange={(e) => onSortChange(e.target.value)}
-          className={styles.sortSelect}
-        >
-          <option value="-created_at">جدیدترین</option>
-          <option value="created_at">قدیمی‌ترین</option>
-          <option value="-min_salary">بیشترین حقوق</option>
-          <option value="min_salary">کمترین حقوق</option>
-          <option value="-views_count">پربازدیدترین</option>
-        </select>
+        <FilterSelectTrigger
+          displayValue={sortName}
+          placeholder="مرتب‌سازی"
+          onClick={() =>
+            openPicker({
+              key: 'sort',
+              title: 'مرتب‌سازی',
+              options: SORT_OPTIONS,
+              value: sortBy || '-created_at',
+              showEmpty: false,
+              onPick: (v) => onSortChange(v || '-created_at'),
+            })
+          }
+        />
       </section>
     </>
   )
@@ -348,7 +403,6 @@ const FiltersSection = ({
   return (
     <>
       <div className={styles.filtersSection}>
-        {/* هدر کامل — فقط دسکتاپ */}
         <div className={styles.desktopOnly}>
           <div className={styles.filtersHeader}>
             <h3 className={styles.filtersTitle}>
@@ -370,7 +424,6 @@ const FiltersSection = ({
           {renderChips()}
         </div>
 
-        {/* جستجو — همیشه */}
         <form onSubmit={handleSubmit} className={styles.searchFilterForm}>
           <div className={styles.searchWrap}>
             <Search size={16} className={styles.searchIcon} />
@@ -401,7 +454,6 @@ const FiltersSection = ({
           </button>
         </form>
 
-        {/* دکمه باز کردن فیلترها — فقط موبایل */}
         <button
           type="button"
           className={styles.mobileOpenBtn}
@@ -414,7 +466,6 @@ const FiltersSection = ({
           )}
         </button>
 
-        {/* چیپ‌های فشرده موبایل (بدون جستجو) */}
         {sheetFilterCount > 0 && (
           <div className={styles.mobileChipsBar}>
             {activeChips
@@ -443,11 +494,9 @@ const FiltersSection = ({
           </div>
         )}
 
-        {/* بدنه فیلترها — فقط دسکتاپ */}
         <div className={styles.desktopFilters}>{filtersBody}</div>
       </div>
 
-      {/* دیالوگ تمام‌صفحه موبایل */}
       {sheetOpen && (
         <div
           className={styles.sheetOverlay}
@@ -506,6 +555,23 @@ const FiltersSection = ({
           </div>
         </div>
       )}
+
+      <FilterDialog
+        isOpen={!!picker}
+        title={picker?.title || ''}
+        options={picker?.options || []}
+        value={picker?.value ?? ''}
+        emptyLabel={picker?.emptyLabel}
+        showEmpty={picker?.showEmpty !== false}
+        loading={
+          optionsLoading &&
+          ['province', 'city', 'neighborhood'].includes(picker?.key)
+        }
+        onChange={(v) => {
+          picker?.onPick?.(v)
+        }}
+        onClose={closePicker}
+      />
     </>
   )
 }
