@@ -894,6 +894,18 @@ news: {
       noVersion: true
     }),
   },
+  topicPacks: {
+    list: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'topic-packs/',
+      noVersion: true,
+    }),
+    apply: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'topic-packs/apply/',
+      noVersion: true,
+    }),
+  },
   siteModules: {
     list: () => Config.getApiUrl({
       segment: 'api',

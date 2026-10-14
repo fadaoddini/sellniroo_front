@@ -9,6 +9,7 @@ import {
   ShieldOff,
   LayoutDashboard,
   LayoutList,
+  Sprout,
   Newspaper,
   Briefcase,
   Settings2,
@@ -50,6 +51,7 @@ import AdminWebModules from './AdminWebModules'
 import LocalSettingsEditor from './LocalSettingsEditor'
 import JobBoardDataPanel from './JobBoardDataPanel'
 import HomepageOrderPanel from './HomepageOrderPanel'
+import TopicPackPanel from './TopicPackPanel'
 import styles from './AdminWeb.module.css'
 
 const QUICK_LINKS = [
@@ -190,6 +192,10 @@ export default function AdminWebPage() {
                 <LayoutList size={13} />
                 چیدمان
               </a>
+              <a href="#topic-packs">
+                <Sprout size={13} />
+                موضوع سایت
+              </a>
               <a href="#job-board-data">
                 <Briefcase size={13} />
                 کاریابی
@@ -246,6 +252,8 @@ export default function AdminWebPage() {
         </div>
 
         <HomepageOrderPanel />
+
+        <TopicPackPanel />
 
         <JobBoardDataPanel />
 
