@@ -1,0 +1,134 @@
+.wrap {
+  position: relative;
+  width: 100%;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.45rem 0.55rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: #f4f5f7;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: right;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.trigger:hover {
+  background: #eceef2;
+}
+
+.trigger:focus-visible {
+  background: #fff;
+  border-color: rgba(20, 24, 31, 0.14);
+}
+
+.triggerIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #14181f;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.triggerMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.triggerMeta strong {
+  font-size: 0.8rem;
+  font-weight: 750;
+  color: #14181f;
+}
+
+.triggerMeta small {
+  font-size: 0.65rem;
+  color: #7a828e;
+}
+
+.panel {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 6px);
+  right: 0;
+  left: 0;
+  border-radius: 12px;
+  border: 1px solid rgba(20, 24, 31, 0.1);
+  background: #fff;
+  box-shadow: 0 14px 36px rgba(12, 16, 23, 0.16);
+  overflow: hidden;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.7rem;
+  border-bottom: 1px solid rgba(20, 24, 31, 0.08);
+  color: #7a828e;
+}
+
+.search input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.8rem;
+  background: transparent;
+  color: #14181f;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: 0.35rem;
+  padding: 0.55rem;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.35rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: #f4f5f7;
+  font-family: inherit;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #5a6270;
+  cursor: pointer;
+}
+
+.item:hover {
+  background: #eceef2;
+  color: #14181f;
+}
+
+.itemOn {
+  border-color: #e8b800;
+  background: #fff8e6;
+  color: #14181f;
+}
+
+.empty {
+  grid-column: 1 / -1;
+  margin: 0.5rem 0;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #7a828e;
+}

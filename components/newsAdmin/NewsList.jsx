@@ -68,6 +68,7 @@ const PLATFORM_LABELS = {
 const NewsList = ({
   news, loading, error,
   onEdit, onDelete, onSendToBale, onRefresh, readyPlatforms = [],
+  emptyHint,
 }) => {
   const { language } = useLanguage()
   const [sendingBale, setSendingBale] = React.useState(null)
@@ -228,7 +229,7 @@ const NewsList = ({
     return (
       <div className={styles.emptyBox}>
         <AlertCircle size={28} />
-        <p>{t.empty}</p>
+        <p>{emptyHint || t.empty}</p>
       </div>
     )
   }

@@ -28,12 +28,13 @@
   --va-radius: 18px;
   --va-radius-sm: 12px;
 
-  padding: 3.5rem 0 2.5rem;
+  padding: 2.5rem 0 2rem;
   direction: rtl;
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  min-height: 80vh;
+  /* بدون min-height اجباری — ارتفاع از محتوا؛ فاصلهٔ خالی زیر آرشیو ساخته نشود */
+  min-height: 0;
   background:
     radial-gradient(ellipse 70% 45% at 70% -10%, var(--va-accent-soft), transparent 55%),
     radial-gradient(ellipse 50% 40% at 10% 20%, var(--va-accent-glow), transparent 50%),

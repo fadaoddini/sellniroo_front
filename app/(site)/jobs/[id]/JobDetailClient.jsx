@@ -14,6 +14,21 @@ import {
   XCircle, MinusCircle, Coffee, Send, Loader2, AlertCircle
 } from 'lucide-react';
 import jobisellApi from '@/services/jobisellApi';
+import {
+  DEMO_JOBS,
+  filterDemoJobs,
+} from '@/components/AllBoxItem/constants/demoJobs';
+import { fetchSiteSettings } from '@/services/siteSettings';
+import {
+  DEFAULT_JOB_SINGLE_PAGE_SETTINGS,
+  normalizeJobSinglePageSettings,
+  jobSinglePageCssVars,
+} from '@/config/jobSinglePageSettings';
+import {
+  normalizeJobSingleLayout,
+  DEFAULT_JOB_SINGLE_LAYOUT,
+} from '@/config/homeLayout';
+import PageBuilderRenderer from '@/components/layout/PageBuilderRenderer';
 import styles from './JobDetail.module.css';
 
 // ============================================
@@ -89,11 +104,53 @@ export default function JobDetailClient({ initialJob }) {
   const [coverLetter, setCoverLetter] = useState('');
   const [similarJobs, setSimilarJobs] = useState([]);
   const [similarLoading, setSimilarLoading] = useState(false);
+  const [pageSettings, setPageSettings] = useState(() =>
+    normalizeJobSinglePageSettings(DEFAULT_JOB_SINGLE_PAGE_SETTINGS)
+  );
+  const [singleLayout, setSingleLayout] = useState(DEFAULT_JOB_SINGLE_LAYOUT);
+
+  useEffect(() => {
+    let cancelled = false;
+    const apply = (s) => {
+      if (cancelled) return;
+      setPageSettings(
+        normalizeJobSinglePageSettings(
+          s?.job_single_page || DEFAULT_JOB_SINGLE_PAGE_SETTINGS
+        )
+      );
+      setSingleLayout(normalizeJobSingleLayout(s?.job_single_layout));
+    };
+    fetchSiteSettings()
+      .then(apply)
+      .catch(() => {
+        if (!cancelled) setSingleLayout(DEFAULT_JOB_SINGLE_LAYOUT);
+      });
+    const onLayout = (ev) => {
+      if (cancelled) return;
+      setSingleLayout(normalizeJobSingleLayout(ev?.detail));
+    };
+    const onPage = (ev) => {
+      if (cancelled) return;
+      if (ev?.detail) {
+        setPageSettings(normalizeJobSinglePageSettings(ev.detail));
+      }
+    };
+    window.addEventListener('job-single-layout-changed', onLayout);
+    window.addEventListener('job-single-page-changed', onPage);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('job-single-layout-changed', onLayout);
+      window.removeEventListener('job-single-page-changed', onPage);
+    };
+  }, []);
+
+  const isDemo = Boolean(job?.is_demo);
 
   // ============================================
-  // ✅ رفرش داده‌ها از API (برای آمار جدید)
+  // ✅ رفرش داده‌ها از API (برای آمار جدید) — دمو را رد کن
   // ============================================
   const refreshJob = useCallback(async () => {
+    if (initialJob?.is_demo) return;
     try {
       setLoading(true);
       const data = await jobisellApi.getJobDetail(initialJob.id);
@@ -108,7 +165,7 @@ export default function JobDetailClient({ initialJob }) {
     } finally {
       setLoading(false);
     }
-  }, [initialJob.id]);
+  }, [initialJob.id, initialJob?.is_demo]);
 
   // ============================================
   // ✅ بارگذاری آگهی‌های مشابه
@@ -118,11 +175,22 @@ export default function JobDetailClient({ initialJob }) {
     (async () => {
       try {
         setSimilarLoading(true);
+
+        if (job?.is_demo) {
+          const results = filterDemoJobs(DEMO_JOBS, {
+            adType: job.type || '',
+            category: job.category || '',
+          })
+            .filter((j) => j.id !== job.id)
+            .slice(0, 4);
+          if (mounted) setSimilarJobs(results);
+          return;
+        }
+
         const params = {
           page_size: 4,
         };
 
-        // اگر دسته‌بندی دارد، بر اساس آن فیلتر کن
         if (job.category) params.category = job.category;
         if (job.type) params.type = job.type;
 
@@ -139,7 +207,7 @@ export default function JobDetailClient({ initialJob }) {
       }
     })();
     return () => { mounted = false; };
-  }, [job.id, job.category, job.type]);
+  }, [job.id, job.category, job.type, job?.is_demo]);
 
   // ============================================
   // ✅ requireAuth
@@ -156,6 +224,11 @@ export default function JobDetailClient({ initialJob }) {
   // ✅ لایک
   // ============================================
   const handleLike = () => {
+    if (isDemo) {
+      setIsLiked((v) => !v);
+      setLikesCount((c) => (isLiked ? Math.max(0, c - 1) : c + 1));
+      return;
+    }
     requireAuth(async () => {
       // Optimistic UI
       const prevLiked = isLiked;
@@ -182,6 +255,10 @@ export default function JobDetailClient({ initialJob }) {
   // ✅ ذخیره
   // ============================================
   const handleBookmark = () => {
+    if (isDemo) {
+      setIsBookmarked((v) => !v);
+      return;
+    }
     requireAuth(async () => {
       const prev = isBookmarked;
       setIsBookmarked(!isBookmarked);
@@ -240,6 +317,12 @@ export default function JobDetailClient({ initialJob }) {
   };
 
   const handleApply = () => {
+    if (isDemo) {
+      setApplicationStatus({
+        error: 'این آگهی نمونه (دمو) است؛ ثبت درخواست واقعی ندارد.',
+      });
+      return;
+    }
     requireAuth(async () => {
       setIsApplying(true);
       setApplicationStatus(null);
@@ -337,13 +420,71 @@ export default function JobDetailClient({ initialJob }) {
     );
   };
 
+  const ps = pageSettings;
+  const themeStyle = jobSinglePageCssVars(ps);
+
   // ============================================
-  // ✅ رندر
+  // ✅ رندر بدنه آگهی (اسلات صفحه‌ساز)
   // ============================================
-  return (
-    <div className={styles.jobDetailPage}>
+  const appliedOk = hasApplied || applicationStatus === 'success';
+  const showMobileCta = ps.show_apply || ps.show_contact;
+
+  const articleNode = (
+    <div
+      className={`${styles.jobDetailPage} ${styles.inSlot} ${styles[`layout_${ps.layout}`] || ''}`}
+      style={themeStyle}
+      data-jsd="1"
+      data-article-slot="1"
+      data-jsd-layout={ps.layout}
+    >
+      {/* نوار بالای اپ‌مانند — فقط موبایل */}
+      <header className={styles.appTopBar}>
+        <Link href="/jobs" className={styles.appBack} aria-label="بازگشت به آگهی‌ها">
+          <ArrowRight size={22} strokeWidth={2.25} />
+        </Link>
+        <div className={styles.appTopCenter}>
+          <span className={styles.appTopTitle}>{job.title}</span>
+          {ps.show_company ? (
+            <span className={styles.appTopSub}>{job.company_name || '—'}</span>
+          ) : null}
+        </div>
+        <div className={styles.appTopActions}>
+          {ps.show_bookmark ? (
+            <button
+              type="button"
+              onClick={handleBookmark}
+              className={`${styles.appIconBtn} ${isBookmarked ? styles.active : ''}`}
+              aria-label={isBookmarked ? 'حذف از نشان‌ها' : 'نشان‌گذاری'}
+            >
+              <Bookmark size={20} strokeWidth={2.1} fill={isBookmarked ? 'currentColor' : 'none'} />
+            </button>
+          ) : null}
+          {ps.show_like ? (
+            <button
+              type="button"
+              onClick={handleLike}
+              className={`${styles.appIconBtn} ${isLiked ? styles.active : ''}`}
+              aria-label={isLiked ? 'حذف لایک' : 'لایک'}
+            >
+              <Heart size={20} strokeWidth={2.1} fill={isLiked ? 'currentColor' : 'none'} />
+            </button>
+          ) : null}
+          {ps.show_share ? (
+            <button
+              type="button"
+              onClick={handleShare}
+              className={styles.appIconBtn}
+              aria-label="اشتراک‌گذاری"
+            >
+              <Share2 size={20} strokeWidth={2.1} />
+            </button>
+          ) : null}
+        </div>
+      </header>
+
       <div className={styles.container}>
-        {/* Breadcrumb */}
+        {/* Breadcrumb — دسکتاپ */}
+        {ps.show_breadcrumb ? (
         <nav className={styles.breadcrumb} aria-label="مسیر یابی">
           <Link href="/" className={styles.breadcrumbLink}>خانه</Link>
           <ChevronRight size={14} className={styles.breadcrumbSeparator} />
@@ -351,6 +492,7 @@ export default function JobDetailClient({ initialJob }) {
           <ChevronRight size={14} className={styles.breadcrumbSeparator} />
           <span className={styles.breadcrumbCurrent}>{job.title}</span>
         </nav>
+        ) : null}
 
         <div className={styles.jobDetailGrid}>
           {/* ستون اصلی */}
@@ -358,6 +500,7 @@ export default function JobDetailClient({ initialJob }) {
             {/* کارت اصلی */}
             <div className={styles.jobCard}>
               {/* تصویر */}
+              {ps.show_image ? (
               <div className={styles.jobImageWrapper}>
                 {job.image ? (
                   <div className={styles.jobImage}>
@@ -369,16 +512,18 @@ export default function JobDetailClient({ initialJob }) {
                       priority
                       unoptimized
                     />
-                    {job.is_featured && (
+                    {ps.show_badges && ps.show_featured_badge && job.is_featured && (
                       <span className={styles.featuredBadge}>
                         <Star size={12} fill="#fff" />
                         ویژه
                       </span>
                     )}
+                    {ps.show_badges && ps.show_type_badge ? (
                     <div className={`${styles.adTypeOverlay} ${isHiring ? styles.hiringOverlay : styles.seekingOverlay}`}>
                       {adTypeIcon}
                       <span>{adTypeLabel}</span>
                     </div>
+                    ) : null}
                   </div>
                 ) : (
                   <div className={styles.jobImagePlaceholder}>
@@ -387,16 +532,22 @@ export default function JobDetailClient({ initialJob }) {
                   </div>
                 )}
               </div>
+              ) : null}
 
               {/* هدر */}
               <div className={styles.jobHeader}>
                 <div className={styles.jobTitleSection}>
                   <div className={styles.jobTitleRow}>
+                    {ps.show_title ? (
                     <h1 className={styles.jobTitle}>{job.title}</h1>
+                    ) : null}
+                    {ps.show_badges && ps.show_type_badge ? (
                     <span className={`${styles.adTypeBadgeLarge} ${isHiring ? styles.hiringBadgeLarge : styles.seekingBadgeLarge}`}>
                       {adTypeLabel}
                     </span>
+                    ) : null}
                   </div>
+                  {ps.show_company ? (
                   <div className={`${styles.jobCompany} ${
                     isHiring && (job.company_is_verified || job.is_verified)
                       ? styles.jobCompanyVerified
@@ -404,16 +555,19 @@ export default function JobDetailClient({ initialJob }) {
                   }`}>
                     <Building2 size={18} className={styles.companyIcon} />
                     <span>{job.company_name || 'بدون شرکت'}</span>
-                    {isHiring && (job.company_is_verified || job.is_verified) ? (
+                    {ps.show_verified && isHiring && (job.company_is_verified || job.is_verified) ? (
                       <span className={styles.verifiedBadge} title="شرکت تاییدشده توسط سلنیرو">
                         <BadgeCheck size={16} />
                         شرکت تاییدشده
                       </span>
                     ) : null}
                   </div>
+                  ) : null}
                 </div>
 
+                {(ps.show_bookmark || ps.show_like || ps.show_share) ? (
                 <div className={styles.jobActions}>
+                  {ps.show_bookmark ? (
                   <button
                     onClick={handleBookmark}
                     className={`${styles.actionBtn} ${isBookmarked ? styles.active : ''}`}
@@ -421,6 +575,8 @@ export default function JobDetailClient({ initialJob }) {
                   >
                     <Bookmark size={18} fill={isBookmarked ? '#e67e22' : 'none'} />
                   </button>
+                  ) : null}
+                  {ps.show_like ? (
                   <button
                     onClick={handleLike}
                     className={`${styles.actionBtn} ${isLiked ? styles.active : ''}`}
@@ -428,6 +584,8 @@ export default function JobDetailClient({ initialJob }) {
                   >
                     <Heart size={18} fill={isLiked ? '#e67e22' : 'none'} />
                   </button>
+                  ) : null}
+                  {ps.show_share ? (
                   <button
                     onClick={handleShare}
                     className={styles.actionBtn}
@@ -435,70 +593,87 @@ export default function JobDetailClient({ initialJob }) {
                   >
                     <Share2 size={18} />
                   </button>
+                  ) : null}
                 </div>
+                ) : null}
               </div>
 
               {/* اطلاعات سریع */}
+              {(ps.show_location ||
+                ps.show_salary ||
+                ps.show_cooperation ||
+                ps.show_meta_date ||
+                ps.show_experience) ? (
               <div className={styles.jobQuickInfo}>
+                {ps.show_location ? (
                 <div className={styles.quickInfoItem}>
                   <MapPin size={16} className={styles.quickInfoIcon} />
                   <span>{locationStr}</span>
                 </div>
-                {isHiring && renderSalary() && (
+                ) : null}
+                {ps.show_salary && isHiring && renderSalary() && (
                   <div className={styles.quickInfoItem}>
                     <DollarSign size={16} className={styles.quickInfoIcon} />
                     <span>{renderSalary()}</span>
                   </div>
                 )}
-                {job.cooperation_type_name && (
+                {ps.show_cooperation && job.cooperation_type_name && (
                   <div className={styles.quickInfoItem}>
                     <Clock size={16} className={styles.quickInfoIcon} />
                     <span>{job.cooperation_type_name}</span>
                   </div>
                 )}
+                {ps.show_meta_date ? (
                 <div className={styles.quickInfoItem}>
                   <Calendar size={16} className={styles.quickInfoIcon} />
                   <span>{getDaysAgo(job.published_at || job.created_at)}</span>
                 </div>
-                {isHiring && job.experience_level_name && (
+                ) : null}
+                {ps.show_experience && isHiring && job.experience_level_name && (
                   <div className={styles.quickInfoItem}>
                     <Briefcase size={16} className={styles.quickInfoIcon} />
                     <span>{job.experience_level_name}</span>
                   </div>
                 )}
               </div>
+              ) : null}
 
               {/* ✅ ویژگی‌ها (داینامیک از API) */}
-              {renderFeatures()}
+              {ps.show_features ? renderFeatures() : null}
 
               {/* اطلاعات تکمیلی */}
+              {(ps.show_experience ||
+                ps.show_education ||
+                ps.show_gender ||
+                ps.show_age ||
+                ps.show_meta_date) ? (
               <div className={styles.jobAdditionalInfo}>
                 <div className={styles.infoGrid}>
-                  {job.experience_level_name && (
+                  {ps.show_experience && job.experience_level_name && (
                     <div className={styles.infoItem}>
                       <span className={styles.infoLabel}>سابقه کار</span>
                       <span className={styles.infoValue}>{job.experience_level_name}</span>
                     </div>
                   )}
-                  {job.education_level_name && (
+                  {ps.show_education && job.education_level_name && (
                     <div className={styles.infoItem}>
                       <span className={styles.infoLabel}>مدرک تحصیلی</span>
                       <span className={styles.infoValue}>{job.education_level_name}</span>
                     </div>
                   )}
-                  {job.gender_name && (
+                  {ps.show_gender && job.gender_name && (
                     <div className={styles.infoItem}>
                       <span className={styles.infoLabel}>جنسیت</span>
                       <span className={styles.infoValue}>{job.gender_name}</span>
                     </div>
                   )}
-                  {job.age_range && (
+                  {ps.show_age && job.age_range && (
                     <div className={styles.infoItem}>
                       <span className={styles.infoLabel}>بازه سنی</span>
                       <span className={styles.infoValue}>{job.age_range}</span>
                     </div>
                   )}
-                  {(job.published_at || job.created_at) && (
+                  {ps.show_meta_date && (job.published_at || job.created_at) && (
                     <div className={styles.infoItem}>
                       <span className={styles.infoLabel}>تاریخ انتشار</span>
                       <span className={styles.infoValue}>
@@ -508,15 +683,18 @@ export default function JobDetailClient({ initialJob }) {
                   )}
                 </div>
               </div>
+              ) : null}
 
               {/* توضیحات */}
+              {ps.show_description ? (
               <div className={styles.jobDescription}>
                 <h2 className={styles.sectionTitle}>توضیحات آگهی</h2>
                 <p className={styles.descriptionText}>{job.description}</p>
               </div>
+              ) : null}
 
               {/* تگ‌ها */}
-              {job.tags?.length > 0 && (
+              {ps.show_tags && job.tags?.length > 0 && (
                 <div className={styles.jobTagsSection}>
                   <span className={styles.tagsLabel}>تخصص‌ها:</span>
                   <div className={styles.jobTags}>
@@ -529,6 +707,7 @@ export default function JobDetailClient({ initialJob }) {
             </div>
 
             {/* ✅ آگهی‌های مشابه */}
+            {ps.show_similar ? (
             <div className={styles.similarJobs}>
               <h2 className={styles.sectionTitle}>آگهی‌های مشابه</h2>
               {similarLoading ? (
@@ -560,12 +739,14 @@ export default function JobDetailClient({ initialJob }) {
                 <p className={styles.similarPlaceholder}>آگهی مشابهی یافت نشد.</p>
               )}
             </div>
+            ) : null}
           </div>
 
           {/* ستون کناری */}
           <div className={styles.sideColumn}>
             {/* کارت اقدامات — فقط استخدام */}
-            <div className={styles.actionCard}>
+            {(ps.show_apply || ps.show_contact) ? (
+            <div className={styles.actionCard} id="job-apply">
               <h3 className={styles.actionCardTitle}>
                 {isHiring ? 'ثبت درخواست همکاری' : 'اطلاعات تماس'}
               </h3>
@@ -586,13 +767,13 @@ export default function JobDetailClient({ initialJob }) {
                 </div>
               ) : (
                 <>
-                  {isHiring && (hasApplied || applicationStatus === 'success') ? (
+                  {isHiring && appliedOk ? (
                     <div className={styles.applicationSuccess}>
                       <CheckCircle size={48} className={styles.successIcon} />
                       <h4>درخواست شما ثبت شده است</h4>
                       <p>کارفرما به‌زودی درخواست شما را بررسی می‌کند.</p>
                     </div>
-                  ) : isHiring ? (
+                  ) : isHiring && ps.show_apply ? (
                     <>
                       <p className={styles.applyHint}>
                         اطلاعات تماس از پروفایل شما ارسال می‌شود. در صورت تمایل توضیح کوتاه بنویسید.
@@ -639,6 +820,7 @@ export default function JobDetailClient({ initialJob }) {
                     </>
                   ) : null}
 
+                  {ps.show_contact ? (
                   <button
                     onClick={() => setShowContact(!showContact)}
                     className={styles.contactBtn}
@@ -647,8 +829,9 @@ export default function JobDetailClient({ initialJob }) {
                     <Phone size={18} />
                     {showContact ? 'بستن اطلاعات تماس' : 'مشاهده اطلاعات تماس'}
                   </button>
+                  ) : null}
 
-                  {showContact && (
+                  {ps.show_contact && showContact && (
                     <div className={styles.contactInfo}>
                       {job.contact_phone && (
                         <a
@@ -678,8 +861,10 @@ export default function JobDetailClient({ initialJob }) {
                 </>
               )}
             </div>
+            ) : null}
 
             {/* اطلاعات شرکت */}
+            {ps.show_company_card ? (
             <div className={styles.companyCard}>
               <h3 className={styles.companyCardTitle}>درباره شرکت</h3>
               <div className={styles.companyInfo}>
@@ -708,8 +893,10 @@ export default function JobDetailClient({ initialJob }) {
                 )}
               </div>
             </div>
+            ) : null}
 
             {/* آمار واقعی */}
+            {ps.show_views ? (
             <div className={styles.statsCard}>
               <div className={styles.statItem}>
                 <Eye size={16} />
@@ -728,9 +915,85 @@ export default function JobDetailClient({ initialJob }) {
                 <span>{getDaysAgo(job.published_at || job.created_at)}</span>
               </div>
             </div>
+            ) : null}
           </div>
         </div>
       </div>
+
+      {/* نوار پایین اپ‌مانند — فقط موبایل */}
+      {showMobileCta ? (
+        <div className={styles.mobileCtaBar} role="region" aria-label="اقدام سریع">
+          <div className={styles.mobileCtaInner}>
+            {!isAuthenticated ? (
+              <Link
+                href={`/login?next=/jobs/${job.id}`}
+                className={styles.mobileCtaPrimary}
+              >
+                ورود برای ادامه
+              </Link>
+            ) : isHiring && appliedOk ? (
+              <div className={styles.mobileCtaDone}>
+                <CheckCircle size={22} strokeWidth={2.25} />
+                <span>درخواست ثبت شد</span>
+              </div>
+            ) : (
+              <>
+                {ps.show_contact ? (
+                  <button
+                    type="button"
+                    className={styles.mobileCtaIcon}
+                    onClick={() => {
+                      setShowContact(true);
+                      document
+                        .getElementById('job-apply')
+                        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }}
+                    aria-label="اطلاعات تماس"
+                  >
+                    <Phone size={22} strokeWidth={2.25} />
+                  </button>
+                ) : null}
+                {isHiring && ps.show_apply ? (
+                  <button
+                    type="button"
+                    className={styles.mobileCtaPrimary}
+                    onClick={handleApply}
+                    disabled={isApplying}
+                  >
+                    {isApplying ? (
+                      <Loader2 size={22} className={styles.spinnerIcon} strokeWidth={2.25} />
+                    ) : (
+                      <Send size={20} strokeWidth={2.25} />
+                    )}
+                    {isApplying ? 'در حال ثبت…' : 'ثبت درخواست'}
+                  </button>
+                ) : ps.show_contact ? (
+                  <button
+                    type="button"
+                    className={styles.mobileCtaPrimary}
+                    onClick={() => {
+                      setShowContact(true);
+                      document
+                        .getElementById('job-apply')
+                        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }}
+                  >
+                    <Phone size={20} strokeWidth={2.25} />
+                    اطلاعات تماس
+                  </button>
+                ) : null}
+              </>
+            )}
+          </div>
+        </div>
+      ) : null}
     </div>
+  );
+
+  return (
+    <PageBuilderRenderer
+      layout={normalizeJobSingleLayout(singleLayout)}
+      articleSlot={articleNode}
+    />
   );
 }

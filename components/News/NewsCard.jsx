@@ -25,8 +25,6 @@ const NewsCard = ({ news, index }) => {
 
   // ✅ اولویت با slug، اگر نبود از id استفاده کن
   const newsSlug = slug || id || `news-${index}`;
-  
-  console.log('🔗 NewsCard slug:', newsSlug, 'id:', id);
 
   // ساخت آدرس کامل تصویر
   const getFullImageUrl = (imagePath) => {

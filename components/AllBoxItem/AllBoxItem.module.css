@@ -8,6 +8,26 @@
   min-height: 100vh;
 }
 
+.allBoxItemNoFilters {
+  min-height: 0;
+}
+
+.allBoxItemEmbedded {
+  min-height: 0;
+  padding: 0.5rem 0 1.25rem;
+  background: transparent;
+}
+
+.allBoxItemNoFilters .container {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.allBoxItem:not(.allBoxItemNoFilters):has(.filtersAside):not(:has(.mainContent))
+  .container {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 360px;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -27,13 +47,13 @@
 }
 
 .filtersSticky {
-  /* تیکر ~40px + هدر ~64px + فاصله */
-  --sticky-top: 112px;
+  --sticky-inset: 10px;
 
   position: sticky;
-  top: var(--sticky-top);
+  top: var(--sticky-inset);
   z-index: 30;
-  max-height: calc(100vh - var(--sticky-top) - 12px);
+  max-height: calc(100vh - (var(--sticky-inset) * 2));
+  max-height: calc(100dvh - (var(--sticky-inset) * 2));
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -53,7 +73,12 @@
 
 @media (max-width: 1023px) {
   .filtersSticky {
-    max-height: calc(100vh - var(--sticky-top) - var(--mobile-bottom-nav, 0px) - 12px);
+    max-height: calc(
+      100vh - (var(--sticky-inset) * 2) - var(--mobile-bottom-nav, 0px)
+    );
+    max-height: calc(
+      100dvh - (var(--sticky-inset) * 2) - var(--mobile-bottom-nav, 0px)
+    );
   }
 }
 

@@ -1,5 +1,5 @@
 // components/common/CorporateMobileNav/CorporateMobileNav.jsx
-// ماژول: corporate_mobile_nav ⊂ corporate_system
+// ماژول: corporate_mobile_nav ⊂ advanced_menu
 'use client'
 
 import React, { useEffect, useMemo, useState } from 'react'
@@ -15,6 +15,9 @@ import {
   fetchHeaderMenu,
   DEFAULT_HEADER_MENU,
   filterHeaderMenuByModules,
+  sortHeaderMenuItems,
+  arrangeMobileNavItems,
+  findMobileNavCenterIndex,
 } from '@/services/headerMenu'
 import { fetchSiteModules } from '@/services/siteModules'
 import {
@@ -52,7 +55,17 @@ function resolveIcon(name) {
 
 function matchPath(pathname, href) {
   if (!href) return false
-  const path = String(href).split('?')[0].split('#')[0] || '/'
+  const raw = String(href).trim()
+  const hashIdx = raw.indexOf('#')
+  if (hashIdx >= 0) {
+    const before = raw.slice(0, hashIdx) || '/'
+    const hash = raw.slice(hashIdx)
+    if (before === '/' || before === '') {
+      if (typeof window === 'undefined') return false
+      return pathname === '/' && window.location.hash === hash
+    }
+  }
+  const path = raw.split('?')[0].split('#')[0] || '/'
   if (path === '/') return pathname === '/'
   return pathname === path || pathname.startsWith(`${path}/`)
 }
@@ -99,22 +112,30 @@ export default function CorporateMobileNav() {
   }, [styleKey])
 
   const navItems = useMemo(() => {
-    // حداکثر ۵ آیتم برای خوانایی بهتر در موبایل
-    return filterHeaderMenuByModules(items || [], moduleMap)
-      .slice(0, 5)
-      .map((item) => ({
-        ...item,
-        label: language === 'en'
-          ? (item.label_en || item.label_fa || item.href)
-          : (item.label_fa || item.label_en || item.href),
-        Icon: resolveIcon(item.icon),
-      }))
-  }, [items, language, moduleMap])
+    const filtered = sortHeaderMenuItems(
+      filterHeaderMenuByModules(items || [], moduleMap),
+      'mobile'
+    )
+    return arrangeMobileNavItems(filtered, {
+      centerItemId:
+        styleKey === 'center_circle' ? appearance.mobile_center_item_id : null,
+      maxItems: 5,
+    }).map((item) => ({
+      ...item,
+      label: language === 'en'
+        ? (item.label_en || item.label_fa || item.href)
+        : (item.label_fa || item.label_en || item.href),
+      Icon: resolveIcon(item.icon),
+    }))
+  }, [items, language, moduleMap, styleKey, appearance.mobile_center_item_id])
 
   const centerIndex = useMemo(() => {
     if (styleKey !== 'center_circle' || !navItems.length) return -1
-    return Math.floor(navItems.length / 2)
-  }, [navItems.length, styleKey])
+    return findMobileNavCenterIndex(
+      navItems,
+      appearance.mobile_center_item_id
+    )
+  }, [navItems, styleKey, appearance.mobile_center_item_id])
 
   const activeHref = useMemo(() => {
     const hit = navItems.find((item) => matchPath(pathname, item.href))

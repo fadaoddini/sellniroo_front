@@ -39,12 +39,14 @@ export const DEFAULT_CORPORATE_APPEARANCE = {
   header_bg: '#000000',
   header_text: '#c8c8c8',
   header_icon: '#ffffff',
+  header_icon_hover: '#ffffff',
   header_hover: '#ffffff',
   mobile_bg: '#000000',
   mobile_text: '#8c8c8c',
   mobile_icon: '#8c8c8c',
   mobile_active: '#ffffff',
   mobile_style: 'classic',
+  mobile_center_item_id: null,
 }
 
 const resolveAsset = (src) => {
@@ -70,6 +72,19 @@ export const normalizeCorporateAppearance = (raw = {}) => {
   if (!valid.has(data.mobile_style)) {
     data.mobile_style = DEFAULT_CORPORATE_APPEARANCE.mobile_style
   }
+  if (
+    data.mobile_center_item_id === '' ||
+    data.mobile_center_item_id === undefined
+  ) {
+    data.mobile_center_item_id = null
+  } else if (data.mobile_center_item_id != null) {
+    const n = Number(data.mobile_center_item_id)
+    data.mobile_center_item_id = Number.isFinite(n) && n > 0 ? n : null
+  }
+  if (!data.header_icon_hover) {
+    data.header_icon_hover =
+      raw.header_icon_hover || data.header_hover || data.header_icon || '#ffffff'
+  }
   return data
 }
 
@@ -79,6 +94,7 @@ export function corporateHeaderStyle(appearance) {
     '--corp-header-bg': a.header_bg,
     '--corp-header-text': a.header_text,
     '--corp-header-icon': a.header_icon,
+    '--corp-header-icon-hover': a.header_icon_hover || a.header_hover,
     '--corp-header-hover': a.header_hover,
   }
 }
@@ -102,6 +118,50 @@ export const clearCorporateAppearanceCache = () => {
   cache = null
   cacheAt = 0
   inflight = null
+}
+
+/** ذخیره سریع رنگ‌ها / ظاهر (بدون فایل لوگو) */
+export async function saveCorporateAppearanceQuick(patch, authHeaders = {}) {
+  const keys = [
+    'logo_url',
+    'header_bg', 'header_text', 'header_icon', 'header_icon_hover', 'header_hover',
+    'mobile_bg', 'mobile_text', 'mobile_icon', 'mobile_active', 'mobile_style',
+    'mobile_center_item_id',
+  ]
+  const body = {}
+  keys.forEach((k) => {
+    if (patch[k] === undefined) return
+    if (k === 'mobile_center_item_id') {
+      body[k] = patch[k] === '' || patch[k] == null ? null : patch[k]
+      return
+    }
+    if (patch[k] !== null) body[k] = patch[k]
+  })
+  const url = Config.endpoints.news.corporateAppearance.update()
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `ذخیره ظاهر ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeCorporateAppearance(json?.data || json)
+  cache = data
+  cacheAt = Date.now()
+  return data
 }
 
 export async function fetchCorporateAppearance({ force = false } = {}) {

@@ -15,8 +15,10 @@ moment.loadPersian({ dialect: 'persian-modern', usePersianDigits: false })
 
 const QuizProfilePanel = lazy(() => import('./QuizProfilePanel'))
 const SchoolProfilePanel = lazy(() => import('@/components/School/SchoolProfilePanel'))
+const ShopProfilePanel = lazy(() => import('./ShopProfilePanel'))
 
 const BASE_TABS = [{ key: 'account', label: 'حساب', icon: 'user' }]
+const SHOP_TAB = { key: 'shop', label: 'فروشگاه', icon: 'shopping' }
 const QUIZ_TAB = { key: 'quiz', label: 'آزمون', icon: 'brain' }
 const SCHOOL_TAB = { key: 'school', label: 'مدرسه', icon: 'school' }
 
@@ -34,13 +36,15 @@ function BasicProfileInner() {
   const searchParams = useSearchParams()
   const [quizOn, setQuizOn] = useState(false)
   const [schoolOn, setSchoolOn] = useState(false)
+  const [shopOn, setShopOn] = useState(false)
 
   const tabs = useMemo(() => {
     const list = [...BASE_TABS]
+    if (shopOn) list.push(SHOP_TAB)
     if (quizOn) list.push(QUIZ_TAB)
     if (schoolOn) list.push(SCHOOL_TAB)
     return list
-  }, [quizOn, schoolOn])
+  }, [quizOn, schoolOn, shopOn])
   const tabKeys = useMemo(() => new Set(tabs.map((t) => t.key)), [tabs])
 
   const initialTab = useMemo(() => {
@@ -63,10 +67,12 @@ function BasicProfileInner() {
       Promise.all([
         isSiteModuleActive(SITE_MODULE_KEYS.QUIZ, { force: true }),
         isSiteModuleActive(SITE_MODULE_KEYS.SCHOOL, { force: true }),
-      ]).then(([quiz, school]) => {
+        isSiteModuleActive(SITE_MODULE_KEYS.SHOP, { force: true }),
+      ]).then(([quiz, school, shop]) => {
         if (cancelled) return
         setQuizOn(!!quiz)
         setSchoolOn(!!school)
+        setShopOn(!!shop)
       })
     }
     refresh()
@@ -140,6 +146,12 @@ function BasicProfileInner() {
                 </li>
               </ul>
             </section>
+          ) : null}
+
+          {activeTab === 'shop' && shopOn ? (
+            <Suspense fallback={<PanelFallback />}>
+              <ShopProfilePanel />
+            </Suspense>
           ) : null}
 
           {activeTab === 'quiz' && quizOn ? (

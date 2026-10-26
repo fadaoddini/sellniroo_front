@@ -4,6 +4,8 @@ import { Suspense } from 'react';
 import NewsDetail from '@/components/News/NewsDetail';
 import NewsPageSlot from '@/components/modules/NewsPageSlot';
 import { notFound } from 'next/navigation';
+import { isSiteModuleActive } from '@/services/siteModules';
+import { SITE_MODULE_KEYS } from '@/config/siteModules';
 
 /* ============================================
    METADATA — برای هر خبر
@@ -118,6 +120,13 @@ export default async function NewsDetailPage({ params }) {
   const { slug } = params;
 
   if (!slug) {
+    notFound();
+  }
+
+  const newsOn = await isSiteModuleActive(SITE_MODULE_KEYS.NEWS, {
+    force: true,
+  });
+  if (!newsOn) {
     notFound();
   }
 

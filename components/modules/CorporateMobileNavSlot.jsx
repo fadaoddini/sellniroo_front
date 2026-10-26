@@ -5,10 +5,10 @@ import ModuleGate from '@/components/modules/ModuleGate'
 import CorporateMobileNav from '@/components/common/CorporateMobileNav'
 import { SITE_MODULE_KEYS } from '@/config/siteModules'
 
-/** منوی پایین سیستم شرکتی — ماژول corporate_mobile_nav ⊂ corporate_system */
+/** منوی پایین موبایل — پشت ماژول منوی پیشرفته */
 export default function CorporateMobileNavSlot() {
   return (
-    <ModuleGate moduleKey={SITE_MODULE_KEYS.CORPORATE_MOBILE_NAV}>
+    <ModuleGate moduleKey={SITE_MODULE_KEYS.ADVANCED_MENU}>
       <CorporateMobileNav />
     </ModuleGate>
   )

@@ -12,8 +12,20 @@ import ViewToggle from './components/ViewToggle/ViewToggle'
 import AdTypeTabs from './components/AdTypeTabs/AdTypeTabs'
 import styles from './AllBoxItem.module.css'
 
-const AllBoxItem = ({ initialFilters = {} }) => {
-  const [viewMode, setViewMode] = useState('grid-2')
+const AllBoxItem = ({
+  initialFilters = {},
+  ui = {},
+  embedded = false,
+  demoMode = false,
+}) => {
+  const showFilters = ui.showFilters !== false
+  const showList = ui.showList !== false
+  const showTabs = showList && ui.showTabs !== false
+  const showViewToggle = showList && ui.showViewToggle !== false
+  const showTitle = showList && ui.showTitle !== false
+  const showCount = showList && ui.showCount !== false
+
+  const [viewMode, setViewMode] = useState(ui.defaultView || 'grid-2')
 
   const [activeTab, setActiveTab] = useState(() => {
     if (initialFilters.adType === 'hiring') return 'hiring'
@@ -41,7 +53,10 @@ const AllBoxItem = ({ initialFilters = {} }) => {
     updateFilter,
     clearFilter,
     clearAllFilters,
-  } = useFilters(initialFilters)
+  } = useFilters(initialFilters, {
+    demoMode,
+    syncUrl: !embedded,
+  })
 
   // وقتی تب از API فیلتر شده، لیست همان است؛ برای all همه را نشان بده
   const visibleJobs = useMemo(() => {
@@ -100,78 +115,100 @@ const AllBoxItem = ({ initialFilters = {} }) => {
   }
 
   return (
-    <div className={styles.allBoxItem}>
+    <div
+      className={`${styles.allBoxItem} ${
+        !showFilters ? styles.allBoxItemNoFilters : ''
+      } ${embedded ? styles.allBoxItemEmbedded : ''}`}
+    >
       <div className={styles.container}>
-        <aside className={styles.filtersAside} aria-label="فیلترهای آگهی">
-          <div className={styles.filtersSticky}>
-            <FiltersSection
-              filters={filters}
-              filterOptions={filterOptions}
-              optionsLoading={optionsLoading}
-              activeFilterCount={activeFilterCount}
-              allProvinces={allProvinces}
-              availableCities={availableCities}
-              availableNeighborhoods={availableNeighborhoods}
-              sortBy={sortBy}
-              onFilterChange={handleFilterChange}
-              onFilterClear={handleFilterClear}
-              onClearAll={handleClearAll}
-              onVerifiedToggle={handleVerifiedToggle}
-              onFeatureToggle={handleFeatureToggle}
-              onSortChange={handleSortChange}
-              onSearchSubmit={handleSearchSubmit}
-            />
-          </div>
-        </aside>
-
-        <div className={styles.mainContent}>
-          <div className={styles.listingsHeader}>
-            <div className={styles.listingsTitleWrapper}>
-              <h3 className={styles.listingsTitle}>
-                <Briefcase size={18} />
-                <span>آگهی‌های شغلی</span>
-              </h3>
-              <span className={styles.listingsCount}>
-                {totalCount > 0
-                  ? `${totalCount.toLocaleString('fa-IR')} آگهی`
-                  : jobsLoading
-                    ? 'در حال بارگذاری...'
-                    : '۰ آگهی'}
-              </span>
-            </div>
-
-            <div className={styles.headerControls}>
-              <AdTypeTabs
-                activeTab={activeTab}
-                onTabChange={handleTabChange}
-                hiringCount={hiringCount}
-                seekingCount={seekingCount}
+        {showFilters ? (
+          <aside className={styles.filtersAside} aria-label="فیلترهای آگهی">
+            <div className={styles.filtersSticky}>
+              <FiltersSection
+                filters={filters}
+                filterOptions={filterOptions}
+                optionsLoading={optionsLoading}
+                activeFilterCount={activeFilterCount}
+                allProvinces={allProvinces}
+                availableCities={availableCities}
+                availableNeighborhoods={availableNeighborhoods}
+                sortBy={sortBy}
+                onFilterChange={handleFilterChange}
+                onFilterClear={handleFilterClear}
+                onClearAll={handleClearAll}
+                onVerifiedToggle={handleVerifiedToggle}
+                onFeatureToggle={handleFeatureToggle}
+                onSortChange={handleSortChange}
+                onSearchSubmit={handleSearchSubmit}
               />
-              <ViewToggle viewMode={viewMode} onViewChange={setViewMode} />
             </div>
-          </div>
+          </aside>
+        ) : null}
 
-          <JobListings
-            jobs={visibleJobs}
-            totalItems={totalCount}
-            viewMode={viewMode}
-            loading={jobsLoading}
-            loadingMore={isLoadingMore}
-            hasMore={hasMore}
-            onLoadMore={loadMore}
-            error={jobsError}
-          >
-            {!jobsLoading && visibleJobs.length === 0 && (
-              <button
-                className={styles.emptyResetBtn}
-                onClick={handleClearAll}
-                type="button"
-              >
-                حذف همه فیلترها
-              </button>
+        {showList ? (
+          <div className={styles.mainContent}>
+            {(showTitle || showCount || showTabs || showViewToggle) && (
+              <div className={styles.listingsHeader}>
+                {showTitle || showCount ? (
+                  <div className={styles.listingsTitleWrapper}>
+                    {showTitle ? (
+                      <h3 className={styles.listingsTitle}>
+                        <Briefcase size={18} />
+                        <span>آگهی‌های شغلی</span>
+                      </h3>
+                    ) : null}
+                    {showCount ? (
+                      <span className={styles.listingsCount}>
+                        {totalCount > 0
+                          ? `${totalCount.toLocaleString('fa-IR')} آگهی`
+                          : jobsLoading
+                            ? 'در حال بارگذاری...'
+                            : '۰ آگهی'}
+                      </span>
+                    ) : null}
+                  </div>
+                ) : null}
+
+                {(showTabs || showViewToggle) && (
+                  <div className={styles.headerControls}>
+                    {showTabs ? (
+                      <AdTypeTabs
+                        activeTab={activeTab}
+                        onTabChange={handleTabChange}
+                        hiringCount={hiringCount}
+                        seekingCount={seekingCount}
+                      />
+                    ) : null}
+                    {showViewToggle ? (
+                      <ViewToggle viewMode={viewMode} onViewChange={setViewMode} />
+                    ) : null}
+                  </div>
+                )}
+              </div>
             )}
-          </JobListings>
-        </div>
+
+            <JobListings
+              jobs={visibleJobs}
+              totalItems={totalCount}
+              viewMode={viewMode}
+              loading={jobsLoading}
+              loadingMore={isLoadingMore}
+              hasMore={hasMore}
+              onLoadMore={loadMore}
+              error={jobsError}
+            >
+              {!jobsLoading && visibleJobs.length === 0 && (
+                <button
+                  className={styles.emptyResetBtn}
+                  onClick={handleClearAll}
+                  type="button"
+                >
+                  حذف همه فیلترها
+                </button>
+              )}
+            </JobListings>
+          </div>
+        ) : null}
       </div>
     </div>
   )

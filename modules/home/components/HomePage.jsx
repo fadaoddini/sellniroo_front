@@ -1,56 +1,49 @@
 'use client'
 
 import React, { useCallback, useEffect, useState } from 'react'
-import JobListingsSlot from '@/components/modules/JobListingsSlot'
-import NewsSectionSlot from '@/components/modules/NewsSectionSlot'
-import CTASectionSlot from '@/components/modules/CTASectionSlot'
-import VideoInstaSlot from '@/components/modules/VideoInstaSlot'
-import CatalogSlot from '@/components/modules/CatalogSlot'
 import {
-  SITE_MODULE_KEYS,
-  HOMEPAGE_ORDERABLE_KEYS,
-  sortHomepageModuleKeys,
-} from '@/config/siteModules'
-import { fetchSiteModules } from '@/services/siteModules'
+  fetchSiteSettings,
+  DEFAULT_SITE_SETTINGS,
+} from '@/services/siteSettings'
+import { normalizeHomeLayout } from '@/config/homeLayout'
+import PageBuilderRenderer from '@/components/layout/PageBuilderRenderer'
 
 import styles from '../styles/HomePage.module.css'
 
-function VideoInstaSectionSlot() {
-  return <VideoInstaSlot variant="section" />
-}
-
-const SLOT_BY_KEY = {
-  [SITE_MODULE_KEYS.NEWS_SECTION]: NewsSectionSlot,
-  [SITE_MODULE_KEYS.VIDEOINSTA]: VideoInstaSectionSlot,
-  [SITE_MODULE_KEYS.CATALOG]: CatalogSlot,
-  [SITE_MODULE_KEYS.JOB_LISTINGS]: JobListingsSlot,
-  [SITE_MODULE_KEYS.CTA_SECTION]: CTASectionSlot,
-}
-
-const DEFAULT_ORDER = [...HOMEPAGE_ORDERABLE_KEYS]
-
+/**
+ * صفحه اصلی فقط آنچه در تب «طراحی صفحه اصلی» ساخته شده را نشان می‌دهد.
+ * بدون fallback به ماژول‌های خودکار.
+ */
 const HomePage = ({ seoSubtitle = '', siteName = '' }) => {
-  const [order, setOrder] = useState(DEFAULT_ORDER)
+  const [homeLayout, setHomeLayout] = useState(null)
+  const [ready, setReady] = useState(false)
 
-  const refreshOrder = useCallback(async () => {
+  const refresh = useCallback(async () => {
     try {
-      const { list } = await fetchSiteModules({ force: false })
-      setOrder(sortHomepageModuleKeys(list))
+      const settings = await fetchSiteSettings({ force: false })
+      setHomeLayout(normalizeHomeLayout(settings?.home_layout))
     } catch {
-      setOrder(DEFAULT_ORDER)
+      setHomeLayout(normalizeHomeLayout(DEFAULT_SITE_SETTINGS.home_layout))
+    } finally {
+      setReady(true)
     }
   }, [])
 
   useEffect(() => {
-    refreshOrder()
-    const onChange = () => {
-      fetchSiteModules({ force: true }).then(({ list }) => {
-        setOrder(sortHomepageModuleKeys(list))
-      }).catch(() => {})
+    refresh()
+    const onLayout = (ev) => {
+      if (ev?.detail) {
+        setHomeLayout(normalizeHomeLayout(ev.detail))
+        setReady(true)
+      } else {
+        fetchSiteSettings({ force: true })
+          .then((s) => setHomeLayout(normalizeHomeLayout(s?.home_layout)))
+          .catch(() => {})
+      }
     }
-    window.addEventListener('site-modules-changed', onChange)
-    return () => window.removeEventListener('site-modules-changed', onChange)
-  }, [refreshOrder])
+    window.addEventListener('home-layout-changed', onLayout)
+    return () => window.removeEventListener('home-layout-changed', onLayout)
+  }, [refresh])
 
   return (
     <div className={styles.homeContainer}>
@@ -59,11 +52,10 @@ const HomePage = ({ seoSubtitle = '', siteName = '' }) => {
       ) : siteName ? (
         <h2 className="sr-only">{siteName}</h2>
       ) : null}
-      {order.map((key) => {
-        const Slot = SLOT_BY_KEY[key]
-        if (!Slot) return null
-        return <Slot key={key} />
-      })}
+
+      {ready ? (
+        <PageBuilderRenderer layout={homeLayout} fallback={null} />
+      ) : null}
     </div>
   )
 }

@@ -12,6 +12,7 @@ const NewsSearch = ({
   filterCategory, setFilterCategory,
   filterFeatured, setFilterFeatured,
   categories = [],
+  hideFeaturedFilter = false,
 }) => {
   const { language } = useLanguage()
 
@@ -99,17 +100,19 @@ const NewsSearch = ({
           </select>
         </div>
 
-        <div className={styles.filterGroup}>
-          <select
-            className={styles.filterSelect}
-            value={filterFeatured}
-            onChange={(e) => setFilterFeatured(e.target.value)}
-          >
-            <option value="all">{t.featured}: {t.all}</option>
-            <option value="featured">{t.isFeatured}</option>
-            <option value="breaking">{t.isBreaking}</option>
-          </select>
-        </div>
+        {!hideFeaturedFilter ? (
+          <div className={styles.filterGroup}>
+            <select
+              className={styles.filterSelect}
+              value={filterFeatured}
+              onChange={(e) => setFilterFeatured(e.target.value)}
+            >
+              <option value="all">{t.featured}: {t.all}</option>
+              <option value="featured">{t.isFeatured}</option>
+              <option value="breaking">{t.isBreaking}</option>
+            </select>
+          </div>
+        ) : null}
       </div>
     </div>
   )

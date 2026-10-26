@@ -8,23 +8,24 @@ import axios from 'axios'
 import {
   Tags, Plus, Pencil, Trash2, RefreshCw, Shield,
   CheckCircle2, X, LayoutDashboard, Power, Settings2,
+  Download, MessageCircle,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import Config from '@/config/config'
+import LucideIconPicker from '@/components/common/LucideIconPicker'
+import { resolveLucideIcon } from '@/utils/lucideIcons'
 import styles from './RequestTypes.module.css'
 
 const emptyForm = {
   name: '',
   name_en: '',
   description: '',
-  icon: '💬',
+  icon: 'Handshake',
   color: '#3b82f6',
   order: 10,
   is_active: true,
 }
-
-const ICON_PRESETS = ['💬', '🤝', '🛠️', '📋', '⭐', '📞', '💼', '✨', '🛒', '❓']
 
 export default function RequestTypesPage() {
   const router = useRouter()
@@ -39,6 +40,7 @@ export default function RequestTypesPage() {
   const [form, setForm] = useState(emptyForm)
   const [formError, setFormError] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [importing, setImporting] = useState(false)
 
   const canManage = user?.is_superuser || user?.is_staff || canManageEmployees
 
@@ -50,7 +52,7 @@ export default function RequestTypesPage() {
     name: 'Title (FA)',
     nameEn: 'Title (EN)',
     description: 'Description',
-    icon: 'Icon / emoji',
+    icon: 'Lucide icon',
     color: 'Color',
     order: 'Order',
     status: 'Status',
@@ -67,8 +69,12 @@ export default function RequestTypesPage() {
     confirmDelete: 'Delete this request type?',
     accessDenied: 'Access denied',
     needManager: 'Only managers and staff can manage request types',
-    hint: 'Active types appear in the contact form dialog on the homepage.',
+    hint: 'Active types appear in the contact form dialog on the homepage. Use Lucide icons (Handshake, Megaphone, MessageCircle, …).',
     nameRequired: 'Title is required',
+    importDefaults: 'Import defaults',
+    importConfirm:
+      'Warning: all existing request types will be deleted and replaced with Partnership, Advertising, and Consulting.\n\nContinue?',
+    importing: 'Importing…',
   } : {
     title: 'انواع درخواست تماس',
     subtitle: 'گزینه‌هایی که در فرم تماس صفحه اصلی نمایش داده می‌شوند',
@@ -77,7 +83,7 @@ export default function RequestTypesPage() {
     name: 'عنوان (فارسی)',
     nameEn: 'عنوان (انگلیسی)',
     description: 'توضیحات',
-    icon: 'آیکون / ایموجی',
+    icon: 'آیکون Lucide',
     color: 'رنگ',
     order: 'ترتیب',
     status: 'وضعیت',
@@ -94,8 +100,12 @@ export default function RequestTypesPage() {
     confirmDelete: 'آیا از حذف این نوع درخواست اطمینان دارید؟',
     accessDenied: 'دسترسی محدود',
     needManager: 'مدیریت انواع درخواست فقط برای مدیر و staff است',
-    hint: 'انواع فعال در دیالوگ انتخاب نوع درخواست فرم تماس صفحه اصلی دیده می‌شوند.',
+    hint: 'انواع فعال در دیالوگ فرم تماس دیده می‌شوند. آیکون باید از Lucide باشد (مثل Handshake، Megaphone، MessageCircle).',
     nameRequired: 'عنوان فارسی الزامی است',
+    importDefaults: 'ایمپورت پیش‌فرض',
+    importConfirm:
+      'هشدار: همهٔ انواع درخواست قبلی حذف می‌شوند و با «همکاری»، «تبلیغات» و «مشاوره» جایگزین می‌گردند.\n\nادامه می‌دهید؟',
+    importing: 'در حال ایمپورت…',
   }
 
   const fetchList = useCallback(async () => {
@@ -146,7 +156,7 @@ export default function RequestTypesPage() {
       name: item.name || '',
       name_en: item.name_en || '',
       description: item.description || '',
-      icon: item.icon || '💬',
+      icon: item.icon || 'Handshake',
       color: item.color || '#3b82f6',
       order: item.order ?? 10,
       is_active: item.is_active ?? true,
@@ -168,6 +178,24 @@ export default function RequestTypesPage() {
     return parts.join(' | ') || 'خطا در ذخیره'
   }
 
+  const runImportDefaults = async () => {
+    if (!window.confirm(t.importConfirm)) return
+    setImporting(true)
+    setError(null)
+    try {
+      await axios.post(
+        Config.endpoints.requser.typesSeed(),
+        {},
+        { headers: getAuthHeaders() },
+      )
+      await fetchList()
+    } catch (err) {
+      setError(fmtErrors(err.response?.data) || err.message)
+    } finally {
+      setImporting(false)
+    }
+  }
+
   const handleSave = async (e) => {
     e.preventDefault()
     setFormError(null)
@@ -181,7 +209,7 @@ export default function RequestTypesPage() {
         name: form.name.trim(),
         name_en: form.name_en.trim(),
         description: form.description.trim(),
-        icon: form.icon.trim() || '💬',
+        icon: form.icon.trim() || 'Handshake',
         color: form.color || '#3b82f6',
         order: Number(form.order) || 0,
         is_active: !!form.is_active,
@@ -286,6 +314,19 @@ export default function RequestTypesPage() {
             <Link href="/site-settings" className={styles.headerGhost}>
               <Settings2 size={15} /> {t.settings}
             </Link>
+            <button
+              type="button"
+              className={styles.headerGhost}
+              onClick={runImportDefaults}
+              disabled={importing}
+            >
+              {importing ? (
+                <RefreshCw size={15} className={styles.spinner} />
+              ) : (
+                <Download size={15} />
+              )}
+              {importing ? t.importing : t.importDefaults}
+            </button>
             <button type="button" className={styles.headerPrimary} onClick={openCreate}>
               <Plus size={16} /> {t.add}
             </button>
@@ -315,9 +356,15 @@ export default function RequestTypesPage() {
               </tr>
             </thead>
             <tbody>
-              {items.map((item) => (
+              {items.map((item) => {
+                const RowIcon = resolveLucideIcon(item.icon, MessageCircle)
+                return (
                 <tr key={item.id} className={!item.is_active ? styles.rowInactive : ''}>
-                  <td><span className={styles.iconCell}>{item.icon || '📋'}</span></td>
+                  <td>
+                    <span className={styles.iconCell} title={item.icon || 'MessageCircle'}>
+                      <RowIcon size={18} />
+                    </span>
+                  </td>
                   <td>
                     <strong>{item.name}</strong>
                     {item.color && (
@@ -359,7 +406,7 @@ export default function RequestTypesPage() {
                     </div>
                   </td>
                 </tr>
-              ))}
+              )})}
               {!items.length && (
                 <tr>
                   <td colSpan={6}>
@@ -421,24 +468,10 @@ export default function RequestTypesPage() {
 
               <div className={styles.formGroup}>
                 <label>{t.icon}</label>
-                <input
-                  value={form.icon}
-                  onChange={(e) => setForm((p) => ({ ...p, icon: e.target.value }))}
-                  placeholder="💬"
+                <LucideIconPicker
+                  value={form.icon || 'Handshake'}
+                  onChange={(name) => setForm((p) => ({ ...p, icon: name }))}
                 />
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
-                  {ICON_PRESETS.map((ic) => (
-                    <button
-                      key={ic}
-                      type="button"
-                      className={styles.iconBtn}
-                      style={{ fontSize: 16 }}
-                      onClick={() => setForm((p) => ({ ...p, icon: ic }))}
-                    >
-                      {ic}
-                    </button>
-                  ))}
-                </div>
               </div>
 
               <div className={styles.formRow}>

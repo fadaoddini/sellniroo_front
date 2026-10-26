@@ -1,0 +1,332 @@
+.shell {
+  width: 100%;
+  margin: var(--jb-mar-t, 0) var(--jb-mar-r, 0) var(--jb-mar-b, 0)
+    var(--jb-mar-l, 0);
+  padding: var(--jb-pad-t, 0) var(--jb-pad-r, 0) var(--jb-pad-b, 0)
+    var(--jb-pad-l, 0);
+  box-sizing: border-box;
+}
+
+.inner {
+  width: 100%;
+  max-width: var(--jb-max, 1200px);
+  margin-inline: auto;
+}
+
+.shell[data-section-full='1'] .inner {
+  max-width: none;
+}
+
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1c1917;
+  font-family: var(--font-iran-bold, var(--font-iran, sans-serif));
+}
+
+.more {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #c27800;
+  text-decoration: none;
+}
+
+.more:hover {
+  text-decoration: underline;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--jb-cols, 2), minmax(0, 1fr));
+  gap: 0.85rem 1rem;
+}
+
+.gridList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.empty,
+.loading,
+.error {
+  margin: 0;
+  padding: 1.25rem;
+  text-align: center;
+  color: #78716c;
+  font-size: 0.85rem;
+  border: 1px dashed rgba(28, 25, 23, 0.12);
+  border-radius: 12px;
+  background: #fafaf9;
+}
+
+@media (max-width: 767px) {
+  .hideOnMobile {
+    display: none !important;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 768px) {
+  .hideOnDesktop {
+    display: none !important;
+  }
+}
+
+/* جستجو */
+.searchForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: stretch;
+  background: #fff;
+  border: 1px solid rgba(28, 25, 23, 0.1);
+  border-radius: 14px;
+  padding: 0.45rem;
+  box-shadow: 0 8px 24px rgba(28, 25, 23, 0.05);
+}
+
+.searchInput {
+  flex: 1 1 180px;
+  min-width: 0;
+  border: none;
+  outline: none;
+  padding: 0.65rem 0.85rem;
+  font: inherit;
+  font-size: 0.9rem;
+  background: transparent;
+}
+
+.citySelect {
+  flex: 0 1 140px;
+  border: 1px solid rgba(28, 25, 23, 0.08);
+  border-radius: 10px;
+  padding: 0.45rem 0.65rem;
+  font: inherit;
+  font-size: 0.82rem;
+  background: #fafaf9;
+}
+
+.searchBtn {
+  flex: 0 0 auto;
+  border: none;
+  border-radius: 10px;
+  padding: 0.65rem 1.1rem;
+  font: inherit;
+  font-weight: 750;
+  font-size: 0.82rem;
+  background: #1c1917;
+  color: #fafaf9;
+  cursor: pointer;
+}
+
+.searchBtn:hover {
+  background: #44403c;
+}
+
+/* دسته‌ها / شرکت / رزومه / آمار */
+.catGrid,
+.companyGrid,
+.resumeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.65rem;
+}
+
+/* سایدبار / تعداد ستون از تنظیمات */
+.sidePanelGrid {
+  grid-template-columns: repeat(var(--jb-cols, 1), minmax(0, 1fr));
+}
+
+.shell[data-jb-widget='verified_companies'],
+.shell[data-jb-widget='public_resumes'],
+.shell[data-jb-widget='job_stats_strip'] {
+  container-type: inline-size;
+  background: #fff;
+  border: 1px solid rgba(28, 25, 23, 0.08);
+  border-radius: 16px;
+  padding: 1rem 0.95rem;
+  box-shadow: 0 4px 18px rgba(28, 25, 23, 0.04);
+}
+
+@container (max-width: 340px) {
+  .sidePanelGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statsRow {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.shell[data-jb-widget='verified_companies'] .head,
+.shell[data-jb-widget='public_resumes'] .head,
+.shell[data-jb-widget='job_stats_strip'] .head {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid rgba(28, 25, 23, 0.06);
+}
+
+.shell[data-jb-widget='verified_companies'] .title,
+.shell[data-jb-widget='public_resumes'] .title,
+.shell[data-jb-widget='job_stats_strip'] .title {
+  font-size: 0.95rem;
+}
+
+.catCard,
+.companyCard,
+.resumeCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem 0.7rem;
+  border-radius: 12px;
+  border: 1px solid rgba(28, 25, 23, 0.07);
+  background: #fafaf9;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.catCard:hover,
+.companyCard:hover,
+.resumeCard:hover {
+  border-color: rgba(230, 126, 34, 0.35);
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(28, 25, 23, 0.06);
+}
+
+.cardTop {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  width: 100%;
+}
+
+.cardIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: rgba(230, 126, 34, 0.1);
+  color: #e67e22;
+}
+
+.cardBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.catName,
+.companyName,
+.resumeName {
+  font-weight: 750;
+  font-size: 0.84rem;
+  color: #1c1917;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.catMeta,
+.companyMeta,
+.resumeMeta {
+  font-size: 0.7rem;
+  color: #78716c;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(3, 105, 161, 0.1);
+  color: #0369a1;
+}
+
+.quickRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(28, 25, 23, 0.1);
+  background: #fafaf9;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #44403c;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.chip:hover {
+  border-color: rgba(194, 120, 0, 0.4);
+  background: #fffbeb;
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(var(--jb-cols, 2), minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.statCard {
+  padding: 0.75rem 0.7rem;
+  border-radius: 12px;
+  background: linear-gradient(165deg, #fff8ef 0%, #fff 70%);
+  border: 1px solid rgba(230, 126, 34, 0.16);
+  min-width: 0;
+}
+
+.statValue {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #1c1917;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  font-family: var(--font-iran-bold, var(--font-iran, sans-serif));
+}
+
+.statLabel {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.68rem;
+  color: #78716c;
+  font-weight: 650;
+}

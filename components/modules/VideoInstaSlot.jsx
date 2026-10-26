@@ -7,9 +7,9 @@ import VideoInstaStoriesRail from '@/components/Story/VideoInstaStoriesRail'
 import { SITE_MODULE_KEYS } from '@/config/siteModules'
 
 /**
- * videoinsta
- * - variant="rail": نوار استوری زیر breaking news (موبایل)
- * - variant="section": آرشیو کامل صفحه اصلی (دسکتاپ)
+ * videoinsta — فقط از ویجت صفحه‌ساز فراخوانی شود (سراسری نیست)
+ * - variant="rail": نوار استوری دایره‌ای
+ * - variant="section": آرشیو کامل ویدیو
  */
 export default function VideoInstaSlot({ variant = 'section', ...props }) {
   return (

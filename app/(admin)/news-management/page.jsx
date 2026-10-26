@@ -1,11 +1,31 @@
 // app/news-management/page.jsx
 'use client'
 
-import React from 'react'
+import React, { Suspense } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useRouter } from 'next/navigation'
 import NewsManagement from '@/components/newsAdmin/NewsManagement'
+
+function LoadingBox({ dir, text }) {
+  return (
+    <div
+      dir={dir}
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'var(--macos-bg)',
+        color: '#6f675c',
+        fontFamily: 'var(--font-iran)',
+        fontSize: 13,
+      }}
+    >
+      {text}
+    </div>
+  )
+}
 
 const NewsManagementPage = () => {
   const { isAuthenticated, loading, user, hasPermission } = useAuth()
@@ -21,38 +41,28 @@ const NewsManagementPage = () => {
   }, [isAuthenticated, loading, router])
 
   if (loading) {
-    return (
-      <div dir={dir} style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--macos-bg)',
-        color: '#6f675c',
-        fontFamily: 'var(--font-iran)',
-        fontSize: 13,
-      }}>
-        در حال بارگذاری...
-      </div>
-    )
+    return <LoadingBox dir={dir} text="در حال بارگذاری..." />
   }
 
   if (!isAuthenticated) return null
 
   if (!canAccess) {
     return (
-      <div dir={dir} style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--macos-bg)',
-        color: '#6f675c',
-        fontFamily: 'var(--font-iran)',
-        fontSize: 13,
-        textAlign: 'center',
-        padding: 40,
-      }}>
+      <div
+        dir={dir}
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'var(--macos-bg)',
+          color: '#6f675c',
+          fontFamily: 'var(--font-iran)',
+          fontSize: 13,
+          textAlign: 'center',
+          padding: 40,
+        }}
+      >
         دسترسی به بخش اخبار برای شما فعال نیست.
       </div>
     )
@@ -60,7 +70,9 @@ const NewsManagementPage = () => {
 
   return (
     <div dir={dir}>
-      <NewsManagement />
+      <Suspense fallback={<LoadingBox dir={dir} text="در حال بارگذاری..." />}>
+        <NewsManagement />
+      </Suspense>
     </div>
   )
 }

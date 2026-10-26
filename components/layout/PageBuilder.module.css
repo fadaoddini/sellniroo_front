@@ -1,0 +1,198 @@
+.page {
+  width: 100%;
+}
+
+.tickerBarWrap {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Container: فقط max-width + وسط‌چین — بدون فاصله اضافه از چپ/راست */
+.pageBoxed .sectionBoxed .columns,
+.pageFluid .sectionBoxed .columns {
+  max-width: var(--home-max-width, 1200px);
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 0;
+  box-sizing: border-box;
+}
+
+.sectionFull .columns {
+  max-width: none;
+  width: 100%;
+  padding-inline: 0;
+}
+
+.widgetBleed {
+  margin-inline: 0;
+  width: 100%;
+  max-width: none;
+}
+
+/* ویجت تمام‌عرض داخل سکشن چندستونه — یک ردیف کامل */
+.widgetSpanAll {
+  width: 100%;
+  min-width: 0;
+}
+
+/* اسلات مقاله سینگل باید ستون را کامل پر کند */
+.widget:has([data-article-slot='1']) {
+  width: 100%;
+  min-width: 0;
+}
+
+.section {
+  width: 100%;
+  overflow: visible;
+}
+
+.column,
+.widget {
+  overflow: visible;
+}
+
+.pad_none { padding-block: 0; }
+.pad_sm { padding-block: 0.5rem; }
+.pad_md { padding-block: 0.85rem; }
+.pad_lg { padding-block: 1.5rem; }
+
+.columns {
+  display: grid;
+  /* فقط فاصله افقی بین ستون‌ها — عمودی صفر تا منو به برکینگ نچسبد */
+  column-gap: 0.75rem;
+  row-gap: 0;
+  align-items: stretch;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.column {
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-self: start;
+  /* بدون gap اجباری — برکینگ و منو باید به هم بچسبند */
+  gap: 0;
+  width: 100%;
+}
+
+.widget {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-width: 0;
+}
+
+/*
+ * فقط بین ویجت‌های محتوایی پشت‌سرهم فاصله بگذار
+ * (نه کروم: برکینگ‌نیوز / منو / هیرو / نوار پایین)
+ */
+.column > .widget:not([data-pb-chrome='1']) + .widget:not([data-pb-chrome='1']) {
+  margin-top: 0;
+}
+
+.simpleWidget {
+  display: flex;
+  align-items: center;
+}
+
+.logoImg {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px dashed rgba(20, 24, 31, 0.15);
+  background: rgba(20, 24, 31, 0.03);
+  color: #5a6270;
+}
+
+.placeholder strong {
+  font-size: 0.9rem;
+  color: #14181f;
+}
+
+.placeholder span {
+  font-size: 0.75rem;
+}
+
+.spacer {
+  height: 1.5rem;
+}
+
+.textBlock {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 767px) {
+  .columns {
+    grid-template-columns: 1fr !important;
+    column-gap: 0;
+    row-gap: 0;
+  }
+
+  .columns > .column {
+    grid-column: 1 / -1 !important;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    gap: 0.75rem;
+  }
+
+  /* فاصله فقط وقتی ستون کناری دسکتاپ زیر محتوا می‌آید */
+  .columns > .column[data-pb-col='2'],
+  .columns > .column[data-pb-col='3'],
+  .columns > .column[data-pb-col='4'] {
+    margin-top: 0.85rem;
+  }
+
+  /*
+   * موبایل: بدون padding اجباری روی کل سکشن —
+   * مارجین/inset منو و برکینگ فقط از تنظیمات خود ویجت می‌آید.
+   * محتوا (مقاله و بقیه) gutter می‌گیرد.
+   */
+  .sectionBoxed .columns,
+  .sectionFull .columns {
+    padding-inline: 0;
+  }
+
+  .column > .widget:not([data-pb-chrome='1']) {
+    padding-inline: var(--home-gutter, 16px);
+    box-sizing: border-box;
+  }
+
+  /* سینگل خبر/آگهی: تمام‌عرض بدون gutter تا حس اپ به‌هم نریزد */
+  .column > .widget:has([data-article-slot='1']) {
+    padding-inline: 0;
+  }
+
+  .column > .widget[data-pb-chrome='1'] {
+    padding-inline: 0;
+    margin-inline: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .widgetBleed {
+    margin-inline: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .page {
+    overflow-x: hidden;
+    overflow-x: clip;
+    max-width: 100%;
+    width: 100%;
+  }
+}

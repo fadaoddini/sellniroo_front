@@ -51,7 +51,7 @@ const buildFormData = (news) => ({
 
 const NewsForm = ({ news, categories = [], onClose, onSubmit }) => {
   const { language, dir } = useLanguage()
-  const isEdit = !!news
+  const isEdit = !!(news?.id || news?.slug)
 
   const [formData, setFormData] = useState(() => buildFormData(news))
   const [errors, setErrors] = useState({})

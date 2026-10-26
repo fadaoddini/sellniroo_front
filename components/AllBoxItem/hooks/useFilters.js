@@ -2,6 +2,12 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import jobisellApi from '@/services/jobisellApi';
+import {
+  DEMO_FILTER_OPTIONS,
+  DEMO_JOBS,
+  filterDemoJobs,
+  paginateDemoJobs,
+} from '../constants/demoJobs';
 
 const PAGE_SIZE = 12;
 
@@ -36,9 +42,12 @@ const buildFiltersQuery = (filters, sortBy) => {
   return params.toString();
 };
 
-export const useFilters = (initialFilters = {}) => {
+export const useFilters = (initialFilters = {}, options = {}) => {
   const router = useRouter();
   const pathname = usePathname();
+  const demoMode = !!options.demoMode;
+  /** روی صفحهٔ اصلی / ویجت، URL را عوض نکن */
+  const syncUrl = options.syncUrl !== false && !demoMode;
 
   const [filters, setFilters] = useState(() => ({
     adType: initialFilters.adType || '',
@@ -93,6 +102,14 @@ export const useFilters = (initialFilters = {}) => {
     (async () => {
       try {
         setOptionsLoading(true);
+        if (demoMode) {
+          if (!mounted) return;
+          setFilterOptions(DEMO_FILTER_OPTIONS);
+          setAllProvinces(DEMO_FILTER_OPTIONS.provinces || []);
+          setAllCities(DEMO_FILTER_OPTIONS.cities || []);
+          setAllNeighborhoods(DEMO_FILTER_OPTIONS.neighborhoods || []);
+          return;
+        }
         const data = await jobisellApi.getFilterOptions();
         if (!mounted) return;
         setFilterOptions(data);
@@ -101,6 +118,12 @@ export const useFilters = (initialFilters = {}) => {
         setAllNeighborhoods(data.neighborhoods || []);
       } catch (err) {
         console.error('Error loading filter options:', err);
+        if (mounted && demoMode) {
+          setFilterOptions(DEMO_FILTER_OPTIONS);
+          setAllProvinces(DEMO_FILTER_OPTIONS.provinces || []);
+          setAllCities(DEMO_FILTER_OPTIONS.cities || []);
+          setAllNeighborhoods(DEMO_FILTER_OPTIONS.neighborhoods || []);
+        }
       } finally {
         if (mounted) setOptionsLoading(false);
       }
@@ -108,7 +131,7 @@ export const useFilters = (initialFilters = {}) => {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [demoMode]);
 
   const availableCities = useMemo(() => {
     if (!filters.province) return [];
@@ -174,8 +197,19 @@ export const useFilters = (initialFilters = {}) => {
     }
 
     try {
-      const params = buildQueryParams(page);
-      const data = await jobisellApi.getJobs(params);
+      let data;
+      if (demoMode) {
+        await new Promise((r) => setTimeout(r, append ? 180 : 280));
+        const filtered = filterDemoJobs(
+          DEMO_JOBS,
+          filtersRef.current,
+          sortByRef.current
+        );
+        data = paginateDemoJobs(filtered, page, PAGE_SIZE);
+      } else {
+        const params = buildQueryParams(page);
+        data = await jobisellApi.getJobs(params);
+      }
 
       if (reqId !== requestIdRef.current) return;
 
@@ -235,11 +269,25 @@ export const useFilters = (initialFilters = {}) => {
       if (reqId !== requestIdRef.current) return;
       console.error('Error fetching jobs:', err);
       if (!append) {
-        setJobsError(err);
-        setFilteredJobs([]);
-        hasMoreRef.current = false;
-        setHasMore(false);
-        setTotalCount(0);
+        if (demoMode) {
+          const filtered = filterDemoJobs(
+            DEMO_JOBS,
+            filtersRef.current,
+            sortByRef.current
+          );
+          const data = paginateDemoJobs(filtered, 1, PAGE_SIZE);
+          setFilteredJobs(data.results);
+          setTotalCount(data.count);
+          setJobsError(null);
+          hasMoreRef.current = !!data.next;
+          setHasMore(!!data.next);
+        } else {
+          setJobsError(err);
+          setFilteredJobs([]);
+          hasMoreRef.current = false;
+          setHasMore(false);
+          setTotalCount(0);
+        }
       } else {
         // خطا در صفحه بعد → توقف برای جلوگیری از لوپ
         hasMoreRef.current = false;
@@ -256,7 +304,7 @@ export const useFilters = (initialFilters = {}) => {
         setIsLoadingMore(false);
       }
     }
-  }, [buildQueryParams]);
+  }, [buildQueryParams, demoMode]);
 
   // فقط با تغییر واقعی فیلتر/مرتب‌سازی ریست کن
   useEffect(() => {
@@ -281,8 +329,9 @@ export const useFilters = (initialFilters = {}) => {
     fetchJobs({ page: pageRef.current + 1, append: true });
   }, [fetchJobs]);
 
-  // Sync URL — بدون remount و بدون لوپ
+  // Sync URL — بدون remount و بدون لوپ (فقط صفحهٔ /jobs)
   useEffect(() => {
+    if (!syncUrl) return;
     if (isFirstUrlSync.current) {
       isFirstUrlSync.current = false;
       return;
@@ -296,7 +345,7 @@ export const useFilters = (initialFilters = {}) => {
 
     const newUrl = nextQuery ? `${pathname}?${nextQuery}` : pathname;
     router.replace(newUrl, { scroll: false });
-  }, [queryKey, pathname, router]);
+  }, [queryKey, pathname, router, syncUrl]);
 
   const updateFilter = useCallback((key, value) => {
     setFilters((prev) => {

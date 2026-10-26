@@ -17,6 +17,7 @@ import CompanyTab from "./company/CompanyTab";
 import ResumeTab from "./resume/ResumeTab";
 import QuizProfilePanel from "./QuizProfilePanel";
 import SchoolProfilePanel from "@/components/School/SchoolProfilePanel";
+import ShopProfilePanel from "./ShopProfilePanel";
 import styles from "../styles/ProfilePage.module.css";
 import { Loader2 } from "lucide-react";
 import { isSiteModuleActive } from "@/services/siteModules";
@@ -31,6 +32,7 @@ const JOB_TABS = [
   { key: "resume", label: "رزومه من", icon: "file-text" },
 ];
 
+const SHOP_TAB = { key: "shop", label: "فروشگاه", icon: "shopping" };
 const QUIZ_TAB = { key: "quiz", label: "آزمون‌ها", icon: "brain" };
 const SCHOOL_TAB = { key: "school", label: "مدرسه", icon: "school" };
 
@@ -47,13 +49,15 @@ function ProfilePageInner() {
   const searchParams = useSearchParams();
   const [quizOn, setQuizOn] = useState(false);
   const [schoolOn, setSchoolOn] = useState(false);
+  const [shopOn, setShopOn] = useState(false);
 
   const tabs = useMemo(() => {
     const list = [...JOB_TABS];
+    if (shopOn) list.push(SHOP_TAB);
     if (quizOn) list.push(QUIZ_TAB);
     if (schoolOn) list.push(SCHOOL_TAB);
     return list;
-  }, [quizOn, schoolOn]);
+  }, [quizOn, schoolOn, shopOn]);
   const tabKeys = useMemo(() => new Set(tabs.map((t) => t.key)), [tabs]);
 
   const initialTab = useMemo(() => {
@@ -78,10 +82,12 @@ function ProfilePageInner() {
       Promise.all([
         isSiteModuleActive(SITE_MODULE_KEYS.QUIZ, { force: true }),
         isSiteModuleActive(SITE_MODULE_KEYS.SCHOOL, { force: true }),
-      ]).then(([quiz, school]) => {
+        isSiteModuleActive(SITE_MODULE_KEYS.SHOP, { force: true }),
+      ]).then(([quiz, school, shop]) => {
         if (cancelled) return;
         setQuizOn(!!quiz);
         setSchoolOn(!!school);
+        setShopOn(!!shop);
       });
     };
     refresh();
@@ -150,7 +156,7 @@ function ProfilePageInner() {
       <div className={styles.container}>
         <ProfileHeader user={user} variant="job" showJobShortcuts />
 
-        {activeTab !== "quiz" ? (
+        {activeTab !== "quiz" && activeTab !== "shop" && activeTab !== "school" ? (
           <ProfileStats
             stats={stats}
             loading={statsLoading}
@@ -184,6 +190,9 @@ function ProfilePageInner() {
           )}
           {activeTab === "resume" && (
             <ResumeTab key={`resume-${refreshKey}`} onRefresh={handleRefresh} />
+          )}
+          {activeTab === "shop" && shopOn && (
+            <ShopProfilePanel key={`shop-${refreshKey}`} />
           )}
           {activeTab === "quiz" && quizOn && (
             <QuizProfilePanel key={`quiz-${refreshKey}`} variant="embedded" />

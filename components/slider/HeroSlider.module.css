@@ -3,55 +3,109 @@
 /* ============================================
    کانتینر اصلی اسلایدر
    ============================================ */
+.shell {
+  width: 100%;
+  box-sizing: border-box;
+  margin: var(--slider-mt, 0) var(--slider-mr, 0) var(--slider-mb, 0)
+    var(--slider-ml, 0);
+  padding: var(--slider-pt, 0) var(--slider-pr, 0) var(--slider-pb, 0)
+    var(--slider-pl, 0);
+}
+
+.shellFullBleed {
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  margin-top: var(--slider-mt, 0);
+  margin-bottom: var(--slider-mb, 0);
+}
+
+.shellInset {
+  width: auto;
+  max-width: 100%;
+}
+
 .slider {
   position: relative;
   width: 100%;
-  height: 250px;
-  max-height:250px;
+  height: var(--slider-h, 250px);
+  max-height: var(--slider-h, 250px);
   overflow: hidden;
+  border-radius:
+    var(--slider-tl, 0) var(--slider-tr, 0) var(--slider-br, 0) var(--slider-bl, 0);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   background: var(--primary-dark, #fb9700);
   isolation: isolate;
 }
 
+.sliderSwipe {
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.sliderDragging {
+  cursor: grabbing;
+}
+
+.heightSm {
+  --slider-h: 180px;
+}
+
+.heightMd {
+  --slider-h: 250px;
+}
+
+.heightLg {
+  --slider-h: 360px;
+}
+
+@media (max-width: 767px) {
+  .hideOnMobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .hideOnDesktop {
+    display: none !important;
+  }
+}
+
 /* ============================================
-   محفظه اسلایدها
+   محفظه اسلایدها — ریل افقی (کشیدن مثل اپ)
    ============================================ */
 .slidesWrapper {
   position: absolute;
   inset: 0;
-  width: 100%;
+  display: flex;
+  flex-direction: row;
   height: 100%;
+  width: 100%;
+  will-change: transform;
+  direction: ltr;
 }
 
 /* ============================================
    هر اسلاید
    ============================================ */
 .slide {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  flex: 0 0 100%;
   width: 100%;
   height: 100%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0;
-  visibility: hidden;
-  transform: scale(1.08);
-  transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 1.2s cubic-bezier(0.4, 0, 0.2, 1),
-              visibility 1s;
   background-color: var(--primary-dark, #fb9700);
   contain: layout paint;
-  content-visibility: auto;
+  direction: rtl;
 }
 
 .slide.active {
-  opacity: 1;
-  visibility: visible;
-  transform: scale(1);
-  z-index: 2;
-  content-visibility: visible;
+  z-index: 1;
 }
 
 /* ============================================
@@ -203,7 +257,7 @@
 }
 
 /* ============================================
-   دات‌های ناوبری (پایین مرکز)
+   دات‌های ناوبری — روی اسلایدر
    ============================================ */
 .dots {
   position: absolute;
@@ -212,14 +266,38 @@
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--slider-dots-gap, 8px);
   z-index: 10;
-  padding: 0.35rem 0.75rem;
-  background: rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: var(--slider-dots-py, 6px) var(--slider-dots-px, 12px);
+  background: var(--slider-dots-bg, rgba(0, 0, 0, 0.25));
+  backdrop-filter: blur(var(--slider-dots-blur, 10px));
+  -webkit-backdrop-filter: blur(var(--slider-dots-blur, 10px));
+  border-radius: var(--slider-dots-radius, 999px);
+  border: var(--slider-dots-bw, 1px) solid
+    var(--slider-dots-bc, rgba(255, 255, 255, 0.12));
+  box-shadow: var(--slider-dots-shadow, none);
+  box-sizing: border-box;
+}
+
+/* دات‌ها زیر اسلایدر */
+.dotsBelow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--slider-dots-gap, 8px);
+  margin-top: var(--slider-dots-mt, 12px);
+  padding: var(--slider-dots-py, 6px) var(--slider-dots-px, 12px);
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  box-sizing: border-box;
+  background: var(--slider-dots-bg, rgba(0, 0, 0, 0.25));
+  backdrop-filter: blur(var(--slider-dots-blur, 10px));
+  -webkit-backdrop-filter: blur(var(--slider-dots-blur, 10px));
+  border-radius: var(--slider-dots-radius, 999px);
+  border: var(--slider-dots-bw, 1px) solid
+    var(--slider-dots-bc, rgba(255, 255, 255, 0.12));
+  box-shadow: var(--slider-dots-shadow, none);
 }
 
 /* ============================================
@@ -227,10 +305,10 @@
    ============================================ */
 .dot {
   position: relative;
-  width: 8px;
-  height: 8px;
+  width: var(--slider-dot-size, 8px);
+  height: var(--slider-dot-size, 8px);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
+  background: var(--slider-dot-color, rgba(255, 255, 255, 0.4));
   border: none;
   cursor: pointer;
   padding: 0;
@@ -239,15 +317,15 @@
 }
 
 .dot:hover {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--slider-dot-hover, rgba(255, 255, 255, 0.7));
   transform: scale(1.2);
 }
 
 /* دات فعال - کشیده میشه */
 .dotActive {
-  width: 28px;
+  width: var(--slider-dot-active-w, 28px);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--slider-dot-active, rgba(255, 255, 255, 0.3));
 }
 
 /* ============================================
@@ -261,8 +339,8 @@
   left: 0;
   background: linear-gradient(
     90deg,
-    var(--primary, #fbc300),
-    var(--primary-dark, #fb9700)
+    var(--slider-dot-progress-from, #fbc300),
+    var(--slider-dot-progress-to, #fb9700)
   );
   border-radius: 999px;
   transform-origin: right center;
@@ -288,12 +366,18 @@
 
 /* تبلت */
 @media (max-width: 1024px) {
-  .slider {
-    height: 180px;
-    max-height: 180px;
-    border-radius: 14px;
+  .heightSm {
+    --slider-h: 140px;
   }
-  
+
+  .heightMd {
+    --slider-h: 180px;
+  }
+
+  .heightLg {
+    --slider-h: 260px;
+  }
+
   .content {
     padding: 0 3rem;
   }
@@ -319,12 +403,18 @@
 
 /* موبایل بزرگ */
 @media (max-width: 768px) {
-  .slider {
-    height: 148px;
-    max-height: 148px;
-    border-radius: 0 0 16px 16px;
+  .heightSm {
+    --slider-h: 120px;
   }
-  
+
+  .heightMd {
+    --slider-h: 148px;
+  }
+
+  .heightLg {
+    --slider-h: 200px;
+  }
+
   .content {
     padding: 0 1.5rem;
     max-width: 100%;
@@ -346,28 +436,23 @@
   
   .dots {
     bottom: 0.6rem;
-    gap: 0.35rem;
-    padding: 0.25rem 0.6rem;
-  }
-  
-  .dot {
-    width: 6px;
-    height: 6px;
-  }
-  
-  .dotActive {
-    width: 22px;
   }
 }
 
 /* موبایل کوچک */
 @media (max-width: 480px) {
-  .slider {
-    height: 140px;
-    max-height: 140px;
-    border-radius: 10px;
+  .heightSm {
+    --slider-h: 110px;
   }
-  
+
+  .heightMd {
+    --slider-h: 140px;
+  }
+
+  .heightLg {
+    --slider-h: 180px;
+  }
+
   .content {
     padding: 0 1rem;
   }
@@ -383,25 +468,21 @@
   
   .dots {
     bottom: 0.5rem;
-    padding: 0.2rem 0.5rem;
-    gap: 0.3rem;
-  }
-  
-  .dot {
-    width: 5px;
-    height: 5px;
-  }
-  
-  .dotActive {
-    width: 18px;
   }
 }
 
 /* موبایل خیلی کوچک */
 @media (max-width: 360px) {
-  .slider {
-    height: 130px;
-    max-height: 130px;
+  .heightSm {
+    --slider-h: 100px;
+  }
+
+  .heightMd {
+    --slider-h: 130px;
+  }
+
+  .heightLg {
+    --slider-h: 160px;
   }
   
   .title {

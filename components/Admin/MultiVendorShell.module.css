@@ -1,0 +1,154 @@
+.page {
+  --ink: #1c1915;
+  --muted: #7a7368;
+  --line: rgba(80, 55, 20, 0.1);
+  --gold: #f5c400;
+  --gold-dark: #a86a00;
+  --surface: #fff;
+  --soft: #faf7f1;
+  --radius: 14px;
+
+  min-height: 100vh;
+  padding: 1.25rem 0 3rem;
+  background:
+    radial-gradient(900px 320px at 10% -5%, rgba(245, 196, 0, 0.16), transparent 55%),
+    linear-gradient(180deg, #f3eee6 0%, #f7f4ef 45%, #f5f2ec 100%);
+  color: var(--ink);
+  font-family: var(--font-iran, Shabnam, Tahoma, sans-serif);
+}
+
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1.05rem 1.15rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: 0 8px 24px rgba(60, 40, 10, 0.05);
+}
+
+.eyebrow {
+  margin: 0 0 0.2rem;
+  font-size: 0.7rem;
+  font-weight: 750;
+  color: var(--gold-dark);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 850;
+}
+
+.sub {
+  margin: 0.3rem 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  max-width: 36rem;
+  line-height: 1.5;
+}
+
+.dashBtn,
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 780;
+  text-decoration: none;
+}
+
+.dashBtn {
+  border: 1px solid var(--line);
+  background: var(--soft);
+  color: var(--muted);
+}
+
+.primaryBtn {
+  background: var(--gold);
+  color: var(--ink);
+  margin-top: 0.75rem;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.navItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.navItem:hover {
+  border-color: rgba(168, 106, 0, 0.35);
+  color: var(--ink);
+}
+
+.navOn {
+  border-color: rgba(168, 106, 0, 0.4);
+  background: rgba(245, 196, 0, 0.2);
+  color: var(--ink);
+}
+
+.body {
+  min-width: 0;
+}
+
+.stateBox,
+.denied {
+  max-width: 480px;
+  margin: 4rem auto;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.denied h1 {
+  margin: 0.75rem 0 0.4rem;
+  font-size: 1.1rem;
+}
+
+.denied p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.spin {
+  animation: spin 0.85s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

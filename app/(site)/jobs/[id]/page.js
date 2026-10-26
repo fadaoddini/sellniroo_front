@@ -3,23 +3,33 @@ import { notFound } from 'next/navigation';
 import JobDetailClient from './JobDetailClient';
 import JobsPageSlot from '@/components/modules/JobsPageSlot';
 import Config from '@/config/config';
+import { isSiteModuleActive } from '@/services/siteModules';
+import { SITE_MODULE_KEYS } from '@/config/siteModules';
+import {
+  getDemoJobById,
+  isDemoJobId,
+} from '@/components/AllBoxItem/constants/demoJobs';
 
-// دریافت جزئیات آگهی از سرور (SSR/SSG)
+// دریافت جزئیات آگهی از سرور (SSR) — با پشتیبانی آگهی‌های دمو ویجت
 async function getJob(id) {
+  if (isDemoJobId(id)) {
+    return getDemoJobById(id);
+  }
+
   try {
     const res = await fetch(Config.endpoints.jobisell.jobs.detail(id), {
-      next: { revalidate: 60 }, // cache 60 ثانیه
+      next: { revalidate: 60 },
     });
 
     if (!res.ok) {
-      if (res.status === 404) return null;
+      if (res.status === 404) return getDemoJobById(id);
       throw new Error(`Failed to fetch job: ${res.status}`);
     }
 
     return await res.json();
   } catch (err) {
     console.error('Error fetching job:', err);
-    return null;
+    return getDemoJobById(id);
   }
 }
 
@@ -34,7 +44,7 @@ export async function generateMetadata({ params }) {
   }
 
   return {
-    title: `${job.title} | آریا استاد`,
+    title: `${job.title}${job.is_demo ? ' (دمو)' : ''} | آریا استاد`,
     description: job.description?.substring(0, 160) || 'جزئیات آگهی شغلی',
     openGraph: {
       title: job.title,
@@ -45,6 +55,13 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function JobDetailPage({ params }) {
+  const jobBoardOn = await isSiteModuleActive(SITE_MODULE_KEYS.JOB_BOARD, {
+    force: true,
+  });
+  if (!jobBoardOn) {
+    notFound();
+  }
+
   const job = await getJob(params.id);
 
   if (!job) {

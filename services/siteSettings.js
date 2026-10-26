@@ -1,6 +1,32 @@
 // services/siteSettings.js — تنظیمات برند / هدر / سئو
 import Config from '@/config/config'
 import { getFullImageUrl } from '@/utils/imageUrl'
+import {
+  DEFAULT_HOME_LAYOUT,
+  DEFAULT_NEWS_SINGLE_LAYOUT,
+  DEFAULT_NEWS_LIST_LAYOUT,
+  DEFAULT_JOB_SINGLE_LAYOUT,
+  DEFAULT_PRODUCT_SINGLE_LAYOUT,
+  DEFAULT_SHOP_LIST_LAYOUT,
+  normalizeHomeLayout,
+  normalizeNewsSingleLayout,
+  normalizeNewsListLayout,
+  normalizeJobSingleLayout,
+  normalizeProductSingleLayout,
+  normalizeShopListLayout,
+} from '@/config/homeLayout'
+import {
+  DEFAULT_NEWS_SINGLE_PAGE_SETTINGS,
+  normalizeNewsSinglePageSettings,
+} from '@/config/newsSinglePageSettings'
+import {
+  DEFAULT_JOB_SINGLE_PAGE_SETTINGS,
+  normalizeJobSinglePageSettings,
+} from '@/config/jobSinglePageSettings'
+import {
+  DEFAULT_PRODUCT_SINGLE_PAGE_SETTINGS,
+  normalizeProductSinglePageSettings,
+} from '@/config/productSinglePageSettings'
 
 export const DEFAULT_SITE_SETTINGS = {
   site_name: 'سلنیرو',
@@ -51,6 +77,15 @@ export const DEFAULT_SITE_SETTINGS = {
   twitter_title: '',
   twitter_description: '',
   robots_index: true,
+  home_layout: { ...DEFAULT_HOME_LAYOUT },
+  news_single_page: { ...DEFAULT_NEWS_SINGLE_PAGE_SETTINGS },
+  news_single_layout: { ...DEFAULT_NEWS_SINGLE_LAYOUT },
+  news_list_layout: { ...DEFAULT_NEWS_LIST_LAYOUT },
+  job_single_page: { ...DEFAULT_JOB_SINGLE_PAGE_SETTINGS },
+  job_single_layout: { ...DEFAULT_JOB_SINGLE_LAYOUT },
+  product_single_page: { ...DEFAULT_PRODUCT_SINGLE_PAGE_SETTINGS },
+  product_single_layout: { ...DEFAULT_PRODUCT_SINGLE_LAYOUT },
+  shop_list_layout: { ...DEFAULT_SHOP_LIST_LAYOUT },
 }
 
 const resolveAsset = (src) => {
@@ -96,6 +131,31 @@ export const normalizeSiteSettings = (raw = {}) => {
   data.show_contact_phone = asBool(data.show_contact_phone, true)
   data.show_contact_mobile = asBool(data.show_contact_mobile, true)
   data.show_contact_email = asBool(data.show_contact_email, true)
+  data.home_layout = normalizeHomeLayout(raw.home_layout || data.home_layout)
+  data.news_single_page = normalizeNewsSinglePageSettings(
+    raw.news_single_page || data.news_single_page
+  )
+  data.news_single_layout = normalizeNewsSingleLayout(
+    raw.news_single_layout || data.news_single_layout
+  )
+  data.news_list_layout = normalizeNewsListLayout(
+    raw.news_list_layout || data.news_list_layout
+  )
+  data.job_single_page = normalizeJobSinglePageSettings(
+    raw.job_single_page || data.job_single_page
+  )
+  data.job_single_layout = normalizeJobSingleLayout(
+    raw.job_single_layout || data.job_single_layout
+  )
+  data.product_single_page = normalizeProductSinglePageSettings(
+    raw.product_single_page || data.product_single_page
+  )
+  data.product_single_layout = normalizeProductSingleLayout(
+    raw.product_single_layout || data.product_single_layout
+  )
+  data.shop_list_layout = normalizeShopListLayout(
+    raw.shop_list_layout || data.shop_list_layout
+  )
   return data
 }
 
@@ -114,12 +174,17 @@ export async function fetchSiteSettings({ force = false } = {}) {
   const now = Date.now()
   if (!force && cache && now - cacheAt < TTL_MS) return cache
   if (!force && inflight) return inflight
+  if (force) {
+    cache = null
+    cacheAt = 0
+    inflight = null
+  }
 
   inflight = (async () => {
     try {
       const url = Config.endpoints.news.siteSettings.get()
       const res = await fetch(url, {
-        next: { revalidate: 60 },
+        cache: 'no-store',
         headers: { Accept: 'application/json' },
       })
       if (!res.ok) throw new Error(`site-settings ${res.status}`)
@@ -137,6 +202,343 @@ export async function fetchSiteSettings({ force = false } = {}) {
   })()
 
   return inflight
+}
+
+/** ذخیره فقط home_layout (PATCH site-settings) */
+export async function saveHomeLayout(layout, authHeaders = {}) {
+  const body = { home_layout: normalizeHomeLayout(layout) }
+  const url = Config.endpoints.news.siteSettings.update()
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `ذخیره چیدمان ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeSiteSettings(json?.data || json)
+  cache = data
+  cacheAt = Date.now()
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('home-layout-changed', { detail: data.home_layout })
+    )
+  }
+  return data.home_layout
+}
+
+/** ذخیره چیدمان صفحه‌ساز سینگل خبر (مثل home_layout) */
+export async function saveNewsSingleLayout(layout, authHeaders = {}) {
+  const body = { news_single_layout: normalizeNewsSingleLayout(layout) }
+  const url = Config.endpoints.news.siteSettings.update()
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `ذخیره چیدمان سینگل ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeSiteSettings(json?.data || json)
+  cache = data
+  cacheAt = Date.now()
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('news-single-layout-changed', {
+        detail: data.news_single_layout,
+      })
+    )
+  }
+  return data.news_single_layout
+}
+
+/** ذخیره تنظیمات صفحه سینگل خبر */
+export async function saveNewsSinglePageSettings(payload, authHeaders = {}) {
+  const body = {
+    news_single_page: normalizeNewsSinglePageSettings(payload),
+  }
+  const url = Config.endpoints.news.siteSettings.update()
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `ذخیره تنظیمات سینگل ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeSiteSettings(json?.data || json)
+  cache = data
+  cacheAt = Date.now()
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('news-single-page-changed', {
+        detail: data.news_single_page,
+      })
+    )
+  }
+  return data.news_single_page
+}
+
+/** ذخیره چیدمان صفحه‌ساز لیست اخبار (/news) */
+export async function saveNewsListLayout(layout, authHeaders = {}) {
+  const body = { news_list_layout: normalizeNewsListLayout(layout) }
+  const url = Config.endpoints.news.siteSettings.update()
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `ذخیره چیدمان لیست اخبار ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeSiteSettings(json?.data || json)
+  cache = data
+  cacheAt = Date.now()
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('news-list-layout-changed', {
+        detail: data.news_list_layout,
+      })
+    )
+  }
+  return data.news_list_layout
+}
+
+/** ذخیره چیدمان صفحه‌ساز سینگل آگهی */
+export async function saveJobSingleLayout(layout, authHeaders = {}) {
+  const body = { job_single_layout: normalizeJobSingleLayout(layout) }
+  const url = Config.endpoints.news.siteSettings.update()
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `ذخیره چیدمان سینگل آگهی ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeSiteSettings(json?.data || json)
+  cache = data
+  cacheAt = Date.now()
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('job-single-layout-changed', {
+        detail: data.job_single_layout,
+      })
+    )
+  }
+  return data.job_single_layout
+}
+
+/** ذخیره تنظیمات صفحه سینگل آگهی */
+export async function saveJobSinglePageSettings(payload, authHeaders = {}) {
+  const body = {
+    job_single_page: normalizeJobSinglePageSettings(payload),
+  }
+  const url = Config.endpoints.news.siteSettings.update()
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `ذخیره تنظیمات سینگل آگهی ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeSiteSettings(json?.data || json)
+  cache = data
+  cacheAt = Date.now()
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('job-single-page-changed', {
+        detail: data.job_single_page,
+      })
+    )
+  }
+  return data.job_single_page
+}
+
+/** ذخیره چیدمان صفحه‌ساز سینگل محصول */
+export async function saveProductSingleLayout(layout, authHeaders = {}) {
+  const body = { product_single_layout: normalizeProductSingleLayout(layout) }
+  const url = Config.endpoints.news.siteSettings.update()
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `ذخیره چیدمان سینگل محصول ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeSiteSettings(json?.data || json)
+  cache = data
+  cacheAt = Date.now()
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('product-single-layout-changed', {
+        detail: data.product_single_layout,
+      })
+    )
+  }
+  return data.product_single_layout
+}
+
+/** ذخیره تنظیمات صفحه سینگل محصول */
+export async function saveProductSinglePageSettings(payload, authHeaders = {}) {
+  const body = {
+    product_single_page: normalizeProductSinglePageSettings(payload),
+  }
+  const url = Config.endpoints.news.siteSettings.update()
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `ذخیره تنظیمات سینگل محصول ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeSiteSettings(json?.data || json)
+  cache = data
+  cacheAt = Date.now()
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('product-single-page-changed', {
+        detail: data.product_single_page,
+      })
+    )
+  }
+  return data.product_single_page
+}
+
+/** ذخیره چیدمان لیست فروشگاه */
+export async function saveShopListLayout(layout, authHeaders = {}) {
+  const body = { shop_list_layout: normalizeShopListLayout(layout) }
+  const url = Config.endpoints.news.siteSettings.update()
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `ذخیره چیدمان لیست فروشگاه ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeSiteSettings(json?.data || json)
+  cache = data
+  cacheAt = Date.now()
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('shop-list-layout-changed', {
+        detail: data.shop_list_layout,
+      })
+    )
+  }
+  return data.shop_list_layout
 }
 
 export function buildMetadataFromSettings(settings) {

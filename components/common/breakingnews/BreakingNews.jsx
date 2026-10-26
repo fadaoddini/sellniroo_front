@@ -10,6 +10,7 @@ import React, {
   useMemo,
   memo,
 } from "react";
+import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -28,11 +29,24 @@ import {
   User,
   HandCoins,
   Info,
+  Menu,
+  Home,
 } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "@/contexts/AuthContext";
 import Config from "@/config/config";
+import { fetchMenuListBySlug } from "@/services/menuLists";
+import {
+  getNavVisibilityFlags,
+  normalizeNavWidgetSettings,
+  navWidgetCssVars,
+} from "@/config/navWidgetSettings";
+import { resolveLucideIcon } from "@/utils/lucideIcons";
 import styles from "./BreakingNews.module.css";
+
+function resolveMenuIcon(name) {
+  return resolveLucideIcon(name, Home);
+}
 
 moment.loadPersian({ dialect: "persian-modern", usePersianDigits: false });
 
@@ -99,7 +113,10 @@ function prefersReducedMotion() {
 }
 
 function useIsMobile(breakpoint = 768) {
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia(`(max-width: ${breakpoint - 1}px)`).matches;
+  });
 
   useEffect(() => {
     const mq = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
@@ -248,6 +265,7 @@ const ProfileMenu = memo(function ProfileMenu({
   isMobile,
   onClose,
   onLogout,
+  menuItems = null,
 }) {
   const displayName =
     user?.display_name ||
@@ -262,6 +280,7 @@ const ProfileMenu = memo(function ProfileMenu({
   };
 
   const iconSize = isMobile ? 20 : 16;
+  const useCustomMenu = Array.isArray(menuItems);
 
   return (
     <>
@@ -294,33 +313,58 @@ const ProfileMenu = memo(function ProfileMenu({
 
       <div className={styles.profileDivider} />
 
-      {PROFILE_LINKS.map((item) => {
-        const active = isActive(item.href);
-        return (
+      {useCustomMenu ? (
+        menuItems.length === 0 ? (
+          <div className={styles.profileEmpty}>آیتمی در فهرست منو نیست</div>
+        ) : (
+          menuItems.map((item) => {
+            const Icon = resolveMenuIcon(item.icon);
+            const active = isActive(item.href || "");
+            return (
+              <Link
+                key={item.id || item.href}
+                href={item.href || "#"}
+                className={`${styles.profileMenuItem} ${active ? styles.activeMenuItem : ""}`}
+                onClick={onClose}
+              >
+                <Icon size={iconSize} />
+                <span>{item.label_fa || item.label_en}</span>
+                {active && <Check size={14} className={styles.activeCheck} />}
+              </Link>
+            );
+          })
+        )
+      ) : (
+        <>
+          {PROFILE_LINKS.map((item) => {
+            const active = isActive(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`${styles.profileMenuItem} ${active ? styles.activeMenuItem : ""}`}
+                onClick={onClose}
+              >
+                <item.icon size={iconSize} />
+                <span>{item.label}</span>
+                {active && <Check size={14} className={styles.activeCheck} />}
+              </Link>
+            );
+          })}
+          <div className={styles.profileDivider} />
           <Link
-            key={item.href}
-            href={item.href}
-            className={`${styles.profileMenuItem} ${active ? styles.activeMenuItem : ""}`}
+            href="/settings"
+            className={`${styles.profileMenuItem} ${isActive("/settings") ? styles.activeMenuItem : ""}`}
             onClick={onClose}
           >
-            <item.icon size={iconSize} />
-            <span>{item.label}</span>
-            {active && <Check size={14} className={styles.activeCheck} />}
+            <Settings size={iconSize} />
+            <span>{LABELS.settings}</span>
           </Link>
-        );
-      })}
+        </>
+      )}
 
-      <div className={styles.profileDivider} />
-
-      <Link
-        href="/settings"
-        className={`${styles.profileMenuItem} ${isActive("/settings") ? styles.activeMenuItem : ""}`}
-        onClick={onClose}
-      >
-        <Settings size={iconSize} />
-        <span>{LABELS.settings}</span>
-      </Link>
-
+      {/* خط جداکننده + خروج — همیشه در انتها */}
+      <div className={`${styles.profileDivider} ${styles.profileDividerStrong}`} />
       <button
         type="button"
         className={`${styles.profileMenuItem} ${styles.logoutItem}`}
@@ -333,20 +377,40 @@ const ProfileMenu = memo(function ProfileMenu({
   );
 });
 
-const BreakingNews = () => {
+/**
+ * @param {{ settings?: Record<string, any>|null }} props
+ * اگر settings از چیدمان بیاید، منو/پروفایل/مهمان قابل تنظیم است.
+ * بدون settings همان رفتار کلاسیک (مشاوره، درباره، ورود) حفظ می‌شود.
+ */
+const BreakingNews = ({ settings: rawSettings = null } = {}) => {
+  const configured = rawSettings != null;
   const { user, isAuthenticated, logout, loading } = useAuth();
   const pathname = usePathname();
   const isMobile = useIsMobile(768);
+  const viewport = isMobile ? 'mobile' : 'desktop';
+  const settings = configured
+    ? normalizeNavWidgetSettings(rawSettings, { viewport })
+    : null;
+  const visibility = configured ? getNavVisibilityFlags(rawSettings) : null;
   const currentDate = usePersianDate(isMobile);
 
   const [newsItems, setNewsItems] = useState(FALLBACK_NEWS);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [profileClosing, setProfileClosing] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuClosing, setMenuClosing] = useState(false);
+  const [menuItems, setMenuItems] = useState([]);
   const [imageError, setImageError] = useState(false);
 
   const profileDropdownRef = useRef(null);
-  const { textRef, cursorRef } = useTypewriter(newsItems, true);
+  const profileCloseTimer = useRef(null);
+  const menuCloseTimer = useRef(null);
+  const showTicker = !configured || settings.show_ticker !== false;
+  const sheetMs = configured ? settings.sheet_ms : 350;
+  const { textRef, cursorRef } = useTypewriter(newsItems, showTicker);
 
   useEffect(() => {
+    if (!showTicker) return undefined;
     let cancelled = false;
 
     (async () => {
@@ -373,7 +437,22 @@ const BreakingNews = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [showTicker]);
+
+  useEffect(() => {
+    if (!configured || !settings?.menu_slug) {
+      setMenuItems([]);
+      return undefined;
+    }
+    let cancelled = false;
+    fetchMenuListBySlug(settings.menu_slug, { force: true }).then((menu) => {
+      if (cancelled) return;
+      setMenuItems((menu?.items || []).filter((i) => i.is_active !== false));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [configured, settings?.menu_slug]);
 
   useEffect(() => {
     setImageError(false);
@@ -395,25 +474,92 @@ const BreakingNews = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobile]);
 
+  const profileSheetOpen = isProfileOpen || profileClosing;
+  const menuSheetOpen = menuOpen || menuClosing;
+  const [portalReady, setPortalReady] = useState(false);
+
   useEffect(() => {
-    if (!(isMobile && isProfileOpen)) return undefined;
+    setPortalReady(true);
+  }, []);
+
+  /* وقتی شیت پروفایل/منو باز است، نوار پایین اپ را مخفی کن تا روی «خروج» نیفتد */
+  useEffect(() => {
+    if (!isMobile) return undefined;
+    const open = profileSheetOpen || menuSheetOpen;
+    if (open) document.body.classList.add("bn-sheet-open");
+    else document.body.classList.remove("bn-sheet-open");
+    return () => document.body.classList.remove("bn-sheet-open");
+  }, [isMobile, profileSheetOpen, menuSheetOpen]);
+
+  useEffect(() => {
+    if (!(isMobile && profileSheetOpen) && !menuSheetOpen) return undefined;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
     };
-  }, [isMobile, isProfileOpen]);
+  }, [isMobile, profileSheetOpen, menuSheetOpen]);
 
   useEffect(() => {
-    if (!isProfileOpen) return undefined;
+    return () => {
+      clearTimeout(profileCloseTimer.current);
+      clearTimeout(menuCloseTimer.current);
+    };
+  }, []);
+
+  const closeProfile = useCallback(() => {
+    if (!isMobile) {
+      setIsProfileOpen(false);
+      setProfileClosing(false);
+      return;
+    }
+    if (profileClosing || !isProfileOpen) return;
+    setIsProfileOpen(false);
+    setProfileClosing(true);
+    clearTimeout(profileCloseTimer.current);
+    profileCloseTimer.current = setTimeout(() => {
+      setProfileClosing(false);
+    }, sheetMs);
+  }, [isMobile, isProfileOpen, profileClosing, sheetMs]);
+
+  useEffect(() => {
+    if (!profileSheetOpen && !menuSheetOpen) return undefined;
     const onEsc = (e) => {
-      if (e.key === "Escape") setIsProfileOpen(false);
+      if (e.key !== "Escape") return;
+      if (profileSheetOpen) closeProfile();
+      else if (menuOpen || menuClosing) {
+        setMenuOpen(false);
+        setMenuClosing(true);
+        clearTimeout(menuCloseTimer.current);
+        menuCloseTimer.current = setTimeout(() => setMenuClosing(false), sheetMs);
+      }
     };
     document.addEventListener("keydown", onEsc);
     return () => document.removeEventListener("keydown", onEsc);
-  }, [isProfileOpen]);
+  }, [
+    profileSheetOpen,
+    menuSheetOpen,
+    menuOpen,
+    menuClosing,
+    closeProfile,
+    sheetMs,
+  ]);
 
-  const closeProfile = useCallback(() => setIsProfileOpen(false), []);
+  const closeMenu = useCallback(() => {
+    if (menuClosing || !menuOpen) return;
+    setMenuOpen(false);
+    setMenuClosing(true);
+    clearTimeout(menuCloseTimer.current);
+    menuCloseTimer.current = setTimeout(() => {
+      setMenuClosing(false);
+    }, sheetMs);
+  }, [menuOpen, menuClosing, sheetMs]);
+
+  const openMenu = useCallback(() => {
+    clearTimeout(menuCloseTimer.current);
+    setMenuClosing(false);
+    setMenuOpen(true);
+  }, []);
 
   const handleImageError = useCallback(() => setImageError(true), []);
 
@@ -423,96 +569,112 @@ const BreakingNews = () => {
 
   const handleLogout = useCallback(async () => {
     await logout();
-    setIsProfileOpen(false);
-  }, [logout]);
+    closeProfile();
+  }, [logout, closeProfile]);
 
   const toggleProfile = useCallback(() => {
+    if (isMobile) {
+      if (isProfileOpen || profileClosing) {
+        closeProfile();
+      } else {
+        clearTimeout(profileCloseTimer.current);
+        setProfileClosing(false);
+        setIsProfileOpen(true);
+      }
+      return;
+    }
     setIsProfileOpen((open) => !open);
-  }, []);
+  }, [isMobile, isProfileOpen, profileClosing, closeProfile]);
 
-  return (
-    <div className={styles.breakingNews}>
-      <div className={styles.container}>
-        <div className={styles.newsLeft}>
-          <div className={styles.newsLabel} aria-hidden="true">
-            <Megaphone size={16} className={styles.labelIcon} />
-          </div>
-          <div className={styles.newsContent} aria-live="polite">
-            <span className={styles.newsText}>
-              <span ref={textRef} />
-              <span ref={cursorRef} className={styles.cursor} aria-hidden="true">
-                |
-              </span>
-            </span>
-          </div>
+  const GuestIcon = resolveMenuIcon(settings?.guest_icon || "LogIn");
+  const displayName =
+    user?.display_name ||
+    `${user?.first_name || ""} ${user?.last_name || ""}`.trim() ||
+    user?.mobile ||
+    LABELS.dearUser;
+
+  const profileMode = settings?.profile_mode || "avatar";
+  const showProfileConfigured =
+    configured &&
+    (isAuthenticated
+      ? profileMode !== "hidden"
+      : settings.guest_visible !== false);
+
+  const renderProfileBlock = () => {
+    if (loading) {
+      return (
+        <div className={styles.loginButton} style={{ opacity: 0.5 }} aria-hidden="true">
+          <span>...</span>
         </div>
+      );
+    }
 
-        <div className={styles.newsRight}>
-          <button
-            type="button"
-            className={styles.consultButton}
-            onClick={handleConsultClick}
-            aria-label={LABELS.consult}
-          >
-            <Phone size={14} />
-            <span>{LABELS.consult}</span>
-          </button>
+    if (configured && !showProfileConfigured) return null;
 
-          <Link href="/about" className={styles.aboutButton} aria-label={LABELS.about}>
-            <Info size={14} />
-            <span>{LABELS.about}</span>
-          </Link>
-
-          {loading ? (
-            <div className={styles.loginButton} style={{ opacity: 0.5 }} aria-hidden="true">
-              <span>...</span>
-            </div>
-          ) : isAuthenticated && user ? (
-            <>
-              <div className={styles.profileSection} ref={profileDropdownRef}>
-                <button
-                  type="button"
-                  className={styles.profileButton}
-                  onClick={toggleProfile}
-                  aria-label={LABELS.profile}
-                  aria-expanded={isProfileOpen}
-                  aria-haspopup="menu"
-                >
-                  <div className={styles.avatar}>
-                    <Avatar
-                      user={user}
-                      imageError={imageError}
-                      onImageError={handleImageError}
-                      size={28}
-                      className={styles.avatarImage}
-                      placeholderClass={styles.avatarPlaceholder}
-                    />
-                  </div>
-                </button>
-
-                {!isMobile && isProfileOpen && (
-                  <div className={styles.profileDropdown} role="menu">
-                    <ProfileMenu
-                      user={user}
-                      imageError={imageError}
-                      onImageError={handleImageError}
-                      pathname={pathname}
-                      isMobile={false}
-                      onClose={closeProfile}
-                      onLogout={handleLogout}
-                    />
-                  </div>
-                )}
+    if (isAuthenticated && user) {
+      if (configured && profileMode === "hidden") return null;
+      return (
+        <>
+          <div className={styles.profileSection} ref={profileDropdownRef}>
+            <button
+              type="button"
+              className={`${styles.profileButton} ${
+                configured && profileMode === "avatar_name" ? styles.profileButtonNamed : ""
+              }`}
+              onClick={toggleProfile}
+              aria-label={LABELS.profile}
+              aria-expanded={isProfileOpen}
+              aria-haspopup="menu"
+            >
+              <div className={styles.avatar}>
+                <Avatar
+                  user={user}
+                  imageError={imageError}
+                  onImageError={handleImageError}
+                  size={28}
+                  className={styles.avatarImage}
+                  placeholderClass={styles.avatarPlaceholder}
+                />
               </div>
+              {configured && profileMode === "avatar_name" ? (
+                <span className={styles.profileNameInline}>{displayName}</span>
+              ) : null}
+            </button>
 
-              {isMobile && isProfileOpen && (
+            {!isMobile && isProfileOpen && (
+              <div className={styles.profileDropdown} role="menu">
+                <ProfileMenu
+                  user={user}
+                  imageError={imageError}
+                  onImageError={handleImageError}
+                  pathname={pathname}
+                  isMobile={false}
+                  onClose={closeProfile}
+                  onLogout={handleLogout}
+                  menuItems={configured ? menuItems : null}
+                />
+              </div>
+            )}
+          </div>
+
+          {isMobile && profileSheetOpen && portalReady
+            ? createPortal(
                 <div
-                  className={styles.dialogOverlay}
+                  className={[
+                    styles.dialogOverlay,
+                    profileClosing
+                      ? styles.dialogOverlayOut
+                      : styles.dialogOverlayIn,
+                  ].join(" ")}
+                  style={{ "--bn-sheet-ms": `${sheetMs}ms` }}
                   onClick={closeProfile}
                   role="presentation"
                 >
                   <div
-                    className={styles.dialogBox}
+                    className={[
+                      styles.dialogBox,
+                      profileClosing ? styles.dialogBoxOut : styles.dialogBoxIn,
+                    ].join(" ")}
                     onClick={(e) => e.stopPropagation()}
                     role="dialog"
                     aria-modal="true"
@@ -526,23 +688,200 @@ const BreakingNews = () => {
                       isMobile
                       onClose={closeProfile}
                       onLogout={handleLogout}
+                      menuItems={configured ? menuItems : null}
                     />
                   </div>
-                </div>
-              )}
-            </>
-          ) : (
-            <Link href="/login" className={styles.loginButton} aria-label={LABELS.login}>
-              <LogIn size={14} />
-              <span>{LABELS.login}</span>
-            </Link>
-          )}
+                </div>,
+                document.body
+              )
+            : null}
+        </>
+      );
+    }
 
-          <div className={styles.datetime} title={currentDate}>
-            <span className={styles.dateText}>{currentDate}</span>
+    if (configured) {
+      if (!settings.guest_visible) return null;
+      return (
+        <Link
+          href={settings.guest_href || "/login"}
+          className={styles.loginButton}
+          aria-label={settings.guest_label || LABELS.login}
+        >
+          <GuestIcon size={14} />
+          <span>{settings.guest_label || LABELS.login}</span>
+        </Link>
+      );
+    }
+
+    return (
+      <Link href="/login" className={styles.loginButton} aria-label={LABELS.login}>
+        <LogIn size={14} />
+        <span>{LABELS.login}</span>
+      </Link>
+    );
+  };
+
+  const hideOnMobile = configured && visibility?.show_on_mobile === false;
+  const hideOnDesktop = configured && visibility?.show_on_desktop === false;
+  const themedStyle = configured
+    ? navWidgetCssVars(rawSettings, { viewport })
+    : undefined;
+  const barFullBleed = configured && settings?.bar_full_bleed !== false;
+
+  return (
+    <div
+      className={[
+        styles.breakingNews,
+        configured ? styles.breakingNewsConfigured : "",
+        configured
+          ? barFullBleed
+            ? styles.barFullBleed
+            : styles.barInset
+          : "",
+        hideOnMobile ? styles.hideOnMobile : "",
+        hideOnDesktop ? styles.hideOnDesktop : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      style={themedStyle}
+    >
+      <div className={styles.container}>
+        {configured && settings.show_hamburger ? (
+          <button
+            type="button"
+            className={styles.hamburgerBtn}
+            aria-label="منو"
+            aria-expanded={menuOpen}
+            onClick={() => {
+              if (menuOpen || menuClosing) closeMenu();
+              else openMenu();
+            }}
+          >
+            {menuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
+        ) : null}
+
+        {showTicker ? (
+          <div className={styles.newsLeft}>
+            <div className={styles.newsLabel} aria-hidden="true">
+              <Megaphone size={16} className={styles.labelIcon} />
+            </div>
+            <div className={styles.newsContent} aria-live="polite">
+              <span className={styles.newsText}>
+                <span ref={textRef} />
+                <span ref={cursorRef} className={styles.cursor} aria-hidden="true">
+                  |
+                </span>
+              </span>
+            </div>
           </div>
+        ) : (
+          <div className={styles.newsLeftSpacer} />
+        )}
+
+        <div className={styles.newsRight}>
+          {configured && settings.show_menu_items ? (
+            <nav className={styles.inlineMenu} aria-label="منو">
+              {menuItems.map((item) => {
+                const Icon = resolveMenuIcon(item.icon);
+                return (
+                  <Link
+                    key={item.id}
+                    href={item.href || "#"}
+                    className={styles.inlineMenuLink}
+                  >
+                    <Icon size={13} />
+                    <span>{item.label_fa || item.label_en}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          ) : null}
+
+          {!configured ? (
+            <>
+              <button
+                type="button"
+                className={styles.consultButton}
+                onClick={handleConsultClick}
+                aria-label={LABELS.consult}
+              >
+                <Phone size={14} />
+                <span>{LABELS.consult}</span>
+              </button>
+
+              <Link href="/about" className={styles.aboutButton} aria-label={LABELS.about}>
+                <Info size={14} />
+                <span>{LABELS.about}</span>
+              </Link>
+            </>
+          ) : null}
+
+          {renderProfileBlock()}
+
+          {!configured || !isMobile ? (
+            <div className={styles.datetime} title={currentDate}>
+              <span className={styles.dateText}>{currentDate}</span>
+            </div>
+          ) : null}
         </div>
       </div>
+
+      {configured && settings.show_hamburger && menuSheetOpen && portalReady
+        ? createPortal(
+            <>
+              <button
+                type="button"
+                className={[
+                  styles.menuBackdrop,
+                  menuClosing ? styles.menuBackdropOut : styles.menuBackdropIn,
+                ].join(" ")}
+                style={{ "--bn-sheet-ms": `${sheetMs}ms` }}
+                aria-label="بستن منو"
+                onClick={closeMenu}
+              />
+              <aside
+                className={[
+                  styles.menuDrawer,
+                  menuClosing ? styles.menuDrawerOut : styles.menuDrawerIn,
+                ].join(" ")}
+                style={{ "--bn-sheet-ms": `${sheetMs}ms` }}
+                aria-label="فهرست منو"
+              >
+                <div className={styles.menuDrawerHead}>
+                  <strong>منو</strong>
+                  <button type="button" onClick={closeMenu} aria-label="بستن">
+                    <X size={18} />
+                  </button>
+                </div>
+                <ul className={styles.menuDrawerList}>
+                  {menuItems.length === 0 ? (
+                    <li className={styles.menuDrawerEmpty}>
+                      آیتمی در این فهرست نیست
+                    </li>
+                  ) : (
+                    menuItems.map((item) => {
+                      const Icon = resolveMenuIcon(item.icon);
+                      return (
+                        <li key={item.id}>
+                          <Link
+                            href={item.href || "#"}
+                            className={styles.menuDrawerLink}
+                            onClick={closeMenu}
+                          >
+                            <Icon size={16} />
+                            <span>{item.label_fa || item.label_en}</span>
+                          </Link>
+                        </li>
+                      );
+                    })
+                  )}
+                </ul>
+              </aside>
+            </>,
+            document.body
+          )
+        : null}
     </div>
   );
 };

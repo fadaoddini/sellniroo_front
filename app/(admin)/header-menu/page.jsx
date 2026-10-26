@@ -1,19 +1,34 @@
 // app/(admin)/header-menu/page.jsx — ظاهر + لینک‌های سیستم شرکتی
 'use client'
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useState, useEffect, useCallback, useMemo, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import axios from 'axios'
 import {
   PanelTop, Plus, Pencil, Trash2, RefreshCw, Shield, Save,
   CheckCircle2, X, LayoutDashboard, Power, ExternalLink,
-  Palette, List, Upload, ImagePlus,
+  List, Upload, ImagePlus, ChevronUp, ChevronDown, Star,
+  Monitor, Smartphone,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import Config from '@/config/config'
-import { clearHeaderMenuCache } from '@/services/headerMenu'
+import {
+  clearHeaderMenuCache,
+  reorderHeaderMenu,
+  arrangeMobileNavItems,
+  findMobileNavCenterIndex,
+  sortHeaderMenuItems,
+} from '@/services/headerMenu'
+
+const VALID_TABS = new Set(['desktop', 'mobile', 'links'])
+
+function normalizeTab(raw) {
+  if (raw === 'appearance') return 'desktop'
+  if (VALID_TABS.has(raw)) return raw
+  return 'desktop'
+}
 import {
   DEFAULT_CORPORATE_APPEARANCE,
   MOBILE_STYLES,
@@ -41,9 +56,10 @@ const emptyForm = {
 
 const COLOR_FIELDS_HEADER = [
   { key: 'header_bg', fa: 'پس‌زمینه هدر', en: 'Header background' },
-  { key: 'header_text', fa: 'رنگ متن هدر', en: 'Header text' },
-  { key: 'header_icon', fa: 'رنگ آیکون هدر', en: 'Header icons' },
-  { key: 'header_hover', fa: 'رنگ هاور هدر', en: 'Header hover' },
+  { key: 'header_text', fa: 'رنگ متن (عادی)', en: 'Text (normal)' },
+  { key: 'header_hover', fa: 'رنگ متن (هاور)', en: 'Text (hover)' },
+  { key: 'header_icon', fa: 'رنگ آیکون (عادی)', en: 'Icon (normal)' },
+  { key: 'header_icon_hover', fa: 'رنگ آیکون (هاور)', en: 'Icon (hover)' },
 ]
 
 const COLOR_FIELDS_MOBILE = [
@@ -82,16 +98,28 @@ function ColorField({ label, value, onChange }) {
   )
 }
 
-export default function HeaderMenuPage() {
+function HeaderMenuPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { isAuthenticated, loading, user, canManageEmployees, getAuthHeaders } = useAuth()
   const { language, dir } = useLanguage()
 
-  const [tab, setTab] = useState('appearance')
+  const initialTab = normalizeTab(searchParams?.get('tab'))
+  const [tab, setTab] = useState(initialTab)
   const [items, setItems] = useState([])
   const [appearance, setAppearance] = useState(DEFAULT_CORPORATE_APPEARANCE)
   const [logoFile, setLogoFile] = useState(null)
   const [loadingData, setLoadingData] = useState(true)
+
+  useEffect(() => {
+    const next = normalizeTab(searchParams?.get('tab'))
+    if (typeof window !== 'undefined' && window.location.hash === '#mobile') {
+      setTab('mobile')
+      router.replace('/header-menu?tab=mobile', { scroll: false })
+      return
+    }
+    setTab(next)
+  }, [searchParams, router])
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
   const [showForm, setShowForm] = useState(false)
@@ -100,12 +128,38 @@ export default function HeaderMenuPage() {
   const [formError, setFormError] = useState(null)
   const [saving, setSaving] = useState(false)
   const [savingAppear, setSavingAppear] = useState(false)
+  const [reordering, setReordering] = useState(false)
 
   const canManage = user?.is_superuser || user?.is_staff || canManageEmployees
 
+  const allSorted = useMemo(() => sortHeaderMenuItems(items, 'desktop'), [items])
+
+  const desktopActiveSorted = useMemo(
+    () => sortHeaderMenuItems((items || []).filter((i) => i.is_active), 'desktop'),
+    [items]
+  )
+
+  const mobileActiveSorted = useMemo(
+    () => sortHeaderMenuItems((items || []).filter((i) => i.is_active), 'mobile'),
+    [items]
+  )
+
+  const mobilePreviewItems = useMemo(() => {
+    const styleKey = appearance.mobile_style || 'classic'
+    return arrangeMobileNavItems(mobileActiveSorted, {
+      centerItemId: styleKey === 'center_circle' ? appearance.mobile_center_item_id : null,
+      maxItems: 5,
+    })
+  }, [mobileActiveSorted, appearance.mobile_style, appearance.mobile_center_item_id])
+
+  const mobilePreviewCenterIdx = useMemo(() => {
+    if ((appearance.mobile_style || 'classic') !== 'center_circle') return -1
+    return findMobileNavCenterIndex(mobilePreviewItems, appearance.mobile_center_item_id)
+  }, [mobilePreviewItems, appearance.mobile_style, appearance.mobile_center_item_id])
+
   const t = language === 'en' ? {
-    title: 'Corporate system',
-    subtitle: 'Logo, colors and menu links for corporate header & mobile nav',
+    title: 'Site menu & appearance',
+    subtitle: 'Logo, colors and links for top menu and mobile bottom nav',
     add: 'New item',
     edit: 'Edit item',
     labelFa: 'Persian label',
@@ -126,13 +180,16 @@ export default function HeaderMenuPage() {
     confirmDelete: 'Delete this menu item?',
     accessDenied: 'Access denied',
     needManager: 'Only managers and staff can manage this section',
-    adminweb: 'Modules',
-    tabAppear: 'Appearance',
+    adminweb: 'adminsettings',
+    tabDesktop: 'Desktop',
+    tabMobile: 'Mobile',
     tabLinks: 'Menu links',
-    appearTitle: 'Logo & colors',
-    appearDesc: 'Dedicated branding for corporate header (desktop) and bottom mobile nav',
-    logo: 'Corporate logo',
-    logoHint: 'Used only in Header With Menu (desktop)',
+    desktopTitle: 'Desktop appearance',
+    desktopDesc: 'Logo, colors and top-menu order for desktop — independent from mobile',
+    mobileTitle: 'Mobile appearance',
+    mobileDesc: 'Bottom-nav style, colors and order for phones — independent from desktop',
+    logo: 'Site logo',
+    logoHint: 'Shown in the top site menu (desktop)',
     pickFile: 'Choose image',
     clearFile: 'Clear file',
     headerColors: 'Desktop header colors',
@@ -140,12 +197,26 @@ export default function HeaderMenuPage() {
     mobileStyles: 'Mobile menu layout',
     mobileStylesDesc: 'Pick how the bottom navigation looks on phones',
     preview: 'Live preview',
-    saved: 'Appearance saved',
+    savedDesktop: 'Desktop appearance saved',
+    savedMobile: 'Mobile appearance saved',
     headerLabel: 'Header',
     mobileLabel: 'Mobile',
+    orderDesktopTitle: 'Desktop menu order',
+    orderDesktopDesc: 'Order of items in the desktop top menu',
+    orderMobileTitle: 'Mobile bottom nav order',
+    orderMobileDesc: 'Independent from desktop. First 5 active items appear on the phone bar.',
+    centerTitle: 'Center item (circle style)',
+    centerDesc: 'Which menu item sits in the raised center circle',
+    centerAuto: 'Automatic (middle of list)',
+    centerBadge: 'Center',
+    orderSaved: 'Order updated',
+    moveUp: 'Move up',
+    moveDown: 'Move down',
+    previewOrder: 'Mobile bar preview',
+    previewDesktop: 'Desktop menu preview',
   } : {
-    title: 'سیستم شرکتی',
-    subtitle: 'لوگو، رنگ‌ها و لینک‌های هدر و منوی موبایل شرکتی',
+    title: 'منوی سایت و ظاهر',
+    subtitle: 'لوگو، رنگ‌ها و لینک‌های منوی بالا و نوار پایین موبایل',
     add: 'آیتم جدید',
     edit: 'ویرایش آیتم',
     labelFa: 'عنوان فارسی',
@@ -166,13 +237,16 @@ export default function HeaderMenuPage() {
     confirmDelete: 'آیا از حذف این آیتم اطمینان دارید؟',
     accessDenied: 'دسترسی محدود',
     needManager: 'مدیریت این بخش فقط برای مدیر و staff است',
-    adminweb: 'ماژول‌ها',
-    tabAppear: 'ظاهر',
+    adminweb: 'تنظیمات ادمین',
+    tabDesktop: 'دسکتاپ',
+    tabMobile: 'موبایل',
     tabLinks: 'لینک‌های منو',
-    appearTitle: 'لوگو و رنگ‌ها',
-    appearDesc: 'برند اختصاصی هدر دسکتاپ و نوار پایین موبایل سیستم شرکتی',
-    logo: 'لوگوی سیستم شرکتی',
-    logoHint: 'فقط در هدر دارای منو (دسکتاپ) نمایش داده می‌شود',
+    desktopTitle: 'ظاهر دسکتاپ',
+    desktopDesc: 'لوگو، رنگ‌ها و ترتیب منوی بالای دسکتاپ — کاملاً مستقل از موبایل',
+    mobileTitle: 'ظاهر موبایل',
+    mobileDesc: 'استایل، رنگ‌ها و ترتیب نوار پایین موبایل — کاملاً مستقل از دسکتاپ',
+    logo: 'لوگوی سایت',
+    logoHint: 'در منوی بالای سایت (دسکتاپ) نمایش داده می‌شود',
     pickFile: 'انتخاب تصویر',
     clearFile: 'حذف فایل',
     headerColors: 'رنگ‌های هدر دسکتاپ',
@@ -180,9 +254,23 @@ export default function HeaderMenuPage() {
     mobileStyles: 'حالت نمایش منوی موبایل',
     mobileStylesDesc: 'یکی از ۴ ظاهر پایین صفحه را انتخاب کنید',
     preview: 'پیش‌نمایش',
-    saved: 'ظاهر با موفقیت ذخیره شد',
+    savedDesktop: 'ظاهر دسکتاپ ذخیره شد',
+    savedMobile: 'ظاهر موبایل ذخیره شد',
     headerLabel: 'هدر',
     mobileLabel: 'موبایل',
+    orderDesktopTitle: 'ترتیب منوی دسکتاپ',
+    orderDesktopDesc: 'ترتیب آیتم‌ها در منوی بالای دسکتاپ',
+    orderMobileTitle: 'ترتیب نوار پایین موبایل',
+    orderMobileDesc: 'مستقل از دسکتاپ. تا ۵ آیتم فعال اول در نوار موبایل نمایش داده می‌شود.',
+    centerTitle: 'آیتم وسط (دایره وسط)',
+    centerDesc: 'کدام آیتم در دایره برجسته وسط باشد',
+    centerAuto: 'خودکار (وسط لیست)',
+    centerBadge: 'وسط',
+    orderSaved: 'ترتیب ذخیره شد',
+    moveUp: 'بالا',
+    moveDown: 'پایین',
+    previewOrder: 'پیش‌نمایش نوار پایین',
+    previewDesktop: 'پیش‌نمایش منوی دسکتاپ',
   }
 
   const logoPreview = useMemo(() => {
@@ -240,6 +328,36 @@ export default function HeaderMenuPage() {
     setAppearance((prev) => ({ ...prev, [key]: value }))
   }
 
+  const handleMoveItem = async (itemId, direction, { scope = 'desktop', activeOnly = true } = {}) => {
+    const orderScope = scope === 'mobile' ? 'mobile' : 'desktop'
+    const activePool = orderScope === 'mobile' ? mobileActiveSorted : desktopActiveSorted
+    const pool = activeOnly ? activePool : sortHeaderMenuItems(items, orderScope)
+    const ids = pool.map((i) => i.id)
+    const idx = ids.indexOf(itemId)
+    const next = idx + direction
+    if (idx < 0 || next < 0 || next >= ids.length) return
+    const swapped = ids.slice()
+    ;[swapped[idx], swapped[next]] = [swapped[next], swapped[idx]]
+    const payload = activeOnly
+      ? [
+          ...swapped,
+          ...sortHeaderMenuItems((items || []).filter((i) => !i.is_active), orderScope).map((i) => i.id),
+        ]
+      : swapped
+    try {
+      setReordering(true)
+      setError(null)
+      const list = await reorderHeaderMenu(payload, getAuthHeaders(), { scope: orderScope })
+      setItems(Array.isArray(list) ? list : [])
+      clearHeaderMenuCache()
+      setSuccess(t.orderSaved)
+    } catch (err) {
+      setError(err.message || 'خطا در تغییر ترتیب')
+    } finally {
+      setReordering(false)
+    }
+  }
+
   const openCreate = () => {
     setEditing(null)
     setForm({
@@ -276,21 +394,25 @@ export default function HeaderMenuPage() {
     return parts.join(' | ') || 'خطا در ذخیره'
   }
 
-  const handleSaveAppearance = async (e) => {
-    e.preventDefault()
+  const patchAppearance = async (keys, { includeLogo = false, successMsg } = {}) => {
     setError(null)
     setSuccess(null)
     try {
       setSavingAppear(true)
       const fd = new FormData()
-      ;[
-        'logo_url',
-        'header_bg', 'header_text', 'header_icon', 'header_hover',
-        'mobile_bg', 'mobile_text', 'mobile_icon', 'mobile_active', 'mobile_style',
-      ].forEach((key) => {
+      keys.forEach((key) => {
+        if (key === 'mobile_center_item_id') {
+          fd.append(
+            key,
+            appearance.mobile_center_item_id != null && appearance.mobile_center_item_id !== ''
+              ? String(appearance.mobile_center_item_id)
+              : ''
+          )
+          return
+        }
         fd.append(key, appearance[key] ?? '')
       })
-      if (logoFile) fd.append('logo', logoFile)
+      if (includeLogo && logoFile) fd.append('logo', logoFile)
 
       const res = await axios.patch(
         Config.endpoints.news.corporateAppearance.update(),
@@ -298,14 +420,40 @@ export default function HeaderMenuPage() {
         { headers: getAuthHeaders() }
       )
       setAppearance(normalizeCorporateAppearance(res.data?.data || res.data))
-      setLogoFile(null)
+      if (includeLogo) setLogoFile(null)
       clearCorporateAppearanceCache()
-      setSuccess(t.saved)
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('corporate-appearance-changed'))
+      }
+      setSuccess(successMsg)
     } catch (err) {
       setError(fmtErrors(err.response?.data))
     } finally {
       setSavingAppear(false)
     }
+  }
+
+  const handleSaveDesktop = async (e) => {
+    e.preventDefault()
+    await patchAppearance(
+      [
+        'logo_url',
+        'header_bg', 'header_text', 'header_hover',
+        'header_icon', 'header_icon_hover',
+      ],
+      { includeLogo: true, successMsg: t.savedDesktop }
+    )
+  }
+
+  const handleSaveMobile = async (e) => {
+    e.preventDefault()
+    await patchAppearance(
+      [
+        'mobile_bg', 'mobile_text', 'mobile_icon', 'mobile_active',
+        'mobile_style', 'mobile_center_item_id',
+      ],
+      { successMsg: t.savedMobile }
+    )
   }
 
   const handleSave = async (e) => {
@@ -424,7 +572,7 @@ export default function HeaderMenuPage() {
             </div>
           </div>
           <div className={styles.headerActions}>
-            <Link href="/adminweb" className={styles.headerGhost}>
+            <Link href="/adminsettings" className={styles.headerGhost}>
               <ExternalLink size={15} /> {t.adminweb}
             </Link>
             <Link href="/dashboard" className={styles.headerGhost}>
@@ -440,7 +588,7 @@ export default function HeaderMenuPage() {
             ) : (
               <button
                 type="submit"
-                form="corporate-appear-form"
+                form={tab === 'mobile' ? 'corporate-mobile-form' : 'corporate-desktop-form'}
                 className={styles.headerPrimary}
                 disabled={savingAppear}
               >
@@ -453,15 +601,31 @@ export default function HeaderMenuPage() {
         <div className={local.tabs}>
           <button
             type="button"
-            className={`${local.tab} ${tab === 'appearance' ? local.tabActive : ''}`}
-            onClick={() => setTab('appearance')}
+            className={`${local.tab} ${tab === 'desktop' ? local.tabActive : ''}`}
+            onClick={() => {
+              setTab('desktop')
+              router.replace('/header-menu?tab=desktop', { scroll: false })
+            }}
           >
-            <Palette size={15} /> {t.tabAppear}
+            <Monitor size={15} /> {t.tabDesktop}
+          </button>
+          <button
+            type="button"
+            className={`${local.tab} ${tab === 'mobile' ? local.tabActive : ''}`}
+            onClick={() => {
+              setTab('mobile')
+              router.replace('/header-menu?tab=mobile', { scroll: false })
+            }}
+          >
+            <Smartphone size={15} /> {t.tabMobile}
           </button>
           <button
             type="button"
             className={`${local.tab} ${tab === 'links' ? local.tabActive : ''}`}
-            onClick={() => setTab('links')}
+            onClick={() => {
+              setTab('links')
+              router.replace('/header-menu?tab=links', { scroll: false })
+            }}
           >
             <List size={15} /> {t.tabLinks} ({items.length})
           </button>
@@ -470,11 +634,11 @@ export default function HeaderMenuPage() {
         {error && <div className={styles.errorBar}>{error}</div>}
         {success && <div className={local.successBar}>{success}</div>}
 
-        {tab === 'appearance' && (
-          <form id="corporate-appear-form" className={local.appearCard} onSubmit={handleSaveAppearance}>
+        {tab === 'desktop' && (
+          <form id="corporate-desktop-form" className={local.appearCard} onSubmit={handleSaveDesktop}>
             <div className={local.appearHead}>
-              <h2>{t.appearTitle}</h2>
-              <p>{t.appearDesc}</p>
+              <h2>{t.desktopTitle}</h2>
+              <p>{t.desktopDesc}</p>
             </div>
 
             <div className={local.logoBlock}>
@@ -534,6 +698,105 @@ export default function HeaderMenuPage() {
               ))}
             </div>
 
+            <div className={local.orderBlock}>
+              <p className={local.subTitle}>{t.orderDesktopTitle}</p>
+              <p className={local.orderHint}>{t.orderDesktopDesc}</p>
+              {desktopActiveSorted.length === 0 ? (
+                <p className={local.orderHint}>{t.empty}</p>
+              ) : (
+                <ul className={local.orderList}>
+                  {desktopActiveSorted.map((item, index) => (
+                    <li key={item.id} className={local.orderRow}>
+                      <span className={local.orderIndex}>{index + 1}</span>
+                      <div className={local.orderMeta}>
+                        <strong>
+                          {language === 'en' && item.label_en ? item.label_en : item.label_fa}
+                        </strong>
+                        <span dir="ltr">{item.href}</span>
+                      </div>
+                      <div className={local.orderActions}>
+                        <button
+                          type="button"
+                          className={local.orderBtn}
+                          disabled={reordering || index === 0}
+                          title={t.moveUp}
+                          onClick={() => handleMoveItem(item.id, -1, { scope: 'desktop' })}
+                        >
+                          <ChevronUp size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          className={local.orderBtn}
+                          disabled={reordering || index === desktopActiveSorted.length - 1}
+                          title={t.moveDown}
+                          onClick={() => handleMoveItem(item.id, 1, { scope: 'desktop' })}
+                        >
+                          <ChevronDown size={16} />
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {desktopActiveSorted.length > 0 ? (
+                <>
+                  <p className={local.orderHint} style={{ marginTop: 12 }}>{t.previewDesktop}</p>
+                  <div
+                    className={local.desktopPreview}
+                    style={{
+                      background: appearance.header_bg,
+                      color: appearance.header_text,
+                    }}
+                  >
+                    {desktopActiveSorted.map((item) => (
+                      <span
+                        key={item.id}
+                        className={local.desktopPreviewItem}
+                        style={{ color: appearance.header_text }}
+                      >
+                        <span
+                          className={local.desktopPreviewDot}
+                          style={{ background: appearance.header_icon }}
+                        />
+                        {language === 'en' && item.label_en ? item.label_en : item.label_fa}
+                      </span>
+                    ))}
+                  </div>
+                </>
+              ) : null}
+            </div>
+
+            <p className={local.subTitle}>{t.preview}</p>
+            <div className={local.previewStrip}>
+              <span
+                className={local.previewChip}
+                style={{
+                  background: appearance.header_bg,
+                  color: appearance.header_text,
+                }}
+              >
+                <span style={{ color: appearance.header_icon }}>●</span>
+                {t.headerLabel}
+              </span>
+            </div>
+
+            <div className={local.saveBar}>
+              <button type="submit" className={styles.primaryBtn} disabled={savingAppear}>
+                <Save size={14} /> {savingAppear ? t.saving : t.save}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {tab === 'mobile' && (
+          <form id="corporate-mobile-form" className={local.appearCard} onSubmit={handleSaveMobile}>
+            <div className={local.appearHead}>
+              <h2>{t.mobileTitle}</h2>
+              <p>{t.mobileDesc}</p>
+            </div>
+
+            <div id="mobile-nav-customize" />
             <p className={local.subTitle}>{t.mobileStyles}</p>
             <p style={{ margin: '0 0 10px', fontSize: 11, color: '#6f675c' }}>{t.mobileStylesDesc}</p>
             <div className={local.styleGrid}>
@@ -569,6 +832,118 @@ export default function HeaderMenuPage() {
               })}
             </div>
 
+            {(appearance.mobile_style || 'classic') === 'center_circle' ? (
+              <div className={local.orderBlock}>
+                <p className={local.subTitle}>{t.centerTitle}</p>
+                <p className={local.orderHint}>{t.centerDesc}</p>
+                <select
+                  className={local.centerSelect}
+                  value={appearance.mobile_center_item_id ?? ''}
+                  onChange={(e) => {
+                    const v = e.target.value
+                    setAppearField('mobile_center_item_id', v === '' ? null : Number(v))
+                  }}
+                >
+                  <option value="">{t.centerAuto}</option>
+                  {mobileActiveSorted.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {language === 'en' && item.label_en ? item.label_en : item.label_fa}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
+
+            <div className={local.orderBlock}>
+              <p className={local.subTitle}>{t.orderMobileTitle}</p>
+              <p className={local.orderHint}>{t.orderMobileDesc}</p>
+              {mobileActiveSorted.length === 0 ? (
+                <p className={local.orderHint}>{t.empty}</p>
+              ) : (
+                <ul className={local.orderList}>
+                  {mobileActiveSorted.map((item, index) => {
+                    const previewCenterId =
+                      mobilePreviewCenterIdx >= 0
+                        ? mobilePreviewItems[mobilePreviewCenterIdx]?.id
+                        : null
+                    const isCenter =
+                      (appearance.mobile_style || 'classic') === 'center_circle' &&
+                      previewCenterId != null &&
+                      String(previewCenterId) === String(item.id)
+                    return (
+                      <li
+                        key={item.id}
+                        className={`${local.orderRow} ${isCenter ? local.orderRowCenter : ''}`}
+                      >
+                        <span className={local.orderIndex}>{index + 1}</span>
+                        <div className={local.orderMeta}>
+                          <strong>
+                            {language === 'en' && item.label_en ? item.label_en : item.label_fa}
+                          </strong>
+                          <span dir="ltr">{item.href}</span>
+                        </div>
+                        {isCenter ? (
+                          <span className={local.centerBadge}>
+                            <Star size={11} /> {t.centerBadge}
+                          </span>
+                        ) : null}
+                        <div className={local.orderActions}>
+                          <button
+                            type="button"
+                            className={local.orderBtn}
+                            disabled={reordering || index === 0}
+                            title={t.moveUp}
+                            onClick={() => handleMoveItem(item.id, -1, { scope: 'mobile' })}
+                          >
+                            <ChevronUp size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            className={local.orderBtn}
+                            disabled={reordering || index === mobileActiveSorted.length - 1}
+                            title={t.moveDown}
+                            onClick={() => handleMoveItem(item.id, 1, { scope: 'mobile' })}
+                          >
+                            <ChevronDown size={16} />
+                          </button>
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+
+              {mobilePreviewItems.length > 0 ? (
+                <>
+                  <p className={local.orderHint} style={{ marginTop: 12 }}>{t.previewOrder}</p>
+                  <div
+                    className={local.barPreview}
+                    style={{
+                      background: appearance.mobile_bg,
+                      color: appearance.mobile_text,
+                    }}
+                  >
+                    {mobilePreviewItems.map((item, i) => {
+                      const raised = i === mobilePreviewCenterIdx
+                      return (
+                        <span
+                          key={item.id}
+                          className={`${local.barPreviewItem} ${raised ? local.barPreviewCenter : ''}`}
+                          style={{
+                            color: raised || i === 0
+                              ? appearance.mobile_active
+                              : appearance.mobile_icon,
+                          }}
+                        >
+                          {language === 'en' && item.label_en ? item.label_en : item.label_fa}
+                        </span>
+                      )
+                    })}
+                  </div>
+                </>
+              ) : null}
+            </div>
+
             <p className={local.subTitle}>{t.mobileColors}</p>
             <div className={local.colorGrid}>
               {COLOR_FIELDS_MOBILE.map((f) => (
@@ -583,16 +958,6 @@ export default function HeaderMenuPage() {
 
             <p className={local.subTitle}>{t.preview}</p>
             <div className={local.previewStrip}>
-              <span
-                className={local.previewChip}
-                style={{
-                  background: appearance.header_bg,
-                  color: appearance.header_text,
-                }}
-              >
-                <span style={{ color: appearance.header_icon }}>●</span>
-                {t.headerLabel}
-              </span>
               <span
                 className={local.previewChip}
                 style={{
@@ -629,7 +994,7 @@ export default function HeaderMenuPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {items.map((item) => (
+                  {allSorted.map((item, index) => (
                     <tr key={item.id} className={!item.is_active ? styles.rowInactive : ''}>
                       <td>
                         <strong>{item.label_fa}</strong>
@@ -648,6 +1013,24 @@ export default function HeaderMenuPage() {
                       </td>
                       <td>
                         <div className={styles.rowActions}>
+                          <button
+                            type="button"
+                            className={styles.iconBtn}
+                            title={t.moveUp}
+                            disabled={reordering || index === 0}
+                            onClick={() => handleMoveItem(item.id, -1, { scope: 'desktop', activeOnly: false })}
+                          >
+                            <ChevronUp size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.iconBtn}
+                            title={t.moveDown}
+                            disabled={reordering || index === allSorted.length - 1}
+                            onClick={() => handleMoveItem(item.id, 1, { scope: 'desktop', activeOnly: false })}
+                          >
+                            <ChevronDown size={14} />
+                          </button>
                           <button type="button" className={styles.iconBtn} title={t.edit} onClick={() => openEdit(item)}>
                             <Pencil size={14} />
                           </button>
@@ -768,5 +1151,13 @@ export default function HeaderMenuPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function HeaderMenuPageSuspense() {
+  return (
+    <Suspense fallback={<div style={{ padding: 24, textAlign: 'center' }}>…</div>}>
+      <HeaderMenuPage />
+    </Suspense>
   )
 }

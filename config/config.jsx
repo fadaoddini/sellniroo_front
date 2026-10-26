@@ -674,6 +674,13 @@ karmandan: {
           noVersion: true,
         });
       },
+      typesSeed: () => {
+        return Config.getApiUrl({
+          segment: 'api/requser',
+          endpoint: 'types/seed/',
+          noVersion: true,
+        });
+      },
       categories: () => {
         return Config.getApiUrl({ 
           segment: 'api/requser', 
@@ -799,6 +806,11 @@ news: {
       params,
       noVersion: true
     }),
+    reorder: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'header-menu/reorder/',
+      noVersion: true
+    }),
     active: () => Config.getApiUrl({
       segment: 'api',
       endpoint: 'header-menu/active/',
@@ -822,6 +834,57 @@ news: {
     toggleActive: (id) => Config.getApiUrl({
       segment: 'api',
       endpoint: `header-menu/${id}/toggle-active/`,
+      noVersion: true
+    }),
+  },
+  menuLists: {
+    list: (params = {}) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'menu-lists/',
+      params,
+      noVersion: true
+    }),
+    get: (slug) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `menu-lists/${slug}/`,
+      noVersion: true
+    }),
+    create: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'menu-lists/',
+      noVersion: true
+    }),
+    update: (slug) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `menu-lists/${slug}/`,
+      noVersion: true
+    }),
+    delete: (slug) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `menu-lists/${slug}/`,
+      noVersion: true
+    }),
+  },
+  menuListItems: {
+    list: (params = {}) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'menu-list-items/',
+      params,
+      noVersion: true
+    }),
+    create: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'menu-list-items/',
+      noVersion: true
+    }),
+    update: (id) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `menu-list-items/${id}/`,
+      noVersion: true
+    }),
+    delete: (id) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `menu-list-items/${id}/`,
       noVersion: true
     }),
   },
@@ -1862,33 +1925,72 @@ news: {
         const qs = new URLSearchParams(params).toString();
         return `${Config.baseUrl}/api/jobisell/provinces/${qs ? '?' + qs : ''}`;
       },
+      provinceDetail: (id) => `${Config.baseUrl}/api/jobisell/provinces/${id}/`,
       cities: (params = {}) => {
         const qs = new URLSearchParams(params).toString();
         return `${Config.baseUrl}/api/jobisell/cities/${qs ? '?' + qs : ''}`;
       },
+      cityDetail: (id) => `${Config.baseUrl}/api/jobisell/cities/${id}/`,
       neighborhoods: (params = {}) => {
         const qs = new URLSearchParams(params).toString();
         return `${Config.baseUrl}/api/jobisell/neighborhoods/${qs ? '?' + qs : ''}`;
       },
-      cooperationTypes: () => `${Config.baseUrl}/api/jobisell/cooperation-types/`,
-      categories: () => `${Config.baseUrl}/api/jobisell/categories/`,
+      neighborhoodDetail: (id) =>
+        `${Config.baseUrl}/api/jobisell/neighborhoods/${id}/`,
+      cooperationTypes: (params = {}) => {
+        const qs = new URLSearchParams(params).toString();
+        return `${Config.baseUrl}/api/jobisell/cooperation-types/${qs ? '?' + qs : ''}`;
+      },
+      cooperationTypeDetail: (id) =>
+        `${Config.baseUrl}/api/jobisell/cooperation-types/${id}/`,
+      categories: (params = {}) => {
+        const qs = new URLSearchParams(params).toString();
+        return `${Config.baseUrl}/api/jobisell/categories/${qs ? '?' + qs : ''}`;
+      },
+      categoryDetail: (id) => `${Config.baseUrl}/api/jobisell/categories/${id}/`,
       jobTitles: (params = {}) => {
         const qs = new URLSearchParams(params).toString();
         return `${Config.baseUrl}/api/jobisell/job-titles/${qs ? '?' + qs : ''}`;
       },
-      educationLevels: () => `${Config.baseUrl}/api/jobisell/education-levels/`,
-      experienceLevels: () => `${Config.baseUrl}/api/jobisell/experience-levels/`,
-      genders: () => `${Config.baseUrl}/api/jobisell/genders/`,
-      salaryRanges: () => `${Config.baseUrl}/api/jobisell/salary-ranges/`,
+      jobTitleDetail: (id) => `${Config.baseUrl}/api/jobisell/job-titles/${id}/`,
+      educationLevels: (params = {}) => {
+        const qs = new URLSearchParams(params).toString();
+        return `${Config.baseUrl}/api/jobisell/education-levels/${qs ? '?' + qs : ''}`;
+      },
+      educationLevelDetail: (id) =>
+        `${Config.baseUrl}/api/jobisell/education-levels/${id}/`,
+      experienceLevels: (params = {}) => {
+        const qs = new URLSearchParams(params).toString();
+        return `${Config.baseUrl}/api/jobisell/experience-levels/${qs ? '?' + qs : ''}`;
+      },
+      experienceLevelDetail: (id) =>
+        `${Config.baseUrl}/api/jobisell/experience-levels/${id}/`,
+      genders: (params = {}) => {
+        const qs = new URLSearchParams(params).toString();
+        return `${Config.baseUrl}/api/jobisell/genders/${qs ? '?' + qs : ''}`;
+      },
+      genderDetail: (id) => `${Config.baseUrl}/api/jobisell/genders/${id}/`,
+      salaryRanges: (params = {}) => {
+        const qs = new URLSearchParams(params).toString();
+        return `${Config.baseUrl}/api/jobisell/salary-ranges/${qs ? '?' + qs : ''}`;
+      },
+      salaryRangeDetail: (id) =>
+        `${Config.baseUrl}/api/jobisell/salary-ranges/${id}/`,
       features: (params = {}) => {
         const qs = new URLSearchParams(params).toString();
         return `${Config.baseUrl}/api/jobisell/features/${qs ? '?' + qs : ''}`;
       },
-      tags: () => `${Config.baseUrl}/api/jobisell/tags/`,
+      featureDetail: (id) => `${Config.baseUrl}/api/jobisell/features/${id}/`,
+      tags: (params = {}) => {
+        const qs = new URLSearchParams(params).toString();
+        return `${Config.baseUrl}/api/jobisell/tags/${qs ? '?' + qs : ''}`;
+      },
+      tagDetail: (id) => `${Config.baseUrl}/api/jobisell/tags/${id}/`,
       companies: (params = {}) => {
         const qs = new URLSearchParams(params).toString();
         return `${Config.baseUrl}/api/jobisell/companies/${qs ? '?' + qs : ''}`;
       },
+      companyDetail: (id) => `${Config.baseUrl}/api/jobisell/companies/${id}/`,
       sortOptions: () => `${Config.baseUrl}/api/jobisell/sort-options/`,
 
       // ---------- آگهی‌ها ----------
@@ -1953,6 +2055,10 @@ news: {
       baseData: {
         status: () => `${Config.baseUrl}/api/jobisell/base-data/`,
         import: () => `${Config.baseUrl}/api/jobisell/base-data/import/`,
+        replaceJobTitles: () =>
+          `${Config.baseUrl}/api/jobisell/base-data/replace-job-titles/`,
+        replaceCategories: () =>
+          `${Config.baseUrl}/api/jobisell/base-data/replace-categories/`,
       },
       // ---------- شرکت من (My Company) ----------  ⬅️ اینجا داخل jobisell
   myCompany: {
@@ -2032,6 +2138,17 @@ news: {
         detail: (slug) => `${Config.baseUrl}/api/jobisell/resumes/${slug}/`,
         download: (slug) => `${Config.baseUrl}/api/jobisell/resumes/${slug}/download/`,
       },
+
+      // ---------- مدیریت رزومه (مدیر) ----------
+      resumesManage: {
+        list: (params = {}) => {
+          const qs = new URLSearchParams(params).toString();
+          return `${Config.baseUrl}/api/jobisell/resumes-manage/${qs ? '?' + qs : ''}`;
+        },
+        detail: (id) => `${Config.baseUrl}/api/jobisell/resumes-manage/${id}/`,
+        setStatus: (id) =>
+          `${Config.baseUrl}/api/jobisell/resumes-manage/${id}/set-status/`,
+      },
     },
 
 
@@ -2082,6 +2199,360 @@ news: {
           noVersion: true
         });
       },
+    },
+
+    // ============================================
+    // SHOP (فروشگاه)
+    // ============================================
+    shop: {
+      products: (params = {}) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: 'v1/products/',
+          params,
+          noVersion: true,
+        }),
+      productDetail: (id) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: `v1/products/${id}/`,
+          noVersion: true,
+        }),
+      widgets: (params = {}) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: 'v1/widgets/',
+          params,
+          noVersion: true,
+        }),
+      categories: () =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: 'v1/categories/',
+          noVersion: true,
+        }),
+      shops: () =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: 'v1/shops/',
+          noVersion: true,
+        }),
+      adminProducts: (params = {}) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: 'v1/admin/products/',
+          params,
+          noVersion: true,
+        }),
+      adminProductDetail: (id) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: `v1/admin/products/${id}/`,
+          noVersion: true,
+        }),
+      ownerMe: () =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: 'v1/owner/me/',
+          noVersion: true,
+        }),
+      ownerDashboard: () =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: 'v1/owner/dashboard/',
+          noVersion: true,
+        }),
+      ownerProducts: (params = {}) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: 'v1/owner/products/',
+          params,
+          noVersion: true,
+        }),
+      ownerProductDetail: (id) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: `v1/owner/products/${id}/`,
+          noVersion: true,
+        }),
+      ownerProductImages: (id) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: `v1/owner/products/${id}/images/`,
+          noVersion: true,
+        }),
+      ownerProductImageDetail: (id, imageId) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: `v1/owner/products/${id}/images/${imageId}/`,
+          noVersion: true,
+        }),
+      ownerProductMedia: (id) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: `v1/owner/products/${id}/media/`,
+          noVersion: true,
+        }),
+      ownerCategories: () =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: 'v1/owner/categories/',
+          noVersion: true,
+        }),
+      platformOverview: () =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: 'v1/platform/overview/',
+          noVersion: true,
+        }),
+      platformShops: (params = {}) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: 'v1/platform/shops/',
+          params,
+          noVersion: true,
+        }),
+      platformShopDetail: (id) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: `v1/platform/shops/${id}/`,
+          noVersion: true,
+        }),
+      platformProducts: (params = {}) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: 'v1/platform/products/',
+          params,
+          noVersion: true,
+        }),
+      platformProductDetail: (id) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: `v1/platform/products/${id}/`,
+          noVersion: true,
+        }),
+      platformProductImages: (id) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: `v1/platform/products/${id}/images/`,
+          noVersion: true,
+        }),
+      platformProductImageDetail: (id, imageId) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: `v1/platform/products/${id}/images/${imageId}/`,
+          noVersion: true,
+        }),
+      platformProductMedia: (id) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: `v1/platform/products/${id}/media/`,
+          noVersion: true,
+        }),
+      platformCategories: (params = {}) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: 'v1/platform/categories/',
+          params,
+          noVersion: true,
+        }),
+      platformCategoryDetail: (id) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: `v1/platform/categories/${id}/`,
+          noVersion: true,
+        }),
+      platformCategoryTemplates: () =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: 'v1/platform/categories/templates/',
+          noVersion: true,
+        }),
+    },
+
+    // ============================================
+    // ORDER (سبد / آدرس / تسویه)
+    // ============================================
+    order: {
+      cart: (params = {}) =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: 'v1/cart/',
+          params,
+          noVersion: true,
+        }),
+      cartItems: () =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: 'v1/cart/items/',
+          noVersion: true,
+        }),
+      cartDelta: () =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: 'v1/cart/delta/',
+          noVersion: true,
+        }),
+      cartClear: () =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: 'v1/cart/clear/',
+          noVersion: true,
+        }),
+      addresses: () =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: 'v1/addresses/',
+          noVersion: true,
+        }),
+      addressDetail: (id) =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: `v1/addresses/${id}/`,
+          noVersion: true,
+        }),
+      checkout: () =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: 'v1/checkout/',
+          noVersion: true,
+        }),
+      shippingEstimate: () =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: 'v1/shipping/estimate/',
+          noVersion: true,
+        }),
+      wallet: () =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: 'v1/wallet/',
+          noVersion: true,
+        }),
+      orders: () =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: 'v1/orders/',
+          noVersion: true,
+        }),
+      orderDetail: (id) =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: `v1/orders/${id}/`,
+          noVersion: true,
+        }),
+      orderReceipt: (id) =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: `v1/orders/${id}/receipt/`,
+          noVersion: true,
+        }),
+      ownerOrders: (params = {}) =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: 'v1/owner/orders/',
+          params,
+          noVersion: true,
+        }),
+      ownerOrderDetail: (id) =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: `v1/owner/orders/${id}/`,
+          noVersion: true,
+        }),
+      platformUnsettled: (params = {}) =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: 'v1/platform/unsettled/',
+          params,
+          noVersion: true,
+        }),
+      platformSettlements: (params = {}) =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: 'v1/platform/settlements/',
+          params,
+          noVersion: true,
+        }),
+      platformSettlementDetail: (id) =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: `v1/platform/settlements/${id}/`,
+          noVersion: true,
+        }),
+    },
+
+    // ============================================
+    // PAYMENT (سراسری)
+    // ============================================
+    payment: {
+      bundle: () =>
+        Config.getApiUrl({
+          segment: 'api/payment',
+          endpoint: 'v1/bundle/',
+          noVersion: true,
+        }),
+      settings: () =>
+        Config.getApiUrl({
+          segment: 'api/payment',
+          endpoint: 'v1/settings/',
+          noVersion: true,
+        }),
+      gateways: () =>
+        Config.getApiUrl({
+          segment: 'api/payment',
+          endpoint: 'v1/gateways/',
+          noVersion: true,
+        }),
+      gatewayDetail: (id) =>
+        Config.getApiUrl({
+          segment: 'api/payment',
+          endpoint: `v1/gateways/${id}/`,
+          noVersion: true,
+        }),
+      purposes: () =>
+        Config.getApiUrl({
+          segment: 'api/payment',
+          endpoint: 'v1/purposes/',
+          noVersion: true,
+        }),
+      purposeDetail: (id) =>
+        Config.getApiUrl({
+          segment: 'api/payment',
+          endpoint: `v1/purposes/${id}/`,
+          noVersion: true,
+        }),
+      payments: (params = {}) =>
+        Config.getApiUrl({
+          segment: 'api/payment',
+          endpoint: 'v1/payments/',
+          params,
+          noVersion: true,
+        }),
+      paymentDetail: (id) =>
+        Config.getApiUrl({
+          segment: 'api/payment',
+          endpoint: `v1/payments/${id}/`,
+          noVersion: true,
+        }),
+      intents: () =>
+        Config.getApiUrl({
+          segment: 'api/payment',
+          endpoint: 'v1/intents/',
+          noVersion: true,
+        }),
+      publicConfig: () =>
+        Config.getApiUrl({
+          segment: 'api/payment',
+          endpoint: 'v1/public/',
+          noVersion: true,
+        }),
+      callback: (scope) =>
+        Config.getApiUrl({
+          segment: 'api/payment',
+          endpoint: scope ? `v1/callback/${scope}/` : 'v1/callback/',
+          noVersion: true,
+        }),
     },
 
     // ============================================

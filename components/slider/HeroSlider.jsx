@@ -13,7 +13,25 @@ import React, {
 import axios from 'axios'
 import Config from '@/config/config'
 import { getFullImageUrl } from '@/utils/imageUrl'
+import {
+  DEFAULT_SLIDER_WIDGET_SETTINGS,
+  getSliderVisibilityFlags,
+  normalizeSliderWidgetSettings,
+  sliderWidgetCssVars,
+} from '@/config/sliderWidgetSettings'
 import styles from './HeroSlider.module.css'
+
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${breakpoint - 1}px)`)
+    const apply = () => setIsMobile(mq.matches)
+    apply()
+    mq.addEventListener('change', apply)
+    return () => mq.removeEventListener('change', apply)
+  }, [breakpoint])
+  return isMobile
+}
 
 const FALLBACK_SLIDES = [
   {
@@ -63,8 +81,19 @@ const normalizeSlide = (item) => ({
 
 const HeroSlider = memo(function HeroSlider({
   slides: customSlides,
-  autoPlayInterval = 5000,
+  autoPlayInterval,
+  settings: rawSettings,
 }) {
+  const raw = rawSettings || DEFAULT_SLIDER_WIDGET_SETTINGS
+  const isMobile = useIsMobile(768)
+  const viewport = isMobile ? 'mobile' : 'desktop'
+  const settings = normalizeSliderWidgetSettings(raw, { viewport })
+  const visibility = getSliderVisibilityFlags(raw)
+  const intervalMs =
+    typeof autoPlayInterval === 'number' && autoPlayInterval > 0
+      ? autoPlayInterval
+      : settings.autoplay_ms
+
   const [remoteSlides, setRemoteSlides] = useState(null)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
@@ -72,7 +101,18 @@ const HeroSlider = memo(function HeroSlider({
   const [reduceMotion, setReduceMotion] = useState(false)
 
   const intervalRef = useRef(null)
-  const touchStartX = useRef(null)
+  const sliderRef = useRef(null)
+  const dragRef = useRef({
+    active: false,
+    startX: 0,
+    dx: 0,
+    width: 0,
+    pointerId: null,
+    moved: false,
+    startT: 0,
+  })
+  const [dragDx, setDragDx] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
   const loadedImages = useRef(new Set())
 
   const slides = useMemo(() => {
@@ -171,57 +211,213 @@ const HeroSlider = memo(function HeroSlider({
   }, [count])
 
   useEffect(() => {
-    if (isPaused || reduceMotion || count < 2) return undefined
+    if (
+      !settings.autoplay ||
+      isPaused ||
+      isDragging ||
+      reduceMotion ||
+      count < 2
+    ) {
+      return undefined
+    }
 
     const tick = () => {
       if (typeof document !== 'undefined' && document.hidden) return
       nextSlide()
     }
 
-    intervalRef.current = window.setInterval(tick, autoPlayInterval)
+    intervalRef.current = window.setInterval(tick, intervalMs)
     return () => {
       if (intervalRef.current) window.clearInterval(intervalRef.current)
     }
-  }, [isPaused, reduceMotion, nextSlide, autoPlayInterval, count, progressKey])
+  }, [
+    settings.autoplay,
+    isPaused,
+    isDragging,
+    reduceMotion,
+    nextSlide,
+    intervalMs,
+    count,
+    progressKey,
+  ])
 
-  const onTouchStart = useCallback((e) => {
-    touchStartX.current = e.changedTouches?.[0]?.clientX ?? null
-  }, [])
+  /* کشیدن مثل اپ — لمس و موس */
+  useEffect(() => {
+    const el = sliderRef.current
+    if (!el || !settings.swipe_drag || count < 2) return undefined
 
-  const onTouchEnd = useCallback(
-    (e) => {
-      if (touchStartX.current == null || count < 2) return
-      const dx = (e.changedTouches?.[0]?.clientX ?? 0) - touchStartX.current
-      touchStartX.current = null
-      if (Math.abs(dx) < 40) return
-      // RTL: swipe right → prev visually? swipe left (negative) → next
-      if (dx > 0) goToPrev()
-      else nextSlide()
-    },
-    [count, goToPrev, nextSlide]
-  )
+    const drag = dragRef.current
+    const THRESHOLD_PX = 48
+    const VELOCITY = 0.35
+
+    const onDown = (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      const rect = el.getBoundingClientRect()
+      drag.active = true
+      drag.moved = false
+      drag.startX = e.clientX
+      drag.lastX = e.clientX
+      drag.dx = 0
+      drag.width = rect.width || 1
+      drag.pointerId = e.pointerId
+      drag.startT = performance.now()
+      try {
+        el.setPointerCapture(e.pointerId)
+      } catch {
+        /* ignore */
+      }
+      setIsDragging(true)
+      setIsPaused(true)
+      setDragDx(0)
+    }
+
+    const onMove = (e) => {
+      if (!drag.active || drag.pointerId !== e.pointerId) return
+      const dx = e.clientX - drag.startX
+      drag.dx = dx
+      drag.lastX = e.clientX
+      if (Math.abs(dx) > 6) drag.moved = true
+      setDragDx(dx)
+    }
+
+    const endDrag = (e) => {
+      if (!drag.active) return
+      if (e && drag.pointerId != null && e.pointerId !== drag.pointerId) return
+      const dx = drag.dx
+      const dt = Math.max(16, performance.now() - drag.startT)
+      const velocity = Math.abs(dx) / dt
+      const pass =
+        Math.abs(dx) > Math.min(THRESHOLD_PX, drag.width * 0.18) ||
+        velocity > VELOCITY
+
+      drag.active = false
+      drag.pointerId = null
+      setIsDragging(false)
+      setDragDx(0)
+
+      if (pass && drag.moved) {
+        /* انگشت به چپ → بعدی؛ به راست → قبلی */
+        if (dx < 0) nextSlide()
+        else goToPrev()
+      }
+
+      window.setTimeout(() => {
+        drag.moved = false
+        setIsPaused(false)
+      }, 40)
+    }
+
+    const onClickCapture = (e) => {
+      if (drag.moved) {
+        e.preventDefault()
+        e.stopPropagation()
+      }
+    }
+
+    el.addEventListener('pointerdown', onDown)
+    el.addEventListener('pointermove', onMove)
+    el.addEventListener('pointerup', endDrag)
+    el.addEventListener('pointercancel', endDrag)
+    el.addEventListener('click', onClickCapture, true)
+
+    return () => {
+      el.removeEventListener('pointerdown', onDown)
+      el.removeEventListener('pointermove', onMove)
+      el.removeEventListener('pointerup', endDrag)
+      el.removeEventListener('pointercancel', endDrag)
+      el.removeEventListener('click', onClickCapture, true)
+    }
+  }, [settings.swipe_drag, count, nextSlide, goToPrev])
 
   if (!current) return null
 
+  const heightClass =
+    settings.height === 'sm'
+      ? styles.heightSm
+      : settings.height === 'lg'
+        ? styles.heightLg
+        : styles.heightMd
+
+  const shellStyle = sliderWidgetCssVars(raw, { viewport })
+  const fullBleed = settings.full_bleed !== false
+  const swipeOn = settings.swipe_drag !== false && count > 1
+  const trackStyle = {
+    transform: `translate3d(calc(${-safeIndex * 100}% + ${dragDx}px), 0, 0)`,
+    transition: isDragging
+      ? 'none'
+      : reduceMotion
+        ? 'none'
+        : 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)',
+  }
+
+  const dotsButtons = slides.map((slide, index) => (
+    <button
+      key={slide.id}
+      type="button"
+      role="tab"
+      aria-selected={index === safeIndex}
+      className={`${styles.dot} ${index === safeIndex ? styles.dotActive : ''}`}
+      onClick={() => goToSlide(index)}
+      aria-label={`رفتن به اسلاید ${index + 1}`}
+    >
+      {index === safeIndex &&
+      settings.autoplay &&
+      !isPaused &&
+      !isDragging &&
+      !reduceMotion ? (
+        <span
+          key={progressKey}
+          className={styles.dotProgress}
+          style={{ animationDuration: `${intervalMs}ms` }}
+        />
+      ) : null}
+    </button>
+  ))
+
   return (
     <div
-      className={styles.slider}
+      className={[
+        styles.shell,
+        fullBleed ? styles.shellFullBleed : styles.shellInset,
+        visibility.show_on_mobile === false ? styles.hideOnMobile : '',
+        visibility.show_on_desktop === false ? styles.hideOnDesktop : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      style={shellStyle}
+    >
+    <div
+      ref={sliderRef}
+      className={[
+        styles.slider,
+        heightClass,
+        swipeOn ? styles.sliderSwipe : '',
+        isDragging ? styles.sliderDragging : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
       onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
+      onMouseLeave={() => {
+        if (!isDragging) setIsPaused(false)
+      }}
       onFocus={() => setIsPaused(true)}
       onBlur={() => setIsPaused(false)}
-      onTouchStart={onTouchStart}
-      onTouchEnd={onTouchEnd}
       dir="rtl"
       role="region"
       aria-roledescription="carousel"
       aria-label="اسلایدر اصلی"
     >
-      <div className={styles.slidesWrapper}>
+      <div
+        className={styles.slidesWrapper}
+        style={trackStyle}
+      >
         {slides.map((slide, index) => {
           const isActive = index === safeIndex
-          const isNear = Math.abs(index - safeIndex) <= 1 || (safeIndex === 0 && index === count - 1) || (safeIndex === count - 1 && index === 0)
-          const showBg = isActive || isNear
+          const isNear =
+            Math.abs(index - safeIndex) <= 1 ||
+            (safeIndex === 0 && index === count - 1) ||
+            (safeIndex === count - 1 && index === 0)
+          const showBg = isActive || isNear || isDragging
 
           return (
             <div
@@ -235,31 +431,49 @@ const HeroSlider = memo(function HeroSlider({
               aria-hidden={!isActive}
             >
               <div className={styles.overlay} />
-              <div className={styles.content}>
-                {slide.link ? (
-                  <a href={slide.link} className={styles.slideLink} tabIndex={isActive ? 0 : -1}>
-                    <h2 className={`${styles.title} ${isActive ? styles.titleActive : ''}`}>
-                      {slide.title}
-                    </h2>
-                    {slide.description ? (
-                      <p className={`${styles.description} ${isActive ? styles.descActive : ''}`}>
-                        {slide.description}
-                      </p>
-                    ) : null}
-                  </a>
-                ) : (
-                  <>
-                    <h2 className={`${styles.title} ${isActive ? styles.titleActive : ''}`}>
-                      {slide.title}
-                    </h2>
-                    {slide.description ? (
-                      <p className={`${styles.description} ${isActive ? styles.descActive : ''}`}>
-                        {slide.description}
-                      </p>
-                    ) : null}
-                  </>
-                )}
-              </div>
+              {settings.show_caption ? (
+                <div className={styles.content}>
+                  {slide.link ? (
+                    <a
+                      href={slide.link}
+                      className={styles.slideLink}
+                      tabIndex={isActive ? 0 : -1}
+                    >
+                      <h2
+                        className={`${styles.title} ${isActive ? styles.titleActive : ''}`}
+                      >
+                        {slide.title}
+                      </h2>
+                      {slide.description ? (
+                        <p
+                          className={`${styles.description} ${
+                            isActive ? styles.descActive : ''
+                          }`}
+                        >
+                          {slide.description}
+                        </p>
+                      ) : null}
+                    </a>
+                  ) : (
+                    <>
+                      <h2
+                        className={`${styles.title} ${isActive ? styles.titleActive : ''}`}
+                      >
+                        {slide.title}
+                      </h2>
+                      {slide.description ? (
+                        <p
+                          className={`${styles.description} ${
+                            isActive ? styles.descActive : ''
+                          }`}
+                        >
+                          {slide.description}
+                        </p>
+                      ) : null}
+                    </>
+                  )}
+                </div>
+              ) : null}
             </div>
           )
         })}
@@ -267,63 +481,61 @@ const HeroSlider = memo(function HeroSlider({
 
       {count > 1 && (
         <>
-          <button
-            type="button"
-            className={`${styles.navBtn} ${styles.navPrev}`}
-            onClick={goToPrev}
-            aria-label="اسلاید قبلی"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path
-                d="M15 18L9 12L15 6"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-
-          <button
-            type="button"
-            className={`${styles.navBtn} ${styles.navNext}`}
-            onClick={nextSlide}
-            aria-label="اسلاید بعدی"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path
-                d="M9 18L15 12L9 6"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-
-          <div className={styles.dots} role="tablist" aria-label="انتخاب اسلاید">
-            {slides.map((slide, index) => (
+          {settings.show_arrows ? (
+            <>
               <button
-                key={slide.id}
                 type="button"
-                role="tab"
-                aria-selected={index === safeIndex}
-                className={`${styles.dot} ${index === safeIndex ? styles.dotActive : ''}`}
-                onClick={() => goToSlide(index)}
-                aria-label={`رفتن به اسلاید ${index + 1}`}
+                className={`${styles.navBtn} ${styles.navPrev}`}
+                onClick={goToPrev}
+                aria-label="اسلاید قبلی"
               >
-                {index === safeIndex && !isPaused && !reduceMotion && (
-                  <span
-                    key={progressKey}
-                    className={styles.dotProgress}
-                    style={{ animationDuration: `${autoPlayInterval}ms` }}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <path
+                    d="M15 18L9 12L15 6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
-                )}
+                </svg>
               </button>
-            ))}
-          </div>
+
+              <button
+                type="button"
+                className={`${styles.navBtn} ${styles.navNext}`}
+                onClick={nextSlide}
+                aria-label="اسلاید بعدی"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <path
+                    d="M9 18L15 12L9 6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </>
+          ) : null}
+
+          {settings.show_dots && settings.dots_place !== 'below' ? (
+            <div className={styles.dots} role="tablist" aria-label="انتخاب اسلاید">
+              {dotsButtons}
+            </div>
+          ) : null}
         </>
       )}
+    </div>
+      {settings.show_dots && settings.dots_place === 'below' && count > 1 ? (
+        <div
+          className={styles.dotsBelow}
+          role="tablist"
+          aria-label="انتخاب اسلاید"
+        >
+          {dotsButtons}
+        </div>
+      ) : null}
     </div>
   )
 })

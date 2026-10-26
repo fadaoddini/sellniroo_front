@@ -83,6 +83,7 @@
 .navLink svg {
   color: var(--corp-header-icon, #fff);
   flex-shrink: 0;
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .navLink:hover {
@@ -91,7 +92,7 @@
 }
 
 .navLink:hover svg {
-  color: var(--corp-header-hover, #fff);
+  color: var(--corp-header-icon-hover, var(--corp-header-hover, #fff));
 }
 
 .navLink::after {
@@ -102,9 +103,10 @@
   transform: translateX(-50%);
   width: 0;
   height: 2px;
-  background: var(--primary);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--corp-header-hover, #fff);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
   border-radius: 2px;
+  pointer-events: none;
 }
 
 .navLink:hover::after {

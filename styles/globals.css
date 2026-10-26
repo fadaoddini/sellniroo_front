@@ -122,6 +122,33 @@ body {
   min-height: 40vh;
 }
 
+.siteMain--builder {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.siteMain--news-single,
+.siteMain--news-list,
+.siteMain--job-single {
+  min-height: 100dvh;
+  padding: 0;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .siteMain--news-single,
+  .siteMain--news-list,
+  .siteMain--job-single {
+    /* فضای نوار پایین منو / CTA اگر در چیدمان باشد */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .siteMain--job-single {
+    background: #fff;
+  }
+}
+
 .adminShell {
   min-height: 100vh;
   display: flex;
@@ -135,6 +162,15 @@ body {
 @media (max-width: 1023px) {
   :root {
     --mobile-bottom-nav: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* نوار پایین ویجت منو (AppBottomNav) */
+  body.has-app-bottom-nav {
+    --mobile-bottom-nav: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.has-app-bottom-nav[data-app-nav-style='center_circle'] {
+    --mobile-bottom-nav: calc(96px + env(safe-area-inset-bottom, 0px));
   }
 
   /* فاصله محتوا تا فوتر؛ خود فوتر بالای منوی پایین فاصله می‌گیرد */
@@ -194,13 +230,52 @@ table {
 }
 
 /* ============================================
-   CONTAINER
+   CONTAINER + Home layout (boxed / fluid)
    ============================================ */
+:root {
+  --home-max-width: 1200px;
+  --home-gutter: 24px;
+}
+
 .container {
-  max-width: 1200px;
+  max-width: var(--home-max-width, 1200px);
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 var(--home-gutter, 24px);
   font-family: var(--font-iran);
+}
+
+html[data-home-width="full"] .container {
+  max-width: none;
+  width: 100%;
+}
+
+html[data-home-width="boxed"] .container {
+  max-width: var(--home-max-width, 1200px);
+}
+
+.layoutSection {
+  display: block;
+  width: 100%;
+}
+
+.layoutSection[data-section-pad="none"] { --section-pad-y: 0; }
+.layoutSection[data-section-pad="sm"] { --section-pad-y: 0.5rem; }
+.layoutSection[data-section-pad="md"] { --section-pad-y: 0; }
+.layoutSection[data-section-pad="lg"] { --section-pad-y: 1.25rem; }
+
+.layoutSection[data-section-pad="sm"],
+.layoutSection[data-section-pad="lg"] {
+  padding-block: var(--section-pad-y);
+}
+
+/* بخش تمام‌عرض: داخلی‌های .container را باز کن */
+.layoutSection[data-section-width="full"] .container {
+  max-width: none;
+  width: 100%;
+}
+
+.layoutSection[data-section-width="boxed"] .container {
+  max-width: var(--home-max-width, 1200px);
 }
 
 /* ============================================

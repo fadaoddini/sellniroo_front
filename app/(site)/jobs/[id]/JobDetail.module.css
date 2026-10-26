@@ -3,15 +3,47 @@
    ============================================ */
 
 .jobDetailPage {
-  background: #f8f9fa;
+  --jsd-ink: #1a2332;
+  --jsd-muted: #6b7280;
+  --jsd-accent: #e67e22;
+  --jsd-surface: #ffffff;
+  --jsd-max: 1100px;
+  --jsd-fs: 16px;
+  --jsd-title-fs: 28px;
+  background: #f3f4f6;
   min-height: 100vh;
   padding: 2rem 0;
+  color: var(--jsd-ink);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* داخل اسلات صفحه‌ساز — بدون قاب اضافه / بدون دوبل پدینگ */
+.jobDetailPage.inSlot {
+  background: transparent;
+  min-height: 0;
+  padding: 0;
+  max-width: none;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: var(--jsd-max, 1200px);
   margin: 0 auto;
   padding: 0 1.5rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.jobDetailPage.inSlot .container {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* نوار بالای اپ — پیش‌فرض مخفی (دسکتاپ) */
+.appTopBar,
+.mobileCtaBar {
+  display: none;
 }
 
 /* ============================================
@@ -187,9 +219,9 @@
 }
 
 .jobTitle {
-  font-size: 1.5rem;
+  font-size: var(--jsd-title-fs, 1.5rem);
   font-weight: 700;
-  color: #1a2a3a;
+  color: var(--jsd-ink, #1a2a3a);
   margin: 0;
   font-family: 'iran_bold', Tahoma, Arial, sans-serif;
   line-height: 1.3;
@@ -432,8 +464,8 @@
 }
 
 .descriptionText {
-  font-size: 0.9rem;
-  color: #555;
+  font-size: var(--jsd-fs, 0.9rem);
+  color: var(--jsd-ink, #555);
   line-height: 1.8;
   margin: 0;
   font-family: 'iran', Tahoma, Arial, sans-serif;
@@ -850,166 +882,483 @@
   }
 }
 
+/* ============================================
+   موبایل — حس اپلیکیشن واقعی
+   ============================================ */
 @media (max-width: 768px) {
-  .jobDetailPage {
-    padding: 1rem 0;
+  .jobDetailPage,
+  .jobDetailPage.inSlot {
+    --app-cta-h: 72px;
+    background: var(--jsd-surface, #fff);
+    padding: 0;
+    padding-bottom: calc(
+      var(--app-cta-h) + var(--mobile-bottom-nav, 0px) +
+        env(safe-area-inset-bottom, 0px)
+    );
+    min-height: 100dvh;
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
   }
 
+  .jobDetailPage.inSlot .container,
   .container {
-    padding: 0 0.75rem;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .breadcrumb {
+    display: none;
+  }
+
+  /* نوار بالای اپ */
+  .appTopBar {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    min-height: 56px;
+    padding: 0.4rem 0.7rem;
+    padding-top: max(0.45rem, env(safe-area-inset-top, 0px));
+    background: color-mix(in srgb, var(--jsd-surface, #fff) 86%, transparent);
+    backdrop-filter: blur(20px) saturate(1.35);
+    -webkit-backdrop-filter: blur(20px) saturate(1.35);
+    border-bottom: 1px solid rgba(26, 35, 50, 0.06);
+  }
+
+  .appBack {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    color: var(--jsd-ink, #1a2332);
+    background: rgba(26, 35, 50, 0.05);
+    flex-shrink: 0;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s ease, transform 0.12s ease;
+  }
+
+  .appBack:active {
+    background: rgba(26, 35, 50, 0.1);
+    transform: scale(0.94);
+  }
+
+  .appTopCenter {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.08rem;
+    padding-inline: 0.15rem;
+  }
+
+  .appTopTitle {
+    font-size: 0.92rem;
+    font-weight: 800;
+    font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+    color: var(--jsd-ink, #1a2332);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.25;
+  }
+
+  .appTopSub {
+    font-size: 0.72rem;
+    color: var(--jsd-muted, #6b7280);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .appTopActions {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    flex-shrink: 0;
+  }
+
+  .appIconBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 14px;
+    background: transparent;
+    color: var(--jsd-muted, #6b7280);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.12s ease;
+  }
+
+  .appIconBtn:active {
+    background: rgba(26, 35, 50, 0.06);
+    transform: scale(0.94);
+  }
+
+  .appIconBtn.active {
+    color: var(--jsd-accent, #e67e22);
+    background: color-mix(in srgb, var(--jsd-accent, #e67e22) 12%, transparent);
+  }
+
+  /* نوار پایین CTA — دکمه بزرگ اپ‌مانند */
+  .mobileCtaBar {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: var(--mobile-bottom-nav, 0px);
+    z-index: 50;
+    padding: 0;
+    background: color-mix(in srgb, var(--jsd-surface, #fff) 94%, transparent);
+    backdrop-filter: blur(22px) saturate(1.4);
+    -webkit-backdrop-filter: blur(22px) saturate(1.4);
+    border-top: 1px solid rgba(26, 35, 50, 0.07);
+    box-shadow: 0 -12px 40px rgba(20, 24, 31, 0.1);
+  }
+
+  .mobileCtaInner {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 0.75rem 1rem;
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .mobileCtaPrimary {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    min-height: 56px;
+    padding: 0.85rem 1.15rem;
+    border: none;
+    border-radius: 18px;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--jsd-accent, #e67e22) 92%, #fff) 0%,
+      var(--jsd-accent, #e67e22) 100%
+    );
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow:
+      0 10px 28px color-mix(in srgb, var(--jsd-accent, #e67e22) 38%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    transition: transform 0.12s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .mobileCtaPrimary:active:not(:disabled) {
+    transform: scale(0.975);
+    filter: brightness(0.96);
+  }
+
+  .mobileCtaPrimary:disabled {
+    opacity: 0.72;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .mobileCtaIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    border-radius: 18px;
+    border: 1.5px solid color-mix(in srgb, var(--jsd-accent, #e67e22) 40%, transparent);
+    background: color-mix(in srgb, var(--jsd-accent, #e67e22) 8%, #fff);
+    color: var(--jsd-accent, #e67e22);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.12s ease, background 0.15s ease;
+  }
+
+  .mobileCtaIcon:active {
+    transform: scale(0.94);
+    background: color-mix(in srgb, var(--jsd-accent, #e67e22) 16%, #fff);
+  }
+
+  .mobileCtaGhost {
+    display: none;
+  }
+
+  .mobileCtaDone {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    min-height: 56px;
+    border-radius: 18px;
+    background: rgba(34, 197, 94, 0.12);
+    color: #15803d;
+    font-size: 1rem;
+    font-weight: 800;
+    font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  }
+
+  .jobDetailGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .mainColumn {
+    gap: 0;
+  }
+
+  /* کارت‌ها بدون قاب — تمام‌عرض مثل اپ */
+  .jobCard,
+  .actionCard,
+  .companyCard,
+  .statsCard,
+  .similarJobs {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: var(--jsd-surface, #fff);
   }
 
   .jobImageWrapper {
-    height: 220px;
+    height: min(58vw, 280px);
+    border-radius: 0;
   }
 
   .jobHeader {
     flex-direction: column;
-    padding: 1rem 1rem 0;
+    align-items: stretch;
+    padding: 1.15rem 1.1rem 0.35rem;
+    gap: 0.7rem;
   }
 
   .jobActions {
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  .jobQuickInfo {
-    padding: 0.75rem 1rem;
-  }
-
-  .quickInfoItem {
-    font-size: 0.7rem;
-    padding: 0.15rem 0.4rem;
+    display: none;
   }
 
   .jobTitle {
-    font-size: 1.2rem;
+    font-size: clamp(1.2rem, 5.2vw, 1.45rem);
+    line-height: 1.35;
+    font-weight: 800;
   }
 
-  .jobDescription {
-    padding: 1rem;
+  .jobCompany {
+    font-size: 0.88rem;
+    margin-top: 0.35rem;
   }
 
-  .jobAdditionalInfo {
-    padding: 0.75rem 1rem;
+  .jobQuickInfo {
+    padding: 0.7rem 1.1rem 1rem;
+    gap: 0.45rem;
+    border-bottom: 1px solid rgba(26, 35, 50, 0.05);
+  }
+
+  .quickInfoItem {
+    font-size: 0.76rem;
+    padding: 0.42rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(26, 35, 50, 0.045);
+  }
+
+  .featuresSection,
+  .jobAdditionalInfo,
+  .jobDescription,
+  .jobTagsSection {
+    padding: 1rem 1.1rem;
+  }
+
+  .sectionTitle,
+  .featuresTitle,
+  .actionCardTitle,
+  .companyCardTitle {
+    font-size: 1rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .descriptionText {
+    font-size: 0.95rem;
+    line-height: 1.85;
   }
 
   .infoGrid {
     grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
   }
 
   .sideColumn {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 0.25rem;
   }
 
-  .jobTagsSection {
-    padding: 0.5rem 1rem;
+  .actionCard,
+  .companyCard,
+  .statsCard {
+    padding: 1.15rem 1.1rem;
+    border-top: 10px solid #f1f3f5;
+  }
+
+  /* دکمه فرم داخل صفحه هم بزرگ و اپ‌مانند */
+  .actionCard .applyBtn,
+  .actionCard .loginBtn,
+  .actionCard .contactBtn {
+    min-height: 54px;
+    border-radius: 16px;
+    font-size: 0.98rem;
+    font-weight: 800;
+  }
+
+  .actionCard .applyBtn {
+    box-shadow: 0 8px 22px color-mix(in srgb, var(--jsd-accent, #e67e22) 28%, transparent);
+  }
+
+  .actionCard .coverInput {
+    min-height: 100px;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    padding: 0.85rem 1rem;
+  }
+
+  .similarJobs {
+    padding: 1.15rem 1.1rem;
+    border-top: 10px solid #f1f3f5;
   }
 
   .tag {
-    font-size: 0.6rem;
-    padding: 0.15rem 0.5rem;
+    font-size: 0.72rem;
+    padding: 0.32rem 0.65rem;
+    border-radius: 999px;
   }
 
   .featuresGrid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
   }
 
   .featureItem {
-    font-size: 0.65rem;
-    padding: 0.25rem 0.4rem;
+    font-size: 0.72rem;
+    padding: 0.55rem 0.55rem;
+    border-radius: 12px;
   }
 
   .statsCard {
+    display: grid;
     grid-template-columns: repeat(3, 1fr);
+    gap: 0.45rem;
+  }
+
+  .statItem {
+    justify-content: center;
+    font-size: 0.74rem;
+    min-height: 44px;
+  }
+
+  .featuredBadge {
+    font-size: 0.7rem;
+    padding: 0.35rem 0.75rem;
+    top: 14px;
+    right: 14px;
+    border-radius: 999px;
+  }
+
+  .adTypeOverlay {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+    bottom: 14px;
+    left: 14px;
+    border-radius: 12px;
+  }
+
+  .similarJobsGrid {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
+  .similarJobCard {
+    border-radius: 14px;
+    padding: 1rem 1.05rem;
+    background: #f6f7f9;
+    border: none;
+    min-height: 72px;
+    transition: transform 0.12s ease, background 0.15s ease;
+  }
+
+  .similarJobCard:active {
+    transform: scale(0.98);
+    background: #eef0f3;
+  }
+
+  .similarJobTitle {
+    font-size: 0.88rem;
   }
 }
 
 @media (max-width: 480px) {
+  .jobDetailPage,
+  .jobDetailPage.inSlot {
+    --app-cta-h: 76px;
+  }
+
   .jobImageWrapper {
-    height: 180px;
-  }
-
-  .jobTitle {
-    font-size: 1rem;
-  }
-
-  .jobQuickInfo {
-    flex-direction: column;
-    gap: 0.3rem;
-  }
-
-  .quickInfoItem {
-    width: 100%;
-    font-size: 0.7rem;
-  }
-
-  .actionBtn {
-    width: 36px;
-    height: 36px;
-  }
-
-  .actionBtn svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  .featuredBadge {
-    font-size: 0.6rem;
-    padding: 0.2rem 0.6rem;
-    top: 10px;
-    right: 10px;
-  }
-
-  .adTypeOverlay {
-    font-size: 0.65rem;
-    padding: 0.3rem 0.6rem;
-    bottom: 10px;
-    left: 10px;
+    height: min(64vw, 240px);
   }
 
   .infoGrid {
     grid-template-columns: 1fr;
   }
 
-  .statsCard {
-    grid-template-columns: 1fr;
-    gap: 0.3rem;
-  }
-
-  .statItem {
-    justify-content: flex-start;
-  }
-
-  .breadcrumb {
-    font-size: 0.7rem;
+  .jobQuickInfo {
     flex-wrap: wrap;
   }
 
-  .applyBtn,
-  .contactBtn,
-  .loginBtn {
-    font-size: 0.8rem;
-    padding: 0.6rem 0.8rem;
+  .mobileCtaInner {
+    padding-inline: 0.85rem;
+    gap: 0.55rem;
   }
 
-  .featuresGrid {
-    grid-template-columns: 1fr 1fr;
+  .mobileCtaPrimary {
+    min-height: 54px;
+    font-size: 1rem;
+    border-radius: 16px;
   }
 
-  .featureItem {
-    font-size: 0.6rem;
-    padding: 0.2rem 0.3rem;
+  .mobileCtaIcon,
+  .mobileCtaDone {
+    width: 54px;
+    height: 54px;
+    min-height: 54px;
+    border-radius: 16px;
+  }
+
+  .mobileCtaDone {
+    width: auto;
+    flex: 1;
   }
 
   .adTypeBadgeLarge {
-    font-size: 0.55rem;
-    padding: 0.1rem 0.4rem;
+    font-size: 0.6rem;
+    padding: 0.15rem 0.5rem;
   }
 
   .verifiedBadge {
-    font-size: 0.6rem;
+    font-size: 0.65rem;
   }
 }
 

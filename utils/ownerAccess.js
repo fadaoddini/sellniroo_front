@@ -9,6 +9,30 @@ export const OWNER_PROFILE = {
   siteUrl: 'https://saeedev.com',
 }
 
+/**
+ * مسیرهای پورتال مالک — فقط دو شمارهٔ OWNER_PHONES.
+ * در /dashboard به کاربر نهایی نشان داده نمی‌شوند.
+ */
+export const OWNER_ONLY_PATHS = [
+  '/adminweb',
+  '/adminshop',
+  '/adminshops',
+  '/adminproducts',
+  '/admincategories',
+  '/adminmodule',
+  '/adminnews',
+  '/adminkaryabi',
+  '/adminsettings',
+]
+
+export function isOwnerOnlyPath(href) {
+  const path = String(href || '').split('?')[0]
+  if (!path) return false
+  return OWNER_ONLY_PATHS.some(
+    (p) => path === p || path.startsWith(`${p}/`),
+  )
+}
+
 /** نرمال‌سازی شماره موبایل ایران به فرم 09xxxxxxxxx */
 export function normalizeIranMobile(raw) {
   let s = String(raw || '').replace(/\D/g, '')

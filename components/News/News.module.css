@@ -599,6 +599,648 @@
   padding: 0 0.25rem;
 }
 
+/* صفحه‌بندی — سبک‌ها */
+.pagClassic {
+  /* پیش‌فرض */
+}
+
+.pagPills .pageBtn {
+  border-radius: 999px;
+  min-width: 42px;
+}
+
+.pagPills .pageBtnActive {
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--nlm-accent, #c27800) 28%, transparent);
+}
+
+.pagMinimal {
+  gap: 0.85rem;
+}
+
+.pagMinimal .pageBtnNav {
+  min-width: auto;
+  padding: 0 0.85rem;
+  gap: 0.4rem;
+  border-radius: 999px;
+}
+
+.pagNavLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.pagStatus {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--muted);
+  padding: 0 0.5rem;
+  font-family: var(--font-iran);
+}
+
+.pagBar {
+  gap: 0.2rem;
+  padding: 0.35rem;
+  background: color-mix(in srgb, var(--nlm-surface, #fff) 92%, var(--nlm-accent-soft, #fff3c4));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  width: fit-content;
+  margin-inline: auto;
+}
+
+.pagBar .pageBtn {
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  min-width: 38px;
+  height: 38px;
+}
+
+.pagBar .pageBtn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--nlm-accent-soft, #fff3c4) 80%, transparent);
+}
+
+.pagBar .pageBtnActive {
+  background: var(--nlm-accent, var(--primary-dark, #c27800));
+  color: #fff;
+  box-shadow: none;
+}
+
+/* ── Magazine card shell + variants ── */
+.magCardShell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--nlm-surface, #fff);
+  border-style: solid;
+  border-width: var(--nlm-border-w, 1px);
+  border-color: var(--nlm-border-c, var(--line));
+  border-radius:
+    var(--nlm-radius-tl, 16px)
+    var(--nlm-radius-tr, 16px)
+    var(--nlm-radius-br, 16px)
+    var(--nlm-radius-bl, 16px);
+  box-shadow: var(--nlm-shadow, 0 6px 18px rgba(80, 50, 0, 0.04));
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.magCardShell:hover {
+  transform: translateY(-3px);
+}
+
+/* کل کارت قابل‌کلیک — اشتراک بالای این لایه می‌ماند */
+.magCardHit {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  text-indent: -9999px;
+  overflow: hidden;
+}
+
+.magActions,
+.magShareWrap,
+.magShareMenu {
+  position: relative;
+  z-index: 5;
+}
+
+.magMedia {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--nlm-aspect, 16 / 9);
+  overflow: hidden;
+  background: #fff4e7;
+  flex-shrink: 0;
+}
+
+.magMedia .cardImageInner,
+.magMedia .cardImagePlaceholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.45s ease;
+}
+
+.magCardShell:hover .magMedia .cardImageInner {
+  transform: scale(1.04);
+}
+
+.magBodyPad {
+  padding: 1.05rem 1.15rem 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.magTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  font-family: var(--font-iran-bold);
+  line-height: 1.5;
+  color: var(--nlm-title-c, var(--ink));
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.magCardShell:hover .magTitle {
+  color: var(--nlm-accent, var(--primary-dark));
+}
+
+.magExcerpt {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--nlm-excerpt-c, var(--muted));
+  line-height: 1.7;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+.magCardShell .cardDate {
+  color: var(--nlm-date-c, var(--muted));
+}
+
+/* overlay / glass / cover — نسبت روی کل کارت */
+.magV_overlay,
+.magV_glass,
+.magV_cover {
+  background: #1a1612;
+  aspect-ratio: var(--nlm-aspect, 16 / 9);
+  min-height: 0;
+}
+
+.magV_overlay .magMedia,
+.magV_glass .magMedia,
+.magV_cover .magMedia {
+  position: absolute;
+  inset: 0;
+  aspect-ratio: auto;
+  height: 100%;
+}
+
+.magOverlayScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 28%,
+    rgba(18, 14, 10, 0.55) 62%,
+    rgba(12, 10, 8, 0.88) 100%
+  );
+  pointer-events: none;
+  transition: background 0.4s ease;
+  z-index: 1;
+}
+
+.magV_overlay:hover .magOverlayScrim {
+  background: linear-gradient(
+    180deg,
+    rgba(12, 10, 8, 0.15) 10%,
+    rgba(12, 10, 8, 0.62) 48%,
+    rgba(8, 6, 4, 0.94) 100%
+  );
+}
+
+.magOverlayBody {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 1.15rem 1.2rem 1.1rem;
+  color: #fff8ec;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.magV_overlay .magTitle,
+.magV_glass .magTitle,
+.magV_cover .magTitle {
+  color: #fff8ec;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+}
+
+.magV_overlay:hover .magTitle,
+.magV_glass:hover .magTitle,
+.magV_cover:hover .magTitle {
+  color: #fff8ec;
+}
+
+.magV_overlay .magExcerpt {
+  color: rgba(255, 248, 236, 0.88);
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(8px);
+  flex: none;
+  transition:
+    max-height 0.4s ease,
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+
+.magV_overlay:hover .magExcerpt {
+  max-height: 5.2em;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.magV_overlay .cardDate,
+.magV_overlay .cardSource,
+.magV_glass .cardDate,
+.magV_glass .cardSource {
+  color: rgba(255, 248, 236, 0.9);
+}
+
+.magV_overlay .cardSource,
+.magV_glass .cardSource {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff8ec;
+}
+
+/* glass */
+.magV_glass .magOverlayScrim {
+  background: linear-gradient(
+    180deg,
+    rgba(20, 16, 12, 0.1) 0%,
+    rgba(20, 16, 12, 0.35) 40%,
+    rgba(12, 10, 8, 0.55) 100%
+  );
+}
+
+.magV_glass .magOverlayBody {
+  margin: 0.75rem;
+  padding: 0.95rem 1rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.magV_glass .magExcerpt {
+  color: rgba(255, 248, 236, 0.9);
+  max-height: none;
+  opacity: 1;
+  transform: none;
+}
+
+/* cover */
+.magCoverGradient {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, transparent 35%),
+    linear-gradient(0deg, rgba(10, 8, 6, 0.9) 0%, rgba(10, 8, 6, 0.35) 45%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.magCoverBody {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 1.25rem 1.2rem;
+  z-index: 2;
+  color: #fff8ec;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45rem;
+}
+
+.magCoverBadge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--nlm-accent, #fbc300) 88%, #fff);
+  color: #3a2a00;
+}
+
+.magCoverDate {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  opacity: 0.88;
+  color: #fff8ec;
+}
+
+.magCoverDate svg {
+  color: var(--nlm-accent, #fbc300);
+}
+
+/* split */
+.magV_split {
+  display: grid;
+  grid-template-columns: 42% 1fr;
+  flex-direction: unset;
+  min-height: 168px;
+}
+
+.magV_split .magMedia {
+  aspect-ratio: auto;
+  min-height: 168px;
+  height: 100%;
+}
+
+.magSplitBody {
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+/* editorial */
+.magV_editorial {
+  display: grid;
+  grid-template-columns: 6px 38% 1fr;
+  flex-direction: unset;
+  min-height: 160px;
+}
+
+.magEditorialBar {
+  background: linear-gradient(
+    180deg,
+    var(--nlm-accent, #c27800),
+    var(--nlm-accent-soft, #fff3c4)
+  );
+  height: 100%;
+}
+
+.magV_editorial .magMedia {
+  aspect-ratio: auto;
+  min-height: 160px;
+  height: 100%;
+}
+
+.magV_editorial .magTitle {
+  font-size: 1.05rem;
+  font-family: var(--font-edameh, var(--font-iran-bold));
+  -webkit-line-clamp: 3;
+}
+
+/* framed / polaroid */
+.magV_framed {
+  background: var(--nlm-surface, #fff);
+  padding: 0;
+}
+
+.magFramePad {
+  padding: 0.75rem 0.75rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  height: 100%;
+}
+
+.magV_framed .magMedia {
+  border-radius: 6px;
+  aspect-ratio: var(--nlm-aspect, 16 / 9);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.magV_framed .magBodyPad {
+  padding: 0.15rem 0.35rem 0.25rem;
+}
+
+.magV_framed .magTitle {
+  text-align: center;
+  font-family: var(--font-edameh, var(--font-iran-bold));
+}
+
+/* actions / share / like */
+.magActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  margin-top: 0.35rem;
+}
+
+.magLike {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--nlm-like-c, #e25555);
+}
+
+.magShareWrap {
+  position: relative;
+}
+
+.magShareBtn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 9px;
+  background: rgba(20, 24, 31, 0.05);
+  color: var(--nlm-share-c, #8b939e);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.magShareBtn:hover,
+.magShareBtnOn {
+  background: rgba(20, 24, 31, 0.1);
+  color: var(--nlm-ink, #2a241c);
+}
+
+.magShareMenu {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 6px);
+  inset-inline-end: 0;
+  min-width: 10.5rem;
+  padding: 0.45rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid rgba(20, 24, 31, 0.08);
+  box-shadow:
+    0 4px 12px rgba(20, 24, 31, 0.06),
+    0 16px 36px rgba(20, 24, 31, 0.14);
+}
+
+.magShareMenuLabel {
+  margin: 0 0.2rem 0.35rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #8b939e;
+}
+
+.magShareGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem;
+  margin-bottom: 0.35rem;
+}
+
+.magShareItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.05rem;
+  border-radius: 9px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-decoration: none;
+  color: #fff;
+}
+
+.magShareRubika { background: #5b21b6; }
+.magShareEitaa { background: #f59e0b; color: #1a1508; }
+.magShareBale { background: #0d9f6e; }
+.magShareSoroush { background: #0ea5e9; }
+
+.magShareCopy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  width: 100%;
+  min-height: 2rem;
+  border: 1px dashed rgba(20, 24, 31, 0.14);
+  border-radius: 9px;
+  background: #f4f5f7;
+  color: #14181f;
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* read more */
+.magRmFlow {
+  display: flex;
+  justify-content: var(--nlm-rm-align, flex-end);
+  margin-top: 0.35rem;
+}
+
+.magRm {
+  color: var(--nlm-rm-c, var(--nlm-accent, #c27800));
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-decoration: none;
+  background: var(--nlm-rm-bg, transparent);
+}
+
+.magRm:hover {
+  filter: brightness(0.92);
+}
+
+.magRmBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9px;
+  background: var(--nlm-rm-bg, var(--nlm-accent-soft, #fff3c4));
+  color: var(--nlm-rm-c, var(--nlm-accent, #c27800));
+}
+
+.magRmAbs {
+  position: absolute;
+  z-index: 5;
+  color: var(--nlm-rm-c, var(--nlm-accent, #c27800));
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-decoration: none;
+  background: var(--nlm-rm-bg, rgba(255, 255, 255, 0.92));
+  padding: 0.3rem 0.65rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.magRmBottomRight { bottom: 0.65rem; inset-inline-end: 0.65rem; }
+.magRmBottomLeft { bottom: 0.65rem; inset-inline-start: 0.65rem; }
+.magRmBottomCenter { bottom: 0.65rem; left: 50%; transform: translateX(-50%); }
+.magRmTopRight { top: 0.65rem; inset-inline-end: 0.65rem; }
+.magRmTopLeft { top: 0.65rem; inset-inline-start: 0.65rem; }
+.magRmTopCenter { top: 0.65rem; left: 50%; transform: translateX(-50%); }
+
+.magV_overlay .magRm,
+.magV_glass .magRm,
+.magV_cover .magRm {
+  color: #fff3c4;
+}
+
+.newsGridCols1 {
+  grid-template-columns: 1fr !important;
+}
+
+.newsGridCols2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.newsGridCols3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.newsGridCols4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+.paginationSlotTop {
+  margin-bottom: 1.25rem;
+  margin-top: 0;
+}
+
+.paginationSlotMid {
+  margin: 0 0 1.25rem;
+}
+
+@media (max-width: 1024px) {
+  .newsGridCols3,
+  .newsGridCols4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .newsGridCols2,
+  .newsGridCols3,
+  .newsGridCols4 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .magV_split,
+  .magV_editorial {
+    grid-template-columns: 1fr;
+  }
+
+  .magV_editorial {
+    grid-template-rows: 6px auto auto;
+  }
+
+  .magEditorialBar {
+    height: 6px;
+    width: 100%;
+  }
+
+  .magV_split .magMedia,
+  .magV_editorial .magMedia {
+    min-height: 0;
+    aspect-ratio: var(--nlm-aspect, 16 / 9);
+    height: auto;
+  }
+}
+
 /* ── Empty / Error ── */
 .emptyState,
 .errorState {
@@ -769,5 +1411,40 @@
     min-width: 36px;
     height: 36px;
     font-size: 0.75rem;
+  }
+}
+
+/* ویجت مجله روی صفحه اصلی — تم از CSS variables */
+.newsContainer[data-nlm='1'] .header,
+.newsContainer[data-nlm='1'] .statsBar,
+.newsContainer[data-nlm='1'] .categoriesWrapper {
+  background: var(--nlm-surface, #fff);
+}
+
+.newsContainer[data-nlm='1'] .magV_classic,
+.newsContainer[data-nlm='1'] .magV_split,
+.newsContainer[data-nlm='1'] .magV_editorial,
+.newsContainer[data-nlm='1'] .magV_framed {
+  background: var(--nlm-surface, #fff);
+}
+
+.newsContainer[data-nlm='1'] .categoryActive {
+  background: linear-gradient(
+    135deg,
+    var(--nlm-accent-soft, #fff3c4),
+    var(--nlm-accent-soft, #ffe082)
+  );
+  border-color: color-mix(in srgb, var(--nlm-accent, #c27800) 35%, transparent);
+  color: var(--nlm-ink, #2a241c);
+}
+
+.newsContainer[data-nlm='1'] .pageBtnActive {
+  background: var(--nlm-accent, #c27800);
+  border-color: var(--nlm-accent, #c27800);
+}
+
+@media (max-width: 767px) {
+  .nlmHideMobile {
+    display: none !important;
   }
 }

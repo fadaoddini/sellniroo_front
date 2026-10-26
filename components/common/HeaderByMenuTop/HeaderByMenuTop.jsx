@@ -1,5 +1,5 @@
 // components/common/HeaderByMenuTop/HeaderByMenuTop.jsx
-// ماژول: header_by_menu_top ⊂ corporate_system
+// ماژول: header_by_menu_top ⊂ advanced_menu
 'use client'
 
 import React, { useState, useEffect, useMemo } from 'react'
@@ -10,12 +10,14 @@ import {
   Building2, Users, Phone, Search, LayoutDashboard,
   Calculator, Container, LibraryBig, Mountain, Layers,
   DollarSign, CheckSquare, Palette, User as UserIcon, Target, Zap, Award, Shield,
+  Package,
 } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import {
   fetchHeaderMenu,
   DEFAULT_HEADER_MENU,
   filterHeaderMenuByModules,
+  sortHeaderMenuItems,
 } from '@/services/headerMenu'
 import { fetchSiteModules } from '@/services/siteModules'
 import {
@@ -52,6 +54,7 @@ const ICON_MAP = {
   Zap,
   Award,
   Shield,
+  Package,
 }
 
 function resolveIcon(name) {
@@ -89,7 +92,10 @@ export default function HeaderByMenuTop() {
   }, [])
 
   const navItems = useMemo(() => {
-    return filterHeaderMenuByModules(items || [], moduleMap).map((item) => ({
+    return sortHeaderMenuItems(
+      filterHeaderMenuByModules(items || [], moduleMap),
+      'desktop'
+    ).map((item) => ({
       ...item,
       label: language === 'en'
         ? (item.label_en || item.label_fa || item.href)

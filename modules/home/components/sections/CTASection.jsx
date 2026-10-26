@@ -5,7 +5,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   Phone, Smartphone, Mail, CheckCircle, XCircle, Loader2, Send,
-  MessageSquare, ChevronDown, X, Check,
+  MessageSquare, ChevronDown, X, Check, MessageCircle,
 } from 'lucide-react';
 import axios from 'axios';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -14,19 +14,38 @@ import {
   fetchSiteSettings,
   DEFAULT_SITE_SETTINGS,
 } from '@/services/siteSettings';
+import {
+  DEFAULT_CTA_WIDGET_SETTINGS,
+  normalizeCtaWidgetSettings,
+  ctaWidgetCssVars,
+} from '@/config/ctaWidgetSettings';
+import { resolveLucideIcon } from '@/utils/lucideIcons';
 import styles from '../../styles/CTASection.module.css';
 
 const FALLBACK_TYPES = [
-  { id: 1, name: 'مشاوره', name_en: 'Consulting', icon: '💬' },
-  { id: 2, name: 'همکاری', name_en: 'Cooperation', icon: '🤝' },
-  { id: 3, name: 'پشتیبانی', name_en: 'Support', icon: '🛠️' },
+  { id: 1, name: 'همکاری', name_en: 'Partnership', icon: 'Handshake' },
+  { id: 2, name: 'تبلیغات', name_en: 'Advertising', icon: 'Megaphone' },
+  { id: 3, name: 'مشاوره', name_en: 'Consulting', icon: 'MessageCircle' },
 ];
 
-const TYPE_ICONS = ['💬', '🤝', '🛠️', '📋', '⭐', '📞', '💼', '✨'];
+const FALLBACK_ICONS = ['Handshake', 'Megaphone', 'MessageCircle'];
 
-export default function ContactSection() {
+function TypeIcon({ name, index = 0, size = 18 }) {
+  const resolved =
+    name || FALLBACK_ICONS[index % FALLBACK_ICONS.length] || 'MessageCircle'
+  const Icon = resolveLucideIcon(resolved, MessageCircle)
+  return <Icon size={size} strokeWidth={2} aria-hidden />
+}
+
+export default function ContactSection({
+  settings: widgetSettingsRaw,
+} = {}) {
   const { language, dir } = useLanguage();
   const isFa = language !== 'en';
+  const ws = normalizeCtaWidgetSettings(
+    widgetSettingsRaw || DEFAULT_CTA_WIDGET_SETTINGS
+  );
+  const cssVars = ctaWidgetCssVars(ws);
 
   const [settings, setSettings] = useState(DEFAULT_SITE_SETTINGS);
   const [requestTypes, setRequestTypes] = useState([]);
@@ -229,7 +248,7 @@ export default function ContactSection() {
       return;
     }
 
-    if (!formData.request_type_id) {
+    if (ws.show_request_type && !formData.request_type_id) {
       setFormError(isFa ? 'نوع درخواست را انتخاب کنید' : 'Select a request type');
       setFormStatus('error');
       setTypeDialogOpen(true);
@@ -248,7 +267,9 @@ export default function ContactSection() {
         customer_name: formData.name.trim(),
         customer_mobile: phoneValidation.formatted,
         customer_email: formData.email.trim() || '',
-        request_type: formData.request_type_id,
+        ...(ws.show_request_type
+          ? { request_type: formData.request_type_id }
+          : {}),
         source: 'website_lsf_contact',
       };
 
@@ -291,181 +312,223 @@ export default function ContactSection() {
 
   if (settings.contact_section_active === false) return null;
 
-  return (
-    <section id="consulting" className={styles.contact} dir={dir}>
-      <div className={styles.bgGrid} aria-hidden />
-      <div className={styles.bgOrb} aria-hidden />
+  const eyebrowLabel =
+    ws.eyebrow_text ||
+    (isFa ? 'ارتباط با سلنیرو' : 'Contact Sellniroo');
+  const formTitle =
+    ws.form_title || (isFa ? 'فرم درخواست' : 'Request form');
+  const formSubtitle =
+    ws.form_subtitle ||
+    (isFa ? 'در کمتر از یک دقیقه ارسال کنید' : 'Send in under a minute');
 
-      <div className={styles.inner}>
-        <div className={styles.infoCol}>
-          <p className={styles.eyebrow}>
-            <MessageSquare size={14} />
-            {isFa ? 'ارتباط با سلنیرو' : 'Contact Sellniroo'}
-          </p>
-          <h2 className={styles.title}>{copy.title}</h2>
-          <p className={styles.desc}>{copy.desc}</p>
+  const layoutClass =
+    ws.layout === 'form_info'
+      ? styles.layoutFormInfo
+      : ws.layout === 'stack'
+        ? styles.layoutStack
+        : '';
 
-          {channels.length > 0 && (
-            <ul className={styles.channels}>
-              {channels.map((ch) => {
-                const Icon = ch.icon;
-                return (
-                  <li key={ch.key}>
-                    <a href={ch.href} className={styles.channel}>
-                      <span className={styles.channelIcon}>
-                        <Icon size={18} />
-                      </span>
-                      <span>
-                        <em>{ch.label}</em>
-                        <strong dir="ltr">{ch.value}</strong>
-                      </span>
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
+  const infoCol = (
+    <div className={styles.infoCol}>
+      {ws.show_eyebrow ? (
+        <p className={styles.eyebrow}>
+          <MessageSquare size={14} />
+          {eyebrowLabel}
+        </p>
+      ) : null}
+      <h2 className={styles.title}>{copy.title}</h2>
+      <p className={styles.desc}>{copy.desc}</p>
 
-          {requestNumber && (
-            <div className={styles.trackBox}>
-              <CheckCircle size={18} />
-              <span>
-                {isFa ? 'شماره پیگیری: ' : 'Tracking no: '}
-                <b dir="ltr">{requestNumber}</b>
-              </span>
-            </div>
-          )}
+      {ws.show_channels && channels.length > 0 ? (
+        <ul className={styles.channels}>
+          {channels.map((ch) => {
+            const Icon = ch.icon;
+            return (
+              <li key={ch.key}>
+                <a href={ch.href} className={styles.channel}>
+                  <span className={styles.channelIcon}>
+                    <Icon size={18} />
+                  </span>
+                  <span>
+                    <em>{ch.label}</em>
+                    <strong dir="ltr">{ch.value}</strong>
+                  </span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+
+      {requestNumber ? (
+        <div className={styles.trackBox}>
+          <CheckCircle size={18} />
+          <span>
+            {isFa ? 'شماره پیگیری: ' : 'Tracking no: '}
+            <b dir="ltr">{requestNumber}</b>
+          </span>
         </div>
+      ) : null}
+    </div>
+  );
 
-        <form className={styles.form} onSubmit={handleSubmit} noValidate>
-          <div className={styles.formHead}>
-            <h3>{isFa ? 'فرم درخواست' : 'Request form'}</h3>
-            <p>{isFa ? 'در کمتر از یک دقیقه ارسال کنید' : 'Send in under a minute'}</p>
-          </div>
-
-          <div className={styles.row}>
-            <label className={styles.field}>
-              <span>{copy.namePh}</span>
-              <input
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                disabled={isSubmitting}
-                autoComplete="name"
-                required
-              />
-            </label>
-            <label className={styles.field}>
-              <span>{copy.phonePh}</span>
-              <input
-                name="phone"
-                type="tel"
-                dir="ltr"
-                value={formData.phone}
-                onChange={handleInputChange}
-                disabled={isSubmitting}
-                autoComplete="tel"
-                placeholder="0912xxxxxxx"
-                required
-              />
-            </label>
-          </div>
-
-          <label className={styles.field}>
-            <span>{copy.emailPh}</span>
-            <input
-              name="email"
-              type="email"
-              dir="ltr"
-              value={formData.email}
-              onChange={handleInputChange}
-              disabled={isSubmitting}
-              autoComplete="email"
-            />
-          </label>
-
-          {/* انتخابگر نوع درخواست — دیالوگ */}
-          <div className={styles.field}>
-            <span>{copy.typePh}</span>
-            <button
-              type="button"
-              className={styles.typeTrigger}
-              onClick={() => setTypeDialogOpen(true)}
-              disabled={isSubmitting || loadingTypes}
-              aria-haspopup="dialog"
-              aria-expanded={typeDialogOpen}
-            >
-              <span className={styles.typeTriggerMain}>
-                <span className={styles.typeEmoji} aria-hidden>
-                  {selectedType?.icon ||
-                    TYPE_ICONS[
-                      Math.max(
-                        0,
-                        requestTypes.findIndex(
-                          (t) => String(t.id) === String(formData.request_type_id)
-                        )
-                      ) % TYPE_ICONS.length
-                    ] ||
-                    '📋'}
-                </span>
-                <span>
-                  {loadingTypes
-                    ? isFa
-                      ? 'در حال بارگذاری...'
-                      : 'Loading...'
-                    : typeLabel(selectedType) || copy.typePick}
-                </span>
-              </span>
-              <ChevronDown size={18} />
-            </button>
-          </div>
-
-          <label className={styles.field}>
-            <span>{copy.messagePh}</span>
-            <textarea
-              name="message"
-              rows={4}
-              value={formData.message}
-              onChange={handleInputChange}
-              disabled={isSubmitting}
-              required
-            />
-          </label>
-
-          <button
-            type="submit"
-            className={styles.submit}
-            disabled={isSubmitting || loadingTypes}
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 size={18} className={styles.spin} />
-                {isFa ? 'در حال ارسال...' : 'Sending...'}
-              </>
-            ) : (
-              <>
-                <Send size={16} />
-                {copy.submit}
-              </>
-            )}
-          </button>
-
-          {formStatus === 'success' && (
-            <div className={styles.alertOk} role="status">
-              <CheckCircle size={16} />
-              {copy.success}
-            </div>
-          )}
-          {formStatus === 'error' && (
-            <div className={styles.alertErr} role="alert">
-              <XCircle size={16} />
-              {formError || copy.error}
-            </div>
-          )}
-        </form>
+  const formCol = ws.show_form ? (
+    <form className={styles.form} onSubmit={handleSubmit} noValidate>
+      <div className={styles.formHead}>
+        <h3>{formTitle}</h3>
+        <p>{formSubtitle}</p>
       </div>
 
-      {typeDialogOpen && (
+      <div className={styles.row}>
+        <label className={styles.field}>
+          <span>{copy.namePh}</span>
+          <input
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+            disabled={isSubmitting}
+            autoComplete="name"
+            required
+          />
+        </label>
+        <label className={styles.field}>
+          <span>{copy.phonePh}</span>
+          <input
+            name="phone"
+            type="tel"
+            dir="ltr"
+            value={formData.phone}
+            onChange={handleInputChange}
+            disabled={isSubmitting}
+            autoComplete="tel"
+            placeholder="0912xxxxxxx"
+            required
+          />
+        </label>
+      </div>
+
+      {ws.show_email_field ? (
+        <label className={styles.field}>
+          <span>{copy.emailPh}</span>
+          <input
+            name="email"
+            type="email"
+            dir="ltr"
+            value={formData.email}
+            onChange={handleInputChange}
+            disabled={isSubmitting}
+            autoComplete="email"
+          />
+        </label>
+      ) : null}
+
+      {ws.show_request_type ? (
+        <div className={styles.field}>
+          <span>{copy.typePh}</span>
+          <button
+            type="button"
+            className={styles.typeTrigger}
+            onClick={() => setTypeDialogOpen(true)}
+            disabled={isSubmitting || loadingTypes}
+            aria-haspopup="dialog"
+            aria-expanded={typeDialogOpen}
+          >
+            <span className={styles.typeTriggerMain}>
+              <span className={styles.typeEmoji} aria-hidden>
+                <TypeIcon
+                  name={selectedType?.icon}
+                  index={Math.max(
+                    0,
+                    requestTypes.findIndex(
+                      (t) =>
+                        String(t.id) === String(formData.request_type_id),
+                    ),
+                  )}
+                  size={18}
+                />
+              </span>
+              <span>
+                {loadingTypes
+                  ? isFa
+                    ? 'در حال بارگذاری...'
+                    : 'Loading...'
+                  : typeLabel(selectedType) || copy.typePick}
+              </span>
+            </span>
+            <ChevronDown size={18} />
+          </button>
+        </div>
+      ) : null}
+
+      <label className={styles.field}>
+        <span>{copy.messagePh}</span>
+        <textarea
+          name="message"
+          rows={4}
+          value={formData.message}
+          onChange={handleInputChange}
+          disabled={isSubmitting}
+          required
+        />
+      </label>
+
+      <button
+        type="submit"
+        className={styles.submit}
+        disabled={isSubmitting || loadingTypes}
+      >
+        {isSubmitting ? (
+          <>
+            <Loader2 size={18} className={styles.spin} />
+            {isFa ? 'در حال ارسال...' : 'Sending...'}
+          </>
+        ) : (
+          <>
+            <Send size={16} />
+            {copy.submit}
+          </>
+        )}
+      </button>
+
+      {formStatus === 'success' && (
+        <div className={styles.alertOk} role="status">
+          <CheckCircle size={16} />
+          {copy.success}
+        </div>
+      )}
+      {formStatus === 'error' && (
+        <div className={styles.alertErr} role="alert">
+          <XCircle size={16} />
+          {formError || copy.error}
+        </div>
+      )}
+    </form>
+  ) : null;
+
+  return (
+    <section
+      id="consulting"
+      className={[
+        styles.contact,
+        ws.section_full ? styles.contactBleed : '',
+        ws.show_on_mobile === false ? styles.hideOnMobile : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      style={cssVars}
+      dir={dir}
+    >
+      {ws.show_bg_grid ? <div className={styles.bgGrid} aria-hidden /> : null}
+      {ws.show_bg_orb ? <div className={styles.bgOrb} aria-hidden /> : null}
+
+      <div
+        className={[styles.inner, layoutClass].filter(Boolean).join(' ')}
+      >
+        {infoCol}
+        {formCol}
+      </div>
+
+      {ws.show_request_type && typeDialogOpen ? (
         <div
           className={styles.dialogOverlay}
           onClick={() => setTypeDialogOpen(false)}
@@ -501,7 +564,6 @@ export default function ContactSection() {
             <div className={styles.typeGrid}>
               {requestTypes.map((type, idx) => {
                 const active = String(type.id) === String(formData.request_type_id);
-                const emoji = type.icon || TYPE_ICONS[idx % TYPE_ICONS.length];
                 return (
                   <button
                     key={type.id}
@@ -510,7 +572,7 @@ export default function ContactSection() {
                     onClick={() => pickType(type.id)}
                   >
                     <span className={styles.typeCardEmoji} aria-hidden>
-                      {emoji}
+                      <TypeIcon name={type.icon} index={idx} size={22} />
                     </span>
                     <span className={styles.typeCardLabel}>{typeLabel(type)}</span>
                     {active && (
@@ -524,7 +586,7 @@ export default function ContactSection() {
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </section>
   );
 }

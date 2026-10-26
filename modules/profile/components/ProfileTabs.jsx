@@ -3,7 +3,7 @@
 
 import { useRef, useEffect, useCallback } from "react";
 import styles from "../styles/ProfileTabs.module.css";
-import { Briefcase, User, Send, Bookmark, Building2, FileText, Brain, GraduationCap } from "lucide-react";
+import { Briefcase, User, Send, Bookmark, Building2, FileText, Brain, GraduationCap, ShoppingBag } from "lucide-react";
 
 const ICONS = {
   briefcase: Briefcase,
@@ -14,6 +14,7 @@ const ICONS = {
   "file-text": FileText,
   brain: Brain,
   school: GraduationCap,
+  shopping: ShoppingBag,
 };
 
 const ProfileTabs = ({ tabs, activeTab, onChange, tone = "job" }) => {

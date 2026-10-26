@@ -226,6 +226,30 @@
   color: #5a3d00;
 }
 
+.featuredBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem;
+  margin-bottom: 12px;
+  border-radius: 14px;
+  background: #fff8e8;
+  border: 1px solid rgba(201, 120, 0, 0.22);
+  color: #5a3d00;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.featuredBanner svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #c27800;
+}
+
+.featuredBanner p {
+  margin: 0;
+}
+
 /* ── Stats ── */
 .statsGrid {
   display: grid;

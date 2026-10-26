@@ -1,0 +1,341 @@
+/* ناوبری و داشبورد پورتال مالک */
+
+.portalNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  padding: 0.4rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(20, 24, 31, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.portalNavItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 11px;
+  font-size: 0.82rem;
+  font-weight: 750;
+  color: #5a6270;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.portalNavItem:hover {
+  background: rgba(20, 24, 31, 0.05);
+  color: #14181f;
+}
+
+.portalNavOn {
+  background: #14181f;
+  color: #fff;
+}
+
+.portalNavOn:hover {
+  background: #1c222c;
+  color: #fff;
+}
+
+.portalBody {
+  min-height: 40vh;
+}
+
+/* ── داشبورد ── */
+.hubGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.15rem;
+}
+
+.hubCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1.15rem 1.1rem;
+  border-radius: 16px;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+  border: 1px solid rgba(20, 24, 31, 0.08);
+  box-shadow: 0 8px 24px rgba(20, 24, 31, 0.04);
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.hubCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(20, 24, 31, 0.08);
+}
+
+.hubIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  color: #fff;
+}
+
+.hubTitle {
+  margin: 0;
+  font-family: var(--font-edameh), var(--font-iran);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #14181f;
+}
+
+.hubDesc {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: #7a828e;
+}
+
+.hubGlow {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  right: -30px;
+  bottom: -40px;
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.chartsRow {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.15rem;
+}
+
+.chartCard {
+  padding: 1.1rem 1.15rem;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid rgba(20, 24, 31, 0.08);
+  box-shadow: 0 8px 24px rgba(20, 24, 31, 0.04);
+}
+
+.chartHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.chartTitle {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #14181f;
+}
+
+.chartSub {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #7a828e;
+}
+
+.donutWrap {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.donut {
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(
+    var(--donut-ok, #1a9a52) 0 calc(var(--donut-pct, 0) * 1%),
+    #e8eaee calc(var(--donut-pct, 0) * 1%) 100%
+  );
+  position: relative;
+}
+
+.donut::after {
+  content: '';
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.donutCenter {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.donutValue {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #14181f;
+  font-family: var(--font-edameh), var(--font-iran);
+  line-height: 1.1;
+}
+
+.donutLabel {
+  font-size: 0.65rem;
+  color: #7a828e;
+  font-weight: 700;
+}
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  flex: 1;
+  min-width: 120px;
+}
+
+.legendRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-left: 0.4rem;
+}
+
+.legendLeft {
+  display: flex;
+  align-items: center;
+  color: #5a6270;
+  font-weight: 650;
+}
+
+.legendVal {
+  font-weight: 800;
+  color: #14181f;
+  font-variant-numeric: tabular-nums;
+}
+
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.barRow {
+  display: grid;
+  grid-template-columns: 88px 1fr 40px;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.barLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #5a6270;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.barTrack {
+  height: 10px;
+  border-radius: 999px;
+  background: #eef0f3;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #e8b800, #e67e22);
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.barVal {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: left;
+  color: #14181f;
+  font-variant-numeric: tabular-nums;
+}
+
+.sectionBlock {
+  margin-bottom: 1.15rem;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.65rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #14181f;
+}
+
+.tabsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.85rem;
+}
+
+.tabBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid rgba(20, 24, 31, 0.1);
+  background: #fff;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 750;
+  color: #5a6270;
+  cursor: pointer;
+}
+
+.tabBtnOn {
+  background: #14181f;
+  border-color: #14181f;
+  color: #fff;
+}
+
+@media (max-width: 720px) {
+  .hubGrid,
+  .chartsRow {
+    grid-template-columns: 1fr;
+  }
+
+  .barRow {
+    grid-template-columns: 72px 1fr 36px;
+  }
+
+  .portalNav {
+    gap: 0.3rem;
+  }
+
+  .portalNavItem {
+    flex: 1 1 calc(50% - 0.3rem);
+    justify-content: center;
+    font-size: 0.75rem;
+    padding: 0.5rem 0.55rem;
+  }
+}

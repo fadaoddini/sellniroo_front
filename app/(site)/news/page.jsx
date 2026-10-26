@@ -1,14 +1,19 @@
 // app/news/page.jsx
 // ماژول سایت: news — با خاموش شدن، صفحه /news در دسترس نیست
+// چیدمان از AdminWeb → «صفحه لیست اخبار» (news_list_layout)
 
-import { Suspense } from 'react';
-import NewsList from '@/components/News/NewsList';
-import NewsPageSlot from '@/components/modules/NewsPageSlot';
-import styles from '@/components/News/News.module.css';
+import { Suspense } from 'react'
+import { notFound } from 'next/navigation'
+import NewsPageSlot from '@/components/modules/NewsPageSlot'
+import NewsListPageClient from './NewsListPageClient'
+import { isSiteModuleActive } from '@/services/siteModules'
+import { SITE_MODULE_KEYS } from '@/config/siteModules'
+import styles from '@/components/News/News.module.css'
 
 export const metadata = {
   title: 'اخبار کاریابی و استخدام | سلنیرو',
-  description: 'آخرین اخبار و رویدادهای بازار کار، فرصت‌های شغلی فروش و بازاریابی، استخدام‌های تازه، تحلیل بازار کار و راهکارهای موفقیت در مصاحبه شغلی - سلنیرو، مرجع تخصصی کاریابی فروش و بازاریابی',
+  description:
+    'آخرین اخبار و رویدادهای بازار کار، فرصت‌های شغلی فروش و بازاریابی، استخدام‌های تازه، تحلیل بازار کار و راهکارهای موفقیت در مصاحبه شغلی - سلنیرو، مرجع تخصصی کاریابی فروش و بازاریابی',
   keywords: [
     'اخبار کاریابی',
     'آخرین اخبار استخدام',
@@ -26,11 +31,12 @@ export const metadata = {
     'کار در تهران',
     'استخدام فوری',
     'سلنیرو',
-    'مرجع کاریابی'
+    'مرجع کاریابی',
   ],
   openGraph: {
     title: 'اخبار کاریابی و استخدام | سلنیرو',
-    description: 'آخرین اخبار و رویدادهای بازار کار، فرصت‌های شغلی فروش و بازاریابی، استخدام‌های تازه و تحلیل بازار کار توسط سلنیرو',
+    description:
+      'آخرین اخبار و رویدادهای بازار کار، فرصت‌های شغلی فروش و بازاریابی، استخدام‌های تازه و تحلیل بازار کار توسط سلنیرو',
     url: 'https://selniro.com/news',
     images: [
       {
@@ -43,26 +49,35 @@ export const metadata = {
   },
   twitter: {
     title: 'اخبار کاریابی و استخدام | سلنیرو',
-    description: 'آخرین اخبار و رویدادهای بازار کار و فرصت‌های شغلی توسط سلنیرو',
+    description:
+      'آخرین اخبار و رویدادهای بازار کار و فرصت‌های شغلی توسط سلنیرو',
     images: ['https://selniro.com/images/logo.png'],
   },
   alternates: {
     canonical: 'https://selniro.com/news',
   },
-};
+}
 
-export default function NewsPage() {
+export default async function NewsPage() {
+  const newsOn = await isSiteModuleActive(SITE_MODULE_KEYS.NEWS, {
+    force: true,
+  })
+  if (!newsOn) {
+    notFound()
+  }
+
   return (
     <NewsPageSlot>
       <h1 className="sr-only">
-        اخبار کاریابی و استخدام | سلنیرو - مرجع تخصصی فرصت‌های شغلی فروش و بازاریابی در ایران
+        اخبار کاریابی و استخدام | سلنیرو - مرجع تخصصی فرصت‌های شغلی فروش و
+        بازاریابی در ایران
       </h1>
 
       <Suspense fallback={<NewsLoading />}>
-        <NewsList />
+        <NewsListPageClient />
       </Suspense>
     </NewsPageSlot>
-  );
+  )
 }
 
 function NewsLoading() {
@@ -71,5 +86,5 @@ function NewsLoading() {
       <div className={styles.pageSpinner} />
       <p>در حال بارگذاری اخبار...</p>
     </div>
-  );
+  )
 }

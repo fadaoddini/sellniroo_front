@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import axios from 'axios'
@@ -15,14 +16,22 @@ import CommentManagement from './CommentManagement'
 import styles from '@/styles/modules/NewsManagement.module.css'
 import {
   Plus, RefreshCw, Newspaper, AlertCircle, CheckCircle, X,
-  FileText, MessageSquare, LayoutDashboard, Radio,
+  FileText, MessageSquare, LayoutDashboard, Radio, Star, Images,
 } from 'lucide-react'
 
 const NewsManagement = () => {
-  const { getAuthHeaders, user } = useAuth()
+  const { getAuthHeaders, user, hasPermission } = useAuth()
   const { language, dir } = useLanguage()
+  const searchParams = useSearchParams()
+  const router = useRouter()
 
-  const [activeTab, setActiveTab] = useState('news')
+  const tabFromUrl = searchParams?.get('tab')
+  const initialTab =
+    tabFromUrl === 'featured' || tabFromUrl === 'comments'
+      ? tabFromUrl
+      : 'news'
+
+  const [activeTab, setActiveTab] = useState(initialTab)
 
   const [news, setNews] = useState([])
   const [stats, setStats] = useState(null)
@@ -49,6 +58,7 @@ const NewsManagement = () => {
       subtitle: 'افزودن، ویرایش و مدیریت اخبار و کامنت‌ها',
       back: 'داشبورد',
       newsTab: 'اخبار',
+      featuredTab: 'اسلایدر ویژه',
       commentsTab: 'کامنت‌ها',
       addNews: 'افزودن خبر',
       refresh: 'بروزرسانی',
@@ -64,12 +74,16 @@ const NewsManagement = () => {
       noAccess: 'شما دسترسی به این بخش ندارید',
       detailError: 'خطا در بارگذاری جزئیات خبر',
       platforms: 'اتصالات پیام‌رسان',
+      featuredHint:
+        'اخبار علامت‌خورده به‌عنوان ویژه در ویجت «اسلایدر اخبار ویژه» نمایش داده می‌شوند. برای افزودن، خبر را ویرایش کنید و گزینه «خبر ویژه (اسلایدر)» را فعال کنید.',
+      featuredEmpty: 'هنوز خبر ویژه‌ای ندارید — یک خبر را ویژه کنید تا در اسلایدر دیده شود.',
     },
     en: {
       title: 'News Management',
       subtitle: 'Add, edit and manage news & comments',
       back: 'Dashboard',
       newsTab: 'News',
+      featuredTab: 'Featured slider',
       commentsTab: 'Comments',
       addNews: 'Add News',
       refresh: 'Refresh',
@@ -85,10 +99,33 @@ const NewsManagement = () => {
       noAccess: 'You do not have access to this section',
       detailError: 'Error loading news details',
       platforms: 'Messenger bots',
+      featuredHint:
+        'News marked as featured appear in the Featured News Slider widget. Edit a post and enable “Featured (slider)”.',
+      featuredEmpty: 'No featured news yet — mark a post as featured to show it in the slider.',
     }
   }
 
   const t = texts[language] || texts.fa
+
+  useEffect(() => {
+    const tab = searchParams?.get('tab')
+    if (tab === 'featured' || tab === 'comments' || tab === 'news') {
+      setActiveTab(tab === 'news' ? 'news' : tab)
+    }
+  }, [searchParams])
+
+  const setTab = (tab) => {
+    setActiveTab(tab)
+    const params = new URLSearchParams(searchParams?.toString() || '')
+    if (tab === 'news') params.delete('tab')
+    else params.set('tab', tab)
+    const q = params.toString()
+    router.replace(q ? `/news-management?${q}` : '/news-management', {
+      scroll: false,
+    })
+    if (tab === 'featured') setFilterFeatured('featured')
+    if (tab === 'news') setFilterFeatured('all')
+  }
 
   // ============================================
   // ✅ دریافت لیست اخبار
@@ -313,12 +350,17 @@ const NewsManagement = () => {
     }
     if (filterStatus !== 'all' && n.status !== filterStatus) return false
     if (filterCategory !== 'all' && n.category?.slug !== filterCategory) return false
-    if (filterFeatured === 'featured' && !n.is_featured) return false
+    const featuredOnly =
+      activeTab === 'featured' || filterFeatured === 'featured'
+    if (featuredOnly && !n.is_featured) return false
     if (filterFeatured === 'breaking' && !n.is_breaking) return false
     return true
   })
 
-  const canManage = user?.is_staff || user?.is_superuser
+  const featuredCount = news.filter((n) => n.is_featured).length
+
+  const canManage =
+    user?.is_staff || user?.is_superuser || hasPermission?.('news')
 
   if (!canManage && !loading) {
     return (
@@ -370,10 +412,15 @@ const NewsManagement = () => {
             <RefreshCw size={16} className={(loading || statsLoading) ? styles.spinning : ''} />
             {t.refresh}
           </button>
-          {activeTab === 'news' && (
+          {(activeTab === 'news' || activeTab === 'featured') && (
             <button
               className={styles.addBtn}
-              onClick={() => { setEditingItem(null); setIsFormOpen(true); }}
+              onClick={() => {
+                setEditingItem(
+                  activeTab === 'featured' ? { is_featured: true } : null
+                )
+                setIsFormOpen(true)
+              }}
             >
               <Plus size={16} />
               {t.addNews}
@@ -385,36 +432,66 @@ const NewsManagement = () => {
       <div className={styles.tabs}>
         <button
           className={`${styles.tab} ${activeTab === 'news' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('news')}
+          onClick={() => setTab('news')}
         >
           <FileText size={16} />
           {t.newsTab}
           <span className={styles.tabCount}>{news.length}</span>
         </button>
         <button
+          className={`${styles.tab} ${activeTab === 'featured' ? styles.tabActive : ''}`}
+          onClick={() => setTab('featured')}
+        >
+          <Images size={16} />
+          {t.featuredTab}
+          <span className={styles.tabCount}>{featuredCount}</span>
+        </button>
+        <button
           className={`${styles.tab} ${activeTab === 'comments' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('comments')}
+          onClick={() => setTab('comments')}
         >
           <MessageSquare size={16} />
           {t.commentsTab}
         </button>
       </div>
 
-      {activeTab === 'news' && (
+      {(activeTab === 'news' || activeTab === 'featured') && (
         <>
-          <NewsStats stats={stats} loading={statsLoading} />
+          {activeTab === 'featured' ? (
+            <div className={styles.featuredBanner} role="note">
+              <Star size={16} />
+              <p>{t.featuredHint}</p>
+            </div>
+          ) : (
+            <NewsStats stats={stats} loading={statsLoading} />
+          )}
 
-          <NewsSearch
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            filterStatus={filterStatus}
-            setFilterStatus={setFilterStatus}
-            filterCategory={filterCategory}
-            setFilterCategory={setFilterCategory}
-            filterFeatured={filterFeatured}
-            setFilterFeatured={setFilterFeatured}
-            categories={categories}
-          />
+          {activeTab === 'news' ? (
+            <NewsSearch
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              filterStatus={filterStatus}
+              setFilterStatus={setFilterStatus}
+              filterCategory={filterCategory}
+              setFilterCategory={setFilterCategory}
+              filterFeatured={filterFeatured}
+              setFilterFeatured={setFilterFeatured}
+              categories={categories}
+            />
+          ) : (
+            <NewsSearch
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              filterStatus={filterStatus}
+              setFilterStatus={setFilterStatus}
+              filterCategory={filterCategory}
+              setFilterCategory={setFilterCategory}
+              filterFeatured="featured"
+              setFilterFeatured={() => {}}
+              categories={categories}
+              hideFeaturedFilter
+            />
+          )}
 
           <NewsList
             news={filteredNews}
@@ -425,6 +502,9 @@ const NewsManagement = () => {
             onSendToBale={handleSendToPlatforms}
             readyPlatforms={readyPlatforms}
             onRefresh={fetchNews}
+            emptyHint={
+              activeTab === 'featured' && !loading ? t.featuredEmpty : undefined
+            }
           />
         </>
       )}

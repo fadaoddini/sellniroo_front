@@ -1,11 +1,19 @@
 // components/News/NewsSkeleton.jsx
 
-import React from 'react';
-import styles from './News.module.css';
+import React from 'react'
+import styles from './News.module.css'
 
-const NewsSkeleton = ({ count = 6 }) => {
+const COL_CLASS = {
+  1: styles.newsGridCols1,
+  2: styles.newsGridCols2,
+  3: styles.newsGridCols3,
+  4: styles.newsGridCols4,
+}
+
+const NewsSkeleton = ({ count = 6, columns }) => {
+  const colClass = columns ? COL_CLASS[columns] : ''
   return (
-    <div className={styles.skeletonGrid}>
+    <div className={`${styles.skeletonGrid} ${colClass || ''}`.trim()}>
       {[...Array(count)].map((_, index) => (
         <div key={index} className={styles.skeletonCard}>
           <div className={styles.skeletonImage} />
@@ -23,7 +31,7 @@ const NewsSkeleton = ({ count = 6 }) => {
         </div>
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default NewsSkeleton;
+export default NewsSkeleton

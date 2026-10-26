@@ -1,26 +1,54 @@
-/* بخش تماس — تم آبی تیره */
+/* بخش تماس — تم آبی تیره (متغیرها از تنظیمات ویجت) */
 
 .contact {
-  --bg: #0b1220;
-  --bg-2: #121c2e;
-  --card: #162033;
-  --card-2: #1a2740;
-  --line: rgba(148, 180, 220, 0.16);
-  --text: #e8eef8;
-  --muted: #93a4bd;
-  --blue: #3b82f6;
-  --blue-bright: #60a5fa;
-  --blue-deep: #1d4ed8;
+  --bg: var(--cta-bg-from, #0b1220);
+  --bg-2: var(--cta-bg-to, #121c2e);
+  --card: var(--cta-card-from, #162033);
+  --card-2: var(--cta-card-to, #1a2740);
+  --line: var(--cta-card-border, rgba(148, 180, 220, 0.16));
+  --text: var(--cta-text, #e8eef8);
+  --muted: var(--cta-muted, #93a4bd);
+  --blue: var(--cta-btn-from, #3b82f6);
+  --blue-bright: var(--cta-accent, #60a5fa);
+  --blue-deep: var(--cta-accent-deep, #1d4ed8);
 
   position: relative;
-  padding: 4.75rem 1.25rem;
+  box-sizing: border-box;
+  margin: var(--cta-mt, 0) var(--cta-mr, 0) var(--cta-mb, 0) var(--cta-ml, 0);
+  padding: var(--cta-pt, 48px) var(--cta-pr, 20px) var(--cta-pb, 48px)
+    var(--cta-pl, 20px);
   background:
-    radial-gradient(ellipse 70% 55% at 15% 10%, rgba(59, 130, 246, 0.22), transparent 55%),
-    radial-gradient(ellipse 55% 45% at 90% 85%, rgba(29, 78, 216, 0.2), transparent 50%),
-    linear-gradient(165deg, var(--bg) 0%, var(--bg-2) 55%, #0a1424 100%);
+    radial-gradient(
+      ellipse 70% 55% at 15% 10%,
+      var(--cta-bg-accent, rgba(59, 130, 246, 0.22)),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 55% 45% at 90% 85%,
+      color-mix(in srgb, var(--cta-accent-deep, #1d4ed8) 35%, transparent),
+      transparent 50%
+    ),
+    linear-gradient(165deg, var(--bg) 0%, var(--bg-2) 55%, var(--bg) 100%);
   color: var(--text);
   overflow: hidden;
   font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
+}
+
+.contactBleed {
+  width: 100vw;
+  max-width: 100vw;
+  margin-inline: calc(50% - 50vw);
+  box-sizing: border-box;
+}
+
+.hideOnMobile {
+  /* placeholder — overridden in media */
+}
+
+@media (max-width: 767px) {
+  .hideOnMobile {
+    display: none !important;
+  }
 }
 
 .bgGrid {
@@ -41,7 +69,11 @@
   right: -80px;
   top: -60px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.28), transparent 68%);
+  background: radial-gradient(
+    circle,
+    var(--cta-bg-accent, rgba(59, 130, 246, 0.28)),
+    transparent 68%
+  );
   pointer-events: none;
   filter: blur(8px);
 }
@@ -49,12 +81,28 @@
 .inner {
   position: relative;
   z-index: 1;
-  max-width: 1120px;
+  max-width: var(--cta-max, 1120px);
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1.05fr;
-  gap: 2.5rem;
+  gap: var(--cta-gap, 40px);
   align-items: start;
+}
+
+.layoutFormInfo {
+  grid-template-columns: 1.05fr 1fr;
+}
+
+.layoutFormInfo .infoCol {
+  order: 2;
+}
+
+.layoutFormInfo .form {
+  order: 1;
+}
+
+.layoutStack {
+  grid-template-columns: 1fr;
 }
 
 .infoCol {
@@ -77,9 +125,9 @@
 
 .title {
   margin: 0 0 0.9rem;
-  font-size: clamp(1.6rem, 2.7vw, 2.25rem);
+  font-size: var(--cta-title-size, 28px);
   line-height: 1.35;
-  color: #f4f8ff;
+  color: var(--cta-title, #f4f8ff);
   font-family: var(--font-edameh, var(--font-iran-bold), sans-serif);
   font-weight: 700;
 }
@@ -87,7 +135,7 @@
 .desc {
   margin: 0 0 1.6rem;
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: var(--cta-desc-size, 15px);
   line-height: 1.85;
   max-width: 38ch;
 }
@@ -106,8 +154,8 @@
   align-items: center;
   gap: 0.9rem;
   padding: 0.9rem 1rem;
-  border-radius: 14px;
-  background: rgba(22, 32, 51, 0.85);
+  border-radius: var(--cta-channel-radius, 14px);
+  background: var(--cta-channel-bg, rgba(22, 32, 51, 0.85));
   border: 1px solid var(--line);
   text-decoration: none;
   color: inherit;
@@ -172,9 +220,9 @@
 .form {
   background: linear-gradient(180deg, var(--card) 0%, var(--card-2) 100%);
   border: 1px solid var(--line);
-  border-radius: 20px;
-  padding: 1.45rem 1.4rem 1.55rem;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  border-radius: var(--cta-form-radius, 20px);
+  padding: var(--cta-form-pad, 22px);
+  box-shadow: var(--cta-form-shadow, 0 20px 50px rgba(0, 0, 0, 0.35));
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
@@ -215,9 +263,9 @@
 .field textarea {
   width: 100%;
   padding: 0.78rem 0.9rem;
-  border-radius: 12px;
-  border: 1px solid rgba(148, 180, 220, 0.18);
-  background: rgba(8, 14, 26, 0.55);
+  border-radius: var(--cta-input-radius, 12px);
+  border: 1px solid var(--cta-input-border, rgba(148, 180, 220, 0.18));
+  background: var(--cta-input-bg, rgba(8, 14, 26, 0.55));
   color: var(--text);
   font-size: 0.9rem;
   font-family: inherit;
@@ -257,9 +305,9 @@
   gap: 0.75rem;
   width: 100%;
   padding: 0.78rem 0.9rem;
-  border-radius: 12px;
-  border: 1px solid rgba(148, 180, 220, 0.22);
-  background: rgba(8, 14, 26, 0.55);
+  border-radius: var(--cta-input-radius, 12px);
+  border: 1px solid var(--cta-input-border, rgba(148, 180, 220, 0.22));
+  background: var(--cta-input-bg, rgba(8, 14, 26, 0.55));
   color: var(--text);
   font-size: 0.9rem;
   font-family: inherit;
@@ -293,8 +341,12 @@
   align-items: center;
   justify-content: center;
   background: rgba(59, 130, 246, 0.18);
-  font-size: 1rem;
+  color: var(--blue-bright, #93c5fd);
   flex-shrink: 0;
+}
+
+.typeEmoji svg {
+  color: inherit;
 }
 
 .typeTrigger svg {
@@ -310,9 +362,13 @@
   margin-top: 0.2rem;
   padding: 0.9rem 1.25rem;
   border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  color: #fff;
+  border-radius: var(--cta-btn-radius, 12px);
+  background: linear-gradient(
+    135deg,
+    var(--cta-btn-from, #3b82f6),
+    var(--cta-btn-to, #1d4ed8)
+  );
+  color: var(--cta-btn-text, #fff);
   font-size: 0.95rem;
   font-weight: 700;
   font-family: var(--font-iran-bold, sans-serif);
@@ -488,7 +544,11 @@
   align-items: center;
   justify-content: center;
   background: rgba(59, 130, 246, 0.16);
-  font-size: 1.15rem;
+  color: #bfdbfe;
+}
+
+.typeCardEmoji svg {
+  color: inherit;
 }
 
 .typeCardLabel {
@@ -517,9 +577,15 @@
 }
 
 @media (max-width: 900px) {
-  .inner {
+  .inner,
+  .layoutFormInfo {
     grid-template-columns: 1fr;
     gap: 1.75rem;
+  }
+
+  .layoutFormInfo .infoCol,
+  .layoutFormInfo .form {
+    order: unset;
   }
 
   .desc {
@@ -529,18 +595,13 @@
 
 @media (max-width: 640px) {
   .contact {
-    padding: 2.25rem 0.85rem calc(2rem + var(--mobile-bottom-nav, 0px));
+    padding-bottom: calc(var(--cta-pb, 36px) + var(--mobile-bottom-nav, 0px));
     scroll-margin-top: 100px;
   }
 
   .row,
   .typeGrid {
     grid-template-columns: 1fr;
-  }
-
-  .form {
-    padding: 1.1rem 0.9rem 1.2rem;
-    border-radius: 16px;
   }
 
   .dialog {

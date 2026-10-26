@@ -1,6 +1,9 @@
 // app/jobs/page.js
 import { Suspense } from 'react';
+import { notFound } from 'next/navigation';
 import JobsPageClient from './JobsPageClient';
+import { isSiteModuleActive } from '@/services/siteModules';
+import { SITE_MODULE_KEYS } from '@/config/siteModules';
 
 // ============================================
 // ✅ Metadata داینامیک بر اساس Query String
@@ -30,7 +33,14 @@ export async function generateMetadata({ searchParams }) {
 // ============================================
 // ✅ صفحه اصلی
 // ============================================
-export default function JobsPage() {
+export default async function JobsPage() {
+  const jobBoardOn = await isSiteModuleActive(SITE_MODULE_KEYS.JOB_BOARD, {
+    force: true,
+  });
+  if (!jobBoardOn) {
+    notFound();
+  }
+
   return (
     <Suspense fallback={<JobsPageLoading />}>
       <JobsPageClient />

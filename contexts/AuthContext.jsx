@@ -32,6 +32,10 @@ const PUBLIC_PATHS = [
   "/projects/",
   "/jobs",
   "/jobs/",
+  "/shop",
+  "/shop/",
+  "/cart",
+  "/cart/",
 ];
 
 // ✅ بررسی مسیر عمومی
@@ -42,6 +46,8 @@ const isPublicPath = (pathname) => {
 
   if (pathname.startsWith("/news/")) return true;
   if (pathname.startsWith("/jobs/")) return true;
+  if (pathname.startsWith("/shop/")) return true;
+  if (pathname.startsWith("/cart")) return true;
 
   const dynamicPatterns = [
     "/about/",

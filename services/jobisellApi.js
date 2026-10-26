@@ -116,6 +116,41 @@ export const jobisellApi = {
     return data;
   },
 
+  async getLatestJobs(limit = 10) {
+    const { data } = await axios.get(
+      Config.endpoints.jobisell.jobs.latest(limit)
+    );
+    return data;
+  },
+
+  async getFeaturedJobs(limit = 10) {
+    const { data } = await axios.get(
+      Config.endpoints.jobisell.jobs.featured(limit)
+    );
+    return data;
+  },
+
+  async getHiringJobs(params = {}) {
+    const { data } = await axios.get(
+      Config.endpoints.jobisell.jobs.hiring(params)
+    );
+    return data;
+  },
+
+  async getSeekingJobs(params = {}) {
+    const { data } = await axios.get(
+      Config.endpoints.jobisell.jobs.seeking(params)
+    );
+    return data;
+  },
+
+  async getCompanies(params = {}) {
+    const { data } = await axios.get(
+      Config.endpoints.jobisell.companies(params)
+    );
+    return data;
+  },
+
   async searchJobs(q) {
     const { data } = await axios.get(Config.endpoints.jobisell.jobs.search(q));
     return data;

@@ -1,16 +1,11 @@
 // app/(site)/layout.jsx
 import React from "react";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { CartProvider } from "@/contexts/CartContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
-import HeaderSlot from "@/components/modules/HeaderSlot";
-import HeaderByMenuTopSlot from "@/components/modules/HeaderByMenuTopSlot";
-import CorporateMobileNavSlot from "@/components/modules/CorporateMobileNavSlot";
-import MobileBottomNavSlot from "@/components/modules/MobileBottomNavSlot";
-import SiteFooterSlot from "@/components/modules/SiteFooterSlot";
 import "@/styles/globals.css";
-import BreakingNewsSlot from "@/components/modules/BreakingNewsSlot";
-import VideoInstaSlot from "@/components/modules/VideoInstaSlot";
-import HeroSliderSlot from "@/components/modules/HeroSliderSlot";
+import HomeLayoutBridge from "@/components/layout/HomeLayoutBridge";
+import SiteChrome from "@/components/layout/SiteChrome";
 import {
   fetchSiteSettings,
   buildMetadataFromSettings,
@@ -38,15 +33,8 @@ async function LayoutContent({ children }) {
   return (
     <html lang="fa" dir="rtl" suppressHydrationWarning>
       <body suppressHydrationWarning className="siteBody">
-        <BreakingNewsSlot />
-        <VideoInstaSlot variant="rail" />
-        <HeroSliderSlot />
-        <HeaderByMenuTopSlot />
-        <HeaderSlot />
-        <main className="siteMain">{children}</main>
-        <SiteFooterSlot siteName={siteName} />
-        <CorporateMobileNavSlot />
-        <MobileBottomNavSlot />
+        <HomeLayoutBridge />
+        <SiteChrome siteName={siteName}>{children}</SiteChrome>
       </body>
     </html>
   );
@@ -56,7 +44,9 @@ export default function RootLayout({ children }) {
   return (
     <LanguageProvider>
       <AuthProvider>
-        <LayoutContent>{children}</LayoutContent>
+        <CartProvider>
+          <LayoutContent>{children}</LayoutContent>
+        </CartProvider>
       </AuthProvider>
     </LanguageProvider>
   );
