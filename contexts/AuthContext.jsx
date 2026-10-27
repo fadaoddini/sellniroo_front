@@ -474,27 +474,43 @@ export const AuthProvider = ({ children }) => {
       const apiUrl = Config.endpoints.login("sendOtp");
       console.log("Sending OTP to:", apiUrl);
 
-      const response = await axios.post(apiUrl, { mobile });
+      const response = await axios.post(
+        apiUrl,
+        { mobile },
+        { timeout: 20000, _isAuthRequest: true },
+      );
       console.log("Send OTP response:", response.data);
 
-      if (response.data.status === "ok") {
+      const data = response.data || {};
+      // کد قبلی هنوز معتبر است — برو به مرحلهٔ ورود کد
+      if (data.status === "ok" || data.status === "failed") {
         return {
           success: true,
-          message: response.data.message,
-          waitTime: response.data.wait_time || 0,
-        };
-      } else {
-        return {
-          success: false,
-          message: response.data.message || "خطا در ارسال کد تایید",
+          message:
+            data.message ||
+            (data.status === "failed"
+              ? "کد قبلی هنوز معتبر است"
+              : "کد تایید ارسال شد"),
+          waitTime: data.wait_time || 0,
+          debugOtp: data.debug_otp || null,
         };
       }
+      return {
+        success: false,
+        message: data.message || "خطا در ارسال کد تایید",
+      };
     } catch (error) {
       console.error("Send OTP error:", error);
       console.error("Error response:", error.response?.data);
+      const apiHint =
+        !error.response && Config.baseUrl
+          ? ` — اتصال به API برقرار نشد (${Config.baseUrl})`
+          : "";
       return {
         success: false,
-        message: error.response?.data?.message || "خطا در ارسال کد تایید",
+        message:
+          (error.response?.data?.message || "خطا در ارسال کد تایید") + apiHint,
+        debugOtp: error.response?.data?.debug_otp || null,
       };
     }
   }, []);
@@ -552,12 +568,20 @@ export const AuthProvider = ({ children }) => {
     }
 
     if (!isPublic && !isAuthenticated) {
-      router.replace("/login");
+      const next = `${pathname}${window.location.search || ""}`;
+      const q =
+        next && next !== "/"
+          ? `?next=${encodeURIComponent(next)}`
+          : "";
+      router.replace(`/login${q}`);
       return;
     }
 
     if (isAuthenticated && pathname === "/login") {
-      router.replace("/");
+      const next = new URLSearchParams(window.location.search).get("next");
+      const safeNext =
+        next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
+      router.replace(safeNext);
     }
   }, [isAuthenticated, loading, router]);
 

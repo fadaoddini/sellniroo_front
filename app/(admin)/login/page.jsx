@@ -23,17 +23,25 @@ export default function LoginPage() {
   const [success, setSuccess] = useState("");
   const [countdown, setCountdown] = useState(0);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [debugOtp, setDebugOtp] = useState("");
+  const [nextPath, setNextPath] = useState("/");
   
   const inputRefs = useRef([]);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const next = new URLSearchParams(window.location.search).get("next");
+    const safeNext =
+      next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
+    setNextPath(safeNext);
+  }, []);
+
+  useEffect(() => {
     if (isAuthenticated) {
-      const next = new URLSearchParams(window.location.search).get("next");
-      const safeNext =
-        next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
-      router.push(safeNext);
+      router.push(nextPath || "/");
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, nextPath]);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -59,6 +67,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setDebugOtp("");
 
     if (!mobile) {
       setError("لطفاً شماره موبایل خود را وارد کنید");
@@ -70,10 +79,13 @@ export default function LoginPage() {
       return;
     }
 
+    setSending(true);
     const result = await sendOtp(mobile);
+    setSending(false);
     
     if (result.success) {
       setSuccess(result.message);
+      if (result.debugOtp) setDebugOtp(String(result.debugOtp));
       setStep(2);
       setCode(["", "", "", ""]);
       if (result.waitTime > 0) {
@@ -87,6 +99,7 @@ export default function LoginPage() {
       }, 100);
     } else {
       setError(result.message);
+      if (result.debugOtp) setDebugOtp(String(result.debugOtp));
     }
   };
 
@@ -174,15 +187,19 @@ export default function LoginPage() {
   };
 
   const handleResendOtp = async () => {
-    if (countdown > 0) return;
+    if (countdown > 0 || sending) return;
     
     setError("");
     setSuccess("");
+    setDebugOtp("");
     setCode(["", "", "", ""]);
     
+    setSending(true);
     const result = await sendOtp(mobile);
+    setSending(false);
     if (result.success) {
-      setSuccess("کد جدید با موفقیت ارسال شد");
+      setSuccess(result.message || "کد جدید با موفقیت ارسال شد");
+      if (result.debugOtp) setDebugOtp(String(result.debugOtp));
       if (result.waitTime > 0) {
         setCountdown(result.waitTime);
       }
@@ -193,6 +210,7 @@ export default function LoginPage() {
       }, 100);
     } else {
       setError(result.message);
+      if (result.debugOtp) setDebugOtp(String(result.debugOtp));
     }
   };
 
@@ -247,9 +265,9 @@ export default function LoginPage() {
             <button
               type="submit"
               className={`${styles.button} ${styles.btnPrimary}`}
-              disabled={loading || !mobile}
+              disabled={sending || !mobile}
             >
-              {loading ? (
+              {sending ? (
                 <span className={styles.loadingSpinner} />
               ) : (
                 "دریافت کد تایید"
@@ -263,7 +281,14 @@ export default function LoginPage() {
             </div>
 
             <p className={styles.footerText}>
-              با ورود، شما با <a href="/terms">قوانین و شرایط</a> موافقت می‌کنید
+              پنل مالک پلتفرم: بعد از ورود به{" "}
+              <a href="/adminweb">/adminweb</a> بروید
+              {nextPath && nextPath !== "/" ? (
+                <>
+                  {" "}
+                  (مقصد فعلی: <code>{nextPath}</code>)
+                </>
+              ) : null}
             </p>
           </form>
         ) : (
@@ -318,11 +343,17 @@ export default function LoginPage() {
               </div>
             )}
 
+            {debugOtp ? (
+              <div className={`${styles.message} ${styles.success}`}>
+                <span>کد موقت سرور: <strong dir="ltr">{debugOtp}</strong></span>
+              </div>
+            ) : null}
+
             <button
               type="button"
               onClick={handleResendOtp}
               className={styles.resendButton}
-              disabled={countdown > 0 || isVerifying || loading}
+              disabled={countdown > 0 || isVerifying || loading || sending}
             >
               {countdown > 0 
                 ? `ارسال مجدد (${countdown} ثانیه)` 
