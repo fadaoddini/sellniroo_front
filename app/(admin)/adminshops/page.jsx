@@ -1,22 +1,12 @@
-'use client'
+import { Suspense } from 'react'
+import AdminShopsPage from './Client'
 
-import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
-import useOwnerGate from '@/components/Admin/useOwnerGate'
-import PlatformShopsManager from '@/components/Admin/PlatformShopsManager'
+export const dynamic = 'force-dynamic'
 
-/** فقط مالک پلتفرم (دو شماره) */
-export default function AdminShopsPage() {
-  const gate = useOwnerGate('/adminshops')
+export default function Page() {
   return (
-    <PlatformShopsManager
-      gate={gate}
-      Shell={OwnerPortalShell}
-      productsHref="/adminproducts"
-      shellProps={{
-        homeHref: '/adminweb',
-        homeLabel: 'بازگشت به adminweb',
-        deniedHomeHref: '/dashboard',
-      }}
-    />
+    <Suspense fallback={null}>
+      <AdminShopsPage />
+    </Suspense>
   )
 }

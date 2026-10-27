@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useEffect, useMemo, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { Check, ImagePlus, Loader2, Plus, X } from 'lucide-react'
-import CKEditorWrapper from '@/components/newsAdmin/CKEditorWrapper'
 import ProductFormExtras from '@/app/(site)/shop-panel/ProductFormExtras'
 import {
   buildCategoryIndex,
@@ -11,6 +11,16 @@ import {
 } from '@/app/(site)/shop-panel/categoryTree'
 import platformShopApi from '@/services/platformShopApi'
 import styles from '@/app/(site)/shop-panel/ShopPanel.module.css'
+
+const CKEditorWrapper = dynamic(
+  () => import('@/components/newsAdmin/CKEditorWrapper'),
+  {
+    ssr: false,
+    loading: () => (
+      <p className={styles.editorLoading}>در حال بارگذاری ویرایشگر…</p>
+    ),
+  },
+)
 
 function emptyExtrasForm() {
   return {

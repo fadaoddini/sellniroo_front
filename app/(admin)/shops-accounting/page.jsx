@@ -1,21 +1,12 @@
-'use client'
+import { Suspense } from 'react'
+import ShopsAccountingPage from './Client'
 
-import MultiVendorShell from '@/components/Admin/MultiVendorShell'
-import useMultiVendorGate from '@/components/Admin/useMultiVendorGate'
-import PlatformShopsManager from '@/components/Admin/PlatformShopsManager'
+export const dynamic = 'force-dynamic'
 
-/** نسخهٔ داشبورد — با ماژول چندفروشندگی */
-export default function ShopsAccountingPage() {
-  const gate = useMultiVendorGate('/shops-accounting')
+export default function Page() {
   return (
-    <PlatformShopsManager
-      gate={gate}
-      Shell={MultiVendorShell}
-      productsHref="/shops-products"
-      shellProps={{
-        homeHref: '/shops-manage',
-        homeLabel: 'بازگشت به مدیریت فروشگاه‌ها',
-      }}
-    />
+    <Suspense fallback={null}>
+      <ShopsAccountingPage />
+    </Suspense>
   )
 }

@@ -1,17 +1,12 @@
-'use client'
+import { Suspense } from 'react'
+import ShopsProductsPage from './Client'
 
-import MultiVendorShell from '@/components/Admin/MultiVendorShell'
-import useMultiVendorGate from '@/components/Admin/useMultiVendorGate'
-import PlatformProductsManager from '@/components/Admin/PlatformProductsManager'
+export const dynamic = 'force-dynamic'
 
-/** نسخهٔ داشبورد — با ماژول چندفروشندگی */
-export default function ShopsProductsPage() {
-  const gate = useMultiVendorGate('/shops-products')
+export default function Page() {
   return (
-    <PlatformProductsManager
-      gate={gate}
-      Shell={MultiVendorShell}
-      shopsHref="/shops-accounting"
-    />
+    <Suspense fallback={null}>
+      <ShopsProductsPage />
+    </Suspense>
   )
 }
