@@ -6,6 +6,7 @@ import axios from "axios";
 import Config from "@/config/config";
 import { useAuth } from "@/contexts/AuthContext";
 import styles from "../ResumeForm.module.css";
+import FieldSelect from "../FieldSelect";
 import { Plus, Trash2, Edit2, Check, X, Loader2, Award } from "lucide-react";
 
 const LEVELS = [
@@ -62,10 +63,14 @@ const SkillsSection = ({ resume, onRefresh }) => {
         : Config.endpoints.jobisell.resumeSections.skills.list();
 
       const method = editingId ? "patch" : "post";
-      const res = await axios[method](url, formData, { headers: getAuthHeaders() });
+      const res = await axios[method](url, formData, {
+        headers: getAuthHeaders(),
+      });
 
       if (editingId) {
-        setItems((prev) => prev.map((it) => (it.id === editingId ? res.data : it)));
+        setItems((prev) =>
+          prev.map((it) => (it.id === editingId ? res.data : it))
+        );
       } else {
         setItems((prev) => [...prev, res.data]);
       }
@@ -77,8 +82,8 @@ const SkillsSection = ({ resume, onRefresh }) => {
     } catch (err) {
       setError(
         err.response?.data?.detail ||
-        err.response?.data?.message ||
-        "خطا در ذخیره"
+          err.response?.data?.message ||
+          "خطا در ذخیره"
       );
     } finally {
       setSaving(false);
@@ -117,13 +122,17 @@ const SkillsSection = ({ resume, onRefresh }) => {
   };
 
   return (
-    <div className={styles.sectionWrapper}>
+    <div className={`${styles.sectionWrapper} ${styles.miniPanel}`}>
       <div className={styles.sectionHeader}>
         <h3>مهارت‌ها</h3>
         {!showForm && (
-          <button type="button" className={styles.addBtn} onClick={() => setShowForm(true)}>
-            <Plus size={14} />
-            افزودن مهارت
+          <button
+            type="button"
+            className={styles.addBtn}
+            onClick={() => setShowForm(true)}
+          >
+            <Plus size={13} strokeWidth={2.4} />
+            افزودن
           </button>
         )}
       </div>
@@ -133,15 +142,31 @@ const SkillsSection = ({ resume, onRefresh }) => {
           {items.map((item) => (
             <div key={item.id} className={styles.listItem}>
               <div className={styles.listItemContent}>
-                <h4>{item.name}</h4>
-                <p>{item.category_display} • {item.level_display}</p>
+                <div className={styles.miniItemMain}>
+                  <h4>{item.name}</h4>
+                  <span className={styles.miniDot} aria-hidden>
+                    ·
+                  </span>
+                  <p>
+                    {item.category_display} • {item.level_display}
+                  </p>
+                </div>
               </div>
               <div className={styles.listItemActions}>
-                <button type="button" onClick={() => handleEdit(item)}>
-                  <Edit2 size={14} />
+                <button
+                  type="button"
+                  onClick={() => handleEdit(item)}
+                  aria-label="ویرایش"
+                >
+                  <Edit2 size={12} strokeWidth={2.2} />
                 </button>
-                <button type="button" onClick={() => handleDelete(item.id)} className={styles.deleteBtn}>
-                  <Trash2 size={14} />
+                <button
+                  type="button"
+                  onClick={() => handleDelete(item.id)}
+                  className={styles.deleteBtn}
+                  aria-label="حذف"
+                >
+                  <Trash2 size={12} strokeWidth={2.2} />
                 </button>
               </div>
             </div>
@@ -151,49 +176,51 @@ const SkillsSection = ({ resume, onRefresh }) => {
 
       {showForm && (
         <div className={styles.subForm}>
-          <div className={styles.row}>
+          <div className={styles.grid3}>
             <div className={styles.formGroup}>
               <label>نام مهارت *</label>
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="مثلاً: React، فروش تلفنی، مدیریت تیم"
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                placeholder="مثلاً React"
               />
             </div>
-            <div className={styles.formGroup}>
-              <label>دسته‌بندی</label>
-              <select
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              >
-                {CATEGORIES.map((c) => (
-                  <option key={c.value} value={c.value}>{c.label}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>سطح تسلط</label>
-            <select
+            <FieldSelect
+              label="دسته‌بندی"
+              value={formData.category}
+              onChange={(v) => setFormData({ ...formData, category: v })}
+              options={CATEGORIES}
+              placeholder="انتخاب دسته"
+            />
+            <FieldSelect
+              label="سطح تسلط"
               value={formData.level}
-              onChange={(e) => setFormData({ ...formData, level: Number(e.target.value) })}
-            >
-              {LEVELS.map((l) => (
-                <option key={l.value} value={l.value}>{l.label}</option>
-              ))}
-            </select>
+              onChange={(v) => setFormData({ ...formData, level: Number(v) })}
+              options={LEVELS}
+              placeholder="انتخاب سطح"
+            />
           </div>
 
           {error && <div className={styles.errorBox}>{error}</div>}
 
           <div className={styles.subFormActions}>
             <button type="button" onClick={handleCancel} disabled={saving}>
-              <X size={14} /> لغو
+              <X size={13} /> لغو
             </button>
-            <button type="button" className={styles.saveBtn} onClick={handleSave} disabled={saving}>
-              {saving ? <Loader2 size={14} className={styles.spin} /> : <Check size={14} />}
+            <button
+              type="button"
+              className={styles.saveBtn}
+              onClick={handleSave}
+              disabled={saving}
+            >
+              {saving ? (
+                <Loader2 size={13} className={styles.spin} />
+              ) : (
+                <Check size={13} />
+              )}
               {editingId ? "بروزرسانی" : "افزودن"}
             </button>
           </div>
@@ -202,8 +229,8 @@ const SkillsSection = ({ resume, onRefresh }) => {
 
       {items.length === 0 && !showForm && (
         <div className={styles.emptyBox}>
-          <Award size={32} />
-          <p>هنوز مهارتی اضافه نکرده‌اید</p>
+          <Award size={22} strokeWidth={1.6} />
+          <p>مهارتی ثبت نشده</p>
         </div>
       )}
     </div>

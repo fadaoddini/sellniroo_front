@@ -1,0 +1,524 @@
+/* modules/inventory/components/products/ProductForm.module.css */
+
+/* ============================================
+   FORM CONTAINER
+   ============================================ */
+.form {
+  padding: 0.25rem 0;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.formHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 1rem 0 1.5rem 0;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--macos-border);
+}
+
+.formHeaderIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(128, 0, 32, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.formTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 2px 0;
+  font-family: var(--font-iran-extra);
+}
+
+.formSubtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   FORM GRID
+   ============================================ */
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.formGroup.fullWidth {
+  grid-column: 1 / -1;
+}
+
+/* ============================================
+   LABELS
+   ============================================ */
+.formLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-iran);
+}
+
+.required {
+  color: var(--macos-red);
+  margin-right: 2px;
+}
+
+.helperText {
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   INPUTS
+   ============================================ */
+.formInput {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid var(--macos-border);
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  outline: none;
+  direction: rtl;
+}
+
+.formInput::placeholder {
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+}
+
+.formInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.08);
+  background: white;
+}
+
+.formInput.error {
+  border-color: var(--macos-red);
+}
+
+.formInput:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--macos-bg);
+}
+
+.formTextarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid var(--macos-border);
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  outline: none;
+  resize: vertical;
+  min-height: 50px;
+  direction: rtl;
+}
+
+.formTextarea::placeholder {
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+}
+
+.formTextarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.08);
+  background: white;
+}
+
+.formTextarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--macos-bg);
+}
+
+.formSelect {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid var(--macos-border);
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  outline: none;
+  direction: rtl;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 12px center;
+  background-size: 12px;
+  cursor: pointer;
+}
+
+.formSelect:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.08);
+  background: white;
+}
+
+.formSelect:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--macos-bg);
+}
+
+/* ============================================
+   CHECKBOX
+   ============================================ */
+.formCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0.3rem 0;
+}
+
+.formCheckbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.formCheckbox input[type="checkbox"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.formCheckbox span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* ============================================
+   SELECTED UNIT INFO
+   ============================================ */
+.selectedUnitInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.3rem;
+  padding: 0.3rem 0.5rem;
+  background: #e3f2fd;
+  border-radius: 6px;
+  border: 1px solid #bbdefb;
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  color: var(--text-primary);
+}
+
+.selectedUnitPath {
+  color: #1976d2;
+  font-weight: 500;
+  font-size: 0.7rem;
+}
+
+/* ============================================
+   ERROR TEXT
+   ============================================ */
+.errorText {
+  font-size: 0.65rem;
+  color: var(--macos-red);
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   IMAGE UPLOAD
+   ============================================ */
+.imageUpload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.imagePreviewWrapper {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid var(--macos-border);
+}
+
+.imagePreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.removeImageBtn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.removeImageBtn:hover {
+  background: var(--macos-red);
+}
+
+.imageUploadArea {
+  width: 150px;
+  height: 150px;
+  border: 2px dashed var(--macos-border);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-secondary);
+  position: relative;
+  background: var(--macos-bg);
+}
+
+.imageUploadArea:hover {
+  border-color: var(--primary);
+  background: rgba(128,0,32,0.03);
+}
+
+.imageInput {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.imageHint {
+  font-size: 0.55rem;
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   IMAGES GRID
+   ============================================ */
+.imagesGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.imageItem {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--macos-border);
+}
+
+.imageThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.removeImageBtnSmall {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+}
+
+.removeImageBtnSmall:hover {
+  background: var(--macos-red);
+}
+
+.addImageBox {
+  width: 80px;
+  height: 80px;
+  border: 2px dashed var(--macos-border);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  font-size: 0.6rem;
+  font-family: var(--font-iran);
+}
+
+.addImageBox:hover {
+  border-color: var(--primary);
+  background: rgba(128,0,32,0.03);
+}
+
+/* ============================================
+   ACTIONS
+   ============================================ */
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--macos-border);
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  
+  box-shadow: 0 4px 16px rgba(128,0,32,0.3);
+}
+
+.primaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.secondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  background: var(--macos-card);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.secondaryBtn:hover:not(:disabled) {
+  background: var(--macos-bg);
+}
+
+.secondaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinnerSmall {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .formActions {
+    flex-direction: column;
+  }
+  
+  .formActions button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .imagePreviewWrapper,
+  .imageUploadArea {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .formHeader {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .imagePreviewWrapper,
+  .imageUploadArea {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .imagesGrid {
+    justify-content: center;
+  }
+}

@@ -1,18 +1,18 @@
 /* CompanyForm — تم طلایی */
 
 .formWrapper {
-  --ink: #2a241c;
-  --muted: #6f675c;
-  --line: rgba(90, 60, 20, 0.12);
-  --gold: #fbc300;
-  --gold-dark: #c27800;
-  --cream: #fff7ec;
+  --ink: #2A1A0E;
+  --muted: #6B5344;
+  --line: rgba(42, 26, 14, 0.12);
+  --gold: #F4AE52;
+  --gold-dark: #D4621A;
+  --cream: #FEF3E2;
 
   background: #fff;
-  border-radius: 20px;
-  padding: 1.35rem 1.4rem 1.5rem;
+  border-radius: 12px;
+  padding: 0.9rem 0.95rem 1rem;
   font-family: var(--font-iran);
-  box-shadow: 0 8px 24px rgba(80, 50, 0, 0.06);
+  box-shadow: 0 8px 24px rgba(42, 26, 14, 0.06);
   border: 1px solid var(--line);
   position: relative;
   overflow: visible;
@@ -22,41 +22,41 @@
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
-  height: 5px;
+  height: 3px;
   border-radius: 20px 20px 0 0;
-  background: linear-gradient(90deg, #ffd54a, #fbc300, #fb9700);
+  background: linear-gradient(90deg, #F4AE52, #F4AE52, #D4621A);
   pointer-events: none;
 }
 
 .header {
-  margin-bottom: 1.25rem;
-  padding-bottom: 0.9rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.55rem;
   border-bottom: 1px solid var(--line);
 }
 
 .header h2 {
   margin: 0 0 0.25rem;
-  font-size: 1.1rem;
+  font-size: 0.92rem;
   color: var(--ink);
-  font-family: var(--font-edameh, var(--font-iran-bold));
+  font-family: var(--font-iran-extra, var(--font-iran-bold, var(--font-iran)));
 }
 
 .subtitle {
   margin: 0;
-  font-size: 0.78rem;
+  font-size: 0.6rem;
   color: var(--muted);
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1.05rem;
+  gap: 0.7rem;
 }
 
 .logoSection label {
   display: block;
   margin-bottom: 0.55rem;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: var(--muted);
 }
@@ -67,10 +67,10 @@
 }
 
 .uploadBox {
-  width: 140px;
-  height: 140px;
+  width: 96px;
+  height: 96px;
   border: 2px dashed rgba(194, 120, 0, 0.35);
-  border-radius: 16px;
+  border-radius: 10px;
   background: var(--cream);
   display: flex;
   flex-direction: column;
@@ -81,7 +81,7 @@
   color: var(--muted);
   transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
   font-family: inherit;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 600;
 }
 
@@ -92,7 +92,7 @@
 }
 
 .uploadBox .hint {
-  font-size: 0.68rem;
+  font-size: 0.6rem;
   color: #9a8f7e;
   font-weight: 500;
 }
@@ -102,12 +102,12 @@
 }
 
 .logoPreview {
-  width: 140px;
-  height: 140px;
+  width: 96px;
+  height: 96px;
   object-fit: cover;
-  border-radius: 16px;
+  border-radius: 10px;
   border: 2px solid var(--line);
-  box-shadow: 0 6px 16px rgba(80, 50, 0, 0.1);
+  box-shadow: 0 6px 16px rgba(42, 26, 14, 0.1);
 }
 
 .removeLogoBtn {
@@ -128,8 +128,8 @@
 
 .row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.9rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
 }
 
 .formGroup {
@@ -139,7 +139,7 @@
 }
 
 .formGroup label {
-  font-size: 0.78rem;
+  font-size: 0.6rem;
   font-weight: 700;
   color: var(--muted);
 }
@@ -147,11 +147,11 @@
 .formGroup input,
 .formGroup select,
 .formGroup textarea {
-  padding: 0.65rem 0.85rem;
+  padding: 0.48rem 0.65rem;
   border: 1.5px solid var(--line);
-  border-radius: 11px;
+  border-radius: 8px;
   font-family: inherit;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: var(--ink);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   background: var(--cream);
@@ -163,7 +163,7 @@
   outline: none;
   border-color: var(--gold);
   background: #fff;
-  box-shadow: 0 0 0 4px rgba(251, 195, 0, 0.18);
+  box-shadow: 0 0 0 4px rgba(244, 174, 82, 0.18);
 }
 
 .formGroup textarea {
@@ -212,8 +212,24 @@
   font-weight: 600;
 }
 
+.docItemLocked {
+  opacity: 0.9;
+  background: #f7fafc;
+  border-color: rgba(29, 155, 240, 0.22);
+}
+
+.lockedBadge {
+  margin-right: auto;
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: #0a6ebd;
+  background: rgba(29, 155, 240, 0.12);
+  border-radius: 999px;
+  padding: 0.12rem 0.4rem;
+}
+
 .docName {
-  max-width: 140px;
+  max-width: 96px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -239,7 +255,7 @@
   border-radius: 10px;
   cursor: pointer;
   font-family: inherit;
-  font-size: 0.78rem;
+  font-size: 0.6rem;
   font-weight: 700;
   color: var(--muted);
   transition: all 0.2s ease;
@@ -252,7 +268,7 @@
 }
 
 .docCount {
-  font-size: 0.68rem;
+  font-size: 0.6rem;
   color: var(--gold-dark);
   padding: 0.15rem 0.4rem;
   background: #fff3c4;
@@ -264,12 +280,12 @@
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.65rem 0.85rem;
+  padding: 0.48rem 0.65rem;
   background: #fde8ea;
   border: 1px solid #f5b7b1;
-  border-radius: 11px;
+  border-radius: 8px;
   color: #c62828;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 600;
 }
 
@@ -287,7 +303,7 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.6rem 1.2rem;
-  border-radius: 11px;
+  border-radius: 8px;
   font-family: inherit;
   font-size: 0.84rem;
   font-weight: 700;
@@ -307,8 +323,8 @@
 }
 
 .saveBtn {
-  background: #3a2a00;
-  color: #fff8e7;
+  background: #2A1A0E;
+  color: #FEF3E2;
   box-shadow: 0 6px 16px rgba(58, 42, 0, 0.2);
 }
 
@@ -330,6 +346,12 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+@media (max-width: 900px) {
+  .row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 640px) {

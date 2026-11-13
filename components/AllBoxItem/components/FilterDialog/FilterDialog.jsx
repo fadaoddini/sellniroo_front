@@ -17,6 +17,7 @@ import styles from './FilterDialog.module.css'
  * @param {(value: string) => void} props.onChange
  * @param {() => void} props.onClose
  * @param {boolean} [props.searchable]
+ * @param {React.CSSProperties} [props.themeStyle] — CSS vars روی overlay (مثلاً --gold, --ink)
  */
 export default function FilterDialog({
   isOpen,
@@ -29,6 +30,7 @@ export default function FilterDialog({
   onChange,
   onClose,
   searchable = true,
+  themeStyle,
 }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [mounted, setMounted] = useState(false)
@@ -64,8 +66,17 @@ export default function FilterDialog({
     const q = searchTerm.trim().toLowerCase()
     if (!q) return options
     return options.filter((opt) => {
-      const label = String(opt.name || opt.title || opt.label || '')
-      return label.toLowerCase().includes(q)
+      const hay = [
+        opt.name,
+        opt.title,
+        opt.label,
+        opt.description,
+        opt.meta,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase()
+      return hay.includes(q)
     })
   }, [options, searchTerm])
 
@@ -81,6 +92,7 @@ export default function FilterDialog({
   const content = (
     <div
       className={styles.overlay}
+      style={themeStyle}
       role="presentation"
       onClick={onClose}
     >
@@ -164,6 +176,7 @@ export default function FilterDialog({
                 filtered.map((opt) => {
                   const id = String(opt.id)
                   const label = opt.name || opt.title || opt.label || id
+                  const meta = opt.description || opt.meta || ''
                   const selected = String(value) === id
                   return (
                     <li key={id}>
@@ -174,7 +187,12 @@ export default function FilterDialog({
                         className={`${styles.option} ${selected ? styles.optionSelected : ''}`}
                         onClick={() => pick(id)}
                       >
-                        <span className={styles.optionLabel}>{label}</span>
+                        <span className={styles.optionText}>
+                          <span className={styles.optionLabel}>{label}</span>
+                          {meta ? (
+                            <span className={styles.optionMeta}>{meta}</span>
+                          ) : null}
+                        </span>
                         {selected ? (
                           <span className={styles.check}>
                             <Check size={16} strokeWidth={2.5} />

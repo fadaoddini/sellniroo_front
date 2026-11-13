@@ -1,0 +1,1314 @@
+.page {
+  --ink: #1a1f1c;
+  --muted: #5c6b63;
+  --line: rgba(26, 31, 28, 0.1);
+  --accent: #b45309;
+  --accent-dark: #92400e;
+  --ok: #0d9488;
+  position: relative;
+  min-height: 70vh;
+  padding: 2.75rem 0 4rem;
+  background:
+    linear-gradient(165deg, #f3ebe1 0%, #f7f4ef 40%, #faf9f6 100%);
+  color: var(--ink);
+  font-family: var(--font-iran);
+}
+
+.atmosphere {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(680px 300px at 90% -8%, rgba(180, 83, 9, 0.16), transparent 58%),
+    radial-gradient(420px 240px at 8% 92%, rgba(26, 31, 28, 0.05), transparent 60%);
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  width: min(720px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.wide {
+  width: min(1100px, calc(100% - 2rem));
+}
+
+.brand {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-edameh);
+  font-size: clamp(1.7rem, 4vw, 2.2rem);
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.title {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-edameh);
+  font-size: 1.25rem;
+}
+
+.subtitle {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.verifiedBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0 0 1.1rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  background: rgba(13, 148, 136, 0.08);
+  border: 1px solid rgba(13, 148, 136, 0.22);
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.verifiedBar strong {
+  color: var(--ink);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.form {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+@media (max-width: 640px) {
+  .row2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field label {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.field input,
+.field textarea,
+.field select {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.7rem 0.85rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.field textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 12px;
+  padding: 0.85rem 1.1rem;
+  font-family: inherit;
+  font-weight: 650;
+  font-size: 0.92rem;
+  cursor: pointer;
+  background: var(--accent);
+  color: #fff8f0;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.btnGhost {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.msg {
+  font-size: 0.85rem;
+  margin: 0.5rem 0 0;
+}
+
+.msgOk {
+  color: var(--ok);
+}
+
+.msgErr {
+  color: #b91c1c;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1.1rem;
+  margin-bottom: 0.85rem;
+}
+
+.card h3 {
+  margin: 0 0 0.55rem;
+  font-family: var(--font-edameh);
+  font-size: 1rem;
+}
+
+.meta {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.meta strong {
+  color: var(--ink);
+}
+
+.badge {
+  display: inline-flex;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  background: rgba(180, 83, 9, 0.12);
+  color: var(--accent-dark);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.table th,
+.table td {
+  padding: 0.55rem 0.4rem;
+  border-bottom: 1px solid var(--line);
+  text-align: start;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.invoiceBox {
+  border: 1px dashed rgba(180, 83, 9, 0.35);
+  border-radius: 14px;
+  padding: 1rem;
+  background: #fffdf9;
+}
+
+.invoiceBox h3 {
+  margin-top: 0;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  margin-top: 0.5rem;
+  font-family: var(--font-edameh);
+}
+
+/* manage */
+.managePage {
+  --ink: #1a1f1c;
+  --muted: #5c6b63;
+  --line: rgba(26, 31, 28, 0.1);
+  --accent: #b45309;
+  --accent-dark: #92400e;
+  min-height: 100vh;
+  padding: 1.5rem 0 3rem;
+  background:
+    radial-gradient(900px 360px at 100% -10%, rgba(180, 83, 9, 0.14), transparent 55%),
+    #f4f1ec;
+  font-family: var(--font-iran);
+  color: var(--ink);
+}
+
+.manageWrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.manageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 18px 22px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #c2410c, #b45309 50%, #92400e);
+  color: #fff8f0;
+  box-shadow: 0 12px 32px rgba(146, 64, 14, 0.28);
+}
+
+.manageHeader h1 {
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-family: var(--font-edameh);
+}
+
+.manageHeader p {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.88;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.tab {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--muted);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.tabOn {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff8f0;
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.stat {
+  padding: 12px;
+  border-radius: 12px;
+  background: linear-gradient(160deg, #fff7ed, #fff);
+  border: 1px solid var(--line);
+}
+
+.stat strong {
+  display: block;
+  font-family: var(--font-edameh);
+  font-size: 1.15rem;
+  color: var(--accent-dark);
+}
+
+.stat span {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.ghostLink {
+  color: #fff8f0;
+  text-decoration: none;
+  font-size: 13px;
+  opacity: 0.92;
+}
+
+/* صفحه /repairs — تم طلایی هم‌تراز صدرا و /booking */
+.hub {
+  --rp-ink: #1c1c1e;
+  --rp-muted: #6b6560;
+  --rp-line: rgba(179, 140, 0, 0.22);
+  --rp-accent: #b38c00;
+  --rp-accent-deep: #8f7000;
+  --rp-gold: #dbbe00;
+  --rp-soft: #fff9e8;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3.5rem;
+  font-family: var(--font-iran, Tahoma, sans-serif);
+  color: var(--rp-ink);
+  background:
+    radial-gradient(720px 260px at 88% -8%, rgba(219, 190, 0, 0.18), transparent 55%),
+    radial-gradient(520px 200px at 8% 12%, rgba(179, 140, 0, 0.08), transparent 50%),
+    linear-gradient(180deg, #fbf7ef 0%, #f5f1ea 100%);
+  min-height: 60vh;
+}
+
+.hubHero {
+  margin-bottom: 1.25rem;
+  max-width: 40rem;
+}
+
+.hubEyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--rp-accent);
+}
+
+.hubHero h1 {
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.55rem, 3.2vw, 2rem);
+  font-weight: 900;
+  font-family: var(--font-edameh, Georgia, serif);
+  line-height: 1.25;
+  color: var(--rp-ink);
+}
+
+.hubHero p {
+  margin: 0;
+  color: var(--rp-muted);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.hubTabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem;
+  width: 100%;
+  margin-bottom: 1.35rem;
+  padding: 0.4rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--rp-line);
+  box-shadow: 0 8px 24px rgba(60, 45, 0, 0.05);
+  backdrop-filter: blur(8px);
+  box-sizing: border-box;
+}
+
+.hubTab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
+  min-height: 48px;
+  padding: 0.7rem 0.65rem;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--rp-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.hubTab svg {
+  flex-shrink: 0;
+  width: 17px;
+  height: 17px;
+}
+
+.hubTab:hover {
+  background: var(--rp-soft);
+  color: var(--rp-ink);
+}
+
+.hubTabOn {
+  background: linear-gradient(135deg, var(--rp-gold), var(--rp-accent));
+  color: #1c1c1e;
+  box-shadow: 0 6px 16px rgba(179, 140, 0, 0.28);
+}
+
+.hubTabOn:hover {
+  background: linear-gradient(135deg, var(--rp-gold), var(--rp-accent));
+  color: #1c1c1e;
+  filter: brightness(1.02);
+}
+
+@media (max-width: 560px) {
+  .hubTabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem;
+  }
+
+  .hubTab {
+    min-height: 44px;
+    font-size: 0.84rem;
+    padding: 0.6rem 0.45rem;
+  }
+}
+
+.hubBody {
+  width: 100%;
+}
+
+.hubRequest {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(220px, 0.7fr);
+  gap: 1.1rem;
+  align-items: start;
+}
+
+@media (max-width: 800px) {
+  .hubRequest {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hubTrack {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.asideCard {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--rp-line);
+  border-radius: 16px;
+  padding: 1rem 1.05rem;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 8px 20px rgba(60, 45, 0, 0.04);
+}
+
+.asideEyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--rp-accent);
+}
+
+.asideCard strong {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-size: 0.95rem;
+  font-family: var(--font-edameh, Georgia, serif);
+}
+
+.asideSteps {
+  margin: 0;
+  padding-inline-start: 1.15rem;
+  color: var(--rp-muted);
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+
+.asideText {
+  margin: 0 0 0.75rem;
+  color: var(--rp-muted);
+  font-size: 0.86rem;
+  line-height: 1.65;
+}
+
+.asideLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  appearance: none;
+  border: none;
+  background: linear-gradient(135deg, var(--rp-gold), var(--rp-accent));
+  color: #1c1c1e;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 800;
+  padding: 0.55rem 0.85rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* ─── /repairs/track/[token] — تم طلایی جزئیات پرونده ─── */
+.trackPage {
+  --tp-ink: #1c1c1e;
+  --tp-muted: #6b6560;
+  --tp-line: rgba(179, 140, 0, 0.22);
+  --tp-accent: #b38c00;
+  --tp-deep: #8f7000;
+  --tp-gold: #dbbe00;
+  --tp-soft: #fff9e8;
+  --tp-ok: #0f766e;
+  --tp-bad: #b91c1c;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 60vh;
+  padding: 1.35rem 0 3.5rem;
+  font-family: var(--font-iran, Tahoma, sans-serif);
+  color: var(--tp-ink);
+  background:
+    radial-gradient(720px 260px at 90% -6%, rgba(219, 190, 0, 0.18), transparent 55%),
+    radial-gradient(480px 200px at 6% 18%, rgba(179, 140, 0, 0.08), transparent 52%),
+    linear-gradient(180deg, #fbf7ef 0%, #f5f1ea 100%);
+}
+
+.trackInner {
+  width: min(920px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.trackHero {
+  margin-bottom: 1.15rem;
+}
+
+.trackHeroTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+}
+
+.trackBack,
+.trackPrintBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--tp-deep);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.trackPrintBtn {
+  padding: 0.45rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--tp-line);
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--tp-ink);
+}
+
+.trackPrintWait {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--tp-muted);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px dashed var(--tp-line);
+  border-radius: 10px;
+  padding: 0.45rem 0.7rem;
+}
+
+.trackEyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--tp-accent);
+}
+
+.trackTitleRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-bottom: 0.35rem;
+}
+
+.trackTitleRow h1 {
+  margin: 0;
+  font-size: clamp(1.35rem, 3vw, 1.85rem);
+  font-weight: 900;
+  font-family: var(--font-edameh, Georgia, serif);
+  line-height: 1.25;
+}
+
+.trackLead {
+  margin: 0;
+  color: var(--tp-muted);
+  font-size: 0.9rem;
+  line-height: 1.65;
+  max-width: 36rem;
+}
+
+.trackBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  background: rgba(219, 190, 0, 0.22);
+  color: var(--tp-deep);
+  border: 1px solid rgba(179, 140, 0, 0.28);
+}
+
+.trackBadgeOk {
+  background: rgba(15, 118, 110, 0.12);
+  color: var(--tp-ok);
+  border-color: rgba(15, 118, 110, 0.25);
+}
+
+.trackBadgeBad {
+  background: rgba(185, 28, 28, 0.1);
+  color: var(--tp-bad);
+  border-color: rgba(185, 28, 28, 0.22);
+}
+
+.trackPipeline {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin: 0 0 1.15rem;
+  padding: 0.55rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--tp-line);
+  box-shadow: 0 8px 22px rgba(60, 45, 0, 0.05);
+}
+
+.trackPipeStep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  text-align: center;
+  padding: 0.45rem 0.2rem;
+  border-radius: 12px;
+  color: var(--tp-muted);
+  min-width: 0;
+}
+
+.trackPipeDot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: #f3eee4;
+  border: 1px solid rgba(28, 28, 30, 0.08);
+}
+
+.trackPipeLabel {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: inherit;
+  white-space: nowrap;
+}
+
+.trackPipeHint {
+  font-size: 0.65rem;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.trackPipeDone {
+  color: var(--tp-deep);
+}
+
+.trackPipeDone .trackPipeDot {
+  background: linear-gradient(135deg, var(--tp-gold), var(--tp-accent));
+  color: #1c1c1e;
+  border-color: transparent;
+}
+
+.trackPipeOn {
+  background: var(--tp-soft);
+  color: var(--tp-ink);
+  box-shadow: inset 0 0 0 1px rgba(179, 140, 0, 0.28);
+}
+
+.trackPipeOn .trackPipeDot {
+  background: #1c1c1e;
+  color: var(--tp-gold);
+  border-color: transparent;
+}
+
+.trackCancelNote {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: rgba(185, 28, 28, 0.08);
+  color: var(--tp-bad);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.trackStats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.trackStat {
+  padding: 0.85rem 0.9rem;
+  border-radius: 14px;
+  background: linear-gradient(160deg, #fff9e8, #ffffff);
+  border: 1px solid var(--tp-line);
+}
+
+.trackStat span {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--tp-muted);
+  margin-bottom: 0.25rem;
+}
+
+.trackStat strong {
+  font-family: var(--font-edameh, Georgia, serif);
+  font-size: 1.05rem;
+  color: var(--tp-deep);
+}
+
+.trackStatRemain {
+  color: var(--tp-accent) !important;
+}
+
+.trackGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.trackCard {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--tp-line);
+  border-radius: 16px;
+  padding: 1rem 1.05rem;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 8px 20px rgba(60, 45, 0, 0.04);
+}
+
+.trackCardAccent {
+  background: linear-gradient(160deg, #fff9e8, #ffffff);
+}
+
+.trackCardHead {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.75rem;
+  color: var(--tp-accent);
+}
+
+.trackCardHead h2 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-family: var(--font-edameh, Georgia, serif);
+  font-weight: 800;
+  color: var(--tp-ink);
+}
+
+.trackDl {
+  margin: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.trackDl div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.trackDl dt {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--tp-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.trackDl dd {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 650;
+  line-height: 1.55;
+  color: var(--tp-ink);
+}
+
+.trackReport {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: var(--tp-ink);
+  white-space: pre-wrap;
+}
+
+.trackTableWrap {
+  overflow-x: auto;
+  margin-bottom: 0.65rem;
+}
+
+.trackTableWrap:last-child {
+  margin-bottom: 0;
+}
+
+.trackTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.trackTable th,
+.trackTable td {
+  padding: 0.6rem 0.45rem;
+  border-bottom: 1px solid rgba(179, 140, 0, 0.14);
+  text-align: start;
+  vertical-align: top;
+}
+
+.trackTable th {
+  font-size: 0.72rem;
+  color: var(--tp-muted);
+  font-weight: 700;
+}
+
+.trackTable td strong {
+  display: block;
+  font-weight: 750;
+}
+
+.trackLineNote {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  color: var(--tp-muted);
+  font-weight: 500;
+}
+
+.trackInvoice {
+  border-style: dashed;
+  background: linear-gradient(165deg, #fffdf5, #ffffff);
+}
+
+.trackInvoiceRows {
+  display: grid;
+  gap: 0.45rem;
+  margin-bottom: 0.85rem;
+}
+
+.trackInvoiceRows > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.86rem;
+  color: var(--tp-muted);
+}
+
+.trackInvoiceRows strong {
+  color: var(--tp-ink);
+  font-weight: 700;
+}
+
+.trackInvoiceTotals {
+  border-top: 1px solid var(--tp-line);
+  padding-top: 0.65rem;
+}
+
+.trackTotalRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: var(--font-edameh, Georgia, serif);
+  font-weight: 800;
+  font-size: 0.95rem;
+  margin-top: 0.4rem;
+}
+
+.trackTotalRemain {
+  color: var(--tp-accent);
+  font-size: 1.05rem;
+}
+
+.trackPayStatus {
+  display: inline-flex;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--tp-soft);
+  color: var(--tp-deep);
+}
+
+.trackPayCard {
+  border-color: rgba(179, 140, 0, 0.4);
+  background: linear-gradient(160deg, #fff6d6, #ffffff 55%);
+}
+
+.trackProposeCard {
+  border-color: rgba(179, 140, 0, 0.45);
+  background: linear-gradient(165deg, #fff8e0, #ffffff 60%);
+}
+
+.trackProposeIntro {
+  margin: 0 0 0.85rem;
+  font-size: 0.86rem;
+  color: var(--tp-muted);
+  line-height: 1.6;
+}
+
+.trackProposeList {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.trackProposeItem {
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--tp-line);
+}
+
+.trackProposeTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.trackProposeType {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--tp-deep);
+}
+
+.trackProposeAmount {
+  font-family: var(--font-edameh, Georgia, serif);
+  color: var(--tp-accent);
+  font-size: 1rem;
+}
+
+.trackProposeItem h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.98rem;
+  font-family: var(--font-edameh, Georgia, serif);
+}
+
+.trackProposeDesc {
+  margin: 0 0 0.75rem;
+  font-size: 0.86rem;
+  color: var(--tp-muted);
+  line-height: 1.65;
+}
+
+.trackProposeShop,
+.trackProposePay {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.trackProposeShop > span {
+  font-size: 0.84rem;
+  color: var(--tp-muted);
+}
+
+.trackPayAmount {
+  margin: 0 0 0.85rem;
+  font-size: 0.92rem;
+  color: var(--tp-muted);
+}
+
+.trackPayAmount strong {
+  color: var(--tp-deep);
+  font-family: var(--font-edameh, Georgia, serif);
+  font-size: 1.15rem;
+}
+
+.trackBank {
+  display: grid;
+  gap: 0.45rem;
+  margin-bottom: 0.9rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--tp-line);
+  font-size: 0.86rem;
+}
+
+.trackBank > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.trackBank span {
+  color: var(--tp-muted);
+}
+
+.trackBank strong {
+  color: var(--tp-ink);
+  font-weight: 750;
+}
+
+.trackBank p {
+  margin: 0.35rem 0 0;
+  color: var(--tp-muted);
+  line-height: 1.6;
+  font-size: 0.82rem;
+}
+
+.trackPayActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.trackBtn,
+.trackBtnGhost {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border-radius: 12px;
+  padding: 0.8rem 1.1rem;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+}
+
+.trackBtn {
+  background: linear-gradient(135deg, var(--tp-gold), var(--tp-accent));
+  color: #1c1c1e;
+  box-shadow: 0 6px 16px rgba(179, 140, 0, 0.28);
+}
+
+.trackBtn:disabled,
+.trackBtnGhost:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.trackBtnGhost {
+  background: #fff;
+  color: var(--tp-ink);
+  border: 1px solid var(--tp-line);
+}
+
+.trackCardForm {
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--tp-line);
+}
+
+.trackFormLabel {
+  margin: 0 0 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 750;
+  color: var(--tp-deep);
+}
+
+.trackFields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+  margin-bottom: 0.75rem;
+}
+
+.trackField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.76rem;
+  color: var(--tp-muted);
+}
+
+.trackField input {
+  border: 1px solid var(--tp-line);
+  border-radius: 11px;
+  padding: 0.7rem 0.8rem;
+  font: inherit;
+  font-size: 0.88rem;
+  background: #fff;
+  color: var(--tp-ink);
+}
+
+.trackFlash {
+  margin: 0.75rem 0 0;
+  padding: 0.75rem 0.95rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 650;
+}
+
+.trackFlashOk {
+  background: rgba(15, 118, 110, 0.1);
+  color: var(--tp-ok);
+}
+
+.trackFlashErr {
+  background: rgba(185, 28, 28, 0.08);
+  color: var(--tp-bad);
+}
+
+.trackMuted,
+.trackMutedCenter {
+  margin: 0.5rem 0 0;
+  color: var(--tp-muted);
+  font-size: 0.88rem;
+}
+
+.trackMutedCenter {
+  text-align: center;
+  padding: 0.85rem;
+}
+
+.trackEmpty {
+  text-align: center;
+  padding: 2.5rem 1.25rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--tp-line);
+}
+
+.trackEmpty svg {
+  color: var(--tp-accent);
+  margin-bottom: 0.65rem;
+}
+
+.trackEmpty h1 {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-edameh, Georgia, serif);
+  font-size: 1.35rem;
+}
+
+.trackEmpty p {
+  margin: 0 0 1.1rem;
+  color: var(--tp-muted);
+  font-size: 0.9rem;
+}
+
+.trackEmptyActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.trackSkeleton {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.trackSkelHero,
+.trackSkelRow,
+.trackSkelCard {
+  border-radius: 14px;
+  background: linear-gradient(90deg, #efe8d8, #f7f2e6, #efe8d8);
+  background-size: 200% 100%;
+  animation: track-shimmer 1.2s ease infinite;
+}
+
+.trackSkelHero {
+  height: 110px;
+}
+
+.trackSkelRow {
+  height: 72px;
+}
+
+.trackSkelCard {
+  height: 140px;
+}
+
+@keyframes track-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .trackPipeline {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .trackStats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .trackGrid,
+  .trackFields {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .trackPipeline {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .trackPipeHint {
+    display: none;
+  }
+}
+
+@media print {
+  .trackPage {
+    background: #fff;
+    padding: 0;
+  }
+
+  .trackBack,
+  .trackPrintBtn,
+  .trackPrintWait,
+  .trackPayCard,
+  .trackPayActions,
+  .trackCardForm {
+    display: none !important;
+  }
+
+  .trackCard,
+  .trackStat,
+  .trackPipeline {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+}

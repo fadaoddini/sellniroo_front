@@ -1,39 +1,47 @@
 // app/news/[slug]/page.jsx
-// ماژول سایت: news — با خاموش شدن، جزئیات خبر هم در دسترس نیست
+// param می‌تواند id عددی یا slug فارسی عنوان باشد
 import { Suspense } from 'react';
 import NewsDetail from '@/components/News/NewsDetail';
 import NewsPageSlot from '@/components/modules/NewsPageSlot';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { isSiteModuleActive } from '@/services/siteModules';
 import { SITE_MODULE_KEYS } from '@/config/siteModules';
+import Config from '@/config/config';
+import {
+  getNewsSlug,
+  isNumericNewsParam,
+} from '@/utils/newsSlug';
+
+async function getNews(param) {
+  const key = decodeURIComponent(String(param || '')).trim();
+  if (!key) return null;
+
+  try {
+    const res = await fetch(Config.endpoints.news.detail(key), {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    console.error('Error fetching news:', err);
+    return null;
+  }
+}
 
 /* ============================================
    METADATA — برای هر خبر
    ============================================ */
 export async function generateMetadata({ params }) {
-  const { slug } = params;
+  const param = params?.slug;
+  const newsData = await getNews(param);
+  const canonicalSlug = newsData ? getNewsSlug(newsData) : decodeURIComponent(String(param || '')).trim();
 
-  if (!slug) {
+  if (!param) {
     return {
       title: 'جزئیات خبر | سلنیرو',
       description:
         'مشاهده جزئیات خبر در سلنیرو — کاریابی تخصصی فروش و بازاریابی',
     };
-  }
-
-  // تلاش برای دریافت اطلاعات خبر از API
-  let newsData = null;
-  try {
-    const apiUrl =
-      process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-    const res = await fetch(`${apiUrl}/api/news/${slug}/`, {
-      next: { revalidate: 60 }, // کش ۶۰ ثانیه
-    });
-    if (res.ok) {
-      newsData = await res.json();
-    }
-  } catch {
-    // در صورت خطا، از metadata پیش‌فرض استفاده می‌شود
   }
 
   const title = newsData?.title
@@ -52,6 +60,10 @@ export async function generateMetadata({ params }) {
         }`
       : 'https://sellniroo.com/images/logo.png';
 
+  const pagePath = canonicalSlug
+    ? `https://sellniroo.com/news/${canonicalSlug}`
+    : 'https://sellniroo.com/news';
+
   return {
     title,
     description,
@@ -65,13 +77,13 @@ export async function generateMetadata({ params }) {
     ],
 
     alternates: {
-      canonical: `https://sellniroo.com/news/${slug}`,
+      canonical: pagePath,
     },
 
     openGraph: {
       type: 'article',
       locale: 'fa_IR',
-      url: `https://sellniroo.com/news/${slug}`,
+      url: pagePath,
       siteName: 'سلنیرو',
       title,
       description,
@@ -117,9 +129,9 @@ export async function generateMetadata({ params }) {
    PAGE COMPONENT
    ============================================ */
 export default async function NewsDetailPage({ params }) {
-  const { slug } = params;
+  const param = params?.slug;
 
-  if (!slug) {
+  if (!param) {
     notFound();
   }
 
@@ -130,12 +142,27 @@ export default async function NewsDetailPage({ params }) {
     notFound();
   }
 
+  const news = await getNews(param);
+  if (news) {
+    const slug = getNewsSlug(news);
+    // /news/42 → /news/افتتاح-فاز-جدید-...
+    if (
+      slug &&
+      isNumericNewsParam(param) &&
+      decodeURIComponent(String(param)) !== slug
+    ) {
+      permanentRedirect(`/news/${slug}`);
+    }
+  }
+
+  const resolvedSlug = decodeURIComponent(String(param)).trim();
+
   return (
     <NewsPageSlot>
       <h1 className="sr-only">جزئیات خبر | سلنیرو — کاریابی تخصصی فروش و بازاریابی</h1>
 
       <Suspense fallback={<NewsDetailLoading />}>
-        <NewsDetail slug={slug} />
+        <NewsDetail slug={resolvedSlug} />
       </Suspense>
     </NewsPageSlot>
   );
@@ -148,34 +175,15 @@ function NewsDetailLoading() {
   return (
     <div
       style={{
-        minHeight: '60vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        minHeight: '50vh',
+        fontFamily: 'var(--font-iran, Tahoma, sans-serif)',
+        color: '#6b7280',
       }}
     >
-      <div style={{ textAlign: 'center' }}>
-        <div
-          style={{
-            width: '48px',
-            height: '48px',
-            border: '4px solid #0e8f59',
-            borderTopColor: 'transparent',
-            borderRadius: '50%',
-            margin: '0 auto',
-            animation: 'spin 1s linear infinite',
-          }}
-        />
-        <p
-          style={{
-            marginTop: '16px',
-            color: '#4b5563',
-            fontFamily: 'var(--font-iran)',
-          }}
-        >
-          در حال بارگذاری خبر...
-        </p>
-      </div>
+      در حال بارگذاری خبر…
     </div>
   );
 }

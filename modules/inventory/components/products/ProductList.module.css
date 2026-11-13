@@ -1,0 +1,1217 @@
+/* modules/inventory/components/products/ProductList.module.css */
+
+/* ============================================
+   CONTAINER
+   ============================================ */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0.75rem 0 1.25rem;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  font-family: var(--font-iran-extra);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+}
+
+.titleIcon {
+  color: var(--primary);
+  width: 22px;
+  height: 22px;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  margin: 0.1rem 0 0 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 1.2rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  
+  box-shadow: 0 4px 16px rgba(128, 0, 32, 0.3);
+}
+
+.primaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.secondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  background: var(--macos-card);
+  color: var(--text-primary);
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.secondaryBtn:hover:not(:disabled) {
+  background: var(--macos-bg);
+}
+
+.secondaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.refreshBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  background: var(--macos-card);
+  color: var(--text-primary);
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.refreshBtn:hover:not(:disabled) {
+  background: var(--macos-bg);
+  transform: translateY(-1px);
+}
+
+.refreshBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinning {
+  animation: spin 0.8s linear infinite !important;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   ERROR ALERT
+   ============================================ */
+.errorAlert {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 10px;
+  color: var(--macos-red);
+  margin-bottom: 1rem;
+  font-family: var(--font-iran);
+  font-size: 0.75rem;
+}
+
+.errorAlert button {
+  background: none;
+  border: none;
+  color: var(--macos-red);
+  cursor: pointer;
+  padding: 0 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.errorAlert button:hover {
+  background: rgba(198, 40, 40, 0.1);
+}
+
+/* ============================================
+   STATS GRID
+   ============================================ */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  background: var(--macos-card);
+  border-radius: 10px;
+  border: 1px solid var(--macos-border);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  transition: all 0.3s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.statIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(128, 0, 32, 0.08);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.statValue {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: var(--font-iran-extra);
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.statLabel {
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   SEARCH SECTION
+   ============================================ */
+.searchSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.searchBox {
+  position: relative;
+  flex: 1;
+  max-width: 420px;
+  min-width: 180px;
+}
+
+.searchIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  pointer-events: none;
+  width: 16px;
+  height: 16px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.45rem 2.5rem 0.45rem 1rem;
+  border: 1.5px solid var(--macos-border);
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  direction: rtl;
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.08);
+}
+
+.searchInput:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.clearSearch {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clearSearch:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--macos-red);
+}
+
+.filterActions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.filterToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  background: var(--macos-card);
+  color: var(--text-primary);
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filterToggle:hover {
+  background: var(--macos-bg);
+}
+
+.filterActive {
+  border-color: var(--primary);
+  background: rgba(128, 0, 32, 0.05);
+  color: var(--primary);
+}
+
+.filterBadge {
+  color: var(--primary);
+  font-size: 0.5rem;
+}
+
+.clearFiltersBtn {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--macos-red);
+  font-size: 0.65rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clearFiltersBtn:hover {
+  background: #ffebee;
+}
+
+.totalCount {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  padding: 0.2rem 1rem;
+  background: var(--macos-bg);
+  border-radius: 10px;
+  font-family: var(--font-iran);
+  border: 1px solid var(--macos-border);
+}
+
+/* ============================================
+   FILTER PANEL
+   ============================================ */
+.filterPanel {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--macos-card);
+  border: 1px solid var(--macos-border);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+  min-width: 120px;
+}
+
+.filterLabel {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+.filterSelect {
+  padding: 0.35rem 0.6rem;
+  border: 1.5px solid var(--macos-border);
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--text-primary);
+  outline: none;
+  direction: rtl;
+}
+
+.filterSelect:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.08);
+}
+
+.filterSelect:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.filterApplyBtn {
+  padding: 0.35rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filterApplyBtn:hover {
+  
+  box-shadow: 0 4px 16px rgba(128, 0, 32, 0.3);
+}
+
+/* ============================================
+   SEARCH HINT
+   ============================================ */
+.searchHint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  margin-bottom: 1rem;
+  background: #fff3e0;
+  border: 1px solid #ffe0b2;
+  border-radius: 8px;
+  color: var(--macos-orange);
+  font-size: 0.65rem;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   LOADING & EMPTY
+   ============================================ */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 250px;
+  gap: 0.75rem;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--macos-border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  gap: 0.75rem;
+}
+
+.emptyIcon {
+  color: var(--text-secondary);
+  opacity: 0.3;
+}
+
+.emptyState p {
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+  font-size: 0.9rem;
+}
+
+/* ============================================
+   PRODUCTS GRID
+   ============================================ */
+.productsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.65rem;
+}
+
+.productCard {
+  background: var(--macos-card);
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.productCard:hover {
+  
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.cardImageWrapper {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  background: var(--macos-bg);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cardImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.cardStatus {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.55rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+}
+
+.activeBadge {
+  background: #e8f5e9;
+  color: #1a934c;
+}
+
+.inactiveBadge {
+  background: #ffebee;
+  color: var(--macos-red);
+}
+
+.cardBody {
+  padding: 0.6rem 0.75rem;
+  flex: 1;
+  cursor: pointer;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.cardTitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-iran-extra);
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+}
+
+.cardCode {
+  font-size: 0.55rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+  background: var(--macos-bg);
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.cardMeta {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.cardMeta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+.cardStock {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.4rem;
+  background: var(--macos-bg);
+  border-radius: 6px;
+  font-size: 0.65rem;
+}
+
+.cardStockLabel {
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+.cardStockValue {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-iran-extra);
+}
+
+.cardStockValue.lowStock {
+  color: var(--macos-red);
+}
+
+.cardStockUnit {
+  font-size: 0.55rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+.cardWarning {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.1rem 0.4rem;
+  margin-top: 0.3rem;
+  background: #fff3e0;
+  border-radius: 6px;
+  font-size: 0.55rem;
+  color: #e65100;
+  font-family: var(--font-iran);
+}
+
+.cardActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.2rem;
+  padding: 0.4rem 0.6rem;
+  border-top: 1px solid var(--macos-border);
+  background: var(--macos-bg);
+}
+
+.cardActions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.cardActions button:hover {
+  background: var(--macos-card);
+  
+}
+
+.cardActions button:nth-child(1) { color: var(--macos-blue); }
+.cardActions button:nth-child(1):hover { background: #e3f2fd; color: #0d47a1; }
+.cardActions button:nth-child(2) { color: var(--macos-orange); }
+.cardActions button:nth-child(2):hover { background: #fff3e0; color: #e65100; }
+.cardActions button:nth-child(3) { color: var(--macos-red); }
+.cardActions button:nth-child(3):hover { background: #ffebee; color: #b71c1c; }
+
+/* ============================================
+   TABLE VIEW
+   ============================================ */
+.tableWrapper {
+  background: var(--macos-card);
+  border-radius: 10px;
+  border: 1px solid var(--macos-border);
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-iran);
+  font-size: 0.8rem;
+  min-width: 700px;
+}
+
+.table thead {
+  background: var(--macos-bg);
+  border-bottom: 2px solid var(--macos-border);
+}
+
+.table th {
+  padding: 0.4rem 0.6rem;
+  text-align: right;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-family: var(--font-iran-extra);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  vertical-align: middle;
+  border-bottom: 1px solid var(--macos-border);
+}
+
+.table tbody tr:hover {
+  background: var(--macos-bg);
+}
+
+.table tbody tr {
+  cursor: pointer;
+}
+
+/* Table Columns */
+.thumbnail {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.thumbnailPlaceholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  background: var(--macos-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.codeBadge {
+  font-size: 0.65rem;
+  font-family: var(--font-iran);
+  color: var(--text-secondary);
+  background: var(--macos-bg);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.productName {
+  font-weight: 600;
+  font-family: var(--font-iran-extra);
+}
+
+.categoryBadge {
+  font-size: 0.6rem;
+  padding: 0.1rem 0.4rem;
+  background: #f3e5f5;
+  color: #6c5ce7;
+  border-radius: 4px;
+  border: 1px solid #e1bee7;
+  white-space: nowrap;
+}
+
+.unitBadge {
+  font-size: 0.6rem;
+  padding: 0.1rem 0.4rem;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 4px;
+  border: 1px solid #bbdefb;
+  white-space: nowrap;
+}
+
+.stockBadge {
+  font-weight: 600;
+  font-family: var(--font-iran-extra);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  background: var(--macos-bg);
+}
+
+.stockBadge.lowStockBadge {
+  color: var(--macos-red);
+  background: #ffebee;
+}
+
+/* ============================================
+   EXPAND BUTTON
+   ============================================ */
+.expandBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 6px;
+  background: var(--macos-card);
+  color: var(--text-primary);
+  font-size: 0.55rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.expandBtn:hover {
+  background: var(--macos-bg);
+  border-color: var(--primary);
+}
+
+/* ============================================
+   ACTION BUTTONS (Table)
+   ============================================ */
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.actionBtn:hover {
+  background: var(--macos-card);
+  
+}
+
+.actionBtn:nth-child(1) { color: var(--macos-blue); }
+.actionBtn:nth-child(1):hover { background: #e3f2fd; color: #0d47a1; }
+.actionBtn:nth-child(2) { color: var(--macos-orange); }
+.actionBtn:nth-child(2):hover { background: #fff3e0; color: #e65100; }
+.actionBtn:nth-child(3) { color: var(--macos-red); }
+.actionBtn:nth-child(3):hover { background: #ffebee; color: #b71c1c; }
+
+/* ============================================
+   EXPANDED ROW
+   ============================================ */
+.expandedRow {
+  background: var(--macos-bg);
+}
+
+.expandedRow td {
+  padding: 0.4rem 0.6rem !important;
+  border-bottom: 2px solid var(--macos-border);
+}
+
+.expandedContent {
+  padding: 0.3rem 0;
+  direction: rtl;
+}
+
+.levelsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+  padding: 0.2rem 0.5rem;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid var(--macos-border);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-iran-extra);
+  color: var(--text-primary);
+}
+
+.levelsSubtitle {
+  font-size: 0.6rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+.levelsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.2rem 0;
+}
+
+.levelItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.5rem;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid var(--macos-border);
+  transition: all 0.2s ease;
+  flex-wrap: wrap;
+}
+
+.levelItem:hover {
+  background: var(--macos-bg);
+}
+
+.levelItem.levelRoot {
+  background: #f8f9fa;
+  border-color: #dee2e6;
+  border-right: 3px solid #800020;
+}
+
+.levelIcon {
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.levelTitle {
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  min-width: 60px;
+}
+
+.levelAbbr {
+  font-size: 0.55rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-right: 0.2rem;
+}
+
+.levelBadge {
+  font-size: 0.5rem;
+  font-weight: 500;
+  color: white;
+  padding: 0.05rem 0.4rem;
+  border-radius: 10px;
+  margin: 0 0.2rem;
+  white-space: nowrap;
+}
+
+.levelStockInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-right: auto;
+  flex-wrap: wrap;
+}
+
+.levelQuantity {
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: var(--font-iran-extra);
+  color: #2e7d32;
+  padding: 0.05rem 0.3rem;
+  background: #e8f5e9;
+  border-radius: 4px;
+  border: 1px solid #c8e6c9;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.levelBuffer {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: #e65100;
+  background: #fff3e0;
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+  border: 1px solid #ffe0b2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.levelReserved {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: #e65100;
+  background: #ffebee;
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+  border: 1px solid #ffcdd2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.levelAvailable {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: #1976d2;
+  background: #e3f2fd;
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+  border: 1px solid #bbdefb;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.levelUnit {
+  font-size: 0.5rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-right: 0.1rem;
+}
+
+.levelFactor {
+  font-size: 0.5rem;
+  color: #6b7280;
+  background: #f1f3f5;
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.levelsEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: #fff8e1;
+  border-radius: 6px;
+  border: 1px solid #ffe0b2;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem 0.5rem;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .headerActions {
+    flex-wrap: wrap;
+  }
+  
+  .headerActions button {
+    flex: 1;
+    justify-content: center;
+    min-width: 70px;
+    font-size: 0.65rem;
+    padding: 0.35rem 0.6rem;
+  }
+  
+  .searchSection {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .searchBox {
+    max-width: 100%;
+  }
+  
+  .statsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.5rem;
+  }
+  
+  .statCard {
+    padding: 0.4rem 0.6rem;
+  }
+  
+  .statValue {
+    font-size: 0.9rem;
+  }
+  
+  .statLabel {
+    font-size: 0.5rem;
+  }
+  
+  .productsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+  
+  .filterPanel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filterGroup {
+    min-width: auto;
+  }
+  
+  .filterApplyBtn {
+    width: 100%;
+  }
+  
+  .filterActions {
+    width: 100%;
+  }
+  
+  .levelsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+  }
+  
+  .levelItem {
+    flex-wrap: wrap;
+  }
+  
+  .levelStockInfo {
+    flex-wrap: wrap;
+    gap: 0.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .headerActions button {
+    font-size: 0.6rem;
+    padding: 0.3rem 0.5rem;
+  }
+  
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .productsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tableWrapper {
+    border-radius: 10px;
+  }
+  
+  .table {
+    font-size: 0.65rem;
+    min-width: 500px;
+  }
+  
+  .table th,
+  .table td {
+    padding: 0.25rem 0.4rem;
+  }
+  
+  .thumbnail {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .thumbnailPlaceholder {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .expandBtn {
+    font-size: 0.45rem;
+    padding: 0.1rem 0.3rem;
+  }
+  
+  .expandBtn span {
+    display: none;
+  }
+  
+  .levelItem {
+    padding: 0.15rem 0.3rem;
+  }
+  
+  .levelTitle {
+    font-size: 0.6rem;
+    min-width: 40px;
+  }
+  
+  .levelQuantity,
+  .levelBuffer,
+  .levelReserved,
+  .levelAvailable {
+    font-size: 0.5rem;
+    padding: 0.05rem 0.2rem;
+  }
+  
+  .levelBadge {
+    font-size: 0.45rem;
+    padding: 0.05rem 0.25rem;
+  }
+}

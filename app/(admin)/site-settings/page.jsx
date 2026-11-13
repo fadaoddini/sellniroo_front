@@ -8,7 +8,7 @@ import axios from 'axios'
 import {
   Settings2, RefreshCw, Shield, LayoutDashboard, Save, X, Tags,
   Palette, Phone, Search, Share2, ImagePlus, Upload, PhoneCall,
-  Smartphone, Mail, ChevronLeft,
+  Smartphone, Mail, ChevronLeft, Database, Table2, Download,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -32,7 +32,64 @@ const SECTIONS = [
   { id: 'contact', icon: Phone },
   { id: 'seo', icon: Search },
   { id: 'social', icon: Share2 },
+  { id: 'backup', icon: Database },
 ]
+
+function filenameFromDisposition(header, fallback) {
+  if (!header || typeof header !== 'string') return fallback
+  const utf = header.match(/filename\*=UTF-8''([^;]+)/i)
+  if (utf?.[1]) {
+    try {
+      return decodeURIComponent(utf[1].trim())
+    } catch {
+      /* ignore */
+    }
+  }
+  const plain = header.match(/filename="?([^";]+)"?/i)
+  return plain?.[1]?.trim() || fallback
+}
+
+async function downloadBackupBlob(res, fallbackName) {
+  const type = String(res.headers?.['content-type'] || '')
+  const blob = res.data instanceof Blob
+    ? res.data
+    : new Blob([res.data], { type: type || 'application/gzip' })
+  if (type.includes('application/json')) {
+    const text = await blob.text()
+    let message = 'Backup failed'
+    try {
+      message = JSON.parse(text || '{}').message || message
+    } catch {
+      /* ignore */
+    }
+    throw new Error(message)
+  }
+  const name = filenameFromDisposition(
+    res.headers?.['content-disposition'],
+    fallbackName
+  )
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = name
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}
+
+async function readAxiosBlobError(err, fallback) {
+  const data = err?.response?.data
+  if (data instanceof Blob) {
+    try {
+      const parsed = JSON.parse(await data.text())
+      return parsed?.message || fallback
+    } catch {
+      return fallback
+    }
+  }
+  return err?.response?.data?.message || err?.message || fallback
+}
 
 function SwitchField({ label, hint, checked, onChange, className }) {
   return (
@@ -118,6 +175,7 @@ export default function SiteSettingsPage() {
   const [ogFile, setOgFile] = useState(null)
   const [loadingData, setLoadingData] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [backingUp, setBackingUp] = useState(null)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
   const [activeSection, setActiveSection] = useState('brand')
@@ -195,9 +253,19 @@ export default function SiteSettingsPage() {
     navContact: 'Contact',
     navSeo: 'SEO',
     navSocial: 'Social',
+    navBackup: 'Backup',
     contentGroup: 'Texts',
     channelsGroup: 'Contact channels',
     formGroup: 'Form',
+    backup: 'Backup',
+    backupDesc: 'Download a full database dump or only essential tables, anytime',
+    backupDb: 'Full database',
+    backupDbHint: 'Complete PostgreSQL dump (.sql.gz)',
+    backupTables: 'Essential tables',
+    backupTablesHint: 'Settings, staff, leads, contact types, payment (.json.gz)',
+    backupWorking: 'Preparing backup…',
+    backupDone: 'Backup downloaded',
+    backupFail: 'Backup failed',
   } : {
     title: 'تنظیمات سایت',
     subtitle: 'برند، تماس، سئو و پیش‌نمایش شبکه‌های اجتماعی',
@@ -268,9 +336,19 @@ export default function SiteSettingsPage() {
     navContact: 'تماس',
     navSeo: 'سئو',
     navSocial: 'اجتماعی',
+    navBackup: 'بک‌آپ',
     contentGroup: 'متن‌ها',
     channelsGroup: 'کانال‌های تماس',
     formGroup: 'فرم',
+    backup: 'بک‌آپ',
+    backupDesc: 'هر زمان که خواستید از کل دیتابیس یا فقط جداول مهم بک‌آپ بگیرید',
+    backupDb: 'کل دیتابیس',
+    backupDbHint: 'دامپ کامل PostgreSQL (.sql.gz)',
+    backupTables: 'جداول مهم',
+    backupTablesHint: 'تنظیمات، کارمندان، لیدها، انواع تماس، پرداخت (.json.gz)',
+    backupWorking: 'در حال آماده‌سازی بک‌آپ…',
+    backupDone: 'بک‌آپ دانلود شد',
+    backupFail: 'بک‌آپ ناموفق بود',
   }
 
   const navLabels = {
@@ -278,6 +356,7 @@ export default function SiteSettingsPage() {
     contact: t.navContact,
     seo: t.navSeo,
     social: t.navSocial,
+    backup: t.navBackup,
   }
 
   const logoPreview = useMemo(() => {
@@ -372,6 +451,33 @@ export default function SiteSettingsPage() {
       parts.push(`${k}: ${Array.isArray(v) ? v.join('، ') : v}`)
     })
     return parts.join(' | ') || 'خطا در ذخیره'
+  }
+
+  const handleBackup = async (scope) => {
+    setError(null)
+    setSuccess(null)
+    setBackingUp(scope)
+    try {
+      const res = await axios.post(
+        Config.endpoints.news.siteBackup.create(),
+        { scope },
+        {
+          headers: getAuthHeaders(),
+          responseType: 'blob',
+          timeout: 10 * 60 * 1000,
+        }
+      )
+      const fallback =
+        scope === 'database'
+          ? `sellniroo_db_${Date.now()}.sql.gz`
+          : `sellniroo_essential_${Date.now()}.json.gz`
+      await downloadBackupBlob(res, fallback)
+      setSuccess(t.backupDone)
+    } catch (err) {
+      setError(await readAxiosBlobError(err, t.backupFail))
+    } finally {
+      setBackingUp(null)
+    }
   }
 
   const handleSave = async (e) => {
@@ -801,6 +907,46 @@ export default function SiteSettingsPage() {
             <div className={styles.formGroup}>
               <label>{t.twDesc}</label>
               <textarea rows={2} value={form.twitter_description || ''} onChange={(e) => setField('twitter_description', e.target.value)} />
+            </div>
+          </section>
+
+          {/* Backup */}
+          <section id="section-backup" className={styles.sectionCard}>
+            <div className={styles.sectionHead}>
+              <span className={`${styles.sectionIcon} ${styles.iconBackup}`}><Database size={18} /></span>
+              <div>
+                <h2 className={styles.sectionTitle}>{t.backup}</h2>
+                <p className={styles.sectionDesc}>{t.backupDesc}</p>
+              </div>
+            </div>
+
+            <div className={styles.backupRow}>
+              <button
+                type="button"
+                className={styles.backupBtn}
+                disabled={!!backingUp}
+                onClick={() => handleBackup('database')}
+              >
+                <span className={styles.backupBtnIcon}><Database size={18} /></span>
+                <span className={styles.backupBtnText}>
+                  <strong>{t.backupDb}</strong>
+                  <small>{backingUp === 'database' ? t.backupWorking : t.backupDbHint}</small>
+                </span>
+                <Download size={16} className={styles.backupBtnArrow} />
+              </button>
+              <button
+                type="button"
+                className={styles.backupBtn}
+                disabled={!!backingUp}
+                onClick={() => handleBackup('essential')}
+              >
+                <span className={styles.backupBtnIcon}><Table2 size={18} /></span>
+                <span className={styles.backupBtnText}>
+                  <strong>{t.backupTables}</strong>
+                  <small>{backingUp === 'essential' ? t.backupWorking : t.backupTablesHint}</small>
+                </span>
+                <Download size={16} className={styles.backupBtnArrow} />
+              </button>
             </div>
           </section>
 

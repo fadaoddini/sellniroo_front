@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@700;800&display=swap');
+
+.shell {
+  width: 100%;
+  padding: var(--spx-pad-t, 10px) 0 var(--spx-pad-b, 10px);
+  box-sizing: border-box;
+  background: transparent;
+}
+
+.inner {
+  width: 100%;
+  max-width: var(--home-max-width, 1200px);
+  margin-inline: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-inline: 0;
+  box-sizing: border-box;
+}
+
+/* تمام‌عرض سکشن — ارتفاع کوتاه و ریز */
+.board {
+  position: relative;
+  width: 100%;
+  border-radius: 10px;
+  padding: 4px 6px;
+  background:
+    linear-gradient(180deg, #15201a 0%, var(--spx-board, #0c1210) 55%, #0a0f0d 100%);
+  border: 1.5px solid var(--spx-board-border, #2a3a30);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--spx-color, #dbbe00) 16%, transparent) inset,
+    0 8px 20px rgba(8, 12, 10, 0.3);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.boardGlow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      color-mix(in srgb, var(--spx-glow, #f5e08a) 12%, transparent),
+      transparent 55%
+    );
+  opacity: 0.85;
+}
+
+.viewport {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.ledCanvas {
+  display: block;
+  max-width: 100%;
+  image-rendering: pixelated;
+}
+
+.loadingText {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Vazirmatn', Tahoma, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--spx-color, #dbbe00);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.hideOnMobile {
+  display: block;
+}
+.hideOnDesktop {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .hideOnMobile {
+    display: none !important;
+  }
+
+  .board {
+    width: 100%;
+    border-radius: 8px;
+    padding: 3px 5px;
+  }
+}
+
+@media (min-width: 769px) {
+  .hideOnDesktop {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ledCanvas {
+    /* انیمیشن در JS با animate=false هم قابل خاموش شدن است */
+  }
+}

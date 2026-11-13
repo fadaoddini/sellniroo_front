@@ -61,7 +61,7 @@
   padding: var(--pjb-py, 10px) var(--pjb-px, 18px);
   border-radius: var(--pjb-radius, 999px);
   border: var(--pjb-bw, 0) solid var(--pjb-border, transparent);
-  background: var(--pjb-bg, #fbc300);
+  background: var(--pjb-bg, #F4AE52);
   color: var(--pjb-text, #14181f);
   font-size: var(--pjb-fs, 14px);
   font-weight: 800;
@@ -82,7 +82,7 @@
 }
 
 .btn:hover {
-  background: var(--pjb-hover, #fb9700);
+  background: var(--pjb-hover, #D4621A);
   transform: translateY(-1px);
   filter: brightness(1.02);
 }

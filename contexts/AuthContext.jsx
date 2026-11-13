@@ -32,10 +32,20 @@ const PUBLIC_PATHS = [
   "/projects/",
   "/jobs",
   "/jobs/",
+  "/companies",
+  "/companies/",
   "/shop",
   "/shop/",
   "/cart",
   "/cart/",
+  "/booking",
+  "/booking/",
+  "/repairs",
+  "/repairs/",
+  "/faq",
+  "/faq/",
+  "/school",
+  "/school/",
 ];
 
 // ✅ بررسی مسیر عمومی
@@ -46,8 +56,13 @@ const isPublicPath = (pathname) => {
 
   if (pathname.startsWith("/news/")) return true;
   if (pathname.startsWith("/jobs/")) return true;
+  if (pathname.startsWith("/companies/")) return true;
   if (pathname.startsWith("/shop/")) return true;
   if (pathname.startsWith("/cart")) return true;
+  if (pathname.startsWith("/booking")) return true;
+  if (pathname.startsWith("/repairs")) return true;
+  if (pathname.startsWith("/faq")) return true;
+  if (pathname.startsWith("/school")) return true;
 
   const dynamicPatterns = [
     "/about/",
@@ -259,6 +274,7 @@ export const AuthProvider = ({ children }) => {
 
   const canManageEmployees =
     !!user?.is_superuser ||
+    !!user?.is_staff ||
     hasPermission("users") ||
     (employeeData?.access_level ?? 0) >= 3;
 
@@ -307,7 +323,8 @@ export const AuthProvider = ({ children }) => {
           user: userProfile,
         };
       } catch (err) {
-        if (err.response?.status === 401 && activeRefreshToken) {
+        const status = err.response?.status;
+        if (status === 401 && activeRefreshToken) {
           try {
             const refreshedTokens = await refreshAccessToken(activeRefreshToken);
             const newAccessToken = refreshedTokens.accessToken;
@@ -326,12 +343,16 @@ export const AuthProvider = ({ children }) => {
             localStorage.removeItem("refreshToken");
             return null;
           }
-        } else {
+        }
+        // فقط شکست قطعی احراز هویت توکن را پاک کند — خطای شبکه/۵۰۰ نباید لاگ‌اوت کند
+        if (status === 401 || status === 403) {
           console.error("Authentication failed:", err);
           localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
           return null;
         }
+        console.error("Profile fetch failed (keeping session):", err);
+        return null;
       }
     }
 
@@ -502,6 +523,33 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Send OTP error:", error);
       console.error("Error response:", error.response?.data);
+      const data = error.response?.data || {};
+      const waitTime = Number(data.wait_time) || 0;
+
+      // کد قبلی هنوز معتبر است (معمولاً HTTP 400 + status:failed)
+      if (data.status === "failed" || (waitTime > 0 && error.response?.status === 400)) {
+        return {
+          success: true,
+          alreadySent: true,
+          message:
+            data.message ||
+            "شما به تازگی پیامکی دریافت کرده‌اید. کد شما هنوز معتبر است.",
+          waitTime,
+        };
+      }
+
+      // محدودیت تعداد درخواست
+      if (error.response?.status === 429 || waitTime > 0) {
+        return {
+          success: false,
+          alreadySent: false,
+          message:
+            data.message ||
+            "تعداد درخواست‌ها زیاد است. لطفاً کمی صبر کنید.",
+          waitTime,
+        };
+      }
+
       const apiHint =
         !error.response && Config.baseUrl
           ? ` — اتصال به API برقرار نشد (${Config.baseUrl})`
@@ -509,8 +557,8 @@ export const AuthProvider = ({ children }) => {
       return {
         success: false,
         message:
-          (error.response?.data?.message || "خطا در ارسال کد تایید") + apiHint,
-        debugOtp: error.response?.data?.debug_otp || null,
+          (data.message || "خطا در ارسال کد تایید") + apiHint,
+        waitTime: 0,
       };
     }
   }, []);
@@ -634,6 +682,14 @@ export const AuthProvider = ({ children }) => {
         }
 
         if (originalRequest._isAuthRequest) {
+          return Promise.reject(error);
+        }
+
+        // درخواست بدون توکن — نشست را خراب نکن (مثلاً قبل از اتمام لود اوت)
+        const hasToken =
+          !!localStorage.getItem("accessToken") ||
+          !!localStorage.getItem("refreshToken");
+        if (!hasToken) {
           return Promise.reject(error);
         }
 

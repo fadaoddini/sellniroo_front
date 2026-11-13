@@ -1,0 +1,3075 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Vazirmatn:wght@700;800&display=swap');
+
+.section {
+  position: relative;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  isolation: isolate;
+  font-family: 'Vazirmatn', var(--font-iran, sans-serif);
+  background: #d8d8d8;
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+/* ─── صحنه سیاه‌وسفید ─── */
+.scene {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    #d8d8d8 0%,
+    #ececec 46%,
+    #c8c8c8 46%,
+    #b5b5b5 100%
+  );
+  image-rendering: pixelated;
+  transition: background 0.35s ease;
+}
+
+.skyFlash {
+  background: linear-gradient(
+    180deg,
+    #c8e6d4 0%,
+    #dff3e8 46%,
+    #c8c8c8 46%,
+    #b5b5b5 100%
+  );
+}
+
+.sky {
+  position: absolute;
+  inset: 0 0 38% 0;
+  pointer-events: none;
+  overflow: hidden;
+  transition: background-color 0.35s ease;
+  z-index: 1;
+}
+
+.skyFlash .sky {
+  background: rgba(34, 197, 94, 0.16);
+}
+
+.skyBulbSign {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  pointer-events: none;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: clamp(6px, 1.2vw, 14px);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  image-rendering: pixelated;
+  direction: ltr;
+  unicode-bidi: isolate;
+  --bulb-core: #fff1f2;
+  --bulb-on: #fb7185;
+  --bulb-mid: #e11d48;
+  --bulb-glow: rgba(244, 63, 94, 0.55);
+  --bulb-halo: rgba(251, 113, 133, 0.3);
+}
+
+/* دکمه پلی پیکسلی موزیک */
+.pixelPlayWrap {
+  position: absolute;
+  top: calc(10% + clamp(58px, 12vw, 92px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  pointer-events: auto;
+}
+
+.pixelPlayWrap audio {
+  display: none;
+}
+
+.pixelPlay {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.7rem;
+  border: 2px solid #111;
+  border-radius: 0;
+  background: #111;
+  color: #fff;
+  font-family: 'Press Start 2P', 'Vazirmatn', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  image-rendering: pixelated;
+  box-shadow:
+    3px 3px 0 #333,
+    inset 0 0 0 1px #444;
+  transition: transform 0.08s steps(1);
+  pointer-events: auto;
+}
+
+.pixelPlay:hover {
+  background: #1a1a1a;
+}
+
+.pixelPlay:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #333;
+}
+
+.pixelPlayOn {
+  background: #e11d48;
+  box-shadow:
+    3px 3px 0 #7f1d1d,
+    inset 0 0 0 1px #fb7185;
+}
+
+.pixelPlayFail {
+  background: #444;
+  box-shadow: 3px 3px 0 #222;
+}
+
+.pixelPlayIcon {
+  display: grid;
+  place-items: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  background: #22c55e;
+  color: #052e16;
+  border: 1px solid #111;
+  font-size: 0.48rem;
+  line-height: 1;
+}
+
+.pixelPlayOn .pixelPlayIcon {
+  background: #fff;
+  color: #e11d48;
+}
+
+.pixelPlayLabel {
+  color: #f8fafc;
+}
+
+.skyBrandSr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.bulbLetter {
+  display: grid;
+  grid-template-columns: repeat(5, clamp(4px, 0.7vw, 7px));
+  grid-template-rows: repeat(7, clamp(4px, 0.7vw, 7px));
+  gap: clamp(1px, 0.22vw, 2px);
+}
+
+.bulbGap {
+  width: 100%;
+  height: 100%;
+}
+
+.bulb {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+  background: radial-gradient(
+    circle at 35% 30%,
+    #6b6b6b 0%,
+    #2f2f2f 55%,
+    #1a1a1a 100%
+  );
+  box-shadow: none;
+  animation: bulbBlink 1.35s ease-in-out infinite;
+  opacity: 0.55;
+}
+
+.skyBulbSign[data-bulb-color='red'] {
+  --bulb-core: #fff1f2;
+  --bulb-on: #fb7185;
+  --bulb-mid: #e11d48;
+  --bulb-glow: rgba(244, 63, 94, 0.55);
+  --bulb-halo: rgba(251, 113, 133, 0.3);
+}
+
+.skyBulbSign[data-bulb-color='green'] {
+  --bulb-core: #ecfdf5;
+  --bulb-on: #86efac;
+  --bulb-mid: #22c55e;
+  --bulb-glow: rgba(34, 197, 94, 0.55);
+  --bulb-halo: rgba(74, 222, 128, 0.3);
+}
+
+.bulbHue0,
+.bulbHue1,
+.bulbHue2,
+.bulbHue3,
+.bulbHue4,
+.bulbHue5 {
+  /* کلاس‌های رنگ چندگانه برای لامپ‌ها */
+}
+
+.skyBulbSign[data-bulb-color='multi'] .bulbHue0 {
+  --bulb-core: #fff1f2;
+  --bulb-on: #fb7185;
+  --bulb-mid: #e11d48;
+  --bulb-glow: rgba(244, 63, 94, 0.55);
+  --bulb-halo: rgba(251, 113, 133, 0.3);
+}
+
+.skyBulbSign[data-bulb-color='multi'] .bulbHue1 {
+  --bulb-core: #fff7ed;
+  --bulb-on: #fdba74;
+  --bulb-mid: #f59e0b;
+  --bulb-glow: rgba(245, 158, 11, 0.5);
+  --bulb-halo: rgba(251, 191, 36, 0.28);
+}
+
+.skyBulbSign[data-bulb-color='multi'] .bulbHue2 {
+  --bulb-core: #ecfdf5;
+  --bulb-on: #86efac;
+  --bulb-mid: #22c55e;
+  --bulb-glow: rgba(34, 197, 94, 0.48);
+  --bulb-halo: rgba(74, 222, 128, 0.26);
+}
+
+.skyBulbSign[data-bulb-color='multi'] .bulbHue3 {
+  --bulb-core: #eff6ff;
+  --bulb-on: #93c5fd;
+  --bulb-mid: #3b82f6;
+  --bulb-glow: rgba(59, 130, 246, 0.5);
+  --bulb-halo: rgba(96, 165, 250, 0.28);
+}
+
+.skyBulbSign[data-bulb-color='multi'] .bulbHue4 {
+  --bulb-core: #faf5ff;
+  --bulb-on: #d8b4fe;
+  --bulb-mid: #a855f7;
+  --bulb-glow: rgba(168, 85, 247, 0.48);
+  --bulb-halo: rgba(192, 132, 252, 0.26);
+}
+
+.skyBulbSign[data-bulb-color='multi'] .bulbHue5 {
+  --bulb-core: #fdf2f8;
+  --bulb-on: #f9a8d4;
+  --bulb-mid: #ec4899;
+  --bulb-glow: rgba(236, 72, 153, 0.48);
+  --bulb-halo: rgba(244, 114, 182, 0.26);
+}
+
+/* وقتی موزیک پخش می‌شود، رنگ لامپ‌ها جابه‌جا می‌چرخد */
+.musicParty .skyBulbSign[data-bulb-color='multi'] .bulbHue0 {
+  filter: hue-rotate(0deg);
+  animation: bulbBlink 0.5s ease-in-out infinite, bulbHueSpin 2.8s linear infinite;
+}
+
+.musicParty .skyBulbSign[data-bulb-color='multi'] .bulbHue1 {
+  animation: bulbBlink 0.5s ease-in-out infinite, bulbHueSpin 2.8s linear infinite;
+  animation-delay: 0s, -0.45s;
+}
+
+.musicParty .skyBulbSign[data-bulb-color='multi'] .bulbHue2 {
+  animation: bulbBlink 0.5s ease-in-out infinite, bulbHueSpin 2.8s linear infinite;
+  animation-delay: 0s, -0.9s;
+}
+
+.musicParty .skyBulbSign[data-bulb-color='multi'] .bulbHue3 {
+  animation: bulbBlink 0.5s ease-in-out infinite, bulbHueSpin 2.8s linear infinite;
+  animation-delay: 0s, -1.35s;
+}
+
+.musicParty .skyBulbSign[data-bulb-color='multi'] .bulbHue4 {
+  animation: bulbBlink 0.5s ease-in-out infinite, bulbHueSpin 2.8s linear infinite;
+  animation-delay: 0s, -1.8s;
+}
+
+.musicParty .skyBulbSign[data-bulb-color='multi'] .bulbHue5 {
+  animation: bulbBlink 0.5s ease-in-out infinite, bulbHueSpin 2.8s linear infinite;
+  animation-delay: 0s, -2.25s;
+}
+
+.cityStripHidden,
+.treeStripHidden {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cloud,
+.cloud2 {
+  position: absolute;
+  top: 18%;
+  right: 14%;
+  width: 34px;
+  height: 12px;
+  background: #fff;
+  box-shadow:
+    10px 4px 0 #fff,
+    20px 0 0 #fff,
+    28px 4px 0 #fff,
+    6px -4px 0 #fff,
+    16px -4px 0 #fff;
+  opacity: 0.9;
+  animation: cloudDrift calc(32s / var(--cloud-speed, 1)) linear infinite;
+  z-index: 2;
+}
+
+.cloud2 {
+  top: 30%;
+  right: 52%;
+  animation-duration: calc(42s / var(--cloud-speed, 1));
+  animation-delay: -12s;
+  opacity: 0.7;
+}
+
+/* پرنده‌ها — گاه‌به‌گاه از آسمان رد می‌شوند */
+.bird {
+  position: absolute;
+  top: 22%;
+  left: -40px;
+  width: 18px;
+  height: 10px;
+  z-index: 3;
+  animation: birdFly calc(22s / var(--bird-speed, 1)) linear infinite;
+  opacity: 0;
+}
+
+.birdBody {
+  position: absolute;
+  left: 5px;
+  top: 3px;
+  width: 8px;
+  height: 4px;
+  background: #222;
+}
+
+.birdWingL,
+.birdWingR {
+  position: absolute;
+  top: 0;
+  width: 7px;
+  height: 3px;
+  background: #111;
+  animation: wingFlap 0.28s steps(2) infinite;
+}
+
+.birdWingL {
+  left: 0;
+  transform-origin: right center;
+}
+
+.birdWingR {
+  right: 0;
+  transform-origin: left center;
+  animation-delay: 0.14s;
+}
+
+.birdA {
+  top: 16%;
+  animation-duration: calc(26s / var(--bird-speed, 1));
+  animation-delay: 0s;
+}
+
+.birdB {
+  top: 28%;
+  width: 14px;
+  height: 8px;
+  animation-duration: calc(30s / var(--bird-speed, 1));
+  animation-delay: 9s;
+}
+
+.birdC {
+  top: 20%;
+  width: 22px;
+  height: 12px;
+  animation-duration: calc(24s / var(--bird-speed, 1));
+  animation-delay: 17s;
+}
+
+/* هواپیما — گاهی رد می‌شود */
+.plane {
+  position: absolute;
+  top: 10%;
+  left: -80px;
+  width: 44px;
+  height: 16px;
+  z-index: 3;
+  animation: planeFly calc(38s / var(--plane-speed, 1)) linear infinite;
+  opacity: 0;
+}
+
+.planeBody {
+  position: absolute;
+  left: 4px;
+  top: 5px;
+  width: 34px;
+  height: 6px;
+  background: #333;
+  border: 1px solid #111;
+  box-sizing: border-box;
+}
+
+.planeWing {
+  position: absolute;
+  left: 14px;
+  top: 0;
+  width: 16px;
+  height: 5px;
+  background: #222;
+  border: 1px solid #111;
+  box-sizing: border-box;
+}
+
+.planeTail {
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 6px;
+  height: 10px;
+  background: #222;
+  border: 1px solid #111;
+  box-sizing: border-box;
+  clip-path: polygon(100% 0, 100% 100%, 0 70%, 0 30%);
+}
+
+.planeWindow {
+  position: absolute;
+  left: 28px;
+  top: 6px;
+  width: 4px;
+  height: 3px;
+  background: #111;
+  box-shadow: -6px 0 0 #111, -12px 0 0 #111;
+}
+
+.planeA {
+  top: 8%;
+  animation-duration: calc(42s / var(--plane-speed, 1));
+  animation-delay: 4s;
+}
+
+.planeB {
+  top: 14%;
+  width: 32px;
+  height: 12px;
+  animation-duration: calc(48s / var(--plane-speed, 1));
+  animation-delay: 22s;
+}
+
+.ground {
+  position: relative;
+  height: clamp(340px, 48vw, 420px);
+  margin-top: 8%;
+  overflow: visible;
+}
+
+/* جاده پایین صحنه — سطح و خط وسط متحرک */
+.road {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34%;
+  z-index: 2;
+  overflow: hidden;
+  border-top: 3px solid #111;
+  background: #222;
+}
+
+.roadSurface {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    #2a2a2a 0 14px,
+    #1f1f1f 14px 28px
+  );
+  background-size: 56px 100%;
+  animation: roadScroll calc(0.55s / var(--road-speed, 1)) linear infinite;
+}
+
+.roadDash {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 48%;
+  height: 4px;
+  transform: translateY(-50%);
+  background: repeating-linear-gradient(
+    90deg,
+    #fff 0 18px,
+    transparent 18px 36px
+  );
+  background-size: 72px 100%;
+  opacity: 0.55;
+  animation: dashScroll calc(0.45s / var(--road-speed, 1)) linear infinite;
+}
+
+.roadEdge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: #555;
+  opacity: 0.7;
+}
+
+/* ماشین‌های رنگی وقتی موزیک پخش است */
+.carTraffic {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  overflow: hidden;
+}
+
+.carTrafficOn {
+  opacity: 1;
+  visibility: visible;
+}
+
+.carTrack {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 44px;
+}
+
+.carLane_top {
+  top: 10%;
+}
+
+.carLane_bot {
+  bottom: 6%;
+}
+
+.carDir_ltr {
+  animation: carDriveLtr var(--car-dur, 8s) linear infinite;
+  animation-delay: var(--car-delay, 0s);
+}
+
+.carDir_rtl {
+  animation: carDriveRtl var(--car-dur, 8s) linear infinite;
+  animation-delay: var(--car-delay, 0s);
+}
+
+.pixelCar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 78px;
+  height: 40px;
+  image-rendering: pixelated;
+}
+
+.carRtl {
+  transform: scaleX(-1);
+}
+
+.carBody {
+  position: absolute;
+  left: 4px;
+  bottom: 7px;
+  width: 70px;
+  height: 18px;
+  background: var(--car-body, #ef4444);
+  border: 2px solid #111;
+  box-sizing: border-box;
+  border-radius: 3px;
+}
+
+.carCabin {
+  position: absolute;
+  left: 22px;
+  bottom: 22px;
+  width: 32px;
+  height: 16px;
+  background: var(--car-cabin, #dc2626);
+  border: 2px solid #111;
+  box-sizing: border-box;
+  border-radius: 3px 3px 0 0;
+}
+
+.carWindow {
+  position: absolute;
+  left: 27px;
+  bottom: 25px;
+  width: 22px;
+  height: 9px;
+  background: #93c5fd;
+  border: 1.5px solid #111;
+  box-sizing: border-box;
+}
+
+.carLight {
+  position: absolute;
+  bottom: 12px;
+  width: 8px;
+  height: 7px;
+  background: #fef08a;
+  border: 1.5px solid #111;
+  box-sizing: border-box;
+  animation: carBlink 0.45s steps(2) infinite;
+  box-shadow: 0 0 10px 3px rgba(254, 240, 138, 0.8);
+}
+
+.carLightL {
+  right: 0;
+}
+
+.carLightR {
+  right: 0;
+  bottom: 22px;
+  width: 7px;
+  height: 5px;
+  background: #fecaca;
+  animation-delay: 0.2s;
+  box-shadow: 0 0 8px 2px rgba(252, 165, 165, 0.7);
+}
+
+.carWheel {
+  position: absolute;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+  background: #111;
+  border: 2px solid #333;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.carWheelL {
+  left: 10px;
+}
+
+.carWheelR {
+  right: 10px;
+}
+
+.car_red {
+  --car-body: #ef4444;
+  --car-cabin: #b91c1c;
+}
+
+.car_blue {
+  --car-body: #3b82f6;
+  --car-cabin: #1d4ed8;
+}
+
+.car_yellow {
+  --car-body: #eab308;
+  --car-cabin: #ca8a04;
+}
+
+.car_green {
+  --car-body: #22c55e;
+  --car-cabin: #15803d;
+}
+
+.car_purple {
+  --car-body: #a855f7;
+  --car-cabin: #7e22ce;
+}
+
+/* شهر شلوغ پشت ساختمان‌های اصلی */
+.cityStrip {
+  position: absolute;
+  left: 0;
+  bottom: calc(34% - 2px);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  width: max-content;
+  z-index: 2;
+  pointer-events: none;
+  direction: ltr;
+  will-change: transform;
+  opacity: 0.72;
+  filter: grayscale(1) contrast(1.05);
+}
+
+.citySet {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  flex: 0 0 auto;
+  gap: 3px;
+  padding-inline-end: 3px;
+}
+
+.cityBlock {
+  position: relative;
+  flex: 0 0 auto;
+  border: 1px solid #111;
+  box-sizing: border-box;
+  overflow: hidden;
+  box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.12);
+}
+
+.cityTone_a {
+  background: #9a9a9a;
+}
+
+.cityTone_b {
+  background: #7a7a7a;
+}
+
+.cityTone_c {
+  background: #b0b0b0;
+}
+
+.cityWindows {
+  position: absolute;
+  inset: 5px 3px 8px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3px 2px;
+  align-content: start;
+}
+
+.cityWindows span {
+  width: 100%;
+  height: 4px;
+  background: #2a2a2a;
+  opacity: 0.85;
+  box-shadow: inset 0 0 0 1px #111;
+}
+
+.cityBlock:nth-child(3n) .cityWindows {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.cityBlock:nth-child(4n) .cityWindows span:nth-child(odd) {
+  background: #444;
+}
+
+.cityBlock:nth-child(5n)::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 3px;
+  height: 8px;
+  background: #333;
+  transform: translateX(-50%);
+}
+
+/* ساختمان‌های اصلی بالای لبه جاده */
+.world {
+  position: absolute;
+  left: 0;
+  right: auto;
+  bottom: calc(34% - 2px);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  flex-wrap: nowrap;
+  gap: 0;
+  padding: 0;
+  width: max-content;
+  will-change: transform;
+  z-index: 4;
+  pointer-events: none;
+  direction: ltr;
+}
+
+.worldSet {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  flex-wrap: nowrap;
+  flex: 0 0 auto;
+  gap: 1.75rem;
+  padding-inline-end: 1.75rem;
+  box-sizing: content-box;
+}
+
+.sceneStatic .skyShow,
+.sceneStatic .beam,
+.sceneStatic .burst {
+  display: none;
+}
+
+.sceneStatic.musicParty .sky {
+  animation: none;
+  background: transparent;
+}
+
+.sceneStatic .roadSurface,
+.sceneStatic .roadDash {
+  animation: none;
+}
+
+.building {
+  position: relative;
+  flex: 0 0 auto;
+  width: 78px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.labelStack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 2.4rem;
+  z-index: 4;
+}
+
+.buildingLabel {
+  font-family: 'Vazirmatn', var(--font-iran, sans-serif);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  text-align: center;
+  color: #111;
+  background: #fff;
+  border: 1.5px solid #111;
+  border-radius: 0.4rem;
+  padding: 0.18rem 0.4rem;
+  max-width: 5.4rem;
+  white-space: nowrap;
+  box-shadow: 1px 1px 0 #111;
+}
+
+.check {
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: #16a34a;
+  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.35);
+  opacity: 0;
+  transform: scale(0.45);
+  transition:
+    opacity 0.18s ease,
+    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.checkOn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.buildingBody {
+  position: relative;
+  width: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  filter: grayscale(1) contrast(1.08);
+  transition: filter 0.35s ease;
+}
+
+/* مهمانی موزیک: ساختمان‌ها رنگی + نورافشانی آسمان */
+.musicParty .buildingBody {
+  filter: none;
+}
+
+.musicParty .buildingBody .facade {
+  background: #fda4af;
+}
+
+.musicParty .bSalon .facade {
+  background: #f9a8d4;
+}
+
+.musicParty .bSalon .salonAwning {
+  background: repeating-linear-gradient(
+    90deg,
+    #db2777 0 6px,
+    #fce7f3 6px 12px
+  );
+}
+
+.musicParty .bClinic .facade {
+  background: #bfdbfe;
+}
+
+.musicParty .bClinic .roof {
+  background: #1d4ed8;
+}
+
+.musicParty .bRestaurant .facade {
+  background: #fdba74;
+}
+
+.musicParty .bRestaurant .restoRoof {
+  border-bottom-color: #c2410c;
+}
+
+.musicParty .bShop .facade {
+  background: #fde68a;
+}
+
+.musicParty .bShop .shopSign {
+  background: #ca8a04;
+}
+
+.musicParty .bCompany .facadeTall {
+  background: #a5b4fc;
+}
+
+.musicParty .bSchool .facadeWide {
+  background: #86efac;
+}
+
+.musicParty .bSchool .roof {
+  background: #15803d;
+}
+
+.musicParty .win,
+.musicParty .winRound,
+.musicParty .winTall,
+.musicParty .shopWindow {
+  background: #fef08a;
+  box-shadow:
+    inset 1px 1px 0 #fff,
+    0 0 6px 1px rgba(250, 204, 21, 0.55);
+  animation: windowTwinkle 0.7s steps(2) infinite;
+}
+
+.musicParty .cityStrip {
+  filter: none;
+  opacity: 0.9;
+}
+
+.musicParty .cityTone_a {
+  background: #60a5fa;
+}
+
+.musicParty .cityTone_b {
+  background: #c084fc;
+}
+
+.musicParty .cityTone_c {
+  background: #34d399;
+}
+
+.musicParty .cityWindows span {
+  background: #fde047;
+  opacity: 1;
+  animation: windowTwinkle 0.85s steps(2) infinite;
+}
+
+.musicParty .sky {
+  background:
+    radial-gradient(ellipse 70% 55% at 20% 30%, rgba(244, 114, 182, 0.28), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 75% 25%, rgba(96, 165, 250, 0.26), transparent 55%),
+    radial-gradient(ellipse 50% 45% at 50% 10%, rgba(250, 204, 21, 0.2), transparent 50%),
+    rgba(15, 23, 42, 0.08);
+  animation: skyPartyPulse 2.4s ease-in-out infinite;
+}
+
+.skyShow {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.beam {
+  position: absolute;
+  bottom: -10%;
+  width: 28px;
+  height: 140%;
+  transform-origin: bottom center;
+  opacity: 0.35;
+  filter: blur(1px);
+  animation: beamSweep 3.2s ease-in-out infinite;
+}
+
+.beam1 {
+  left: 12%;
+  background: linear-gradient(180deg, transparent 0%, #f472b6 55%, transparent 100%);
+  animation-delay: 0s;
+}
+
+.beam2 {
+  left: 34%;
+  background: linear-gradient(180deg, transparent 0%, #60a5fa 55%, transparent 100%);
+  animation-delay: -0.7s;
+  animation-duration: 2.8s;
+}
+
+.beam3 {
+  left: 58%;
+  background: linear-gradient(180deg, transparent 0%, #4ade80 55%, transparent 100%);
+  animation-delay: -1.3s;
+  animation-duration: 3.6s;
+}
+
+.beam4 {
+  left: 78%;
+  background: linear-gradient(180deg, transparent 0%, #fbbf24 55%, transparent 100%);
+  animation-delay: -2s;
+  animation-duration: 3s;
+}
+
+.burst {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  opacity: 0;
+  animation: burstPop 1.8s ease-out infinite;
+}
+
+.burst1 {
+  top: 18%;
+  left: 18%;
+  background: #f43f5e;
+  box-shadow:
+    0 0 0 0 #f43f5e,
+    10px -8px 0 #fb7185,
+    -12px -4px 0 #fda4af,
+    4px 12px 0 #fff;
+  animation-delay: 0s;
+}
+
+.burst2 {
+  top: 28%;
+  left: 48%;
+  background: #3b82f6;
+  box-shadow:
+    8px -10px 0 #93c5fd,
+    -10px -6px 0 #60a5fa,
+    12px 6px 0 #fff;
+  animation-delay: -0.45s;
+}
+
+.burst3 {
+  top: 14%;
+  left: 72%;
+  background: #22c55e;
+  box-shadow:
+    -8px -10px 0 #86efac,
+    10px -4px 0 #4ade80,
+    0 12px 0 #fff;
+  animation-delay: -0.9s;
+}
+
+.burst4 {
+  top: 34%;
+  left: 32%;
+  background: #eab308;
+  box-shadow:
+    10px -8px 0 #fde047,
+    -10px 4px 0 #facc15,
+    6px 10px 0 #fff;
+  animation-delay: -1.2s;
+}
+
+.burst5 {
+  top: 22%;
+  left: 88%;
+  background: #a855f7;
+  box-shadow:
+    -10px -8px 0 #d8b4fe,
+    10px 2px 0 #c084fc,
+    0 12px 0 #fff;
+  animation-delay: -1.55s;
+}
+
+.roof {
+  width: 100%;
+  height: 10px;
+  background: #222;
+  box-shadow:
+    0 -3px 0 #111,
+    3px 0 0 #111,
+    -3px 0 0 #111;
+}
+
+.facade {
+  position: relative;
+  width: 50px;
+  height: 58px;
+  background: #d4d4d4;
+  border: 2px solid #111;
+  box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.08);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto 1fr;
+  gap: 4px;
+  padding: 7px 7px 5px;
+  box-sizing: border-box;
+}
+
+.win {
+  width: 10px;
+  height: 10px;
+  background: #111;
+  border: 1px solid #000;
+  box-shadow: inset 1px 1px 0 #555;
+  justify-self: center;
+}
+
+.winRound {
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+}
+
+.winTall {
+  height: 16px;
+  width: 9px;
+}
+
+.door {
+  grid-column: 1 / -1;
+  width: 12px;
+  height: 18px;
+  margin: 0 auto;
+  background: #222;
+  border: 1px solid #111;
+  align-self: end;
+}
+
+.doorWide {
+  width: 18px;
+  height: 20px;
+}
+
+.doorSide {
+  grid-column: 2;
+  grid-row: 1 / -1;
+  width: 10px;
+  height: 28px;
+  align-self: end;
+  justify-self: end;
+  margin: 0;
+}
+
+.doorArch {
+  width: 16px;
+  height: 20px;
+  border-radius: 8px 8px 0 0;
+}
+
+/* آرایشگاه — سایبان راه‌راه + میله */
+.bSalon {
+  width: 58px;
+}
+
+.bSalon .facade {
+  width: 52px;
+  height: 48px;
+  background: #cfcfcf;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+}
+
+.salonAwning {
+  width: 58px;
+  height: 10px;
+  background: repeating-linear-gradient(
+    90deg,
+    #111 0 6px,
+    #eee 6px 12px
+  );
+  border: 2px solid #111;
+  border-bottom: none;
+  box-sizing: border-box;
+}
+
+.salonPole {
+  position: absolute;
+  top: -6px;
+  right: 4px;
+  width: 6px;
+  height: 22px;
+  background: repeating-linear-gradient(
+    180deg,
+    #111 0 4px,
+    #fff 4px 8px
+  );
+  border: 1px solid #111;
+  z-index: 2;
+}
+
+/* مطب — صلیب پزشکی + ورودی پهن */
+.bClinic {
+  width: 54px;
+}
+
+.bClinic .facade {
+  width: 48px;
+  height: 54px;
+  background: #e8e8e8;
+}
+
+.clinicCross {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 14px;
+  z-index: 2;
+  background:
+    linear-gradient(#111, #111) center / 4px 100% no-repeat,
+    linear-gradient(#111, #111) center / 100% 4px no-repeat;
+  pointer-events: none;
+}
+
+/* رستوران — دودکش و سقف شیروانی */
+.bRestaurant {
+  width: 60px;
+}
+
+.chimney {
+  position: absolute;
+  top: -4px;
+  left: 8px;
+  width: 10px;
+  height: 16px;
+  background: #333;
+  border: 1px solid #111;
+  z-index: 2;
+}
+
+.smoke {
+  position: absolute;
+  top: -10px;
+  left: 1px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #bbb;
+  box-shadow: 4px -4px 0 #ccc, 8px -2px 0 #ddd;
+  opacity: 0.85;
+  animation: smokePuff 2.4s ease-in-out infinite;
+}
+
+.restoRoof {
+  width: 0;
+  height: 0;
+  border-left: 32px solid transparent;
+  border-right: 32px solid transparent;
+  border-bottom: 16px solid #222;
+  margin-bottom: -1px;
+}
+
+.bRestaurant .facade {
+  width: 54px;
+  height: 50px;
+  background: #bdbdbd;
+}
+
+/* فروشگاه — ویترین بزرگ */
+.bShop {
+  width: 64px;
+}
+
+.shopSign {
+  width: 60px;
+  height: 12px;
+  background: #333;
+  border: 2px solid #111;
+  box-sizing: border-box;
+  margin-bottom: -1px;
+  box-shadow: inset 0 -2px 0 #555;
+}
+
+.bShop .facade {
+  width: 60px;
+  height: 52px;
+  background: #cacaca;
+  display: grid;
+  grid-template-columns: 1.4fr 0.6fr;
+  grid-template-rows: 1fr;
+  padding: 6px;
+  gap: 4px;
+}
+
+.shopWindow {
+  width: 100%;
+  height: 100%;
+  min-height: 34px;
+  background: #1a1a1a;
+  border: 2px solid #111;
+  box-shadow: inset 2px 2px 0 #444;
+  align-self: stretch;
+}
+
+/* شرکت — برج بلند چندطبقه */
+.bCompany {
+  width: 48px;
+}
+
+.antenna {
+  width: 2px;
+  height: 14px;
+  background: #111;
+  margin-bottom: 2px;
+  position: relative;
+}
+
+.antenna::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid #111;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.facadeTall {
+  width: 44px;
+  height: 78px;
+  background: #9a9a9a;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(3, auto) 1fr;
+  gap: 3px;
+  padding: 5px 5px 4px;
+}
+
+.facadeTall .door {
+  height: 14px;
+}
+
+/* آموزشگاه — پرچم، زنگ، پله */
+.bSchool {
+  width: 70px;
+}
+
+.schoolFlag {
+  position: absolute;
+  top: -2px;
+  right: 10px;
+  width: 2px;
+  height: 18px;
+  background: #111;
+  z-index: 2;
+}
+
+.schoolFlag::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 2px;
+  width: 12px;
+  height: 8px;
+  background: #333;
+  border: 1px solid #111;
+}
+
+.schoolBell {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 8px;
+  background: #222;
+  border: 1px solid #111;
+  border-radius: 50% 50% 2px 2px;
+  z-index: 2;
+}
+
+.facadeWide {
+  width: 64px;
+  height: 48px;
+  background: #d0d0d0;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto 1fr;
+}
+
+.schoolSteps {
+  width: 58px;
+  height: 8px;
+  background: #888;
+  border: 1px solid #111;
+  border-top: none;
+  box-shadow: inset 0 2px 0 #aaa;
+  box-sizing: border-box;
+}
+
+/* ─── کاراکتر رنگی بزرگ ─── */
+.walkerSlot {
+  position: absolute;
+  left: 22%;
+  bottom: 5%;
+  z-index: 6;
+  transform: translateX(-50%);
+}
+
+/* دوستان مهمانی وقتی موزیک پخش می‌شود */
+.partyCrew {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.partyCrewOn {
+  opacity: 1;
+  visibility: visible;
+}
+
+.partyBuddy {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%) scale(0.82);
+  transform-origin: bottom center;
+  opacity: 0;
+  animation: none;
+}
+
+.partyCrewOn .partyBuddy {
+  animation: partyEnter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--party-delay, 0s);
+}
+
+.partyBuddy_a {
+  left: -78px;
+}
+
+.partyBuddy_b {
+  left: 78px;
+}
+
+.partyBuddy_c {
+  left: -128px;
+  transform: translateX(-50%) scale(0.72);
+}
+
+.partyBuddy_d {
+  left: 128px;
+  transform: translateX(-50%) scale(0.72);
+}
+
+.partyBuddy_e {
+  left: -200px;
+  transform: translateX(-50%) scale(1.28);
+}
+
+.partyCrewOn .partyBuddy_c,
+.partyCrewOn .partyBuddy_d {
+  animation-name: partyEnterSmall;
+}
+
+.partyCrewOn .partyBuddy_e {
+  animation-name: partyEnterElder;
+}
+
+/* رنگ‌های مختلف دوستان */
+.walker_buddyA .hair {
+  background: #7c2d12;
+  box-shadow: 4px 4px 0 #7c2d12, -4px 4px 0 #7c2d12, 8px 2px 0 #5c1a0a;
+}
+
+.walker_buddyA .body {
+  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+.walker_buddyA .leg {
+  background: #0f172a;
+}
+
+.walker_buddyA .foot {
+  background: #f59e0b;
+}
+
+.walker_buddyB .hair {
+  background: #4c1d95;
+  box-shadow: 4px 4px 0 #4c1d95, -4px 4px 0 #4c1d95, 8px 2px 0 #2e1065;
+}
+
+.walker_buddyB .body {
+  background: linear-gradient(180deg, #f97316 0%, #ea580c 100%);
+}
+
+.walker_buddyB .leg {
+  background: #44403c;
+}
+
+.walker_buddyB .foot {
+  background: #22c55e;
+}
+
+.walker_buddyC .hair {
+  background: #0f766e;
+  box-shadow: 4px 4px 0 #0f766e, -4px 4px 0 #0f766e, 8px 2px 0 #115e59;
+}
+
+.walker_buddyC .body {
+  background: linear-gradient(180deg, #e11d48 0%, #be123c 100%);
+}
+
+.walker_buddyC .leg {
+  background: #1e3a8a;
+}
+
+.walker_buddyC .foot {
+  background: #111;
+}
+
+.walker_buddyD .hair {
+  background: #a16207;
+  box-shadow: 4px 4px 0 #a16207, -4px 4px 0 #a16207, 8px 2px 0 #854d0e;
+}
+
+.walker_buddyD .body {
+  background: linear-gradient(180deg, #8b5cf6 0%, #6d28d9 100%);
+}
+
+.walker_buddyD .leg {
+  background: #14532d;
+}
+
+.walker_buddyD .foot {
+  background: #dc2626;
+}
+
+/* پیرمرد قوزدار با عصا — اندام‌ها دقیقاً به تنه چسبیده‌اند */
+.walker_elder .walkerSprite {
+  transform-origin: 50% 100%;
+  transform: rotate(12deg) translate(1px, 2px);
+}
+
+.walker_elder .hair {
+  top: 2px;
+  left: 14px;
+  width: 28px;
+  height: 12px;
+  background: #e5e7eb;
+  box-shadow:
+    4px 4px 0 #d1d5db,
+    -4px 5px 0 #f3f4f6,
+    10px 2px 0 #9ca3af,
+    -8px 8px 0 #e5e7eb;
+}
+
+.walker_elder .head {
+  background: #e8b88a;
+  top: 10px;
+  left: 16px;
+  width: 26px;
+  height: 24px;
+}
+
+.walker_elder .eye {
+  top: 18px;
+  left: 32px;
+  height: 3px;
+  box-shadow: -10px 0 0 #111;
+}
+
+.walker_elder .cheek {
+  top: 24px;
+  left: 20px;
+  background: #f9a8d4;
+  box-shadow: 16px 0 0 #f9a8d4;
+}
+
+.walker_elder .beard {
+  position: absolute;
+  top: 30px;
+  left: 19px;
+  width: 20px;
+  height: 9px;
+  background: #f3f4f6;
+  border: 1.5px solid #111;
+  border-radius: 0 0 7px 7px;
+  box-sizing: border-box;
+  z-index: 3;
+  box-shadow: inset 0 -2px 0 #d1d5db;
+}
+
+.walker_elder .body {
+  top: 34px;
+  left: 15px;
+  width: 30px;
+  height: 38px;
+  background: linear-gradient(180deg, #64748b 0%, #334155 100%);
+  transform: none;
+  border-radius: 4px 4px 2px 2px;
+}
+
+.walker_elder .collar {
+  top: 34px;
+  left: 23px;
+  background: #cbd5e1;
+}
+
+.walker_elder .shirtBrand {
+  font-size: 11px;
+  transform: translateY(2px);
+}
+
+.walker_elder .armL,
+.walker_elder .armR {
+  animation: none;
+  transform-origin: top center;
+  width: 8px;
+  height: 28px;
+  top: 38px;
+  z-index: 3;
+}
+
+/* شانه چپ = باز و بالا */
+.walker_elder .armL {
+  left: 9px;
+  transform: rotate(-155deg);
+}
+
+/* شانه راست = باز و بالا؛ عصا در همین دست */
+.walker_elder .armR {
+  left: 37px;
+  right: auto;
+  height: 30px;
+  overflow: visible;
+  transform: rotate(155deg);
+  z-index: 5;
+}
+
+/* پاها از پایین تنه شروع می‌شوند (34+38=72) */
+.walker_elder .leg {
+  top: 70px;
+  height: 32px;
+  width: 10px;
+  background: #1e293b;
+  transform-origin: top center;
+}
+
+.walker_elder .legL {
+  left: 18px;
+  transform: rotate(6deg);
+}
+
+.walker_elder .legR {
+  left: 32px;
+  right: auto;
+  transform: rotate(-4deg);
+}
+
+.walker_elder .foot {
+  background: #78716c;
+  width: 14px;
+}
+
+/*
+  عصا به انتهای دست راست چسبیده:
+  دسته دقیقاً زیر مشت است و چوب در امتداد دست ادامه دارد.
+*/
+.walker_elder .armR .cane {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  margin-top: -3px;
+  width: 10px;
+  height: 44px;
+  z-index: 1;
+  transform: translateX(-50%);
+  transform-origin: top center;
+  pointer-events: none;
+  animation: none;
+}
+
+.elderHand {
+  position: absolute;
+  left: 50%;
+  bottom: -3px;
+  width: 12px;
+  height: 10px;
+  margin-left: -6px;
+  background: #e8b88a;
+  border: 1.5px solid #111;
+  border-radius: 2px;
+  box-sizing: border-box;
+  z-index: 3;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.caneHandle {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 10px;
+  height: 8px;
+  margin-left: -5px;
+  background: #a16207;
+  border: 1.5px solid #111;
+  border-radius: 3px;
+  box-sizing: border-box;
+}
+
+.caneShaft {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 4px;
+  height: 34px;
+  margin-left: -2px;
+  background: #92400e;
+  border: 1.5px solid #111;
+  box-sizing: border-box;
+}
+
+.caneTip {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 7px;
+  height: 5px;
+  margin-left: -3.5px;
+  background: #292524;
+  border: 1.5px solid #111;
+  border-radius: 1px;
+  box-sizing: border-box;
+}
+
+.dance_cane .walkerSprite {
+  animation: danceCane 0.62s ease-in-out infinite;
+}
+
+.dance_cane .legL,
+.dance_cane .legR {
+  animation: elderHappyLegs 0.62s steps(2) infinite;
+}
+
+.dance_cane .singMouth {
+  animation-duration: 0.3s;
+  top: 30px;
+  left: 22px;
+}
+
+.dance_cane .sparkle {
+  top: -2px;
+  left: 20px;
+}
+
+/* درخت‌های رنگی طبیعی‌تر — هم‌جهت جاده */
+.treeStrip {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  width: max-content;
+  z-index: 7;
+  pointer-events: none;
+  direction: ltr;
+  will-change: transform;
+  image-rendering: auto;
+  filter: none;
+}
+
+.treeSet {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  flex: 0 0 auto;
+  gap: 16rem;
+  padding-inline-end: 16rem;
+}
+
+.tree {
+  position: relative;
+  flex: 0 0 auto;
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: bottom center;
+}
+
+.treeCrown {
+  animation: treeBob 2.8s ease-in-out infinite;
+}
+
+.tree:nth-child(2n) .treeCrown {
+  animation-delay: -0.9s;
+  animation-duration: 3.4s;
+}
+
+.tree:nth-child(3n) .treeCrown {
+  animation-delay: -1.6s;
+  animation-duration: 3.1s;
+}
+
+/* قدهای متفاوت */
+.treeH_short {
+  transform: scale(0.58);
+}
+
+.tree.treeH_short .treeTrunk {
+  height: 64px;
+}
+
+.treeH_mid {
+  transform: scale(0.86);
+}
+
+.tree.treeH_mid .treeTrunk {
+  height: 110px;
+}
+
+.treeH_tall {
+  transform: scale(1.15);
+}
+
+.tree.treeH_tall .treeTrunk {
+  height: 156px;
+}
+
+.treeTrunk {
+  width: 10px;
+  height: 120px;
+  background: linear-gradient(90deg, #6b3f24 0%, #a67c52 42%, #5c3317 100%);
+  box-shadow:
+    inset -2px 0 0 rgba(0, 0, 0, 0.22),
+    1px 0 0 rgba(255, 220, 180, 0.15);
+  border: none;
+  border-radius: 2px;
+}
+
+.treeBase {
+  width: 40px;
+  height: 8px;
+  background: #4d7c0f;
+  margin-top: 0;
+  margin-bottom: 0;
+  border-radius: 4px;
+  box-shadow:
+    10px 0 0 #3f6212,
+    -10px 0 0 #3f6212,
+    0 1px 0 rgba(0, 0, 0, 0.15);
+  opacity: 0.85;
+}
+
+.treeCrown {
+  position: relative;
+  width: 120px;
+  height: 144px;
+  margin-bottom: -4px;
+  display: grid;
+  grid-template-columns: repeat(5, 24px);
+  grid-template-rows: repeat(6, 24px);
+  justify-content: center;
+  transform-origin: bottom center;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.18));
+}
+
+.treeCrown span {
+  display: block;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border-radius: 6px;
+}
+
+/* کاج — سبز تیره جنگلی */
+.tree_pine {
+  width: 96px;
+}
+
+.tree_pine .treeCrown {
+  width: 96px;
+  height: 168px;
+  grid-template-columns: repeat(4, 24px);
+  grid-template-rows: repeat(7, 24px);
+}
+
+.tree_pine .treeCrown span:nth-child(1) {
+  grid-column: 2 / 4;
+  grid-row: 1;
+  background: #4ade80;
+  width: 48px;
+  border-radius: 8px 8px 4px 4px;
+}
+
+.tree_pine .treeCrown span:nth-child(2) {
+  grid-column: 1 / 5;
+  grid-row: 2 / 4;
+  background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+  width: 96px;
+  height: 48px;
+  box-shadow: inset 0 -14px 0 #15803d;
+  border-radius: 10px;
+}
+
+.tree_pine .treeCrown span:nth-child(3) {
+  grid-column: 1 / 5;
+  grid-row: 4 / 6;
+  background: linear-gradient(180deg, #15803d 0%, #166534 100%);
+  width: 96px;
+  height: 48px;
+  box-shadow: inset 18px 0 0 #14532d, inset -18px 0 0 #14532d;
+  border-radius: 10px;
+}
+
+.tree_pine .treeCrown span:nth-child(4) {
+  grid-column: 2 / 4;
+  grid-row: 6 / 8;
+  background: #14532d;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+}
+
+.tree_pine .treeTrunk {
+  height: 110px;
+  width: 8px;
+}
+
+/* درخت گرد — سبز روشن بهاری */
+.tree_round .treeCrown span:nth-child(1) {
+  grid-column: 2 / 5;
+  grid-row: 1;
+  background: #86efac;
+  width: 72px;
+  border-radius: 12px 12px 4px 4px;
+}
+
+.tree_round .treeCrown span:nth-child(2) {
+  grid-column: 1 / 6;
+  grid-row: 2 / 4;
+  background: radial-gradient(circle at 30% 35%, #4ade80 0%, #22c55e 70%);
+  width: 120px;
+  height: 48px;
+  box-shadow: inset 20px 0 0 rgba(21, 128, 61, 0.35);
+  border-radius: 18px;
+}
+
+.tree_round .treeCrown span:nth-child(3) {
+  grid-column: 1 / 6;
+  grid-row: 4 / 6;
+  background: linear-gradient(180deg, #16a34a 0%, #15803d 100%);
+  width: 120px;
+  height: 48px;
+  box-shadow: inset -20px 0 0 rgba(20, 83, 45, 0.4);
+  border-radius: 16px;
+}
+
+.tree_round .treeCrown span:nth-child(4) {
+  grid-column: 2 / 5;
+  grid-row: 6;
+  background: #166534;
+  width: 72px;
+  border-radius: 8px;
+}
+
+.tree_round .treeTrunk {
+  height: 118px;
+  width: 10px;
+}
+
+/* درخت پهن — سبز زیتونی */
+.tree_wide {
+  width: 144px;
+}
+
+.tree_wide .treeCrown {
+  width: 144px;
+  grid-template-columns: repeat(6, 24px);
+}
+
+.tree_wide .treeCrown span:nth-child(1) {
+  grid-column: 2 / 6;
+  grid-row: 1 / 3;
+  background: #a3e635;
+  width: 96px;
+  height: 48px;
+  box-shadow: -22px 20px 0 #84cc16, 22px 20px 0 #84cc16;
+  border-radius: 20px;
+}
+
+.tree_wide .treeCrown span:nth-child(2) {
+  grid-column: 1 / 7;
+  grid-row: 3 / 5;
+  background: linear-gradient(180deg, #65a30d 0%, #4d7c0f 100%);
+  width: 144px;
+  height: 48px;
+  box-shadow: inset 0 -16px 0 #3f6212;
+  border-radius: 18px;
+}
+
+.tree_wide .treeCrown span:nth-child(3) {
+  grid-column: 2 / 6;
+  grid-row: 5 / 7;
+  background: #3f6212;
+  width: 96px;
+  height: 48px;
+  border-radius: 14px;
+}
+
+.tree_wide .treeTrunk {
+  height: 112px;
+  width: 12px;
+}
+
+.walker {
+  position: relative;
+  width: 64px;
+  height: 128px;
+}
+
+.walkerSprite {
+  position: relative;
+  width: 64px;
+  height: 118px;
+  animation: bob 0.34s steps(2) infinite;
+}
+
+/* حالت خوشحالی با موزیک: پرش + دست‌ها + دهان خواننده */
+.walkerHappy .walkerSprite {
+  animation: happyJump 0.42s ease-in-out infinite;
+}
+
+.walkerHappy .armL,
+.walkerHappy .armR {
+  transform-origin: top center;
+}
+
+.walkerHappy .armL {
+  animation: armUpL 0.42s ease-in-out infinite;
+}
+
+.walkerHappy .armR {
+  animation: armUpR 0.42s ease-in-out infinite;
+  animation-delay: 0.08s;
+}
+
+.walkerHappy .legL,
+.walkerHappy .legR {
+  animation: happyLegs 0.42s steps(2) infinite;
+}
+
+.walkerHappy .smile {
+  display: none;
+}
+
+.singMouth {
+  display: none;
+}
+
+.walkerHappy .singMouth {
+  display: block;
+  position: absolute;
+  top: 26px;
+  left: 27px;
+  width: 8px;
+  height: 4px;
+  background: #7f1d1d;
+  border: 1.5px solid #111;
+  border-radius: 50%;
+  box-sizing: border-box;
+  z-index: 4;
+  animation: singMouth 0.28s steps(2) infinite;
+  transform-origin: center;
+}
+
+.walkerHappy .cheek {
+  opacity: 1;
+  background: #fb7185;
+}
+
+.walkerHappy .sparkle {
+  display: block;
+}
+
+.walkerHappy .shadow {
+  animation: shadowPulse 0.42s ease-in-out infinite;
+}
+
+/* رفتارهای متفاوت هر کاراکتر */
+.dance_bounce .walkerSprite {
+  animation: happyJump 0.42s ease-in-out infinite;
+}
+
+.dance_bounce .singMouth {
+  animation-duration: 0.26s;
+}
+
+.dance_spin .walkerSprite {
+  animation: danceSpinJump 0.55s ease-in-out infinite;
+}
+
+.dance_spin .armL {
+  animation: armUpL 0.55s ease-in-out infinite;
+}
+
+.dance_spin .armR {
+  animation: armUpR 0.55s ease-in-out infinite reverse;
+}
+
+.dance_spin .singMouth {
+  animation-duration: 0.2s;
+  animation-delay: 0.05s;
+}
+
+.dance_sway .walkerSprite {
+  animation: danceSway 0.7s ease-in-out infinite;
+}
+
+.dance_sway .armL,
+.dance_sway .armR {
+  animation: armSideWave 0.7s ease-in-out infinite;
+}
+
+.dance_sway .armR {
+  animation-delay: 0.15s;
+}
+
+.dance_sway .singMouth {
+  animation-duration: 0.36s;
+}
+
+.dance_hop .walkerSprite {
+  animation: danceHop 0.34s cubic-bezier(0.2, 0.9, 0.3, 1) infinite;
+}
+
+.dance_hop .armL {
+  animation: armClapL 0.34s ease-in-out infinite;
+}
+
+.dance_hop .armR {
+  animation: armClapR 0.34s ease-in-out infinite;
+}
+
+.dance_hop .singMouth {
+  animation-duration: 0.18s;
+  width: 10px;
+  left: 26px;
+}
+
+.dance_stomp .walkerSprite {
+  animation: danceStomp 0.48s steps(2) infinite;
+}
+
+.dance_stomp .armL {
+  animation: armPunkL 0.48s ease-in-out infinite;
+}
+
+.dance_stomp .armR {
+  animation: armPunkR 0.48s ease-in-out infinite;
+}
+
+.dance_stomp .legL {
+  animation: stompLegL 0.48s steps(2) infinite;
+}
+
+.dance_stomp .legR {
+  animation: stompLegR 0.48s steps(2) infinite;
+}
+
+.dance_stomp .singMouth {
+  animation-duration: 0.32s;
+  animation-delay: 0.1s;
+}
+
+/* دست‌های پیرمرد: یکی موج می‌زند، یکی عصا را نگه می‌دارد */
+.walkerHappy.walker_elder .armL,
+.walker_elder.dance_cane .armL {
+  animation: armElderWave 0.62s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+.walkerHappy.walker_elder .armR,
+.walker_elder.dance_cane .armR {
+  animation: armCaneHold 0.62s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+/* عصا قفل روی دست است؛ جدا تکان نمی‌خورد */
+
+.sparkle {
+  display: none;
+  position: absolute;
+  top: -6px;
+  left: 28px;
+  width: 6px;
+  height: 6px;
+  background: #fbbf24;
+  box-shadow:
+    10px 4px 0 #fbbf24,
+    -8px 8px 0 #fde68a,
+    4px -8px 0 #fff;
+  z-index: 5;
+  animation: sparkleTwinkle 0.5s steps(2) infinite;
+}
+
+.hair {
+  position: absolute;
+  top: 0;
+  left: 16px;
+  width: 30px;
+  height: 14px;
+  background: #1e3a5f;
+  box-shadow:
+    4px 4px 0 #1e3a5f,
+    -4px 4px 0 #1e3a5f,
+    8px 2px 0 #152a45;
+  z-index: 2;
+}
+
+.head {
+  position: absolute;
+  top: 8px;
+  left: 18px;
+  width: 26px;
+  height: 26px;
+  background: #f6c9a0;
+  border: 2px solid #111;
+  z-index: 1;
+  box-sizing: border-box;
+}
+
+.cheek {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  width: 5px;
+  height: 4px;
+  background: #f4a4a4;
+  border-radius: 50%;
+  z-index: 3;
+  opacity: 0.85;
+  box-shadow: 16px 0 0 #f4a4a4;
+}
+
+.eye {
+  position: absolute;
+  top: 16px;
+  left: 34px;
+  width: 4px;
+  height: 5px;
+  background: #111;
+  z-index: 3;
+  border-radius: 1px;
+  box-shadow: -10px 0 0 #111;
+}
+
+.smile {
+  position: absolute;
+  top: 26px;
+  left: 28px;
+  width: 8px;
+  height: 4px;
+  border-bottom: 2px solid #c45c2a;
+  border-radius: 0 0 6px 6px;
+  z-index: 3;
+}
+
+.body {
+  position: absolute;
+  top: 32px;
+  left: 14px;
+  width: 34px;
+  height: 48px;
+  background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+  border: 2px solid #111;
+  border-radius: 3px;
+  box-sizing: border-box;
+  box-shadow: inset 0 -10px 0 rgba(0, 0, 0, 0.12);
+  display: grid;
+  place-items: center;
+  z-index: 2;
+}
+
+.shirtBrand {
+  font-family: 'Vazirmatn', var(--font-iran, sans-serif);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  color: #fff;
+  text-transform: lowercase;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+  transform: translateY(4px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.collar {
+  position: absolute;
+  top: 32px;
+  left: 24px;
+  width: 14px;
+  height: 6px;
+  background: #fff;
+  border: 1px solid #111;
+  border-top: none;
+  z-index: 3;
+  box-sizing: border-box;
+}
+
+.arm {
+  position: absolute;
+  top: 36px;
+  width: 8px;
+  height: 32px;
+  background: #f6c9a0;
+  border: 2px solid #111;
+  transform-origin: top center;
+  border-radius: 2px;
+  box-sizing: border-box;
+  z-index: 3;
+}
+
+.armL {
+  left: 6px;
+  animation: armSwing 0.34s steps(2) infinite;
+}
+
+.armR {
+  right: 6px;
+  animation: armSwing 0.34s steps(2) infinite reverse;
+}
+
+.leg {
+  position: absolute;
+  top: 78px;
+  width: 10px;
+  height: 34px;
+  background: #2563eb;
+  border: 2px solid #111;
+  transform-origin: top center;
+  box-sizing: border-box;
+}
+
+.legL {
+  left: 18px;
+  animation: legSwing 0.34s steps(2) infinite;
+}
+
+.legR {
+  right: 18px;
+  animation: legSwing 0.34s steps(2) infinite reverse;
+}
+
+.foot {
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  width: 15px;
+  height: 7px;
+  background: #ef4444;
+  border: 2px solid #111;
+  border-radius: 1px 3px 1px 1px;
+  box-sizing: border-box;
+}
+
+.footL {
+  transform: translateX(-35%);
+}
+
+.footR {
+  transform: translateX(-35%);
+}
+
+.shadow {
+  position: absolute;
+  left: 8px;
+  bottom: 0;
+  width: 48px;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.28);
+  border-radius: 50%;
+}
+
+@keyframes roadScroll {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -56px 0;
+  }
+}
+
+@keyframes dashScroll {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -72px 0;
+  }
+}
+
+@keyframes cloudDrift {
+  from {
+    transform: translateX(8vw);
+  }
+  to {
+    transform: translateX(-110vw);
+  }
+}
+
+@keyframes birdFly {
+  0% {
+    transform: translateX(0) translateY(0);
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  45% {
+    transform: translateX(55vw) translateY(-6px);
+    opacity: 1;
+  }
+  70% {
+    transform: translateX(85vw) translateY(4px);
+    opacity: 1;
+  }
+  88% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateX(112vw) translateY(-2px);
+    opacity: 0;
+  }
+}
+
+@keyframes planeFly {
+  0% {
+    transform: translateX(0) translateY(0);
+    opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(58vw) translateY(-4px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(120vw) translateY(-10px);
+    opacity: 0;
+  }
+}
+
+@keyframes wingFlap {
+  from {
+    transform: rotate(18deg);
+  }
+  to {
+    transform: rotate(-22deg);
+  }
+}
+
+@keyframes treeBob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-0.6deg);
+  }
+  50% {
+    transform: translateY(2px) rotate(0.8deg);
+  }
+}
+
+@keyframes bulbBlink {
+  0%,
+  100% {
+    opacity: 1;
+    background: radial-gradient(
+      circle at 32% 28%,
+      var(--bulb-core, #fff1f2) 0%,
+      var(--bulb-on, #fb7185) 38%,
+      var(--bulb-mid, #e11d48) 78%,
+      #4c0519 100%
+    );
+    box-shadow:
+      0 0 3px 1px var(--bulb-glow, rgba(244, 63, 94, 0.55)),
+      0 0 7px 1px var(--bulb-halo, rgba(251, 113, 133, 0.3));
+  }
+  45% {
+    opacity: 0.4;
+    background: radial-gradient(
+      circle at 35% 30%,
+      #5a5a5a 0%,
+      #2a2a2a 60%,
+      #151515 100%
+    );
+    box-shadow: none;
+  }
+  55% {
+    opacity: 0.35;
+    background: radial-gradient(
+      circle at 35% 30%,
+      #4a4a4a 0%,
+      #222 65%,
+      #111 100%
+    );
+    box-shadow: none;
+  }
+}
+
+@keyframes smokePuff {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.75;
+  }
+  50% {
+    transform: translateY(-4px);
+    opacity: 0.35;
+  }
+}
+
+@keyframes bob {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(2px);
+  }
+}
+
+@keyframes happyJump {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  35% {
+    transform: translateY(-18px) rotate(2deg);
+  }
+  55% {
+    transform: translateY(-22px) rotate(-1deg);
+  }
+  75% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+}
+
+@keyframes danceSpinJump {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-8deg) scaleX(1);
+  }
+  25% {
+    transform: translateY(-14px) rotate(12deg) scaleX(-1);
+  }
+  50% {
+    transform: translateY(-24px) rotate(-6deg) scaleX(1);
+  }
+  75% {
+    transform: translateY(-10px) rotate(10deg) scaleX(-1);
+  }
+}
+
+@keyframes danceSway {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-10deg) translateX(-3px);
+  }
+  50% {
+    transform: translateY(-10px) rotate(10deg) translateX(3px);
+  }
+}
+
+@keyframes danceHop {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  40% {
+    transform: translateY(-26px) scaleY(1.05);
+  }
+  55% {
+    transform: translateY(-4px) scaleY(0.92);
+  }
+}
+
+@keyframes danceStomp {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  30% {
+    transform: translateY(-8px) rotate(-4deg);
+  }
+  50% {
+    transform: translateY(2px) rotate(3deg);
+  }
+  70% {
+    transform: translateY(-12px) rotate(-2deg);
+  }
+}
+
+@keyframes danceCane {
+  0%,
+  100% {
+    transform: rotate(12deg) translate(1px, 2px);
+  }
+  30% {
+    transform: rotate(8deg) translate(2px, -8px);
+  }
+  50% {
+    transform: rotate(16deg) translate(0, -14px);
+  }
+  75% {
+    transform: rotate(10deg) translate(2px, -3px);
+  }
+}
+
+@keyframes armElderWave {
+  0%,
+  100% {
+    transform: rotate(-150deg);
+  }
+  50% {
+    transform: rotate(-175deg);
+  }
+}
+
+@keyframes armCaneHold {
+  0%,
+  100% {
+    transform: rotate(150deg);
+  }
+  50% {
+    transform: rotate(175deg);
+  }
+}
+
+@keyframes elderHappyLegs {
+  from {
+    transform: rotate(4deg);
+  }
+  to {
+    transform: rotate(-6deg);
+  }
+}
+
+@keyframes singMouth {
+  from {
+    height: 3px;
+    width: 7px;
+    border-radius: 40%;
+    background: #7f1d1d;
+  }
+  to {
+    height: 10px;
+    width: 9px;
+    border-radius: 50%;
+    background: #450a0a;
+  }
+}
+
+@keyframes armUpL {
+  0%,
+  100% {
+    transform: rotate(-150deg) translateY(-2px);
+  }
+  50% {
+    transform: rotate(-165deg) translateY(-4px);
+  }
+}
+
+@keyframes armUpR {
+  0%,
+  100% {
+    transform: rotate(150deg) translateY(-2px);
+  }
+  50% {
+    transform: rotate(165deg) translateY(-4px);
+  }
+}
+
+@keyframes armSideWave {
+  0%,
+  100% {
+    transform: rotate(-110deg);
+  }
+  50% {
+    transform: rotate(-40deg);
+  }
+}
+
+@keyframes armClapL {
+  0%,
+  100% {
+    transform: rotate(-40deg);
+  }
+  50% {
+    transform: rotate(-120deg);
+  }
+}
+
+@keyframes armClapR {
+  0%,
+  100% {
+    transform: rotate(40deg);
+  }
+  50% {
+    transform: rotate(120deg);
+  }
+}
+
+@keyframes armPunkL {
+  0%,
+  100% {
+    transform: rotate(-175deg);
+  }
+  50% {
+    transform: rotate(-130deg);
+  }
+}
+
+@keyframes armPunkR {
+  0%,
+  100% {
+    transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(40deg);
+  }
+}
+
+@keyframes stompLegL {
+  from {
+    transform: rotate(25deg);
+  }
+  to {
+    transform: rotate(-8deg);
+  }
+}
+
+@keyframes stompLegR {
+  from {
+    transform: rotate(-20deg);
+  }
+  to {
+    transform: rotate(15deg);
+  }
+}
+
+@keyframes happyLegs {
+  from {
+    transform: rotate(12deg);
+  }
+  to {
+    transform: rotate(-18deg);
+  }
+}
+
+@keyframes shadowPulse {
+  0%,
+  100% {
+    transform: scaleX(1);
+    opacity: 0.28;
+  }
+  50% {
+    transform: scaleX(0.55);
+    opacity: 0.14;
+  }
+}
+
+@keyframes sparkleTwinkle {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.35;
+    transform: scale(1.3);
+  }
+}
+
+@keyframes partyEnter {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.4) translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(0.82) translateY(0);
+  }
+}
+
+@keyframes partyEnterSmall {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.35) translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(0.72) translateY(0);
+  }
+}
+
+@keyframes partyEnterElder {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.7) translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.28) translateY(0);
+  }
+}
+
+@keyframes carDriveLtr {
+  from {
+    transform: translateX(-110px);
+  }
+  to {
+    transform: translateX(calc(100% + 30px));
+  }
+}
+
+@keyframes carDriveRtl {
+  from {
+    transform: translateX(calc(100% + 30px));
+  }
+  to {
+    transform: translateX(-110px);
+  }
+}
+
+@keyframes carBlink {
+  from {
+    opacity: 1;
+    filter: brightness(1.35);
+  }
+  to {
+    opacity: 0.25;
+    filter: brightness(0.6);
+  }
+}
+
+@keyframes windowTwinkle {
+  from {
+    opacity: 1;
+    filter: brightness(1.25);
+  }
+  to {
+    opacity: 0.55;
+    filter: brightness(0.85);
+  }
+}
+
+@keyframes beamSweep {
+  0%,
+  100% {
+    transform: rotate(-18deg) scaleY(1);
+    opacity: 0.22;
+  }
+  50% {
+    transform: rotate(18deg) scaleY(1.05);
+    opacity: 0.45;
+  }
+}
+
+@keyframes burstPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  18% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  55% {
+    opacity: 0.85;
+    transform: scale(1.4);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+}
+
+@keyframes skyPartyPulse {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.12);
+  }
+}
+
+@keyframes bulbHueSpin {
+  from {
+    filter: hue-rotate(0deg) saturate(1.25);
+  }
+  to {
+    filter: hue-rotate(360deg) saturate(1.4);
+  }
+}
+
+@keyframes armSwing {
+  from {
+    transform: rotate(16deg);
+  }
+  to {
+    transform: rotate(-16deg);
+  }
+}
+
+@keyframes legSwing {
+  from {
+    transform: rotate(20deg);
+  }
+  to {
+    transform: rotate(-20deg);
+  }
+}
+
+@media (max-width: 720px) {
+  .inner {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .ground {
+    height: 280px;
+    margin-top: 14%;
+  }
+
+  .walkerSlot {
+    left: 28%;
+  }
+
+  .walker {
+    width: 54px;
+    height: 112px;
+    transform: scale(0.88);
+    transform-origin: bottom center;
+  }
+
+  .shirtBrand {
+    font-size: 11px;
+  }
+
+  .skyBulbSign {
+    top: 7%;
+    gap: 4px;
+  }
+
+  .bulbLetter {
+    grid-template-columns: repeat(5, 4px);
+    grid-template-rows: repeat(7, 4px);
+    gap: 1px;
+  }
+
+  .treeSet {
+    gap: 10rem;
+    padding-inline-end: 10rem;
+  }
+
+  .treeStrip {
+    zoom: 0.72;
+  }
+
+  .building {
+    width: 68px;
+  }
+
+  .buildingLabel {
+    font-size: 0.64rem;
+    max-width: 4.8rem;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roadSurface,
+  .roadDash,
+  .cloud,
+  .cloud2,
+  .bird,
+  .birdWingL,
+  .birdWingR,
+  .plane,
+  .treeCrown,
+  .bulb,
+  .smoke,
+  .walkerSprite,
+  .walkerHappy .walkerSprite,
+  .armL,
+  .armR,
+  .legL,
+  .legR,
+  .walkerHappy .armL,
+  .walkerHappy .armR,
+  .walkerHappy .legL,
+  .walkerHappy .legR,
+  .walkerHappy .shadow,
+  .walkerHappy .singMouth,
+  .sparkle,
+  .cane,
+  .dance_cane .walkerSprite,
+  .dance_cane .armL,
+  .dance_cane .armR,
+  .dance_cane .legL,
+  .dance_cane .legR,
+  .partyCrewOn .partyBuddy {
+    animation: none !important;
+  }
+
+  .partyCrewOn .partyBuddy {
+    opacity: 1;
+  }
+
+  .carDir_ltr,
+  .carDir_rtl,
+  .carLight {
+    animation: none !important;
+  }
+
+  .carTrafficOn {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .carDir_ltr {
+    transform: translateX(20%);
+  }
+
+  .carDir_rtl {
+    transform: translateX(55%);
+  }
+
+  .scene {
+    transition: none;
+  }
+}

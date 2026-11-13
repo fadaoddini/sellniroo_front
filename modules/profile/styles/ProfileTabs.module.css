@@ -1,21 +1,24 @@
-/* ProfileTabs — تم طلایی */
+/* تب‌های فشرده پروفایل — آیکون Lucide + برچسب کوتاه */
 
 .tabsWrapper {
-  --ink: #2a241c;
-  --muted: #6f675c;
-  --line: rgba(90, 60, 20, 0.12);
-  --gold: #fbc300;
-  --gold-dark: #c27800;
-  --cream: #fff7ec;
+  --ink: #2A1A0E;
+  --muted: #6B5344;
+  --line: rgba(42, 26, 14, 0.1);
+  --gold: #F4AE52;
+  --gold-dark: #D4621A;
+  --cream: #FEF3E2;
 
   background: #fff;
-  border-radius: 16px;
-  padding: 0.4rem;
+  border-radius: 12px;
+  padding: 0.28rem;
   border: 1px solid var(--line);
-  box-shadow: 0 6px 18px rgba(80, 50, 0, 0.05);
+  box-shadow: 0 3px 12px rgba(42, 26, 14, 0.04);
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  position: sticky;
+  top: 0.35rem;
+  z-index: 8;
 }
 
 .tabsWrapper::-webkit-scrollbar {
@@ -24,31 +27,34 @@
 
 .tabs {
   display: flex;
-  gap: 0.3rem;
+  gap: 0.2rem;
   min-width: max-content;
 }
 
 .tab {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.7rem 1.05rem;
+  gap: 0.32rem;
+  padding: 0.42rem 0.7rem;
+  min-height: 2.05rem;
   background: transparent;
   border: none;
-  border-radius: 12px;
+  border-radius: 9px;
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-family: var(--font-iran);
-  font-weight: 600;
+  font-weight: 650;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
   white-space: nowrap;
 }
 
 .tab svg {
-  color: #a08960;
-  transition: color 0.2s ease;
+  color: #8a7360;
+  transition: color 0.15s ease;
   flex-shrink: 0;
+  width: 14px;
+  height: 14px;
 }
 
 .tab:hover {
@@ -62,26 +68,64 @@
 
 .tab:focus-visible {
   outline: 2px solid var(--gold);
-  outline-offset: 2px;
+  outline-offset: 1px;
 }
 
 .tab.active {
-  background: linear-gradient(135deg, #ffd54a 0%, #fbc300 50%, #fb9700 100%);
-  color: #3a2a00;
-  box-shadow: 0 6px 16px rgba(201, 120, 0, 0.28);
+  background: linear-gradient(135deg, #F4AE52 0%, #D4621A 100%);
+  color: #FEF3E2;
+  box-shadow: 0 4px 10px rgba(212, 98, 26, 0.22);
 }
 
 .tab.active svg {
-  color: #5a3d00;
+  color: #FEF3E2;
+}
+
+.toneJob {
+  /* همان پالت پیش‌فرض */
 }
 
 /* تب‌های حساب شخصی */
+.toneSadra {
+  --ink: #1e3b2f;
+  --muted: #7f8c6a;
+  --line: color-mix(in srgb, #7f8c6a 24%, transparent);
+  --cream: #f5f0e6;
+  background: #ffffff;
+  border: 1px solid color-mix(in srgb, #7f8c6a 22%, transparent);
+  box-shadow: 0 4px 12px color-mix(in srgb, #1e3b2f 4%, transparent);
+}
+
+.toneSadra .tab:hover {
+  background: #f5f0e6;
+  color: #1e3b2f;
+}
+
+.toneSadra .tab:hover svg,
+.toneSadra .tab svg {
+  color: #7f8c6a;
+}
+
+.toneSadra .tab.active {
+  background: #f5f0e6;
+  color: #1e3b2f;
+  border: 1px solid color-mix(in srgb, #c8b48a 65%, transparent);
+  box-shadow: inset 0 -2px 0 #c8b48a;
+}
+
+.toneSadra .tab.active svg {
+  color: #1e3b2f;
+}
+
+.toneSadra .tab:focus-visible {
+  outline-color: #c8b48a;
+}
+
 .toneBasic {
   --ink: #1c1410;
   --muted: #6a5f58;
   --line: rgba(128, 0, 32, 0.12);
   --cream: #faf6f4;
-  box-shadow: 0 8px 22px rgba(40, 10, 20, 0.05);
 }
 
 .toneBasic .tab:hover {
@@ -95,7 +139,7 @@
 .toneBasic .tab.active {
   background: linear-gradient(135deg, #5c0a1f 0%, #800020 55%, #a31d3a 100%);
   color: #fff8f0;
-  box-shadow: 0 8px 18px rgba(128, 0, 32, 0.28);
+  box-shadow: 0 6px 14px rgba(128, 0, 32, 0.24);
 }
 
 .toneBasic .tab.active svg {
@@ -106,14 +150,208 @@
   outline-color: #800020;
 }
 
+.toneShop {
+  --ink: #12241f;
+  --muted: rgba(18, 36, 31, 0.62);
+  --line: rgba(38, 166, 128, 0.16);
+  --cream: #eef7f3;
+}
+
+.toneShop .tab:hover {
+  background: rgba(38, 166, 128, 0.08);
+}
+
+.toneShop .tab:hover svg,
+.toneShop .tab svg {
+  color: #0f6b52;
+}
+
+.toneShop .tab.active {
+  background: linear-gradient(135deg, #2fb890 0%, #26a680 55%, #0f6b52 100%);
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(38, 166, 128, 0.24);
+}
+
+.toneShop .tab.active svg {
+  color: #e8fff6;
+}
+
+.toneShop .tab:focus-visible {
+  outline-color: #26a680;
+}
+
+.toneRebo {
+  --ink: #0c1f1a;
+  --muted: rgba(12, 31, 26, 0.58);
+  --line: rgba(38, 166, 128, 0.18);
+  --cream: #e8f7f1;
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(18, 36, 31, 0.08);
+  box-shadow: 0 8px 24px rgba(15, 61, 52, 0.06);
+  position: static;
+  top: auto;
+}
+
+.toneRebo .tab:hover {
+  background: rgba(38, 166, 128, 0.1);
+  color: #0c1f1a;
+}
+
+.toneRebo .tab:hover svg,
+.toneRebo .tab svg {
+  color: #0f6b52;
+}
+
+.toneRebo .tab.active {
+  background: linear-gradient(135deg, #1d1d1f 0%, #12241f 48%, #0f6b52 100%);
+  color: #f4faf7;
+  box-shadow: 0 8px 18px rgba(18, 36, 31, 0.28);
+}
+
+.toneRebo .tab.active svg {
+  color: #3dd4a5;
+}
+
+.toneRebo .tab:focus-visible {
+  outline-color: #26a680;
+}
+
+.toneBooking {
+  --ink: #0f172a;
+  --muted: rgba(15, 23, 42, 0.6);
+  --line: rgba(37, 99, 235, 0.14);
+  --cream: #eff6ff;
+}
+
+.toneBooking .tab.active {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 55%, #1d4ed8 100%);
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.24);
+}
+
+.toneBooking .tab.active svg {
+  color: #dbeafe;
+}
+
+.toneRepairs {
+  --ink: #1c1917;
+  --muted: rgba(28, 25, 23, 0.62);
+  --line: rgba(185, 28, 28, 0.14);
+  --cream: #fef2f2;
+}
+
+.toneRepairs .tab.active {
+  background: linear-gradient(135deg, #f87171 0%, #ef4444 55%, #b91c1c 100%);
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(185, 28, 28, 0.24);
+}
+
+.toneRepairs .tab.active svg {
+  color: #fee2e2;
+}
+
+.toneGym {
+  --ink: #10241c;
+  --muted: #4d6a5c;
+  --line: rgba(2, 60, 44, 0.14);
+  --cream: #e8f5ef;
+  background: #ffffff;
+  border-color: rgba(2, 60, 44, 0.12);
+  box-shadow: none;
+  position: static;
+  top: auto;
+  font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
+}
+
+.toneGym .tab {
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
+  font-weight: 400;
+}
+
+.toneGym .tab svg {
+  color: #4d6a5c;
+}
+
+.toneGym .tab:hover {
+  background: #e8f5ef;
+  color: #023c2c;
+}
+
+.toneGym .tab:hover svg {
+  color: #10b981;
+}
+
+.toneGym .tab:focus-visible {
+  outline-color: #046c4e;
+}
+
+.toneGym .tab.active {
+  background: linear-gradient(135deg, #10b981 0%, #046c4e 55%, #023c2c 100%);
+  color: #ecfdf5;
+  box-shadow: 0 6px 14px rgba(2, 60, 44, 0.22);
+}
+
+.toneGym .tab.active svg {
+  color: #a7f3d0;
+}
+
+.toneSchool {
+  --ink: #004733;
+  --muted: #568d66;
+  --line: rgba(0, 71, 51, 0.14);
+  --cream: #eef3f0;
+  background: #ffffff;
+  border-color: rgba(0, 71, 51, 0.12);
+  box-shadow: none;
+  position: static;
+  top: auto;
+  font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
+}
+
+.toneSchool .tab {
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
+  font-weight: 400;
+}
+
+.toneSchool .tab svg {
+  color: #568d66;
+}
+
+.toneSchool .tab:hover {
+  background: #eef3f0;
+  color: #004733;
+}
+
+.toneSchool .tab:hover svg {
+  color: #004733;
+}
+
+.toneSchool .tab:focus-visible {
+  outline-color: #2b6a4d;
+}
+
+.toneSchool .tab.active {
+  background: linear-gradient(135deg, #2b6a4d 0%, #004733 55%, #003528 100%);
+  color: #f3f4f6;
+  box-shadow: 0 6px 14px rgba(0, 71, 51, 0.22);
+}
+
+.toneSchool .tab.active svg {
+  color: #a5c1ae;
+}
+
 @media (max-width: 480px) {
   .tab {
-    padding: 0.58rem 0.85rem;
-    font-size: 0.74rem;
+    padding: 0.38rem 0.55rem;
+    font-size: 0.68rem;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 3.4rem;
+    min-height: 2.55rem;
   }
 
-  .tab svg {
-    width: 14px;
-    height: 14px;
+  .tab span {
+    font-size: 0.62rem;
+    font-weight: 700;
   }
 }

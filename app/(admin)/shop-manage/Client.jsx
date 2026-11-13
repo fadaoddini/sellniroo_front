@@ -133,7 +133,7 @@ function ShopManageInner() {
           <h1>دسترسی محدود</h1>
           <p style={{ marginTop: 8 }}>
             برای افزودن محصول فروشگاه خود به{' '}
-            <Link href="/shop-panel">پنل فروشگاه</Link> بروید.
+            <Link href="/dashboard/my-shop?tab=products">فروشگاه من</Link> بروید.
           </p>
           <Link href="/dashboard" className={styles.solidBtn}>
             داشبورد
@@ -279,7 +279,7 @@ function ShopManageInner() {
                   ایجاد محصول
                 </button>
                 <Link href="/shop-panel" className={styles.miniBtn}>
-                  رفتن به پنل فروشگاه
+                  فروشگاه من
                 </Link>
               </div>
             </div>

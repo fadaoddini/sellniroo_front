@@ -78,15 +78,24 @@ function paymentLabel(o) {
   return 'پرداخت‌نشده'
 }
 
-export default function ShopProfilePanel() {
+export default function ShopProfilePanel({
+  /** اگر ست شود، سگمنت داخلی مخفی و همین بخش نشان داده می‌شود */
+  section: controlledSection,
+  showOwnerLinks = true,
+}) {
   const { user } = useAuth()
-  const [section, setSection] = useState('orders')
+  const [section, setSection] = useState(controlledSection || 'orders')
   const [orders, setOrders] = useState([])
   const [addresses, setAddresses] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [busy, setBusy] = useState(false)
+  const controlled = Boolean(controlledSection)
+
+  useEffect(() => {
+    if (controlledSection) setSection(controlledSection)
+  }, [controlledSection])
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -145,46 +154,54 @@ export default function ShopProfilePanel() {
 
   return (
     <div className={styles.wrap}>
-      <header className={styles.toolbar}>
-        <div className={styles.seg} role="tablist">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={section === 'orders'}
-            className={section === 'orders' ? styles.segOn : ''}
-            onClick={() => setSection('orders')}
-          >
-            <Package size={15} strokeWidth={2} />
-            سفارش‌ها
-            {orders.length ? (
-              <span className={styles.segCount}>{orders.length}</span>
-            ) : null}
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={section === 'addresses'}
-            className={section === 'addresses' ? styles.segOn : ''}
-            onClick={() => setSection('addresses')}
-          >
-            <MapPin size={15} strokeWidth={2} />
-            آدرس‌ها
-            {addresses.length ? (
-              <span className={styles.segCount}>{addresses.length}</span>
-            ) : null}
-          </button>
-        </div>
-        <div className={styles.toolbarLinks}>
-          <Link href="/shop-panel" className={styles.ownerLink}>
-            <Store size={15} strokeWidth={2} />
-            پنل صاحب فروشگاه
-          </Link>
-          <Link href="/cart" className={styles.cartLink}>
-            <ShoppingBag size={15} strokeWidth={2} />
-            سبد خرید
-          </Link>
-        </div>
-      </header>
+      {!controlled || showOwnerLinks ? (
+        <header className={styles.toolbar}>
+          {!controlled ? (
+            <div className={styles.seg} role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={section === 'orders'}
+                className={section === 'orders' ? styles.segOn : ''}
+                onClick={() => setSection('orders')}
+              >
+                <Package size={15} strokeWidth={2} />
+                سفارش‌ها
+                {orders.length ? (
+                  <span className={styles.segCount}>{orders.length}</span>
+                ) : null}
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={section === 'addresses'}
+                className={section === 'addresses' ? styles.segOn : ''}
+                onClick={() => setSection('addresses')}
+              >
+                <MapPin size={15} strokeWidth={2} />
+                آدرس‌ها
+                {addresses.length ? (
+                  <span className={styles.segCount}>{addresses.length}</span>
+                ) : null}
+              </button>
+            </div>
+          ) : (
+            <div className={styles.seg} />
+          )}
+          {showOwnerLinks ? (
+            <div className={styles.toolbarLinks}>
+              <Link href="/dashboard/my-shop" className={styles.ownerLink}>
+                <Store size={15} strokeWidth={2} />
+                فروشگاه من
+              </Link>
+              <Link href="/cart" className={styles.cartLink}>
+                <ShoppingBag size={15} strokeWidth={2} />
+                سبد خرید
+              </Link>
+            </div>
+          ) : null}
+        </header>
+      ) : null}
 
       {error ? <p className={styles.err}>{error}</p> : null}
 

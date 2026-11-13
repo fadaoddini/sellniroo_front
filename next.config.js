@@ -10,6 +10,7 @@ const nextConfig = {
   images: {
     domains: [
       'localhost',
+      '127.0.0.1',
       'admin.ariastudholding.com',
       'images.unsplash.com',
     ],
@@ -19,9 +20,25 @@ const nextConfig = {
         hostname: 'images.unsplash.com',
         pathname: '/**',
       },
+      // API لوکال (Django media) — بدون port یعنی هر پورتی
       {
         protocol: 'http',
         hostname: 'localhost',
+        pathname: '/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'localhost',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '127.0.0.1',
         pathname: '/**',
       },
       {
@@ -29,12 +46,28 @@ const nextConfig = {
         hostname: 'admin.ariastudholding.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'admin.sellniroo.com',
+        pathname: '/**',
+      },
     ],
     formats: ['image/avif', 'image/webp'],
   },
   
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    // همیشه لوکال روی 8000 — 8001 را قبول نکن
+    NEXT_PUBLIC_API_URL: (() => {
+      const raw = String(
+        process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+      ).trim()
+      return raw
+        .replace(/\/$/, '')
+        .replace(
+          /^(https?:\/\/(?:localhost|127\.0\.0\.1)):8001(?=\/|$)/i,
+          '$1:8000'
+        )
+    })(),
   },
   
   webpack: (config) => {
@@ -54,6 +87,18 @@ const nextConfig = {
   
   // مخفی کردن هدر X-Powered-By
   poweredByHeader: false,
+
+  // پروکسی مدیا به Django تا /media از فرانت هم در دسترس باشد
+  async rewrites() {
+    const api =
+      process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+    return [
+      {
+        source: '/media/:path*',
+        destination: `${api.replace(/\/$/, '')}/media/:path*`,
+      },
+    ]
+  },
 };
 
 module.exports = nextConfig;

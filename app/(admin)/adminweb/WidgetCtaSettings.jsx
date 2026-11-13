@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { ChevronDown, Smartphone } from 'lucide-react'
 import {
+  CTA_FONTS,
   CTA_LAYOUTS,
   CTA_MARGIN_FIELDS,
   CTA_SPACE_FIELDS,
@@ -155,6 +156,7 @@ export default function WidgetCtaSettings({ settings: raw, onChange }) {
   )
   const [openId, setOpenId] = useState('display')
   const patch = (key, value) => onChange({ [key]: value })
+  const patchMany = (obj) => onChange?.(obj)
 
   return (
     <div className={styles.wsMinimal}>
@@ -228,12 +230,66 @@ export default function WidgetCtaSettings({ settings: raw, onChange }) {
       </Accordion>
 
       <Accordion id="display" title="نمایش" openId={openId} setOpenId={setOpenId}>
-        <p className={styles.wsMiniLabel}>چیدمان</p>
+        <p className={styles.wsMiniLabel}>اسکلتون چیدمان (۴ حالت)</p>
+        <p className={styles.wsHint}>
+          افقی یا عمودی — با یک کلیک جای متن و فرم عوض می‌شود.
+        </p>
+        <div className={styles.wsPresetGrid}>
+          {CTA_LAYOUTS.map((preset) => {
+            const on = settings.layout === preset.id
+            return (
+              <button
+                key={preset.id}
+                type="button"
+                className={`${styles.wsPresetCard} ${
+                  on ? styles.wsPresetCardOn : ''
+                }`}
+                onClick={() => patchMany({ layout: preset.id })}
+              >
+                <div
+                  className={`${styles.wsPresetSkel} ${
+                    styles[`wsCtaSkel_${preset.skeleton}`] || ''
+                  }`}
+                  aria-hidden
+                >
+                  <i className={styles.wsCtaSkelInfo} />
+                  <i className={styles.wsCtaSkelForm} />
+                </div>
+                <strong>{preset.label}</strong>
+                <small>{preset.desc}</small>
+              </button>
+            )
+          })}
+        </div>
+
+        <p className={`${styles.wsMiniLabel} ${styles.wsMiniLabelSpaced}`}>
+          فونت عنوان
+        </p>
         <Seg
-          options={CTA_LAYOUTS}
-          value={settings.layout}
-          onChange={(v) => patch('layout', v)}
+          options={CTA_FONTS}
+          value={settings.title_font || 'edameh'}
+          onChange={(v) => patch('title_font', v)}
+          cols={2}
         />
+        <p className={`${styles.wsMiniLabel} ${styles.wsMiniLabelSpaced}`}>
+          فونت متن / توضیح
+        </p>
+        <Seg
+          options={CTA_FONTS}
+          value={settings.body_font || 'iran'}
+          onChange={(v) => patch('body_font', v)}
+          cols={2}
+        />
+        <p className={`${styles.wsMiniLabel} ${styles.wsMiniLabelSpaced}`}>
+          فونت فرم
+        </p>
+        <Seg
+          options={CTA_FONTS}
+          value={settings.form_font || 'iran'}
+          onChange={(v) => patch('form_font', v)}
+          cols={2}
+        />
+
         <div className={styles.wsStack}>
           <Toggle
             checked={!!settings.section_full}
@@ -280,91 +336,108 @@ export default function WidgetCtaSettings({ settings: raw, onChange }) {
       </Accordion>
 
       <Accordion id="colors" title="رنگ‌ها" openId={openId} setOpenId={setOpenId}>
-        <ColorRow
-          label="پس‌زمینه شروع"
-          value={settings.bg_from}
-          onChange={(v) => patch('bg_from', v)}
-        />
-        <ColorRow
-          label="پس‌زمینه پایان"
-          value={settings.bg_to}
-          onChange={(v) => patch('bg_to', v)}
-        />
-        <ColorRow
-          label="نور گرادیان"
-          value={settings.bg_accent}
-          onChange={(v) => patch('bg_accent', v)}
-        />
-        <ColorRow
-          label="رنگ عنوان"
-          value={settings.title_color}
-          onChange={(v) => patch('title_color', v)}
-        />
-        <ColorRow
-          label="رنگ متن"
-          value={settings.text_color}
-          onChange={(v) => patch('text_color', v)}
-        />
-        <ColorRow
-          label="رنگ متن ثانویه"
-          value={settings.muted_color}
-          onChange={(v) => patch('muted_color', v)}
-        />
-        <ColorRow
-          label="اکسنت"
-          value={settings.accent_color}
-          onChange={(v) => patch('accent_color', v)}
-        />
-        <ColorRow
-          label="اکسنت تیره"
-          value={settings.accent_deep}
-          onChange={(v) => patch('accent_deep', v)}
-        />
-        <ColorRow
-          label="کارت فرم (شروع)"
-          value={settings.card_from}
-          onChange={(v) => patch('card_from', v)}
-        />
-        <ColorRow
-          label="کارت فرم (پایان)"
-          value={settings.card_to}
-          onChange={(v) => patch('card_to', v)}
-        />
-        <ColorRow
-          label="بردر کارت"
-          value={settings.card_border}
-          onChange={(v) => patch('card_border', v)}
-        />
-        <ColorRow
-          label="پس‌زمینه اینپوت"
-          value={settings.input_bg}
-          onChange={(v) => patch('input_bg', v)}
-        />
-        <ColorRow
-          label="بردر اینپوت"
-          value={settings.input_border}
-          onChange={(v) => patch('input_border', v)}
-        />
-        <ColorRow
-          label="دکمه ارسال (شروع)"
-          value={settings.button_from}
-          onChange={(v) => patch('button_from', v)}
-        />
-        <ColorRow
-          label="دکمه ارسال (پایان)"
-          value={settings.button_to}
-          onChange={(v) => patch('button_to', v)}
-        />
-        <ColorRow
-          label="متن دکمه"
-          value={settings.button_text}
-          onChange={(v) => patch('button_text', v)}
-        />
-        <ColorRow
-          label="پس‌زمینه کانال تماس"
-          value={settings.channel_bg}
-          onChange={(v) => patch('channel_bg', v)}
-        />
+        <div className={styles.wsStack}>
+          <Toggle
+            checked={!!settings.use_site_theme}
+            onChange={(v) => patch('use_site_theme', v)}
+            label="تم سایت (کرم و طلایی)"
+            hint="#FEF3E2 · #F4AE52 · #D4621A · #2A1A0E"
+          />
+        </div>
+        {settings.use_site_theme ? (
+          <p className={styles.wsHint}>
+            بک‌گراند تیره #2A1A0E، فرم روشن #FEF3E2، اکسنت #F4AE52 و #D4621A.
+            برای رنگ‌های دستی این گزینه را خاموش کنید.
+          </p>
+        ) : (
+          <>
+            <ColorRow
+              label="پس‌زمینه شروع"
+              value={settings.bg_from}
+              onChange={(v) => patch('bg_from', v)}
+            />
+            <ColorRow
+              label="پس‌زمینه پایان"
+              value={settings.bg_to}
+              onChange={(v) => patch('bg_to', v)}
+            />
+            <ColorRow
+              label="نور گرادیان"
+              value={settings.bg_accent}
+              onChange={(v) => patch('bg_accent', v)}
+            />
+            <ColorRow
+              label="رنگ عنوان"
+              value={settings.title_color}
+              onChange={(v) => patch('title_color', v)}
+            />
+            <ColorRow
+              label="رنگ متن"
+              value={settings.text_color}
+              onChange={(v) => patch('text_color', v)}
+            />
+            <ColorRow
+              label="رنگ متن ثانویه"
+              value={settings.muted_color}
+              onChange={(v) => patch('muted_color', v)}
+            />
+            <ColorRow
+              label="اکسنت"
+              value={settings.accent_color}
+              onChange={(v) => patch('accent_color', v)}
+            />
+            <ColorRow
+              label="اکسنت تیره"
+              value={settings.accent_deep}
+              onChange={(v) => patch('accent_deep', v)}
+            />
+            <ColorRow
+              label="کارت فرم (شروع)"
+              value={settings.card_from}
+              onChange={(v) => patch('card_from', v)}
+            />
+            <ColorRow
+              label="کارت فرم (پایان)"
+              value={settings.card_to}
+              onChange={(v) => patch('card_to', v)}
+            />
+            <ColorRow
+              label="بردر کارت"
+              value={settings.card_border}
+              onChange={(v) => patch('card_border', v)}
+            />
+            <ColorRow
+              label="پس‌زمینه اینپوت"
+              value={settings.input_bg}
+              onChange={(v) => patch('input_bg', v)}
+            />
+            <ColorRow
+              label="بردر اینپوت"
+              value={settings.input_border}
+              onChange={(v) => patch('input_border', v)}
+            />
+            <ColorRow
+              label="دکمه ارسال (شروع)"
+              value={settings.button_from}
+              onChange={(v) => patch('button_from', v)}
+            />
+            <ColorRow
+              label="دکمه ارسال (پایان)"
+              value={settings.button_to}
+              onChange={(v) => patch('button_to', v)}
+            />
+            <ColorRow
+              label="متن دکمه"
+              value={settings.button_text}
+              onChange={(v) => patch('button_text', v)}
+            />
+            <ColorRow
+              label="پس‌زمینه کانال تماس"
+              value={settings.channel_bg}
+              onChange={(v) => patch('channel_bg', v)}
+            />
+          </>
+        )}
       </Accordion>
 
       <Accordion id="type" title="تایپوگرافی و فرم" openId={openId} setOpenId={setOpenId}>

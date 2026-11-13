@@ -7,6 +7,7 @@ import Config from "@/config/config";
 import { useAuth } from "@/contexts/AuthContext";
 import CompanyForm from "./CompanyForm";
 import CompanyView from "./CompanyView";
+import CompanyQrCard from "./CompanyQrCard";
 import VerificationSection from "./VerificationSection";
 import styles from "../../styles/company/CompanyTab.module.css";
 import {
@@ -92,7 +93,7 @@ const CompanyTab = ({ onRefresh }) => {
       <div className={styles.emptyWrapper}>
         <div className={styles.emptyCard}>
           <div className={styles.emptyIcon}>
-            <Building2 size={40} />
+            <Building2 size={26} strokeWidth={1.8} />
           </div>
           <h2>شرکت خود را ثبت کنید</h2>
           <p>
@@ -133,11 +134,18 @@ const CompanyTab = ({ onRefresh }) => {
 
   return (
     <div className={styles.companyTab}>
-      <CompanyView company={company} onEdit={() => setMode("edit")} />
-      <VerificationSection
-        company={company}
-        onRequestSubmitted={handleSaved}
-      />
+      <div className={styles.colMain}>
+        <CompanyView company={company} onEdit={() => setMode("edit")} />
+      </div>
+      <div className={styles.colSide}>
+        <CompanyQrCard company={company} />
+      </div>
+      <div className={styles.colSide}>
+        <VerificationSection
+          company={company}
+          onRequestSubmitted={handleSaved}
+        />
+      </div>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 // دادهٔ فیک برای پیش‌نمایش ویجت سیستم کاریابی (شکل پاسخ API)
+import { slugifyJobTitle } from '@/utils/jobSlug'
 
 export const DEMO_FILTER_OPTIONS = {
   provinces: [
@@ -458,10 +459,12 @@ const PROVINCE_NAME = Object.fromEntries(
 
 function enrichDemoJob(job) {
   if (!job) return null
+  const slug = job.slug || slugifyJobTitle(job.title) || String(job.id)
   return {
     ...DEMO_BASE,
     ...job,
     is_demo: true,
+    slug,
     province_name:
       job.province_name || PROVINCE_NAME[String(job.province)] || '',
     description:
@@ -482,6 +485,19 @@ export function isDemoJobId(id) {
 /** جزئیات آگهی دمو برای صفحه /jobs/[id] */
 export function getDemoJobById(id) {
   const found = DEMO_JOBS.find((j) => String(j.id) === String(id))
+  return enrichDemoJob(found)
+}
+
+/** جزئیات دمو با id یا slug عنوان */
+export function getDemoJobByParam(param) {
+  const key = decodeURIComponent(String(param || '')).trim()
+  if (!key) return null
+  if (isDemoJobId(key)) return getDemoJobById(key)
+
+  const found = DEMO_JOBS.find((j) => {
+    const slug = j.slug || slugifyJobTitle(j.title)
+    return slug === key || String(j.id) === key
+  })
   return enrichDemoJob(found)
 }
 

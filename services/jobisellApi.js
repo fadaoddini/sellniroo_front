@@ -151,6 +151,13 @@ export const jobisellApi = {
     return data;
   },
 
+  async getCompanyBySlug(slug) {
+    const { data } = await axios.get(
+      Config.endpoints.jobisell.companyBySlug(slug)
+    );
+    return data;
+  },
+
   async searchJobs(q) {
     const { data } = await axios.get(Config.endpoints.jobisell.jobs.search(q));
     return data;

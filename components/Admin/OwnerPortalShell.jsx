@@ -14,6 +14,8 @@ import {
   LayoutDashboard,
   LayoutTemplate,
   Boxes,
+  Calculator,
+  Cloud,
   Newspaper,
   Briefcase,
   Store,
@@ -33,6 +35,9 @@ const NAV_BASE = [
   { href: '/adminweb', label: 'داشبورد', icon: LayoutDashboard },
   { href: '/adminsettings', label: 'صفحه اصلی', icon: LayoutTemplate },
   { href: '/adminmodule', label: 'ماژول‌ها', icon: Boxes },
+  { href: '/rebo-pricing', label: 'قیمت ربو', icon: Calculator },
+  { href: '/rebo-manage', label: 'مدیریت ربو', icon: Boxes },
+  { href: '/cloud-manage', label: 'سرور ابری', icon: Cloud },
   { href: '/adminnews', label: 'اخبار', icon: Newspaper },
   { href: '/adminkaryabi', label: 'کاریابی', icon: Briefcase },
   { href: '/adminshop', label: 'طراحی فروشگاه', icon: Store },
@@ -179,7 +184,7 @@ export default function OwnerPortalShell({
         <div className={portalStyles.portalBody}>{children}</div>
 
         <p className={styles.pageFoot}>
-          طراحی و توسعه ·{' '}
+          طراح {OWNER_PROFILE.name} ·{' '}
           <a
             href={OWNER_PROFILE.siteUrl}
             target="_blank"
@@ -187,6 +192,10 @@ export default function OwnerPortalShell({
           >
             {OWNER_PROFILE.site}
           </a>
+          <br />
+          {OWNER_PROFILE.engineLine}
+          <br />
+          تمامی حقوق برای سایت {OWNER_PROFILE.brandFa} محفوظ است
           {normalizeIranMobile(user?.mobile) &&
           OWNER_PHONES.includes(normalizeIranMobile(user?.mobile))
             ? ' · مالک پلتفرم'

@@ -85,7 +85,65 @@ export const SITE_TOP_NAV_SHARED_ROOT_KEYS = new Set([
   'mobile_bottom_nav',
   /** نمایش نوار بالای منو در موبایل */
   'mobile_show_top',
+  /**
+   * آیتم‌های انتخاب‌شده برای منوی پایین موبایل (idهای HeaderMenuItem)
+   * null = همهٔ فعال‌ها به ترتیب داشبورد
+   * number[] = زیرمجموعه + ترتیب ویجت
+   */
+  'mobile_nav_item_ids',
+  /**
+   * ظاهر منوی پایین موبایل
+   * null = مثل داشبورد /header-menu
+   * classic | center_circle | rounded_square | glow_dock
+   */
+  'mobile_nav_style',
+  /** آیتم وسط برای حالت دایره وسط — null = مثل داشبورد / خودکار */
+  'mobile_center_item_id',
+  /** پروفایل + تاریخ (مثل خبر فوری) روی نوار منو */
+  'show_date',
+  'date_font_size',
+  'date_font_weight',
+  'profile_mode',
+  'avatar_shape',
+  'guest_visible',
+  'guest_label',
+  'guest_icon',
+  'guest_href',
+  'color_date',
+  'color_profile_bg',
+  'color_profile_text',
+  'color_avatar_border',
+  'color_btn_bg',
+  'color_btn_text',
 ])
+
+export const SITE_TOP_NAV_MOBILE_STYLE_OPTIONS = [
+  {
+    id: null,
+    label: 'مثل داشبورد',
+    hint: 'همان تنظیم /header-menu',
+  },
+  {
+    id: 'classic',
+    label: 'کلاسیک',
+    hint: 'آیکون و متن ساده',
+  },
+  {
+    id: 'center_circle',
+    label: 'دایره وسط',
+    hint: 'آیتم میانی دایره برجسته',
+  },
+  {
+    id: 'rounded_square',
+    label: 'مربع گرد',
+    hint: 'آیکون داخل کادر گرد',
+  },
+  {
+    id: 'glow_dock',
+    label: 'داک درخشان',
+    hint: 'نوار شناور با نور',
+  },
+]
 
 export const DEFAULT_SITE_TOP_NAV_WIDGET_SETTINGS = {
   show_on_mobile: true,
@@ -99,6 +157,9 @@ export const DEFAULT_SITE_TOP_NAV_WIDGET_SETTINGS = {
   filter_by_modules: true,
   mobile_bottom_nav: true,
   mobile_show_top: true,
+  mobile_nav_item_ids: null,
+  mobile_nav_style: null,
+  mobile_center_item_id: null,
 
   sticky: true,
   sticky_offset: 0,
@@ -135,10 +196,10 @@ export const DEFAULT_SITE_TOP_NAV_WIDGET_SETTINGS = {
   color_text: '#b8bcc6',
   color_icon: '#f4f5f7',
   color_hover: '#ffffff',
-  color_accent: '#fbc300',
+  color_accent: '#F4AE52',
   color_border: 'rgba(255, 255, 255, 0.08)',
-  color_cta_bg: '#fbc300',
-  color_cta_text: '#14181f',
+  color_cta_bg: '#D4621A',
+  color_cta_text: '#FEF3E2',
   color_drawer_bg: '#0f1115',
   color_hamburger: '#ffffff',
 }
@@ -178,10 +239,10 @@ export const DEFAULT_SITE_TOP_NAV_MOBILE = {
   color_text: '#c4c8d0',
   color_icon: '#f4f5f7',
   color_hover: '#ffffff',
-  color_accent: '#fbc300',
+  color_accent: '#F4AE52',
   color_border: 'rgba(255, 255, 255, 0.1)',
-  color_cta_bg: '#fbc300',
-  color_cta_text: '#14181f',
+  color_cta_bg: '#D4621A',
+  color_cta_text: '#FEF3E2',
   color_drawer_bg: '#0f1115',
   color_hamburger: '#ffffff',
 }
@@ -196,6 +257,45 @@ function pxNum(v, fallback = 0, max = 240) {
   const n = Number(v)
   if (!Number.isFinite(n)) return fallback
   return Math.max(0, Math.min(max, Math.round(n)))
+}
+
+/** null = پیش‌فرض داشبورد؛ آرایه = انتخاب دستی به همان ترتیب */
+export function normalizeMobileNavItemIds(raw) {
+  if (raw == null || raw === '') return null
+  if (!Array.isArray(raw)) return null
+  const ids = []
+  const seen = new Set()
+  raw.forEach((v) => {
+    const n = Number(v)
+    if (!Number.isFinite(n) || n <= 0) return
+    const id = Math.round(n)
+    if (seen.has(id)) return
+    seen.add(id)
+    ids.push(id)
+  })
+  return ids
+}
+
+const MOBILE_NAV_STYLE_KEYS = new Set([
+  'classic',
+  'center_circle',
+  'rounded_square',
+  'glow_dock',
+])
+
+/** null = مثل داشبورد؛ وگرنه یکی از کلیدهای معتبر */
+export function normalizeMobileNavStyle(raw) {
+  if (raw == null || raw === '' || raw === 'dashboard' || raw === 'inherit') {
+    return null
+  }
+  const key = String(raw).trim()
+  return MOBILE_NAV_STYLE_KEYS.has(key) ? key : null
+}
+
+export function normalizeMobileCenterItemId(raw) {
+  if (raw == null || raw === '') return null
+  const n = Number(raw)
+  return Number.isFinite(n) && n > 0 ? Math.round(n) : null
 }
 
 function colorStr(v) {
@@ -259,6 +359,36 @@ function coerceSiteTopNavSettings(merged, rawRoot = {}) {
     rawRoot.mobile_show_top === undefined
       ? true
       : !!rawRoot.mobile_show_top
+  s.mobile_nav_item_ids = normalizeMobileNavItemIds(
+    rawRoot.mobile_nav_item_ids ?? s.mobile_nav_item_ids
+  )
+  s.mobile_nav_style = normalizeMobileNavStyle(
+    rawRoot.mobile_nav_style ?? s.mobile_nav_style
+  )
+  s.mobile_center_item_id = normalizeMobileCenterItemId(
+    rawRoot.mobile_center_item_id ?? s.mobile_center_item_id
+  )
+
+  /* پروفایل/تاریخ — از ریشه حفظ شوند (viewport slice آن‌ها را حذف می‌کند) */
+  ;[
+    'show_date',
+    'date_font_size',
+    'date_font_weight',
+    'profile_mode',
+    'avatar_shape',
+    'guest_visible',
+    'guest_label',
+    'guest_icon',
+    'guest_href',
+    'color_date',
+    'color_profile_bg',
+    'color_profile_text',
+    'color_avatar_border',
+    'color_btn_bg',
+    'color_btn_text',
+  ].forEach((k) => {
+    if (rawRoot[k] !== undefined) s[k] = rawRoot[k]
+  })
 
   ;[
     'sticky',
@@ -430,6 +560,9 @@ export function createDefaultSiteTopNavSettings() {
     filter_by_modules: true,
     mobile_bottom_nav: true,
     mobile_show_top: true,
+    mobile_nav_item_ids: null,
+    mobile_nav_style: null,
+    mobile_center_item_id: null,
     ...desktop,
     desktop: { ...desktop },
     mobile: { ...DEFAULT_SITE_TOP_NAV_MOBILE },

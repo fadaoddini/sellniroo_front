@@ -3,7 +3,30 @@
 
 import { useRef, useEffect, useCallback } from "react";
 import styles from "../styles/ProfileTabs.module.css";
-import { Briefcase, User, Send, Bookmark, Building2, FileText, Brain, GraduationCap, ShoppingBag } from "lucide-react";
+import {
+  Briefcase,
+  User,
+  Send,
+  Bookmark,
+  Building2,
+  FileText,
+  Brain,
+  GraduationCap,
+  ShoppingBag,
+  Package,
+  MapPin,
+  CalendarCheck,
+  Wrench,
+  Store,
+  Cloud,
+  Newspaper,
+  Users,
+  ClipboardList,
+  LayoutDashboard,
+  Search,
+  MessageCircle,
+  Headphones,
+} from "lucide-react";
 
 const ICONS = {
   briefcase: Briefcase,
@@ -15,12 +38,42 @@ const ICONS = {
   brain: Brain,
   school: GraduationCap,
   shopping: ShoppingBag,
+  package: Package,
+  pin: MapPin,
+  calendar: CalendarCheck,
+  wrench: Wrench,
+  store: Store,
+  cloud: Cloud,
+  newspaper: Newspaper,
+  users: Users,
+  clipboard: ClipboardList,
+  layout: LayoutDashboard,
+  search: Search,
+  message: MessageCircle,
+  headphones: Headphones,
 };
 
 const ProfileTabs = ({ tabs, activeTab, onChange, tone = "job" }) => {
   const listRef = useRef(null);
   const btnRefs = useRef({});
-  const toneClass = tone === "basic" ? styles.toneBasic : styles.toneJob;
+  const toneClass =
+    tone === "sadra"
+      ? styles.toneSadra
+      : tone === "basic"
+        ? styles.toneBasic
+        : tone === "shop"
+          ? styles.toneShop
+          : tone === "rebo"
+            ? styles.toneRebo
+            : tone === "booking"
+              ? styles.toneBooking
+              : tone === "repairs"
+                ? styles.toneRepairs
+                : tone === "school"
+                  ? styles.toneSchool
+                  : tone === "gym"
+                    ? styles.toneGym
+                    : styles.toneJob;
 
   useEffect(() => {
     const el = btnRefs.current[activeTab];
@@ -82,7 +135,7 @@ const ProfileTabs = ({ tabs, activeTab, onChange, tone = "job" }) => {
               className={`${styles.tab} ${isActive ? styles.active : ""}`}
               onClick={() => onChange(tab.key)}
             >
-              <Icon size={16} aria-hidden />
+              <Icon size={14} strokeWidth={2.15} aria-hidden />
               <span>{tab.label}</span>
             </button>
           );

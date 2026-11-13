@@ -1,8 +1,11 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { ChevronDown, ExternalLink, Smartphone } from 'lucide-react'
+import { ChevronDown, ExternalLink, Smartphone, Upload, X } from 'lucide-react'
+import axios from 'axios'
+import { useAuth } from '@/contexts/AuthContext'
+import Config from '@/config/config'
 import {
   DEFAULT_NEWS_WIDGET_SETTINGS,
   DEFAULT_NEWS_MAGAZINE_SETTINGS,
@@ -23,6 +26,7 @@ import {
   NEWS_READ_MORE_RADIUS_FIELDS,
   NEWS_SPACE_FIELDS,
   NEWS_STATS_LAYOUTS,
+  NEWS_SHARE_ICON_FIELDS,
   NEWS_RECYCLER_TEXT_Y,
   NEWS_RECYCLER_TEXT_X,
   NEWS_RECYCLER_ASPECTS,
@@ -31,6 +35,213 @@ import {
 } from '@/config/newsWidgetSettings'
 import newsService from '@/services/newsService'
 import styles from './AdminWeb.module.css'
+
+function resolveShareIconPreview(url) {
+  if (!url) return ''
+  if (
+    url.startsWith('http://') ||
+    url.startsWith('https://') ||
+    url.startsWith('data:')
+  ) {
+    return url
+  }
+  const base = Config.baseUrl || ''
+  if (url.startsWith('/media/')) return `${base}${url}`
+  if (url.startsWith('media/')) return `${base}/${url}`
+  return url
+}
+
+/** آپلود آیکن سفارشی شبکه اشتراک (درگ‌اند‌دراپ / کلیک) */
+function ShareIconDropZone({ label, value, onChange }) {
+  const { getAuthHeaders } = useAuth()
+  const inputRef = useRef(null)
+  const [dragging, setDragging] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState('')
+  const preview = resolveShareIconPreview(value)
+
+  const uploadFile = useCallback(
+    async (file) => {
+      if (!file) return
+      if (!file.type?.startsWith('image/')) {
+        setError('فقط تصویر (PNG / JPG / WEBP / GIF)')
+        return
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setError('حداکثر ۵ مگابایت')
+        return
+      }
+      setError('')
+      setUploading(true)
+      try {
+        const fd = new FormData()
+        fd.append('upload', file)
+        const headers = { ...getAuthHeaders() }
+        delete headers['Content-Type']
+        const res = await axios.post(
+          `${Config.baseUrl}/api/news/upload-image/`,
+          fd,
+          { headers },
+        )
+        let nextUrl = res.data?.url || ''
+        if (nextUrl && /^https?:\/\//i.test(nextUrl)) {
+          try {
+            const u = new URL(nextUrl)
+            if (u.pathname.startsWith('/media/')) nextUrl = u.pathname
+          } catch {
+            /* keep absolute */
+          }
+        }
+        if (!nextUrl) throw new Error('آدرس تصویر برنگشت')
+        onChange(nextUrl)
+      } catch (err) {
+        // fallback: data URL برای پیش‌نمایش محلی اگر آپلود سرور شکست خورد
+        try {
+          if (file.size <= 180 * 1024) {
+            const dataUrl = await new Promise((resolve, reject) => {
+              const reader = new FileReader()
+              reader.onload = () => resolve(String(reader.result || ''))
+              reader.onerror = reject
+              reader.readAsDataURL(file)
+            })
+            if (dataUrl) {
+              onChange(dataUrl)
+              setError('آپلود سرور نشد؛ به‌صورت موقت ذخیره شد')
+              return
+            }
+          }
+        } catch {
+          /* ignore */
+        }
+        setError(
+          err?.response?.data?.error ||
+            err?.message ||
+            'آپلود ناموفق بود',
+        )
+      } finally {
+        setUploading(false)
+      }
+    },
+    [getAuthHeaders, onChange],
+  )
+
+  return (
+    <div className={styles.wsStack} style={{ gap: 6 }}>
+      <p className={styles.wsMiniLabel} style={{ margin: 0 }}>
+        {label}
+      </p>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+        }}
+      >
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => !uploading && inputRef.current?.click()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') inputRef.current?.click()
+          }}
+          onDragEnter={(e) => {
+            e.preventDefault()
+            setDragging(true)
+          }}
+          onDragOver={(e) => {
+            e.preventDefault()
+            setDragging(true)
+          }}
+          onDragLeave={(e) => {
+            e.preventDefault()
+            setDragging(false)
+          }}
+          onDrop={(e) => {
+            e.preventDefault()
+            setDragging(false)
+            const file = e.dataTransfer?.files?.[0]
+            if (file) uploadFile(file)
+          }}
+          style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            minHeight: 44,
+            padding: '0.45rem 0.65rem',
+            borderRadius: 10,
+            border: `1.5px dashed ${
+              dragging ? '#c27800' : 'rgba(42,26,14,0.22)'
+            }`,
+            background: dragging
+              ? 'rgba(244,174,82,0.12)'
+              : 'rgba(42,26,14,0.03)',
+            cursor: uploading ? 'wait' : 'pointer',
+          }}
+        >
+          <span
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: '50%',
+              overflow: 'hidden',
+              flexShrink: 0,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: '#fff',
+              border: '1px solid rgba(42,26,14,0.12)',
+            }}
+          >
+            {preview ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={preview}
+                alt=""
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <Upload size={14} style={{ opacity: 0.55 }} />
+            )}
+          </span>
+          <span style={{ fontSize: 12, fontWeight: 600, lineHeight: 1.35 }}>
+            {uploading
+              ? 'در حال آپلود…'
+              : preview
+                ? 'تعویض آیکن'
+                : 'رها کنید یا کلیک'}
+          </span>
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            hidden
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (file) uploadFile(file)
+              e.target.value = ''
+            }}
+          />
+        </div>
+        {value ? (
+          <button
+            type="button"
+            className={styles.wsTinyBtn}
+            title="حذف آیکن"
+            onClick={() => onChange('')}
+          >
+            <X size={12} />
+          </button>
+        ) : null}
+      </div>
+      {error ? (
+        <p className={styles.wsHint} style={{ color: '#b45309', margin: 0 }}>
+          {error}
+        </p>
+      ) : null}
+    </div>
+  )
+}
 
 function Toggle({ checked, onChange, label, hint }) {
   return (
@@ -1055,11 +1266,34 @@ export default function WidgetNewsSettings({
                 />
               ) : null}
               {settings.show_share ? (
-                <ColorRow
-                  label="رنگ اشتراک"
-                  value={settings.share_color}
-                  onChange={(v) => patch('share_color', v)}
-                />
+                <>
+                  <ColorRow
+                    label="رنگ اشتراک"
+                    value={settings.share_color}
+                    onChange={(v) => patch('share_color', v)}
+                  />
+                  <PxField
+                    label="اندازه آیکن شبکه‌ها"
+                    value={settings.share_icons_size}
+                    onChange={(v) => patch('share_icons_size', v)}
+                    min={16}
+                    max={40}
+                  />
+                  <p className={styles.wsMiniLabel}>آیکن سفارشی شبکه‌ها</p>
+                  <p className={styles.wsHint}>
+                    تصویر را بکشید و رها کنید یا کلیک کنید — در غیر این صورت حرف پیش‌فرض نشان داده می‌شود
+                  </p>
+                  <div className={styles.wsStack} style={{ gap: 10 }}>
+                    {NEWS_SHARE_ICON_FIELDS.map((f) => (
+                      <ShareIconDropZone
+                        key={f.key}
+                        label={f.label}
+                        value={settings[f.key] || ''}
+                        onChange={(v) => patch(f.key, v)}
+                      />
+                    ))}
+                  </div>
+                </>
               ) : null}
             </div>
           ) : null}

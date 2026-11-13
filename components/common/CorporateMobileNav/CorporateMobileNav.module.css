@@ -1,4 +1,4 @@
-/* منوی پایین سیستم شرکتی — ۴ استایل بهینه */
+/* منوی پایین شرکتی — هم‌سبک اپ با AppBottomNav */
 
 .bar {
   display: none;
@@ -6,35 +6,51 @@
 
 @media (max-width: 1023px) {
   .bar {
-    --nav-h: 64px;
-    --fab-size: 56px;
-    --fab-rise: 22px;
+    --nav-h: 58px;
+    --fab-size: 58px;
+    --fab-rise: 26px;
+    --dock-radius: 26px;
+    --ease-app: cubic-bezier(0.22, 1, 0.36, 1);
     display: block;
     position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
     z-index: 1200;
-    background: var(--corp-mobile-bg, #0a0a0a);
-    backdrop-filter: blur(22px) saturate(1.25);
-    -webkit-backdrop-filter: blur(22px) saturate(1.25);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 -10px 32px rgba(0, 0, 0, 0.28);
+    background: transparent;
+    border: none;
+    box-shadow: none;
     font-family: var(--font-iran);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding: 0 12px calc(10px + env(safe-area-inset-bottom, 0px));
     overflow: visible;
+    box-sizing: border-box;
+    pointer-events: none;
   }
 
   .inner {
+    pointer-events: auto;
     display: flex;
     align-items: center;
     justify-content: space-around;
     height: var(--nav-h);
-    max-width: 560px;
+    max-width: 420px;
     margin: 0 auto;
-    padding: 6px 8px 8px;
-    gap: 4px;
+    padding: 4px 6px;
+    gap: 2px;
     overflow: visible;
+    border-radius: var(--dock-radius);
+    background: color-mix(
+      in srgb,
+      var(--corp-mobile-bg, #0b0c10) 88%,
+      transparent
+    );
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+      0 10px 36px rgba(0, 0, 0, 0.38),
+      0 2px 8px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(28px) saturate(1.45);
+    -webkit-backdrop-filter: blur(28px) saturate(1.45);
   }
 
   .link {
@@ -42,235 +58,212 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 2px;
     flex: 1 1 0;
     min-width: 0;
-    max-width: 96px;
+    max-width: 88px;
     min-height: 48px;
-    padding: 6px 4px;
+    padding: 6px 2px 4px;
     text-decoration: none;
-    color: var(--corp-mobile-text, #9a9a9a);
+    color: var(--corp-mobile-text, #8e8e93);
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
     transition:
-      color 0.22s ease,
-      background 0.22s ease,
-      transform 0.22s cubic-bezier(0.34, 1.2, 0.64, 1),
-      box-shadow 0.22s ease;
-    border-radius: 14px;
+      color 0.2s var(--ease-app),
+      transform 0.2s var(--ease-app),
+      background 0.2s var(--ease-app);
+    border-radius: 18px;
     position: relative;
   }
 
+  .link:active {
+    transform: scale(0.92);
+  }
+
   .iconWrap {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 30px;
-    height: 30px;
-    color: var(--corp-mobile-icon, #9a9a9a);
-    transition: inherit;
+    width: 32px;
+    height: 28px;
+    color: var(--corp-mobile-icon, #8e8e93);
+    transition: color 0.2s var(--ease-app), transform 0.2s var(--ease-app);
     flex-shrink: 0;
   }
 
+  .link.active .iconWrap::before {
+    content: '';
+    position: absolute;
+    inset: -4px -10px;
+    border-radius: 999px;
+    background: color-mix(
+      in srgb,
+      var(--corp-mobile-active, #fff) 18%,
+      transparent
+    );
+    z-index: -1;
+  }
+
   .label {
-    font-size: 0.68rem;
-    font-weight: 600;
-    line-height: 1.15;
+    position: relative;
+    z-index: 1;
+    font-size: 0.62rem;
+    font-weight: 650;
+    line-height: 1.1;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
+    opacity: 0.92;
   }
 
-  /* ══════════ ۱) کلاسیک ══════════ */
-  .classic .link:hover,
-  .classic .active {
+  .active {
     color: var(--corp-mobile-active, #fff);
-    background: rgba(255, 255, 255, 0.07);
   }
 
-  .classic .active {
+  .active .iconWrap {
+    color: var(--corp-mobile-active, #fff);
     transform: translateY(-1px);
   }
 
-  .classic .link:hover .iconWrap,
-  .classic .active .iconWrap {
-    color: var(--corp-mobile-active, #fff);
+  .active .label {
+    opacity: 1;
+    font-weight: 750;
   }
 
   .classic .active .iconWrap {
-    transform: scale(1.08);
+    transform: translateY(-1px) scale(1.06);
   }
 
-  /* ══════════ ۲) دایره وسط ══════════ */
   .center_circle {
-    --nav-h: 58px;
-    background: transparent;
-    border-top: none;
-    box-shadow: none;
-    /* فضای بالا برای دایره بیرون‌زده */
-    padding-top: calc(var(--fab-rise) + 10px);
-    padding-inline: 10px;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-    pointer-events: none;
+    --nav-h: 56px;
+    padding-top: calc(var(--fab-rise) + 6px);
+    padding-inline: 14px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   }
 
   .center_circle .inner {
-    pointer-events: auto;
-    height: var(--nav-h);
     align-items: flex-end;
-    padding: 0 10px 8px;
-    border-radius: 22px;
-    background: color-mix(in srgb, var(--corp-mobile-bg, #0a0a0a) 94%, transparent);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow:
-      0 12px 36px rgba(0, 0, 0, 0.38),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(22px) saturate(1.3);
-    -webkit-backdrop-filter: blur(22px) saturate(1.3);
-    overflow: visible;
+    padding: 0 8px 7px;
+    border-radius: 24px;
   }
 
   .center_circle .link {
     justify-content: flex-end;
-    gap: 3px;
+    gap: 2px;
     min-height: 0;
     height: 100%;
     padding: 0 2px 2px;
-    border-radius: 16px;
-    z-index: 1;
   }
 
-  .center_circle .link:not(.centerLink):hover,
-  .center_circle .link:not(.centerLink).active {
-    color: var(--corp-mobile-active, #fff);
-    background: transparent;
-  }
-
-  .center_circle .link:not(.centerLink):hover .iconWrap,
-  .center_circle .link:not(.centerLink).active .iconWrap {
-    color: var(--corp-mobile-active, #fff);
-    transform: translateY(-2px);
+  .center_circle .link:not(.centerLink).active .iconWrap::before {
+    inset: -2px -8px;
   }
 
   .center_circle .centerLink {
     z-index: 3;
-    max-width: 88px;
-    justify-content: flex-end;
-    gap: 6px;
-    color: var(--corp-mobile-text, #9a9a9a);
+    max-width: 92px;
+    gap: 4px;
+  }
+
+  .center_circle .centerLink.active .iconWrap::before {
+    display: none;
   }
 
   .center_circle .centerIcon {
     width: var(--fab-size);
     height: var(--fab-size);
-    margin-top: calc(var(--fab-rise) * -1 - 6px);
+    margin-top: calc(var(--fab-rise) * -1 - 4px);
     margin-bottom: 0;
     border-radius: 50%;
     background: linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--corp-mobile-active, #fff) 100%, #fff) 0%,
-      var(--corp-mobile-active, #fff) 100%
+      160deg,
+      color-mix(in srgb, var(--corp-mobile-active, #fff) 92%, #fff) 0%,
+      var(--corp-mobile-active, #fff) 55%,
+      color-mix(in srgb, var(--corp-mobile-active, #fff) 75%, #000) 100%
     );
-    color: var(--corp-mobile-bg, #0a0a0a);
+    color: var(--corp-mobile-bg, #0b0c10);
     box-shadow:
-      0 8px 22px color-mix(in srgb, var(--corp-mobile-active, #fff) 35%, transparent),
+      0 10px 28px color-mix(in srgb, var(--corp-mobile-active, #fff) 40%, transparent),
       0 4px 12px rgba(0, 0, 0, 0.35),
-      0 0 0 4px color-mix(in srgb, var(--corp-mobile-bg, #0a0a0a) 92%, transparent);
+      0 0 0 5px color-mix(in srgb, var(--corp-mobile-bg, #0b0c10) 94%, #fff 6%),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
   }
 
   .center_circle .centerLink .label {
-    font-weight: 700;
-    font-size: 0.65rem;
-    color: var(--corp-mobile-text, #9a9a9a);
+    font-weight: 750;
+    font-size: 0.6rem;
   }
 
-  .center_circle .centerLink.active .label,
-  .center_circle .centerLink:hover .label {
+  .center_circle .centerLink:active .centerIcon {
+    transform: scale(0.94);
+  }
+
+  .center_circle .centerLink.active .centerIcon,
+  .center_circle .centerLink:hover .centerIcon {
+    transform: scale(1.05);
+    box-shadow:
+      0 12px 32px color-mix(in srgb, var(--corp-mobile-active, #fff) 48%, transparent),
+      0 4px 14px rgba(0, 0, 0, 0.4),
+      0 0 0 5px color-mix(in srgb, var(--corp-mobile-bg, #0b0c10) 94%, #fff 6%),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+
+  .center_circle .centerLink.active .label {
     color: var(--corp-mobile-active, #fff);
   }
 
-  .center_circle .centerLink:hover .centerIcon,
-  .center_circle .centerLink.active .centerIcon {
-    transform: scale(1.06);
-    box-shadow:
-      0 10px 26px color-mix(in srgb, var(--corp-mobile-active, #fff) 45%, transparent),
-      0 4px 14px rgba(0, 0, 0, 0.4),
-      0 0 0 4px color-mix(in srgb, var(--corp-mobile-bg, #0a0a0a) 92%, transparent);
-  }
-
-  /* ══════════ ۳) مربع گرد ══════════ */
   .rounded_square {
-    --nav-h: 68px;
+    --nav-h: 64px;
   }
 
   .rounded_square .inner {
-    padding: 8px 10px 10px;
-    gap: 6px;
+    padding: 6px 8px;
+    gap: 4px;
   }
 
   .rounded_square .link {
-    gap: 5px;
+    gap: 3px;
     padding: 4px 2px;
-    background: transparent;
   }
 
   .rounded_square .iconWrap {
-    width: 40px;
-    height: 40px;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    width: 38px;
+    height: 38px;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  .rounded_square .link:hover .iconWrap,
+  .rounded_square .link.active .iconWrap::before {
+    display: none;
+  }
+
   .rounded_square .active .iconWrap {
-    background: color-mix(in srgb, var(--corp-mobile-active, #fff) 20%, transparent);
-    border-color: color-mix(in srgb, var(--corp-mobile-active, #fff) 50%, transparent);
+    background: color-mix(in srgb, var(--corp-mobile-active, #fff) 22%, transparent);
+    border-color: color-mix(in srgb, var(--corp-mobile-active, #fff) 45%, transparent);
     color: var(--corp-mobile-active, #fff);
-    transform: translateY(-2px);
-    box-shadow:
-      0 6px 14px rgba(0, 0, 0, 0.22),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
   }
 
-  .rounded_square .link:hover,
-  .rounded_square .active {
-    color: var(--corp-mobile-active, #fff);
-    background: transparent;
-  }
-
-  .rounded_square .active .label {
-    font-weight: 700;
-  }
-
-  /* ══════════ ۴) داک درخشان ══════════ */
   .glow_dock {
-    background: transparent;
-    border-top: none;
-    box-shadow: none;
-    padding: 0 12px calc(12px + env(safe-area-inset-bottom, 0px));
+    padding: 0 14px calc(12px + env(safe-area-inset-bottom, 0px));
   }
 
   .glow_dock .inner {
-    height: 60px;
-    margin: 0 auto;
-    padding: 6px 10px;
-    border-radius: 22px;
-    background: color-mix(in srgb, var(--corp-mobile-bg, #0a0a0a) 90%, transparent);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    height: 58px;
+    border-radius: 28px;
+    border-color: rgba(255, 255, 255, 0.14);
     box-shadow:
-      0 14px 40px rgba(0, 0, 0, 0.42),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(24px) saturate(1.35);
-    -webkit-backdrop-filter: blur(24px) saturate(1.35);
-  }
-
-  .glow_dock .link {
-    border-radius: 16px;
-    gap: 3px;
+      0 14px 42px rgba(0, 0, 0, 0.45),
+      0 0 0 1px rgba(255, 255, 255, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
   }
 
   .glow_dock .iconWrap {
@@ -280,42 +273,36 @@
   }
 
   .glow_dock .label {
-    font-size: 0.6rem;
-    opacity: 0.85;
+    font-size: 0.58rem;
   }
 
-  .glow_dock .link:hover,
   .glow_dock .active {
-    color: var(--corp-mobile-active, #fff);
-    background: rgba(255, 255, 255, 0.06);
-    transform: translateY(-3px);
-  }
-
-  .glow_dock .active .label {
-    opacity: 1;
-    font-weight: 700;
+    transform: translateY(-2px);
   }
 
   .glow_dock .active .iconWrap {
-    color: var(--corp-mobile-active, #fff);
     background: color-mix(in srgb, var(--corp-mobile-active, #fff) 16%, transparent);
     box-shadow:
-      0 0 0 2px color-mix(in srgb, var(--corp-mobile-active, #fff) 30%, transparent),
-      0 0 18px color-mix(in srgb, var(--corp-mobile-active, #fff) 50%, transparent);
+      0 0 0 2px color-mix(in srgb, var(--corp-mobile-active, #fff) 28%, transparent),
+      0 0 20px color-mix(in srgb, var(--corp-mobile-active, #fff) 45%, transparent);
   }
 
-  .glow_dock .link:hover .iconWrap {
-    color: var(--corp-mobile-active, #fff);
+  .glow_dock .link.active .iconWrap::before {
+    display: none;
   }
 }
 
 @media (max-width: 380px) {
+  .bar {
+    padding-inline: 8px;
+  }
+
   .label {
-    font-size: 0.58rem;
+    font-size: 0.56rem;
   }
 
   .center_circle {
-    --fab-size: 50px;
-    --fab-rise: 18px;
+    --fab-size: 52px;
+    --fab-rise: 22px;
   }
 }

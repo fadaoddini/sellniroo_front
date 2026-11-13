@@ -7,7 +7,9 @@ import Config from "@/config/config";
 import { useAuth } from "@/contexts/AuthContext";
 import styles from "../ResumeForm.module.css";
 import PersianDatePicker from "@/components/common/PersianDatePicker";
-import { Plus, Trash2, Edit2, Check, X, Loader2, FolderKanban } from "lucide-react";
+import {
+  Plus, Trash2, Edit2, Check, X, Loader2, FolderKanban,
+} from "lucide-react";
 
 const emptyForm = {
   title: "",
@@ -28,7 +30,11 @@ const ProjectsSection = ({ resume, onRefresh }) => {
   const [error, setError] = useState(null);
 
   if (!resume) {
-    return <div className={styles.infoBox}>ابتدا اطلاعات پایه رزومه را ذخیره کنید.</div>;
+    return (
+      <div className={styles.infoBox}>
+        ابتدا اطلاعات پایه رزومه را ذخیره کنید.
+      </div>
+    );
   }
 
   const handleSave = async () => {
@@ -53,10 +59,14 @@ const ProjectsSection = ({ resume, onRefresh }) => {
         : Config.endpoints.jobisell.resumeSections.projects.list();
 
       const method = editingId ? "patch" : "post";
-      const res = await axios[method](url, payload, { headers: getAuthHeaders() });
+      const res = await axios[method](url, payload, {
+        headers: getAuthHeaders(),
+      });
 
       if (editingId) {
-        setItems((prev) => prev.map((it) => (it.id === editingId ? res.data : it)));
+        setItems((prev) =>
+          prev.map((it) => (it.id === editingId ? res.data : it))
+        );
       } else {
         setItems((prev) => [...prev, res.data]);
       }
@@ -105,12 +115,17 @@ const ProjectsSection = ({ resume, onRefresh }) => {
   };
 
   return (
-    <div className={styles.sectionWrapper}>
+    <div className={`${styles.sectionWrapper} ${styles.miniPanel}`}>
       <div className={styles.sectionHeader}>
         <h3>پروژه‌ها</h3>
         {!showForm && (
-          <button type="button" className={styles.addBtn} onClick={() => setShowForm(true)}>
-            <Plus size={14} /> افزودن پروژه
+          <button
+            type="button"
+            className={styles.addBtn}
+            onClick={() => setShowForm(true)}
+          >
+            <Plus size={13} strokeWidth={2.4} />
+            افزودن
           </button>
         )}
       </div>
@@ -120,15 +135,33 @@ const ProjectsSection = ({ resume, onRefresh }) => {
           {items.map((item) => (
             <div key={item.id} className={styles.listItem}>
               <div className={styles.listItemContent}>
-                <h4>{item.title}</h4>
-                {item.role && <p>{item.role}</p>}
+                <div className={styles.miniItemMain}>
+                  <h4>{item.title}</h4>
+                  {item.role ? (
+                    <>
+                      <span className={styles.miniDot} aria-hidden>
+                        ·
+                      </span>
+                      <p>{item.role}</p>
+                    </>
+                  ) : null}
+                </div>
               </div>
               <div className={styles.listItemActions}>
-                <button type="button" onClick={() => handleEdit(item)}>
-                  <Edit2 size={14} />
+                <button
+                  type="button"
+                  onClick={() => handleEdit(item)}
+                  aria-label="ویرایش"
+                >
+                  <Edit2 size={12} strokeWidth={2.2} />
                 </button>
-                <button type="button" onClick={() => handleDelete(item.id)} className={styles.deleteBtn}>
-                  <Trash2 size={14} />
+                <button
+                  type="button"
+                  onClick={() => handleDelete(item.id)}
+                  className={styles.deleteBtn}
+                  aria-label="حذف"
+                >
+                  <Trash2 size={12} strokeWidth={2.2} />
                 </button>
               </div>
             </div>
@@ -138,13 +171,16 @@ const ProjectsSection = ({ resume, onRefresh }) => {
 
       {showForm && (
         <div className={styles.subForm}>
-          <div className={styles.row}>
+          <div className={styles.grid3}>
             <div className={styles.formGroup}>
               <label>عنوان پروژه *</label>
               <input
                 type="text"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                placeholder="عنوان"
               />
             </div>
             <div className={styles.formGroup}>
@@ -152,32 +188,24 @@ const ProjectsSection = ({ resume, onRefresh }) => {
               <input
                 type="text"
                 value={formData.role}
-                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                placeholder="مثلاً: توسعه‌دهنده اصلی"
+                onChange={(e) =>
+                  setFormData({ ...formData, role: e.target.value })
+                }
+                placeholder="توسعه‌دهنده اصلی"
               />
             </div>
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>توضیحات</label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              rows={3}
-            />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>لینک پروژه</label>
-            <input
-              type="url"
-              value={formData.link}
-              onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-              dir="ltr"
-            />
-          </div>
-
-          <div className={styles.row}>
+            <div className={styles.formGroup}>
+              <label>لینک</label>
+              <input
+                type="url"
+                value={formData.link}
+                onChange={(e) =>
+                  setFormData({ ...formData, link: e.target.value })
+                }
+                placeholder="https://..."
+                dir="ltr"
+              />
+            </div>
             <div className={styles.formGroup}>
               <label>تاریخ شروع</label>
               <PersianDatePicker
@@ -185,7 +213,7 @@ const ProjectsSection = ({ resume, onRefresh }) => {
                 onChange={(date) =>
                   setFormData({ ...formData, start_date: date || "" })
                 }
-                placeholder="تاریخ شروع"
+                placeholder="شروع"
               />
             </div>
             <div className={styles.formGroup}>
@@ -195,7 +223,18 @@ const ProjectsSection = ({ resume, onRefresh }) => {
                 onChange={(date) =>
                   setFormData({ ...formData, end_date: date || "" })
                 }
-                placeholder="تاریخ پایان"
+                placeholder="پایان"
+              />
+            </div>
+            <div className={`${styles.formGroup} ${styles.spanFull}`}>
+              <label>توضیحات</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                rows={2}
+                placeholder="خلاصه پروژه"
               />
             </div>
           </div>
@@ -204,10 +243,19 @@ const ProjectsSection = ({ resume, onRefresh }) => {
 
           <div className={styles.subFormActions}>
             <button type="button" onClick={handleCancel} disabled={saving}>
-              <X size={14} /> لغو
+              <X size={13} /> لغو
             </button>
-            <button type="button" className={styles.saveBtn} onClick={handleSave} disabled={saving}>
-              {saving ? <Loader2 size={14} className={styles.spin} /> : <Check size={14} />}
+            <button
+              type="button"
+              className={styles.saveBtn}
+              onClick={handleSave}
+              disabled={saving}
+            >
+              {saving ? (
+                <Loader2 size={13} className={styles.spin} />
+              ) : (
+                <Check size={13} />
+              )}
               {editingId ? "بروزرسانی" : "افزودن"}
             </button>
           </div>
@@ -216,8 +264,8 @@ const ProjectsSection = ({ resume, onRefresh }) => {
 
       {items.length === 0 && !showForm && (
         <div className={styles.emptyBox}>
-          <FolderKanban size={32} />
-          <p>هنوز پروژه‌ای اضافه نکرده‌اید</p>
+          <FolderKanban size={22} strokeWidth={1.6} />
+          <p>پروژه‌ای ثبت نشده</p>
         </div>
       )}
     </div>

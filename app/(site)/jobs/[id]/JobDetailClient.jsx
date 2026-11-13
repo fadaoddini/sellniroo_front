@@ -29,6 +29,9 @@ import {
   DEFAULT_JOB_SINGLE_LAYOUT,
 } from '@/config/homeLayout';
 import PageBuilderRenderer from '@/components/layout/PageBuilderRenderer';
+import JobBoardHowItWorks from '@/components/widgets/jobs/JobBoardHowItWorks';
+import { JOB_SINGLE_TOUR_STEPS } from '@/config/jobSingleTour';
+import { getJobHref } from '@/utils/jobSlug';
 import styles from './JobDetail.module.css';
 
 // ============================================
@@ -214,7 +217,7 @@ export default function JobDetailClient({ initialJob }) {
   // ============================================
   const requireAuth = (callback) => {
     if (!isAuthenticated) {
-      router.push(`/login?next=/jobs/${job.id}`);
+      router.push(`/login?next=${encodeURIComponent(getJobHref(job))}`);
       return;
     }
     callback();
@@ -385,7 +388,7 @@ export default function JobDetailClient({ initialJob }) {
     if (!isHiring || !job.features?.length) return null;
 
     return (
-      <div className={styles.featuresSection}>
+      <div className={styles.featuresSection} data-tour="jsd-features">
         <h3 className={styles.featuresTitle}>مزایا و امکانات</h3>
         <div className={styles.featuresGrid}>
           {job.features.map((feat) => {
@@ -486,19 +489,42 @@ export default function JobDetailClient({ initialJob }) {
         {/* Breadcrumb — دسکتاپ */}
         {ps.show_breadcrumb ? (
         <nav className={styles.breadcrumb} aria-label="مسیر یابی">
-          <Link href="/" className={styles.breadcrumbLink}>خانه</Link>
-          <ChevronRight size={14} className={styles.breadcrumbSeparator} />
-          <Link href="/jobs" className={styles.breadcrumbLink}>آگهی‌های شغلی</Link>
-          <ChevronRight size={14} className={styles.breadcrumbSeparator} />
-          <span className={styles.breadcrumbCurrent}>{job.title}</span>
+          <ol className={styles.breadcrumbList}>
+            <li className={styles.breadcrumbItem}>
+              <Link href="/" className={styles.breadcrumbLink}>خانه</Link>
+            </li>
+            <li className={styles.breadcrumbSep} aria-hidden>
+              <ChevronRight size={13} strokeWidth={2.2} />
+            </li>
+            <li className={styles.breadcrumbItem}>
+              <Link href="/jobs" className={styles.breadcrumbLink}>آگهی‌های شغلی</Link>
+            </li>
+            <li className={styles.breadcrumbSep} aria-hidden>
+              <ChevronRight size={13} strokeWidth={2.2} />
+            </li>
+            <li className={styles.breadcrumbItem}>
+              <span className={styles.breadcrumbCurrent} title={job.title}>
+                {job.title}
+              </span>
+            </li>
+          </ol>
         </nav>
         ) : null}
+
+        <JobBoardHowItWorks
+          title="صفحه آگهی چطور کار می‌کند؟"
+          eyebrow="راهنمای سریع"
+          buttonLabel="راهنما"
+          steps={JOB_SINGLE_TOUR_STEPS}
+          tourTarget="jsd-how"
+          ariaLabel="شروع تور راهنمای صفحه آگهی"
+        />
 
         <div className={styles.jobDetailGrid}>
           {/* ستون اصلی */}
           <div className={styles.mainColumn}>
             {/* کارت اصلی */}
-            <div className={styles.jobCard}>
+            <div className={styles.jobCard} data-tour="jsd-card">
               {/* تصویر */}
               {ps.show_image ? (
               <div className={styles.jobImageWrapper}>
@@ -604,7 +630,7 @@ export default function JobDetailClient({ initialJob }) {
                 ps.show_cooperation ||
                 ps.show_meta_date ||
                 ps.show_experience) ? (
-              <div className={styles.jobQuickInfo}>
+              <div className={styles.jobQuickInfo} data-tour="jsd-meta">
                 {ps.show_location ? (
                 <div className={styles.quickInfoItem}>
                   <MapPin size={16} className={styles.quickInfoIcon} />
@@ -687,7 +713,7 @@ export default function JobDetailClient({ initialJob }) {
 
               {/* توضیحات */}
               {ps.show_description ? (
-              <div className={styles.jobDescription}>
+              <div className={styles.jobDescription} data-tour="jsd-description">
                 <h2 className={styles.sectionTitle}>توضیحات آگهی</h2>
                 <p className={styles.descriptionText}>{job.description}</p>
               </div>
@@ -708,7 +734,7 @@ export default function JobDetailClient({ initialJob }) {
 
             {/* ✅ آگهی‌های مشابه */}
             {ps.show_similar ? (
-            <div className={styles.similarJobs}>
+            <div className={styles.similarJobs} data-tour="jsd-similar">
               <h2 className={styles.sectionTitle}>آگهی‌های مشابه</h2>
               {similarLoading ? (
                 <div className={styles.similarLoading}>
@@ -720,7 +746,7 @@ export default function JobDetailClient({ initialJob }) {
                   {similarJobs.map((sj) => (
                     <Link
                       key={sj.id}
-                      href={`/jobs/${sj.id}`}
+                      href={getJobHref(sj)}
                       className={styles.similarJobCard}
                     >
                       <div className={styles.similarJobTitle}>{sj.title}</div>
@@ -746,7 +772,7 @@ export default function JobDetailClient({ initialJob }) {
           <div className={styles.sideColumn}>
             {/* کارت اقدامات — فقط استخدام */}
             {(ps.show_apply || ps.show_contact) ? (
-            <div className={styles.actionCard} id="job-apply">
+            <div className={styles.actionCard} id="job-apply" data-tour="jsd-apply">
               <h3 className={styles.actionCardTitle}>
                 {isHiring ? 'ثبت درخواست همکاری' : 'اطلاعات تماس'}
               </h3>
@@ -759,7 +785,7 @@ export default function JobDetailClient({ initialJob }) {
                       : 'برای مشاهده اطلاعات تماس وارد حساب کاربری شوید.'}
                   </p>
                   <Link
-                    href={`/login?next=/jobs/${job.id}`}
+                    href={`/login?next=${encodeURIComponent(getJobHref(job))}`}
                     className={styles.loginBtn}
                   >
                     ورود به حساب کاربری
@@ -865,7 +891,7 @@ export default function JobDetailClient({ initialJob }) {
 
             {/* اطلاعات شرکت */}
             {ps.show_company_card ? (
-            <div className={styles.companyCard}>
+            <div className={styles.companyCard} data-tour="jsd-company">
               <h3 className={styles.companyCardTitle}>درباره شرکت</h3>
               <div className={styles.companyInfo}>
                 <div className={styles.companyLogoLarge}>
@@ -926,7 +952,7 @@ export default function JobDetailClient({ initialJob }) {
           <div className={styles.mobileCtaInner}>
             {!isAuthenticated ? (
               <Link
-                href={`/login?next=/jobs/${job.id}`}
+                href={`/login?next=${encodeURIComponent(getJobHref(job))}`}
                 className={styles.mobileCtaPrimary}
               >
                 ورود برای ادامه

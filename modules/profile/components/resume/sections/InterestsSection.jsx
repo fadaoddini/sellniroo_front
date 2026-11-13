@@ -15,7 +15,11 @@ const InterestsSection = ({ resume, onRefresh }) => {
   const [saving, setSaving] = useState(false);
 
   if (!resume) {
-    return <div className={styles.infoBox}>ابتدا اطلاعات پایه رزومه را ذخیره کنید.</div>;
+    return (
+      <div className={styles.infoBox}>
+        ابتدا اطلاعات پایه رزومه را ذخیره کنید.
+      </div>
+    );
   }
 
   const handleAdd = async () => {
@@ -49,7 +53,7 @@ const InterestsSection = ({ resume, onRefresh }) => {
   };
 
   return (
-    <div className={styles.sectionWrapper}>
+    <div className={`${styles.sectionWrapper} ${styles.miniPanel}`}>
       <div className={styles.sectionHeader}>
         <h3>علاقه‌مندی‌ها</h3>
       </div>
@@ -62,8 +66,16 @@ const InterestsSection = ({ resume, onRefresh }) => {
           placeholder="مثلاً: مطالعه، ورزش، سفر"
           onKeyDown={(e) => e.key === "Enter" && handleAdd()}
         />
-        <button type="button" onClick={handleAdd} disabled={saving || !name.trim()}>
-          {saving ? <Loader2 size={14} className={styles.spin} /> : <Plus size={14} />}
+        <button
+          type="button"
+          onClick={handleAdd}
+          disabled={saving || !name.trim()}
+        >
+          {saving ? (
+            <Loader2 size={13} className={styles.spin} />
+          ) : (
+            <Plus size={13} strokeWidth={2.4} />
+          )}
           افزودن
         </button>
       </div>
@@ -73,8 +85,12 @@ const InterestsSection = ({ resume, onRefresh }) => {
           {items.map((item) => (
             <div key={item.id} className={styles.tag}>
               {item.name}
-              <button type="button" onClick={() => handleDelete(item.id)}>
-                <Trash2 size={11} />
+              <button
+                type="button"
+                onClick={() => handleDelete(item.id)}
+                aria-label="حذف"
+              >
+                <Trash2 size={11} strokeWidth={2.2} />
               </button>
             </div>
           ))}
@@ -83,8 +99,8 @@ const InterestsSection = ({ resume, onRefresh }) => {
 
       {items.length === 0 && (
         <div className={styles.emptyBox}>
-          <Heart size={32} />
-          <p>هنوز علاقه‌مندی اضافه نکرده‌اید</p>
+          <Heart size={22} strokeWidth={1.6} />
+          <p>علاقه‌مندی ثبت نشده</p>
         </div>
       )}
     </div>

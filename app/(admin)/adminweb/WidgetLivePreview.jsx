@@ -6,6 +6,7 @@ import {
   Megaphone,
   User,
   LogIn,
+  ShoppingBag,
   Images,
   Newspaper,
   Film,
@@ -52,6 +53,7 @@ const FALLBACK_ICONS = {
   latest_news_recycler: GalleryHorizontal,
   video_gallery: Film,
   video_archive_grid: Film,
+  video_archive_recycler: GalleryHorizontal,
   featured_video: Film,
   story: Film,
   story_circles: Film,
@@ -167,6 +169,14 @@ export default function WidgetLivePreview({ type, settings, selected = false }) 
 
         {showProfile ? (
           <span className={styles.lpProfile}>
+            {type === 'breaking_news' &&
+            s.show_cart !== false &&
+            s.cart_place !== 'after_profile' ? (
+              <span className={styles.lpGuest} title="سبد خرید">
+                <ShoppingBag size={10} />
+                {s.cart_show_badge !== false ? <b>۲</b> : null}
+              </span>
+            ) : null}
             {s.guest_visible ? (
               <span className={styles.lpGuest} title="قبل از ورود">
                 <LogIn size={10} />
@@ -181,6 +191,14 @@ export default function WidgetLivePreview({ type, settings, selected = false }) 
               >
                 <User size={11} />
                 {s.profile_mode === 'avatar_name' ? <b>کاربر</b> : null}
+              </span>
+            ) : null}
+            {type === 'breaking_news' &&
+            s.show_cart !== false &&
+            s.cart_place === 'after_profile' ? (
+              <span className={styles.lpGuest} title="سبد خرید">
+                <ShoppingBag size={10} />
+                {s.cart_show_badge !== false ? <b>۲</b> : null}
               </span>
             ) : null}
             {!s.guest_visible && s.profile_mode === 'hidden' ? (

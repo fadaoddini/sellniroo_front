@@ -3,10 +3,13 @@
 export const OWNER_PHONES = ['09135004344', '09152913121']
 
 export const OWNER_PROFILE = {
-  name: 'محمد سعید فداالدینی',
-  role: 'طراح و برنامه‌نویس پلتفرم',
-  site: 'saeedev.com',
-  siteUrl: 'https://saeedev.com',
+  name: 'محمدسعید فداالدینی',
+  role: 'طراح',
+  site: 'www.rebo.ir',
+  siteUrl: 'https://www.rebo.ir',
+  brandFa: 'ربو',
+  /** اعتبار پلتفرم — بدون نام انگلیسی */
+  engineLine: 'موتور اختصاصی ربو',
 }
 
 /**

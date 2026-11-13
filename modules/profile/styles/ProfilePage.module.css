@@ -1,46 +1,76 @@
-/* ProfilePage — هماهنگ با تم طلایی/کرم داشبورد */
+/* پروفایل کاریابی — جمع‌وجور، RTL، پالت #FEF3E2 · #F4AE52 · #D4621A · #2A1A0E */
 
 .profilePage {
-  --ink: #2a241c;
-  --muted: #6f675c;
-  --line: rgba(90, 60, 20, 0.12);
-  --gold: #fbc300;
-  --gold-dark: #c27800;
-  --cream: #fff7ec;
+  --ink: #2A1A0E;
+  --muted: #6B5344;
+  --line: rgba(42, 26, 14, 0.1);
+  --gold: #F4AE52;
+  --gold-dark: #D4621A;
+  --cream: #FEF3E2;
 
-  min-height: calc(100vh - 40px);
-  padding: 1.75rem 0 3.5rem;
+  padding: 0.75rem 0 2rem;
   direction: rtl;
-  font-family: var(--font-iran);
+  font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
   color: var(--ink);
-  background:
-    radial-gradient(1200px 420px at 100% -10%, rgba(251, 195, 0, 0.16), transparent 55%),
-    radial-gradient(900px 380px at -10% 0%, rgba(251, 151, 0, 0.1), transparent 50%),
-    var(--macos-bg, #fff4e7);
+  background: transparent;
+}
+
+.profilePageSchool {
+  --ink: #004733;
+  --muted: #568d66;
+  --line: rgba(0, 71, 51, 0.14);
+  --gold: #2b6a4d;
+  --gold-dark: #004733;
+  --cream: #eef3f0;
+  font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
+  color: #004733;
+  background: transparent;
+}
+
+.profilePageSchool .tabContent {
+  background: #fff;
+  border: 1px solid rgba(0, 71, 51, 0.12);
+  border-radius: 14px;
+  padding: 0.85rem;
+  box-shadow: 0 4px 14px rgba(0, 71, 51, 0.04);
+  font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
+}
+
+/* تب معلم: محتوای کامل داشبورد بدون قاب اضافه */
+.profilePageSchool .tabContentFlush {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+}
+
+.profilePageSchool .spinner {
+  color: #004733;
 }
 
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 1.15rem;
+  gap: 0.7rem;
+  box-sizing: border-box;
 }
 
 .loadingContainer {
-  min-height: calc(100vh - 40px);
+  min-height: 42vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.85rem;
+  gap: 0.7rem;
   color: var(--muted);
-  background:
-    radial-gradient(900px 320px at 50% 0%, rgba(251, 195, 0, 0.14), transparent 55%),
-    var(--macos-bg, #fff4e7);
+  background: transparent;
   font-family: var(--font-iran);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .spinner {
@@ -48,24 +78,51 @@
   color: var(--gold-dark);
 }
 
-/* ——— پروفایل عادی (بدون کاریابی) ——— */
+/* ——— پروفایل صدرا ——— */
+.profilePageSadra {
+  --ink: #1e3b2f;
+  --muted: #7f8c6a;
+  --line: color-mix(in srgb, #7f8c6a 28%, transparent);
+  --accent: #c8b48a;
+  --profile-ink: #1e3b2f;
+  --profile-muted: #7f8c6a;
+  --profile-accent: #c8b48a;
+  --profile-accent-deep: #1e3b2f;
+  --profile-cream: #f5f0e6;
+  --profile-line: color-mix(in srgb, #7f8c6a 28%, transparent);
+  --profile-surface: #ffffff;
+  --profile-black: #0a0a0a;
+  padding: 1rem 0 2.5rem;
+  background: transparent;
+  color: var(--ink);
+}
+
+.loadingSadra {
+  background: transparent;
+}
+
+.loadingSadra .spinner {
+  color: #7f8c6a;
+}
+
+/* ——— پروفایل عادی ——— */
 .profilePageBasic {
   --ink: #1a1a1a;
   --muted: #6b6b6b;
   --line: rgba(0, 0, 0, 0.08);
   --accent: #1a1a1a;
-  background: #f6f6f4;
-  min-height: calc(100vh - 40px);
-  padding: 1.25rem 0 2.5rem;
+  background: transparent;
+  padding: 1rem 0 2rem;
 }
 
 .containerBasic {
-  max-width: 1200px;
-  gap: 0.85rem;
+  max-width: none;
+  width: 100%;
+  gap: 0.75rem;
 }
 
 .loadingBasic {
-  background: #f6f6f4;
+  background: transparent;
 }
 
 .loadingBasic .spinner {
@@ -122,8 +179,13 @@
 }
 
 .tabContent {
-  animation: fadeIn 0.28s ease-out;
-  min-height: 240px;
+  animation: fadeIn 0.22s ease-out;
+  min-height: 180px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0.85rem;
+  box-shadow: 0 4px 14px rgba(42, 26, 14, 0.04);
 }
 
 @keyframes spin {
@@ -133,7 +195,7 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
@@ -143,11 +205,16 @@
 
 @media (max-width: 768px) {
   .profilePage {
-    padding: 1rem 0 2.75rem;
+    padding: 0.55rem 0 1.75rem;
   }
 
   .container {
-    gap: 0.9rem;
+    gap: 0.55rem;
+  }
+
+  .tabContent {
+    padding: 0.7rem;
+    border-radius: 12px;
   }
 }
 

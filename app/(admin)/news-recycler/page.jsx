@@ -467,72 +467,72 @@ export default function NewsRecyclerAdminPage() {
             <div className={styles.panelHead}>
               <p className={styles.panelTitle}>داده و محتوا</p>
             </div>
-            <label className={styles.field}>
+          <label className={styles.field}>
               <span>دسته‌بندی</span>
-              <select
-                value={form.category_slug || ''}
-                onChange={(e) => patch('category_slug', e.target.value)}
-              >
+            <select
+              value={form.category_slug || ''}
+              onChange={(e) => patch('category_slug', e.target.value)}
+            >
                 <option value="">همهٔ آخرین اخبار (بدون فیلتر دسته)</option>
-                {categories.map((c) => (
-                  <option key={c.id || c.slug} value={c.slug}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <div className={styles.grid3}>
-              <label className={styles.field}>
+              {categories.map((c) => (
+                <option key={c.id || c.slug} value={c.slug}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className={styles.grid3}>
+            <label className={styles.field}>
                 <span>تعداد</span>
-                <input
-                  type="number"
-                  min={1}
-                  max={20}
-                  value={form.count}
-                  onChange={(e) =>
-                    patch(
-                      'count',
-                      Math.max(1, Math.min(20, Number(e.target.value) || 1))
-                    )
-                  }
-                  dir="ltr"
-                />
-              </label>
-              <label className={styles.field}>
+              <input
+                type="number"
+                min={1}
+                max={20}
+                value={form.count}
+                onChange={(e) =>
+                  patch(
+                    'count',
+                    Math.max(1, Math.min(20, Number(e.target.value) || 1))
+                  )
+                }
+                dir="ltr"
+              />
+            </label>
+            <label className={styles.field}>
                 <span>افست</span>
-                <input
-                  type="number"
-                  min={0}
-                  max={40}
-                  value={form.offset}
-                  onChange={(e) =>
-                    patch(
-                      'offset',
-                      Math.max(0, Math.min(40, Number(e.target.value) || 0))
-                    )
-                  }
-                  dir="ltr"
-                />
-              </label>
-              <label className={styles.field}>
+              <input
+                type="number"
+                min={0}
+                max={40}
+                value={form.offset}
+                onChange={(e) =>
+                  patch(
+                    'offset',
+                    Math.max(0, Math.min(40, Number(e.target.value) || 0))
+                  )
+                }
+                dir="ltr"
+              />
+            </label>
+            <label className={styles.field}>
                 <span>شروع از خبر شماره</span>
-                <input
-                  type="number"
-                  min={1}
-                  max={41}
-                  value={(form.offset || 0) + 1}
-                  onChange={(e) =>
-                    patch(
-                      'offset',
-                      Math.max(0, Math.min(40, (Number(e.target.value) || 1) - 1))
-                    )
-                  }
-                  dir="ltr"
-                />
-              </label>
-            </div>
-            <div className={styles.toggles}>
-              {[
+              <input
+                type="number"
+                min={1}
+                max={41}
+                value={(form.offset || 0) + 1}
+                onChange={(e) =>
+                  patch(
+                    'offset',
+                    Math.max(0, Math.min(40, (Number(e.target.value) || 1) - 1))
+                  )
+                }
+                dir="ltr"
+              />
+            </label>
+          </div>
+          <div className={styles.toggles}>
+            {[
                 ['show_on_mobile', 'نمایش در موبایل'],
                 ['show_image', 'نمایش تصویر'],
                 ['show_likes', 'نمایش لایک'],
@@ -542,44 +542,44 @@ export default function NewsRecyclerAdminPage() {
                 ['show_lead', 'نمایش لید'],
                 ['show_read_more', 'نمایش ادامه مطلب'],
                 ['title_wrap', 'شکستن عنوان'],
-              ].map(([key, label]) => (
-                <label key={key} className={styles.toggleRow}>
-                  <span>{label}</span>
-                  <input
-                    type="checkbox"
-                    checked={!!form[key]}
-                    onChange={(e) => patch(key, e.target.checked)}
-                  />
-                </label>
-              ))}
-            </div>
-            {form.show_read_more ? (
-              <label className={styles.field}>
-                <span>متن ادامه مطلب</span>
+            ].map(([key, label]) => (
+              <label key={key} className={styles.toggleRow}>
+                <span>{label}</span>
                 <input
-                  type="text"
-                  value={form.read_more_text || ''}
-                  onChange={(e) => patch('read_more_text', e.target.value)}
+                  type="checkbox"
+                  checked={!!form[key]}
+                  onChange={(e) => patch(key, e.target.checked)}
                 />
               </label>
-            ) : null}
+            ))}
+          </div>
+          {form.show_read_more ? (
             <label className={styles.field}>
-              <span>حداکثر کاراکتر عنوان</span>
+                <span>متن ادامه مطلب</span>
               <input
-                type="number"
-                min={10}
-                max={120}
-                value={form.title_max_chars}
-                onChange={(e) =>
-                  patch(
-                    'title_max_chars',
-                    Math.max(10, Math.min(120, Number(e.target.value) || 48))
-                  )
-                }
-                dir="ltr"
+                type="text"
+                value={form.read_more_text || ''}
+                onChange={(e) => patch('read_more_text', e.target.value)}
               />
             </label>
-          </div>
+          ) : null}
+          <label className={styles.field}>
+              <span>حداکثر کاراکتر عنوان</span>
+            <input
+              type="number"
+              min={10}
+              max={120}
+              value={form.title_max_chars}
+              onChange={(e) =>
+                patch(
+                  'title_max_chars',
+                  Math.max(10, Math.min(120, Number(e.target.value) || 48))
+                )
+              }
+              dir="ltr"
+            />
+          </label>
+        </div>
 
           {/* سکشن / گرادیان */}
           <div className={styles.panel}>

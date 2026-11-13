@@ -2,6 +2,7 @@
 
 import React from 'react'
 import ModuleGate from '@/components/modules/ModuleGate'
+import ModulePageShell from '@/components/layout/ModulePageShell'
 import Quiz from '@/components/Quiz'
 import { SITE_MODULE_KEYS } from '@/config/siteModules'
 import disabledStyles from './ModuleDisabled.module.css'

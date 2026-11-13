@@ -16,8 +16,12 @@ moment.loadPersian({ dialect: 'persian-modern', usePersianDigits: false })
 const QuizProfilePanel = lazy(() => import('./QuizProfilePanel'))
 const SchoolProfilePanel = lazy(() => import('@/components/School/SchoolProfilePanel'))
 const ShopProfilePanel = lazy(() => import('./ShopProfilePanel'))
+const ReboPackageOrdersPanel = lazy(() => import('./ReboPackageOrdersPanel'))
+const NewsContributionsPanel = lazy(() => import('./NewsContributionsPanel'))
 
 const BASE_TABS = [{ key: 'account', label: 'حساب', icon: 'user' }]
+const NEWS_TAB = { key: 'news', label: 'مطالب من', icon: 'newspaper' }
+const REBO_TAB = { key: 'rebo', label: 'سفارش ربو', icon: 'package' }
 const SHOP_TAB = { key: 'shop', label: 'فروشگاه', icon: 'shopping' }
 const QUIZ_TAB = { key: 'quiz', label: 'آزمون', icon: 'brain' }
 const SCHOOL_TAB = { key: 'school', label: 'مدرسه', icon: 'school' }
@@ -37,14 +41,18 @@ function BasicProfileInner() {
   const [quizOn, setQuizOn] = useState(false)
   const [schoolOn, setSchoolOn] = useState(false)
   const [shopOn, setShopOn] = useState(false)
+  const [reboOn, setReboOn] = useState(false)
+  const [newsOn, setNewsOn] = useState(false)
 
   const tabs = useMemo(() => {
     const list = [...BASE_TABS]
+    if (newsOn) list.push(NEWS_TAB)
+    if (reboOn) list.push(REBO_TAB)
     if (shopOn) list.push(SHOP_TAB)
     if (quizOn) list.push(QUIZ_TAB)
     if (schoolOn) list.push(SCHOOL_TAB)
     return list
-  }, [quizOn, schoolOn, shopOn])
+  }, [quizOn, schoolOn, shopOn, reboOn, newsOn])
   const tabKeys = useMemo(() => new Set(tabs.map((t) => t.key)), [tabs])
 
   const initialTab = useMemo(() => {
@@ -57,9 +65,11 @@ function BasicProfileInner() {
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      router.replace('/login?next=/profile')
+      const qs = searchParams.toString()
+      const next = qs ? `/profile?${qs}` : '/profile'
+      router.replace(`/login?next=${encodeURIComponent(next)}`)
     }
-  }, [authLoading, isAuthenticated, router])
+  }, [authLoading, isAuthenticated, router, searchParams])
 
   useEffect(() => {
     let cancelled = false
@@ -68,11 +78,17 @@ function BasicProfileInner() {
         isSiteModuleActive(SITE_MODULE_KEYS.QUIZ, { force: true }),
         isSiteModuleActive(SITE_MODULE_KEYS.SCHOOL, { force: true }),
         isSiteModuleActive(SITE_MODULE_KEYS.SHOP, { force: true }),
-      ]).then(([quiz, school, shop]) => {
+        isSiteModuleActive(SITE_MODULE_KEYS.DATA_PACK_REBO_THEME_ONE, {
+          force: true,
+        }),
+        isSiteModuleActive(SITE_MODULE_KEYS.NEWS, { force: true }),
+      ]).then(([quiz, school, shop, rebo, news]) => {
         if (cancelled) return
         setQuizOn(!!quiz)
         setSchoolOn(!!school)
         setShopOn(!!shop)
+        setReboOn(!!rebo)
+        setNewsOn(!!news)
       })
     }
     refresh()
@@ -148,6 +164,12 @@ function BasicProfileInner() {
             </section>
           ) : null}
 
+          {activeTab === 'rebo' && reboOn ? (
+            <Suspense fallback={<PanelFallback />}>
+              <ReboPackageOrdersPanel />
+            </Suspense>
+          ) : null}
+
           {activeTab === 'shop' && shopOn ? (
             <Suspense fallback={<PanelFallback />}>
               <ShopProfilePanel />
@@ -163,6 +185,12 @@ function BasicProfileInner() {
           {activeTab === 'school' && schoolOn ? (
             <Suspense fallback={<PanelFallback />}>
               <SchoolProfilePanel />
+            </Suspense>
+          ) : null}
+
+          {activeTab === 'news' && newsOn ? (
+            <Suspense fallback={<PanelFallback />}>
+              <NewsContributionsPanel />
             </Suspense>
           ) : null}
         </div>

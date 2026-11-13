@@ -77,24 +77,23 @@ export default function QuizProfilePanel({ variant = 'embedded' }) {
       }`}
     >
       <div className={styles.hero}>
-        <div className={styles.heroGlow} aria-hidden />
         <div className={styles.heroContent}>
           <div className={styles.heroText}>
             <p className={styles.heroEyebrow}>
-              <Sparkles size={14} />
+              <Sparkles size={12} strokeWidth={2.2} />
               کارنامه آزمون
             </p>
             <h2 className={styles.title}>
-              <Brain size={22} />
+              <Brain size={18} strokeWidth={2.1} />
               پروفایل آزمون
             </h2>
             <p className={styles.sub}>
-              آزمون‌های قبلی، بهترین امتیازها و رتبه‌های شما در یک نگاه
+              آزمون‌ها، بهترین امتیازها و رتبه‌های شما
             </p>
           </div>
           <div className={styles.headActions}>
             <button type="button" className={styles.btnGhost} onClick={load}>
-              <RefreshCw size={15} />
+              <RefreshCw size={13} strokeWidth={2.2} />
               بروزرسانی
             </button>
             <Link href="/quiz" className={styles.btnPrimary}>
@@ -107,28 +106,28 @@ export default function QuizProfilePanel({ variant = 'embedded' }) {
       <div className={styles.stats}>
         <div className={styles.stat}>
           <span className={styles.statIcon}>
-            <Target size={18} />
+            <Target size={15} strokeWidth={2.2} />
           </span>
           <strong>{summary.total_attempts || 0}</strong>
           <span>تعداد آزمون</span>
         </div>
         <div className={styles.stat}>
           <span className={styles.statIcon}>
-            <Trophy size={18} />
+            <Trophy size={15} strokeWidth={2.2} />
           </span>
           <strong>{summary.best_percentage || 0}%</strong>
           <span>بهترین درصد</span>
         </div>
         <div className={styles.stat}>
           <span className={styles.statIcon}>
-            <Award size={18} />
+            <Award size={15} strokeWidth={2.2} />
           </span>
           <strong>{summary.best_score || 0}</strong>
           <span>بهترین امتیاز</span>
         </div>
         <div className={styles.stat}>
           <span className={styles.statIcon}>
-            <Medal size={18} />
+            <Medal size={15} strokeWidth={2.2} />
           </span>
           <strong>{summary.specialties_played || 0}</strong>
           <span>حوزه شرکت‌کرده</span>
@@ -161,9 +160,9 @@ export default function QuizProfilePanel({ variant = 'embedded' }) {
         {!hasData ? (
           <div className={styles.empty}>
             <div className={styles.emptyIcon}>
-              <Brain size={28} />
+              <Brain size={22} strokeWidth={1.6} />
             </div>
-            <p>هنوز آزمونی ثبت نشده است.</p>
+            <p>آزمونی ثبت نشده</p>
             <Link href="/quiz" className={styles.btnPrimary}>
               اولین آزمون را شروع کنید
             </Link>

@@ -60,10 +60,11 @@ export const clearSiteModulesCache = () => {
 }
 
 function normalizePayload(json) {
-  const list = Array.isArray(json?.data)
-    ? json.data
-    : Array.isArray(json?.modules)
-      ? json.modules
+  // ترجیح با modules (لیست کامل بعد از toggle) — data گاهی تک‌آیتم بوده
+  const list = Array.isArray(json?.modules)
+    ? json.modules
+    : Array.isArray(json?.data)
+      ? json.data
       : []
   let map
   if (json?.map && typeof json.map === 'object') {
@@ -93,7 +94,7 @@ function emitChanged(detail = {}) {
   }
 }
 
-export async function fetchSiteModules({ force = false } = {}) {
+export async function fetchSiteModules({ force = false, soft = true } = {}) {
   const now = Date.now()
   if (!force && cache && now - cacheAt < TTL_MS) return cache
   if (!force && inflight) return inflight
@@ -106,7 +107,13 @@ export async function fetchSiteModules({ force = false } = {}) {
         headers: { Accept: 'application/json' },
         cache: 'no-store',
       })
-      if (!res.ok) throw new Error(`site-modules ${res.status}`)
+      if (!res.ok) {
+        throw new Error(
+          res.status === 404
+            ? `API ماژول‌ها پیدا نشد (${url}) — بک‌اند sellniroo را چک کنید`
+            : `site-modules ${res.status}`,
+        )
+      }
       const json = await res.json()
       const payload = normalizePayload(json)
       // پاسخ قدیمی‌تر از یک fetch جدیدتر، کش را خراب نکند
@@ -115,8 +122,9 @@ export async function fetchSiteModules({ force = false } = {}) {
         cacheAt = Date.now()
       }
       return payload
-    } catch {
+    } catch (err) {
       if (cache) return cache
+      if (!soft) throw err
       const failMap = Object.fromEntries(
         SITE_MODULES_CATALOG.map((m) => [m.key, false])
       )
@@ -135,6 +143,7 @@ export async function fetchSiteModules({ force = false } = {}) {
         })),
         map: failMap,
         affected: [],
+        error: err?.message || 'خطا در دریافت ماژول‌ها',
       }
     } finally {
       if (gen === fetchGen) inflight = null
@@ -180,6 +189,10 @@ export async function reorderHomepageModules(keys, headers = {}) {
 }
 
 export async function toggleSiteModule(key, headers = {}) {
+  const auth = headers?.Authorization || headers?.authorization
+  if (!auth) {
+    throw new Error('وارد نشده‌اید — برای تغییر ماژول دوباره وارد شوید')
+  }
   const url = Config.endpoints.news.siteModules.toggle(key)
   const res = await fetch(url, {
     method: 'POST',
@@ -191,17 +204,31 @@ export async function toggleSiteModule(key, headers = {}) {
   })
   const json = await res.json().catch(() => ({}))
   if (!res.ok) {
-    throw new Error(json?.detail || json?.message || `toggle failed ${res.status}`)
+    const detail =
+      json?.detail ||
+      json?.message ||
+      (res.status === 401
+        ? 'نشست منقضی شده — دوباره وارد شوید'
+        : res.status === 403
+          ? 'دسترسی مدیریت ماژول ندارید'
+          : `toggle failed ${res.status}`)
+    throw new Error(detail)
   }
   clearSiteModulesCache()
   // بلافاصله کش را از پاسخ toggle پر کن تا داشبورد/سایت وضعیت کهنه نبینند
-  const payload = normalizePayload(json)
-  cache = payload
-  cacheAt = Date.now()
+  let payload = normalizePayload(json)
+  // اگر لیست خالی آمد، یک‌بار از API لیست تازه بگیر
+  if (!payload.list.length) {
+    const fresh = await fetchSiteModules({ force: true })
+    payload = fresh
+  } else {
+    cache = payload
+    cacheAt = Date.now()
+  }
   const affected = json?.affected || [key]
   emitChanged({ key, affected, map: payload.map })
   return {
-    data: json?.data || json,
+    data: json?.item || json?.data || json,
     map: payload.map,
     list: payload.list.length ? payload.list : null,
     affected,

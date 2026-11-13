@@ -140,12 +140,13 @@ const VerificationSection = ({ company, onRequestSubmitted }) => {
     return (
       <div className={`${styles.card} ${styles.verified}`}>
         <div className={styles.iconBox}>
-          <ShieldCheck size={32} />
+          <ShieldCheck size={20} strokeWidth={2} />
         </div>
         <div className={styles.content}>
           <h3>شرکت شما تایید شده است</h3>
           <p>
             تبریک! شرکت شما به عنوان یک شرکت تاییدشده در سامانه معرفی می‌شود.
+            مدارک تاییدشده دیگر قابل ویرایش یا حذف نیستند.
           </p>
           {company.verified_at && (
             <span className={styles.dateInfo}>
@@ -165,13 +166,14 @@ const VerificationSection = ({ company, onRequestSubmitted }) => {
     return (
       <div className={`${styles.card} ${styles.pending}`}>
         <div className={styles.iconBox}>
-          <Clock size={32} />
+          <Clock size={20} strokeWidth={2} />
         </div>
         <div className={styles.content}>
           <h3>درخواست شما در حال بررسی است</h3>
           <p>
             تیم پشتیبانی در حال بررسی مدارک شرکت شماست. این فرآیند معمولاً بین
-            ۲ تا ۵ روز کاری زمان می‌برد.
+            ۲ تا ۵ روز کاری زمان می‌برد. تا اعلام نتیجه، مدارک قابل تغییر
+            نیستند.
           </p>
         </div>
       </div>
@@ -185,7 +187,7 @@ const VerificationSection = ({ company, onRequestSubmitted }) => {
     return (
       <div className={`${styles.card} ${styles.rejected}`}>
         <div className={styles.iconBox}>
-          <XCircle size={32} />
+          <XCircle size={20} strokeWidth={2} />
         </div>
         <div className={styles.content}>
           <h3>درخواست شما رد شد</h3>
@@ -225,7 +227,7 @@ const VerificationSection = ({ company, onRequestSubmitted }) => {
   return (
     <div className={`${styles.card} ${styles.unverified}`}>
       <div className={styles.iconBox}>
-        <ShieldAlert size={32} />
+        <ShieldAlert size={20} strokeWidth={2} />
       </div>
       <div className={styles.content}>
         <h3>درخواست تایید شرکت</h3>

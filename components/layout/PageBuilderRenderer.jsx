@@ -42,6 +42,67 @@ import FeaturedNewsSliderWidget from '@/components/widgets/FeaturedNewsSliderWid
 import SiteTopNavWidget from '@/components/widgets/SiteTopNavWidget'
 import PostJobButtonWidget from '@/components/widgets/PostJobButtonWidget'
 import PersianDateTimeWidget from '@/components/widgets/PersianDateTimeWidget'
+import SadraPixelTitleWidget from '@/components/widgets/SadraPixelTitleWidget'
+import {
+  BookingCtaWidget,
+  BookingFormWidget,
+  BookingLookupWidget,
+  BookingServicesWidget,
+  BookingStaffWidget,
+} from '@/components/Booking/BookingWidgets'
+import FeatureCardsWidget from '@/components/widgets/FeatureCardsWidget'
+import SoftAppsGridWidget from '@/components/widgets/SoftAppsGridWidget'
+import ReboShowcaseWidget from '@/components/widgets/ReboShowcaseWidget'
+import {
+  ReboCapabilities,
+  ReboCloudOrderSection,
+  ReboClosing,
+  ReboDashboard,
+  ReboHero,
+  ReboOps,
+  ReboPillars,
+  ReboPricing,
+  ReboStack,
+  ReboUsecases,
+  REBO_WIDGET_TYPES,
+} from '@/components/widgets/rebo'
+import {
+  GymClosing,
+  GymFeatures,
+  GymHero,
+  GymJourney,
+  GymPillars,
+  GymSessions,
+  GymShop,
+  GymTrainers,
+  GYM_WIDGET_TYPES,
+} from '@/components/widgets/gym'
+import { isGymWidgetType } from '@/config/gymWidgetSettings'
+import { isHeroWithMenuWidgetType } from '@/config/heroWithMenuSettings'
+import {
+  SchoolClosing,
+  SchoolCounseling,
+  SchoolHero,
+  SchoolLanding,
+  SchoolAnimation,
+  SchoolHeroBreaking,
+  SchoolRoleBar,
+  SchoolPortals,
+  SchoolReportPreview,
+  SCHOOL_WIDGET_TYPES,
+} from '@/components/widgets/school'
+import { renderNobatWidget } from '@/components/widgets/nobat'
+import { NOBAT_WIDGET_TYPES } from '@/config/nobatWidgetSettings'
+import { renderInventoryWidget } from '@/components/widgets/inventory/InventoryHomeWidgets'
+import { INVENTORY_WIDGET_TYPES } from '@/config/inventoryWidgetSettings'
+import {
+  RepairsCtaWidget,
+  RepairsRequestWidget,
+  RepairsServicesWidget,
+  RepairsTechniciansWidget,
+  RepairsTrackWidget,
+} from '@/components/Repairs/RepairsWidgets'
+import { isModulePageContentWidget } from '@/config/modulePageLayouts'
 import { SITE_MODULE_KEYS } from '@/config/siteModules'
 import { widgetMeta } from '@/config/pageBuilderWidgets'
 import {
@@ -49,6 +110,15 @@ import {
   normalizeNewsWidgetSettings,
 } from '@/config/newsWidgetSettings'
 import { normalizeCtaWidgetSettings } from '@/config/ctaWidgetSettings'
+import {
+  isBookingCtaWidgetType,
+  isBookingFormWidgetType,
+  isBookingServicesWidgetType,
+  normalizeBookingCtaSettings,
+  normalizeBookingFormSettings,
+  normalizeBookingServicesSettings,
+} from '@/config/bookingWidgetSettings'
+import { normalizeRepairsCtaSettings } from '@/config/repairsWidgetSettings'
 import {
   isNavWidgetType,
   normalizeNavWidgetSettings,
@@ -65,15 +135,12 @@ import {
 import styles from './PageBuilder.module.css'
 
 function VideoInstaWidget({ type, settings }) {
-  /* story / story_circles = نوار دایره‌ای · بقیه = آرشیو کامل */
+  /* story = نوار دایره‌ای · recycler = ردیف افقی · بقیه = آرشیو کامل */
   const rail =
     type === 'story' || type === 'story_circles' || type === 'featured_video'
-  return (
-    <VideoInstaSlot
-      variant={rail ? 'rail' : 'section'}
-      settings={settings}
-    />
-  )
+  const recycler = type === 'video_archive_recycler'
+  const variant = rail ? 'rail' : recycler ? 'recycler' : 'section'
+  return <VideoInstaSlot variant={variant} settings={settings} />
 }
 
 function LogoWidget() {
@@ -143,6 +210,14 @@ function settingsForColumn(instance, constrainBleed) {
   if (isJobBoardWidgetType(instance.type)) {
     raw.section_full = false
   }
+  if (isShopWidgetType(instance.type)) {
+    raw.section_full = false
+    raw.surface_span = 'container'
+  }
+  if (isBookingServicesWidgetType(instance.type)) {
+    raw.section_full = false
+    raw.surface_span = 'container'
+  }
   return raw
 }
 
@@ -151,7 +226,17 @@ function isChromeWidgetType(type) {
     isNavWidgetType(type) ||
     isSiteTopNavWidgetType(type) ||
     type === 'breaking_news' ||
+    type === 'shop_search_bar' ||
     type === 'hero_slider' ||
+    type === 'rebo_hero' ||
+    type === 'rebo_usecases' ||
+    type === 'rebo_showcase' ||
+    type === 'gym_hero' ||
+    type === 'hero_with_menu' ||
+    type === 'school_animation' ||
+    type === 'school_landing' ||
+    type === 'school_hero_breaking' ||
+    type === 'school_hero' ||
     type === 'brand_bar' ||
     type === 'job_header_bar' ||
     type === 'job_bottom_nav' ||
@@ -164,9 +249,11 @@ function isChromeWidgetType(type) {
 function isSelfSpacedWidgetType(type) {
   return (
     isChromeWidgetType(type) ||
+    type === 'school_hero_breaking' ||
     type === 'cta_contact' ||
     type === 'video_gallery' ||
     type === 'video_archive_grid' ||
+    type === 'video_archive_recycler' ||
     type === 'featured_video' ||
     type === 'latest_news' ||
     type === 'latest_news_recycler' ||
@@ -174,6 +261,23 @@ function isSelfSpacedWidgetType(type) {
     type === 'featured_news' ||
     type === 'featured_news_slider' ||
     type === 'news_by_category' ||
+    type === 'dual_cta_buttons' ||
+    type === 'feature_cards' ||
+    REBO_WIDGET_TYPES.includes(type) ||
+    GYM_WIDGET_TYPES.includes(type) ||
+    isGymWidgetType(type) ||
+    isHeroWithMenuWidgetType(type) ||
+    SCHOOL_WIDGET_TYPES.includes(type) ||
+    NOBAT_WIDGET_TYPES.includes(type) ||
+    INVENTORY_WIDGET_TYPES.includes(type) ||
+    type === 'booking_cta' ||
+    type === 'booking_services' ||
+    type === 'booking_staff' ||
+    type === 'repairs_cta' ||
+    type === 'repairs_technicians' ||
+    type === 'repairs_services' ||
+    type === 'repairs_request' ||
+    type === 'repairs_track' ||
     isSliderWidgetType(type) ||
     isJobBoardWidgetType(type)
   )
@@ -197,7 +301,27 @@ function widgetBleedClass(instance, sectionWidth, constrainBleed) {
     return !!normalizeJobBoardWidgetSettings(raw).section_full
   }
   if (isShopWidgetType(type)) {
-    return !!normalizeShopWidgetSettings(raw, type).section_full
+    const shop = normalizeShopWidgetSettings(raw, type)
+    if (shop.section_full) return true
+    return (
+      shop.surface_mode === 'color' && (shop.surface_span || 'full') === 'full'
+    )
+  }
+  if (isBookingFormWidgetType(type)) {
+    return !!normalizeBookingFormSettings(raw).section_full
+  }
+  if (isBookingCtaWidgetType(type) || type === 'dual_cta_buttons') {
+    return !!normalizeBookingCtaSettings(raw).section_full
+  }
+  if (isBookingServicesWidgetType(type)) {
+    const svc = normalizeBookingServicesSettings(raw)
+    if (svc.section_full) return true
+    return (
+      svc.surface_mode === 'color' && (svc.surface_span || 'full') === 'full'
+    )
+  }
+  if (type === 'repairs_cta') {
+    return !!normalizeRepairsCtaSettings(raw).section_full
   }
   if (isNavWidgetType(type) || type === 'breaking_news') {
     return normalizeNavWidgetSettings(raw).bar_full_bleed !== false
@@ -208,7 +332,18 @@ function widgetBleedClass(instance, sectionWidth, constrainBleed) {
   return false
 }
 
-function renderWidget(instance, { articleSlot, settings } = {}) {
+function renderWidget(instance, { articleSlot, settings, productContext } = {}) {
+  if (isModulePageContentWidget(instance?.type)) {
+    return (
+      <div className={styles.modulePageContent} data-module-page-content="1">
+        {articleSlot || (
+          <p style={{ opacity: 0.55, fontSize: '0.9rem' }}>
+            محتوای صفحه داخلی
+          </p>
+        )}
+      </div>
+    )
+  }
   const s = settings != null ? settings : instance.settings || {}
   switch (instance.type) {
     case 'news_article':
@@ -253,7 +388,14 @@ function renderWidget(instance, { articleSlot, settings } = {}) {
     case 'products_recycler':
     case 'products_grid':
     case 'products_by_category':
-      return <ShopProductsStripWidget type={instance.type} settings={s} />
+    case 'product_similar':
+      return (
+        <ShopProductsStripWidget
+          type={instance.type}
+          settings={s}
+          product={productContext}
+        />
+      )
     case 'product_stories':
       return <ProductStoriesWidget settings={s} />
     case 'shop_categories':
@@ -315,20 +457,196 @@ function renderWidget(instance, { articleSlot, settings } = {}) {
       return <JobBottomNavWidget />
     case 'cta_contact':
       return <CTASectionSlot settings={s} />
+    case 'dual_cta_buttons':
+      return <BookingCtaWidget settings={s} />
+    case 'feature_cards':
+      return <FeatureCardsWidget settings={s} />
+    case 'rebo_hero':
+      return <ReboHero settings={s} />
+    case 'rebo_stack':
+      return <ReboStack settings={s} />
+    case 'rebo_pillars':
+      return <ReboPillars settings={s} />
+    case 'rebo_capabilities':
+      return <ReboCapabilities settings={s} />
+    case 'rebo_dashboard':
+      return <ReboDashboard settings={s} />
+    case 'rebo_usecases':
+      return <ReboUsecases settings={s} />
+    case 'rebo_pricing':
+      return <ReboPricing settings={s} />
+    case 'rebo_ops':
+      return <ReboOps settings={s} />
+    case 'rebo_cloud_order':
+      return <ReboCloudOrderSection settings={s} />
+    case 'rebo_closing':
+      return <ReboClosing settings={s} />
+    case 'rebo_showcase':
+      return <ReboShowcaseWidget settings={s} />
+    case 'gym_hero':
+    case 'hero_with_menu':
+      return (
+        <ModuleGate moduleKey={SITE_MODULE_KEYS.HERO_WITH_MENU}>
+          <GymHero settings={s} />
+        </ModuleGate>
+      )
+    case 'gym_journey':
+      return <GymJourney settings={s} />
+    case 'gym_features':
+    case 'curved_timeline':
+      return (
+        <ModuleGate moduleKey={SITE_MODULE_KEYS.CURVED_TIMELINE}>
+          <GymFeatures settings={s} />
+        </ModuleGate>
+      )
+    case 'gym_sessions':
+      return (
+        <ModuleGate moduleKey={SITE_MODULE_KEYS.GYM_BODYBUILDING}>
+          <GymSessions settings={s} />
+        </ModuleGate>
+      )
+    case 'gym_trainers':
+      return (
+        <ModuleGate moduleKey={SITE_MODULE_KEYS.GYM_BODYBUILDING}>
+          <GymTrainers settings={s} />
+        </ModuleGate>
+      )
+    case 'gym_shop':
+      return (
+        <ModuleGate moduleKey={SITE_MODULE_KEYS.GYM_BODYBUILDING}>
+          <GymShop settings={s} />
+        </ModuleGate>
+      )
+    case 'gym_pillars':
+      return <GymPillars settings={s} />
+    case 'gym_closing':
+      return <GymClosing settings={s} />
+    case 'school_animation':
+      return <SchoolAnimation settings={s} />
+    case 'school_landing':
+      return <SchoolLanding settings={s} />
+    case 'school_hero_breaking':
+      return <SchoolHeroBreaking settings={s} />
+    case 'school_role_bar':
+      return <SchoolRoleBar settings={s} />
+    case 'school_hero':
+      return <SchoolHero settings={s} />
+    case 'school_portals':
+      return <SchoolPortals settings={s} />
+    case 'school_report_preview':
+      return <SchoolReportPreview settings={s} />
+    case 'school_counseling':
+      return <SchoolCounseling settings={s} />
+    case 'school_closing':
+      return <SchoolClosing settings={s} />
+    case 'booking_form':
+      return (
+        <ModuleGate moduleKey={SITE_MODULE_KEYS.BOOKING_WIDGET}>
+          <BookingFormWidget settings={s} />
+        </ModuleGate>
+      )
+    case 'booking_services':
+      return (
+        <ModuleGate moduleKey={SITE_MODULE_KEYS.BOOKING_SERVICES}>
+          <BookingServicesWidget settings={s} />
+        </ModuleGate>
+      )
+    case 'booking_staff':
+      return (
+        <ModuleGate moduleKey={SITE_MODULE_KEYS.BOOKING_STAFF}>
+          <BookingStaffWidget settings={s} />
+        </ModuleGate>
+      )
+    case 'booking_lookup':
+      return (
+        <ModuleGate moduleKey={SITE_MODULE_KEYS.BOOKING_LOOKUP}>
+          <BookingLookupWidget settings={s} />
+        </ModuleGate>
+      )
+    case 'booking_cta':
+      return (
+        <ModuleGate moduleKey={SITE_MODULE_KEYS.BOOKING_CTA}>
+          <BookingCtaWidget settings={s} />
+        </ModuleGate>
+      )
     case 'story':
     case 'story_circles':
     case 'video_gallery':
     case 'video_archive_grid':
+    case 'video_archive_recycler':
     case 'featured_video':
       return <VideoInstaWidget type={instance.type} settings={s} />
     case 'catalog':
       return <CatalogSlot />
+    case 'softapps_grid':
+    case 'softapps_featured':
+    case 'softapps_cta':
+      return (
+        <SoftAppsGridWidget type={instance.type} settings={s} />
+      )
+    case 'repairs_cta':
+      return (
+        <ModuleGate moduleKey={SITE_MODULE_KEYS.REPAIRS}>
+          <RepairsCtaWidget settings={s} />
+        </ModuleGate>
+      )
+    case 'repairs_technicians':
+      return (
+        <ModuleGate moduleKey={SITE_MODULE_KEYS.REPAIRS}>
+          <RepairsTechniciansWidget settings={s} />
+        </ModuleGate>
+      )
+    case 'repairs_services':
+      return (
+        <ModuleGate moduleKey={SITE_MODULE_KEYS.REPAIRS}>
+          <RepairsServicesWidget settings={s} />
+        </ModuleGate>
+      )
+    case 'repairs_request':
+      return (
+        <ModuleGate moduleKey={SITE_MODULE_KEYS.REPAIRS}>
+          <RepairsRequestWidget settings={s} />
+        </ModuleGate>
+      )
+    case 'repairs_track':
+      return (
+        <ModuleGate moduleKey={SITE_MODULE_KEYS.REPAIRS}>
+          <RepairsTrackWidget settings={s} />
+        </ModuleGate>
+      )
+    case 'nobat_hero':
+    case 'nobat_pillars':
+    case 'nobat_parts':
+    case 'nobat_search':
+    case 'nobat_process':
+    case 'nobat_book':
+    case 'nobat_team':
+    case 'nobat_report':
+    case 'nobat_closing':
+      return (
+        <ModuleGate moduleKey={instance.type}>
+          {renderNobatWidget(instance.type, s)}
+        </ModuleGate>
+      )
+    case 'inventory_add_keeper':
+    case 'inventory_top_operators':
+    case 'inventory_stock_in_cta':
+    case 'inventory_stock_out_cta':
+    case 'inventory_activity_chart':
+    case 'inventory_today_vouchers':
+      return (
+        <ModuleGate moduleKey={SITE_MODULE_KEYS.ADVANCED_INVENTORY}>
+          {renderInventoryWidget(instance)}
+        </ModuleGate>
+      )
     case 'hero_slider':
       return <HeroSliderSlot settings={s} />
     case 'breaking_news':
       return <BreakingNewsSlot settings={s} />
     case 'persian_datetime':
       return <PersianDateTimeWidget />
+    case 'sadra_pixel_title':
+      return <SadraPixelTitleWidget settings={s} />
     case 'brand_bar':
       return <CorporateBrandBarSlot />
     case 'site_menu':
@@ -366,30 +684,47 @@ function renderWidget(instance, { articleSlot, settings } = {}) {
 }
 
 function useIsMobileLayout(breakpoint = 768) {
-  const [mobile, setMobile] = useState(() => {
-    if (typeof window === 'undefined') return false
-    return window.matchMedia(`(max-width: ${breakpoint - 1}px)`).matches
-  })
+  // همیشه false شروع شود تا SSR و هیدریشن یکی باشند؛ بعد از mount به‌روز می‌شود
+  const [mobile, setMobile] = useState(false)
+  const [ready, setReady] = useState(false)
   useEffect(() => {
     const mq = window.matchMedia(`(max-width: ${breakpoint - 1}px)`)
     const apply = () => setMobile(mq.matches)
     apply()
+    setReady(true)
     mq.addEventListener('change', apply)
     return () => mq.removeEventListener('change', apply)
   }, [breakpoint])
-  return mobile
+  return ready ? mobile : false
 }
 
 /**
- * @param {{ layout: any, fallback?: React.ReactNode, articleSlot?: React.ReactNode }} props
+ * @param {{ layout: any, fallback?: React.ReactNode, articleSlot?: React.ReactNode, productContext?: any }} props
  */
 export default function PageBuilderRenderer({
   layout,
   fallback = null,
   articleSlot = null,
+  productContext = null,
 }) {
   const L = normalizeHomeLayout(layout)
   const isMobile = useIsMobileLayout()
+  const pageBg = L.page_background || ''
+
+  useEffect(() => {
+    if (!pageBg || typeof document === 'undefined') return undefined
+    const body = document.body
+    const prev = body.style.background
+    body.style.background = pageBg
+    body.dataset.pageBuilderBg = '1'
+    return () => {
+      if (body.dataset.pageBuilderBg === '1') {
+        body.style.background = prev
+        delete body.dataset.pageBuilderBg
+      }
+    }
+  }, [pageBg])
+
   if (!L.rows?.length) return fallback
 
   const hasArticleWidget = L.rows.some((row) =>
@@ -400,7 +735,8 @@ export default function PageBuilderRenderer({
           w.type === 'news_page' ||
           w.type === 'job_article' ||
           w.type === 'product_article' ||
-          w.type === 'shop_page'
+          w.type === 'shop_page' ||
+          isModulePageContentWidget(w.type)
       )
     )
   )
@@ -411,6 +747,7 @@ export default function PageBuilderRenderer({
       style={{
         '--home-max-width': `${L.max_width}px`,
         '--home-gutter': `${L.gutter}px`,
+        ...(pageBg ? { background: pageBg } : {}),
       }}
       data-pb-mobile={isMobile ? '1' : '0'}
     >
@@ -478,7 +815,11 @@ export default function PageBuilderRenderer({
                           className={`${styles.widget} ${bleed ? styles.widgetBleed : ''}`}
                           data-pb-chrome={chrome ? '1' : undefined}
                         >
-                          {renderWidget(w, { articleSlot, settings })}
+                          {renderWidget(w, {
+                            articleSlot,
+                            settings,
+                            productContext,
+                          })}
                         </div>
                       )
                     })}

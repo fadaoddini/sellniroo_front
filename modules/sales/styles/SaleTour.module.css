@@ -1,0 +1,323 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 14000;
+  pointer-events: none;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 8, 12, 0.62);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  pointer-events: auto;
+  animation: fadeIn 0.28s ease;
+}
+
+.spotlightHit {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.spotlight {
+  position: absolute;
+  border-radius: 16px;
+  box-shadow:
+    0 0 0 9999px rgba(6, 8, 12, 0.62),
+    0 0 0 2px rgba(15, 118, 110, 0.9),
+    0 12px 40px rgba(15, 118, 110, 0.28);
+  pointer-events: none;
+  transition: top 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    left 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: pulseRing 2s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes pulseRing {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 9999px rgba(6, 8, 12, 0.62),
+      0 0 0 2px rgba(15, 118, 110, 0.9),
+      0 12px 40px rgba(15, 118, 110, 0.22);
+  }
+  50% {
+    box-shadow:
+      0 0 0 9999px rgba(6, 8, 12, 0.62),
+      0 0 0 3px rgba(45, 212, 191, 1),
+      0 16px 48px rgba(15, 118, 110, 0.38);
+  }
+}
+
+.card {
+  position: absolute;
+  z-index: 2;
+  width: min(380px, calc(100vw - 28px));
+  max-height: min(420px, calc(100vh - 24px));
+  padding: 1.15rem 1.15rem 1rem;
+  border-radius: 20px;
+  background: linear-gradient(160deg, #1a1c24 0%, #12141a 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  color: #fff;
+  pointer-events: auto;
+  overflow: auto;
+  font-family: var(--font-iran);
+  animation: cardIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cardSheet {
+  left: 50%;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  top: auto;
+  transform: translateX(-50%);
+  width: min(420px, calc(100vw - 20px));
+  max-height: min(46vh, 420px);
+  border-radius: 22px 22px 18px 18px;
+  animation: sheetIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cardFloat {
+  /* موقعیت با استایل اینلاین نزدیک هدف تنظیم می‌شود */
+}
+
+.cardCenter {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.cardGlow {
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 160px;
+  height: 160px;
+  background: radial-gradient(circle, rgba(45, 212, 191, 0.28), transparent 70%);
+  pointer-events: none;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.cardHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.65rem;
+  padding-left: 2rem;
+}
+
+.iconWrap {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(45, 212, 191, 0.25), rgba(15, 118, 110, 0.4));
+  color: #5eead4;
+  box-shadow: 0 8px 20px rgba(15, 118, 110, 0.25);
+}
+
+.stepLabel {
+  margin: 0 0 0.2rem;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.04em;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-family: var(--font-iran-extra);
+  line-height: 1.35;
+}
+
+.body {
+  margin: 0 0 1rem;
+  font-size: 0.82rem;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.progress {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 0.95rem;
+  flex-wrap: wrap;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  border: 0;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  transition: width 0.25s ease, background 0.25s ease;
+}
+
+.dotActive {
+  width: 22px;
+  background: linear-gradient(90deg, #2dd4bf, #0f766e);
+}
+
+.dotDone {
+  background: rgba(45, 212, 191, 0.55);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.navBtns {
+  display: flex;
+  gap: 0.4rem;
+  margin-inline-start: auto;
+}
+
+.btnGhost,
+.btnSecondary,
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 12px;
+  padding: 0.65rem 0.9rem;
+  font-family: var(--font-iran);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.btnGhost {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.btnGhost:hover {
+  color: #fff;
+}
+
+.btnSecondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.btnPrimary {
+  background: linear-gradient(135deg, #14b8a6, #0f766e);
+  color: #fff;
+  box-shadow: 0 8px 22px rgba(15, 118, 110, 0.35);
+}
+
+.btnPrimary:hover,
+.btnSecondary:hover {
+  transform: translateY(-1px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sheetIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (max-width: 767px) {
+  .spotlight {
+    border-radius: 14px;
+  }
+
+  .cardHead {
+    padding-left: 1.75rem;
+  }
+
+  .title {
+    font-size: 0.98rem;
+  }
+
+  .body {
+    font-size: 0.8rem;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .navBtns {
+    margin-inline-start: 0;
+    width: 100%;
+  }
+
+  .btnPrimary,
+  .btnSecondary {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .btnGhost {
+    text-align: center;
+    justify-content: center;
+  }
+}

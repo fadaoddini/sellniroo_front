@@ -110,10 +110,10 @@ export const DEFAULT_NEWS_WIDGET_SETTINGS = {
   recycler_card_shadow: false,
   /** بردر هر کارت ریسایکلر */
   recycler_card_border_width: 1,
-  recycler_card_border_color: 'rgba(255, 255, 255, 0.12)',
-  recycler_card_border_hover: 'rgba(251, 195, 0, 0.35)',
+  recycler_card_border_color: 'rgba(254, 243, 226, 0.18)',
+  recycler_card_border_hover: 'rgba(244, 174, 82, 0.55)',
   /** ریسایکلر: رنگ متن روی تصویر */
-  recycler_text_color: '#ffffff',
+  recycler_text_color: '#FEF3E2',
   recycler_height: 280,
   /** free | 16_9 | 4_3 | … — پیش‌فرض آزاد تا ارتفاع قدیمی‌ها حفظ شود */
   recycler_aspect: 'free',
@@ -130,19 +130,19 @@ export const DEFAULT_NEWS_WIDGET_SETTINGS = {
   recycler_drag_scroll: true,
   /** سکشن تمام‌عرض؛ محتوا داخل container */
   recycler_section_full: true,
-  /** گرادیان پس‌زمینه سکشن */
-  recycler_section_from: '#071a2e',
-  recycler_section_to: '#0e3d66',
-  recycler_section_angle: 180,
+  /** گرادیان پس‌زمینه سکشن — پالت کرم/طلایی */
+  recycler_section_from: '#2A1A0E',
+  recycler_section_to: '#D4621A',
+  recycler_section_angle: 155,
   show_likes: true,
   show_views: true,
-  like_color: '#e74c3c',
-  views_color: '#8b939e',
-  share_color: '#8b939e',
+  like_color: '#F4AE52',
+  views_color: '#FEF3E2',
+  share_color: '#FEF3E2',
   stats_layout: 'stack',
   stats_icon_size: 14,
   stats_font_size: 10,
-  stats_bg: 'transparent',
+  stats_bg: 'rgba(42, 26, 14, 0.78)',
   stats_radius: 999,
   stats_gap: 6,
   stats_padding_x: 0,
@@ -169,6 +169,14 @@ export const DEFAULT_NEWS_WIDGET_SETTINGS = {
   read_more_radius_bottom_right: 8,
   read_more_radius_bottom_left: 8,
   show_share: false,
+  /** آیکن سفارشی شبکه‌های اشتراک (URL یا data:) */
+  share_icon_rubika: '',
+  share_icon_eitaa: '',
+  share_icon_bale: '',
+  share_icon_soroush: '',
+  share_icon_copy: '',
+  /** اندازه آیکن شبکه‌ها (px) */
+  share_icons_size: 22,
   title_max_chars: 48,
   title_wrap: false,
   item_border: true,
@@ -281,6 +289,21 @@ export const NEWS_RECYCLER_DASHBOARD_KEYS = [
   'recycler_section_from',
   'recycler_section_to',
   'recycler_section_angle',
+  'share_icon_rubika',
+  'share_icon_eitaa',
+  'share_icon_bale',
+  'share_icon_soroush',
+  'share_icon_copy',
+  'share_icons_size',
+]
+
+/** شبکه‌های اشتراک برای آپلود آیکن در ویجت */
+export const NEWS_SHARE_ICON_FIELDS = [
+  { key: 'share_icon_rubika', id: 'rubika', label: 'روبیکا' },
+  { key: 'share_icon_eitaa', id: 'eitaa', label: 'ایتا' },
+  { key: 'share_icon_bale', id: 'bale', label: 'بله' },
+  { key: 'share_icon_soroush', id: 'soroush', label: 'سروش' },
+  { key: 'share_icon_copy', id: 'copy', label: 'کپی لینک' },
 ]
 
 export function pickNewsRecyclerDashboardSettings(raw = {}) {
@@ -294,6 +317,40 @@ export function pickNewsRecyclerDashboardSettings(raw = {}) {
 
 /** پالت‌های آماده ترکیب رنگی ریسایکلر */
 export const NEWS_RECYCLER_COLOR_PRESETS = [
+  {
+    id: 'cream_gold',
+    label: 'کرم طلایی',
+    patch: {
+      recycler_section_from: '#2A1A0E',
+      recycler_section_to: '#D4621A',
+      recycler_section_angle: 155,
+      recycler_text_color: '#FEF3E2',
+      recycler_overlay_bg: 'transparent',
+      recycler_card_border_color: 'rgba(254, 243, 226, 0.2)',
+      recycler_card_border_hover: 'rgba(244, 174, 82, 0.65)',
+      like_color: '#F4AE52',
+      views_color: '#FEF3E2',
+      share_color: '#FEF3E2',
+      stats_bg: 'rgba(42, 26, 14, 0.78)',
+    },
+  },
+  {
+    id: 'cream_light',
+    label: 'کرم روشن',
+    patch: {
+      recycler_section_from: '#FEF3E2',
+      recycler_section_to: '#F4AE52',
+      recycler_section_angle: 145,
+      recycler_text_color: '#2A1A0E',
+      recycler_overlay_bg: 'rgba(254, 243, 226, 0.55)',
+      recycler_card_border_color: 'rgba(42, 26, 14, 0.12)',
+      recycler_card_border_hover: 'rgba(212, 98, 26, 0.45)',
+      like_color: '#D4621A',
+      views_color: '#2A1A0E',
+      share_color: '#2A1A0E',
+      stats_bg: 'rgba(254, 243, 226, 0.92)',
+    },
+  },
   {
     id: 'navy_gold',
     label: 'سرمه‌ای طلایی',
@@ -826,6 +883,12 @@ export const NEWS_LIST_FULL_DASHBOARD_KEYS = [
   'like_color',
   'views_color',
   'share_color',
+  'share_icon_rubika',
+  'share_icon_eitaa',
+  'share_icon_bale',
+  'share_icon_soroush',
+  'share_icon_copy',
+  'share_icons_size',
   'stats_layout',
   'stats_icon_size',
   'stats_font_size',
@@ -1051,6 +1114,15 @@ export function normalizeNewsWidgetSettings(raw = {}) {
   s.show_lead = !!s.show_lead
   s.show_read_more = raw.show_read_more === undefined ? true : !!raw.show_read_more
   s.show_share = !!s.show_share
+  s.share_icon_rubika = String(s.share_icon_rubika || '').trim()
+  s.share_icon_eitaa = String(s.share_icon_eitaa || '').trim()
+  s.share_icon_bale = String(s.share_icon_bale || '').trim()
+  s.share_icon_soroush = String(s.share_icon_soroush || '').trim()
+  s.share_icon_copy = String(s.share_icon_copy || '').trim()
+  s.share_icons_size = Math.max(
+    16,
+    Math.min(40, pxNum(s.share_icons_size, 22, 40))
+  )
   s.title_wrap = !!s.title_wrap
   s.read_more_bold = raw.read_more_bold === undefined ? true : !!raw.read_more_bold
   s.read_more_as_button = !!s.read_more_as_button
@@ -1239,6 +1311,7 @@ export function newsWidgetCssVars(settings) {
   vars['--ln-like-color'] = s.like_color || '#e74c3c'
   vars['--ln-views-color'] = s.views_color || '#8b939e'
   vars['--ln-share-color'] = s.share_color || '#8b939e'
+  vars['--ln-share-icon'] = `${s.share_icons_size || 22}px`
   vars['--ln-st-bg'] = s.stats_bg || 'transparent'
   vars['--ln-st-icon'] = `${s.stats_icon_size}px`
   vars['--ln-st-fs'] = `${s.stats_font_size}px`

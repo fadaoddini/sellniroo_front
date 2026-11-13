@@ -1,0 +1,740 @@
+/* modules/gym/components/GymPage.module.css */
+
+/* ============================================
+   GYM PAGE - PAGE HEADER
+   ============================================ */
+.gymPage {
+  background: var(--bg-secondary);
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
+
+.pageHeader {
+  background: var(--bg-secondary);
+  padding: 3rem 0 2rem;
+  border-bottom: 1px solid var(--border-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.pageHeader::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 60%;
+  height: 200%;
+  background: radial-gradient(
+    ellipse at 70% 50%,
+    rgba(10, 122, 74, 0.05) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.pageHeaderContent {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+  position: relative;
+  z-index: 1;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  text-decoration: none;
+  transition: all var(--transition-base);
+  margin-bottom: 1.5rem;
+}
+
+.backLink:hover {
+  color: var(--text-primary);
+  gap: 0.75rem;
+}
+
+.backLink svg {
+  transition: transform var(--transition-base);
+}
+
+.backLink:hover svg {
+  transform: translateX(-4px);
+}
+
+.pageBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+  margin-bottom: 0.75rem;
+  backdrop-filter: var(--glass-blur);
+}
+
+.pageBadge svg {
+  color: var(--gold);
+}
+
+.pageTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  font-family: var(--font-edameh);
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.pageTitle span {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pageSubtitle {
+  color: var(--text-muted);
+  font-size: 1rem;
+  font-family: var(--font-iran);
+  max-width: 600px;
+}
+
+/* ============================================
+   GYM GRID
+   ============================================ */
+.gymGridContainer {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 2.5rem var(--container-padding) 0;
+}
+
+.gymGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+/* ============================================
+   GYM CARD
+   ============================================ */
+.gymCard {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  cursor: pointer;
+  position: relative;
+  border: 2px solid transparent;
+  background: var(--bg-card);
+}
+
+.gymCard:hover {
+  transform: var(--hover-lift);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-primary);
+  border-color: var(--border-primary);
+}
+
+.gymCardSelected {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md), var(--shadow-glow-primary);
+}
+
+.gymCardImage {
+  position: relative;
+  aspect-ratio: 16/11;
+  overflow: hidden;
+  background: var(--bg-secondary);
+  transition: transform var(--transition-slow);
+}
+
+.gymCard:hover .gymCardImage {
+  transform: var(--hover-scale);
+}
+
+/* ============================================
+   GYM CARD OVERLAY
+   ============================================ */
+.gymCardOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.3) 30%,
+    rgba(0, 0, 0, 0.65) 60%,
+    rgba(0, 0, 0, 0.85) 100%
+  );
+  z-index: 1;
+  transition: background var(--transition-base);
+}
+
+.gymCard:hover .gymCardOverlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.35) 20%,
+    rgba(10, 122, 74, 0.6) 60%,
+    rgba(10, 122, 74, 0.85) 100%
+  );
+}
+
+/* ============================================
+   GYM SELECTED BADGE
+   ============================================ */
+.gymSelectedBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  box-shadow: 0 0 20px var(--primary-glow);
+  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gymSelectedBadge svg {
+  color: white;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   GYM CARD CONTENT
+   ============================================ */
+.gymCardContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem;
+  z-index: 2;
+  color: var(--text-on-primary);
+}
+
+.gymIconWrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gymCardTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: var(--font-edameh);
+  margin: 0 0 0.25rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  color: var(--text-on-primary);
+}
+
+.gymCardDesc {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--font-iran);
+  margin: 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ============================================
+   GYM FEATURES
+   ============================================ */
+.gymFeatures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all var(--transition-base);
+}
+
+.gymFeaturesVisible {
+  max-height: 200px;
+  opacity: 1;
+}
+
+.gymFeature {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-full);
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-iran);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.gymFeature svg {
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.gymFeatureMore {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   GYM CARD ACTION
+   ============================================ */
+.gymCardAction {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 5;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: all var(--transition-base);
+}
+
+.gymCard:hover .gymCardAction {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.gymCardButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-decoration: none;
+  backdrop-filter: var(--glass-blur);
+  transition: all var(--transition-base);
+}
+
+.gymCardButton:hover {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  transform: var(--hover-scale);
+  box-shadow: var(--shadow-glow-primary);
+}
+
+.gymCardButton svg {
+  transition: transform var(--transition-base);
+}
+
+.gymCardButton:hover svg {
+  transform: translateX(-2px);
+}
+
+/* ============================================
+   GYM STATS
+   ============================================ */
+.gymStats {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  z-index: 3;
+  opacity: 0;
+  transition: all var(--transition-base);
+}
+
+.gymCard:hover .gymStats {
+  opacity: 1;
+}
+
+.gymStats span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--font-iran);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.gymStats svg {
+  color: var(--gold);
+}
+
+/* ============================================
+   GYM BOTTOM SECTION
+   ============================================ */
+.gymBottomSection {
+  max-width: var(--container-max);
+  margin: 3rem auto 0;
+  padding: 0 var(--container-padding);
+}
+
+.gymBottomContent {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  backdrop-filter: var(--glass-blur);
+}
+
+.gymBottomFeatures {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.gymBottomFeature {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.gymBottomIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-glass);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.gymBottomIcon svg {
+  color: var(--primary);
+}
+
+.gymBottomFeature h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: var(--font-iran-bold);
+  color: var(--text-primary);
+  margin: 0 0 0.15rem;
+}
+
+.gymBottomFeature p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: var(--font-iran);
+  margin: 0;
+}
+
+.gymBottomCTA {
+  border-top: 1px solid var(--border-light);
+  padding-top: 1.5rem;
+  text-align: center;
+}
+
+.gymBottomText {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+  margin: 0;
+}
+
+.gymBottomLink {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color var(--transition-base);
+}
+
+.gymBottomLink:hover {
+  color: var(--primary-light);
+}
+
+/* ============================================
+   RTL SUPPORT
+   ============================================ */
+[dir="rtl"] .backLink:hover svg {
+  transform: translateX(4px);
+}
+
+[dir="rtl"] .gymCardButton:hover svg {
+  transform: translateX(2px);
+}
+
+[dir="rtl"] .gymSelectedBadge {
+  right: auto;
+  left: 12px;
+}
+
+[dir="rtl"] .gymCardAction {
+  left: auto;
+  right: 12px;
+}
+
+[dir="rtl"] .gymStats {
+  right: auto;
+  left: 1.5rem;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1024px) {
+  .gymGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .gymBottomFeatures {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .pageTitle {
+    font-size: 2rem;
+  }
+
+  .pageSubtitle {
+    font-size: 0.9rem;
+  }
+
+  .gymGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .gymCardContent {
+    padding: 1rem;
+  }
+
+  .gymIconWrapper {
+    width: 36px;
+    height: 36px;
+  }
+
+  .gymIconWrapper svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .gymCardTitle {
+    font-size: 0.9rem;
+  }
+
+  .gymCardDesc {
+    font-size: 0.65rem;
+  }
+
+  .gymCardAction {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .gymCardButton {
+    font-size: 0.6rem;
+    padding: 0.3rem 0.8rem;
+  }
+
+  .gymStats {
+    opacity: 1;
+  }
+
+  .gymBottomFeatures {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .gymBottomContent {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pageHeader {
+    padding: 2rem 0 1.5rem;
+  }
+
+  .pageTitle {
+    font-size: 1.6rem;
+  }
+
+  .pageSubtitle {
+    font-size: 0.8rem;
+  }
+
+  .backLink {
+    font-size: 0.75rem;
+  }
+
+  .gymGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .gymGridContainer {
+    padding: 1.5rem var(--container-padding) 0;
+  }
+
+  .gymCardImage {
+    aspect-ratio: 16/12;
+  }
+
+  .gymCardContent {
+    padding: 0.75rem;
+  }
+
+  .gymIconWrapper {
+    width: 32px;
+    height: 32px;
+  }
+
+  .gymIconWrapper svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .gymCardTitle {
+    font-size: 0.85rem;
+  }
+
+  .gymFeaturesVisible {
+    max-height: 150px;
+  }
+
+  .gymFeature {
+    font-size: 0.55rem;
+    padding: 0.15rem 0.5rem;
+  }
+
+  .gymStats span {
+    font-size: 0.55rem;
+    padding: 0.15rem 0.5rem;
+  }
+
+  .gymBottomSection {
+    margin-top: 2rem;
+  }
+
+  .gymBottomContent {
+    padding: 1rem;
+  }
+
+  .gymBottomFeature h4 {
+    font-size: 0.8rem;
+  }
+
+  .gymBottomFeature p {
+    font-size: 0.7rem;
+  }
+}
+/* ============================================
+   LOADING & ERROR STATES
+   ============================================ */
+.loadingState,
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 5rem 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  color: var(--primary);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.retryButton {
+  padding: 0.6rem 1.5rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.retryButton:hover {
+  background: var(--primary-dark);
+  transform: var(--hover-lift);
+}
+
+/* ============================================
+   IMAGE SKELETON & ERROR
+   ============================================ */
+.imageSkeleton {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    var(--bg-card) 25%,
+    var(--bg-card-hover) 50%,
+    var(--bg-card) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.imageError {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  opacity: 0.3;
+  z-index: 2;
+}

@@ -10,90 +10,117 @@ const newsService = {
 
   /**
    * دریافت لیست اخبار با صفحه‌بندی و فیلتر
+   * پشتیبانی از امضای قدیمی:
+   *   getNews(page, limit, search, category)
+   * و امضای جدید:
+   *   getNews({ page, limit, search, category, is_featured, is_breaking, ordering })
    */
-  async getNews(page = 1, limit = 12, search = '', category = 'all') {
+  async getNews(pageOrOpts = 1, limit = 12, search = '', category = 'all') {
+    const opts =
+      pageOrOpts && typeof pageOrOpts === 'object'
+        ? pageOrOpts
+        : {
+            page: pageOrOpts,
+            limit,
+            search,
+            category,
+          }
+
+    const page = Math.max(1, Number(opts.page) || 1)
+    const pageLimit = Math.max(1, Math.min(48, Number(opts.limit) || 12))
+    const searchQ = String(opts.search || '').trim()
+    const cat = opts.category || 'all'
+    const ordering = opts.ordering || '-publish_date'
+
     try {
       const params = {
         page,
-        limit,
-        ...(search && { search }),
-        ...(category && category !== 'all' && { category }),
-      };
+        limit: pageLimit,
+        ordering,
+        ...(searchQ ? { search: searchQ } : {}),
+        ...(cat && cat !== 'all' ? { category: cat } : {}),
+        ...(opts.is_featured === true || opts.is_featured === 'true'
+          ? { is_featured: 'true' }
+          : {}),
+        ...(opts.is_breaking === true || opts.is_breaking === 'true'
+          ? { is_breaking: 'true' }
+          : {}),
+        ...(opts.from_date ? { from_date: opts.from_date } : {}),
+        ...(opts.to_date ? { to_date: opts.to_date } : {}),
+      }
 
-      const url = Config.endpoints.news.list(params);
-      console.log('📡 Fetching news from:', url);
-      
-      const response = await axios.get(url);
-      console.log('📦 Raw API Response:', response.data);
+      const url = Config.endpoints.news.list(params)
+      const response = await axios.get(url)
+      const data = response.data
 
-      const data = response.data;
-
-      // ✅ ساختار Django REST Framework با results و count
       if (data.results && Array.isArray(data.results)) {
-        console.log('✅ Using results structure');
         return {
           success: true,
           data: data.results,
           total: data.count || data.results.length,
-          totalPages: Math.ceil((data.count || data.results.length) / limit),
+          totalPages: Math.ceil(
+            (data.count || data.results.length) / pageLimit
+          ),
           currentPage: page,
-        };
+        }
       }
 
-      // ✅ ساختار ساده با data
       if (data.data && Array.isArray(data.data)) {
-        console.log('✅ Using data structure');
         return {
           success: true,
           data: data.data,
           total: data.total || data.count || data.data.length,
-          totalPages: data.total_pages || data.totalPages || Math.ceil((data.total || data.data.length) / limit),
+          totalPages:
+            data.total_pages ||
+            data.totalPages ||
+            Math.ceil(
+              (data.total || data.data.length) / pageLimit
+            ),
           currentPage: data.current_page || data.currentPage || page,
-        };
+        }
       }
 
-      // ✅ ساختار مستقیم آرایه
       if (Array.isArray(data)) {
-        console.log('✅ Using array structure');
         return {
           success: true,
-          data: data,
+          data,
           total: data.length,
-          totalPages: Math.ceil(data.length / limit),
+          totalPages: Math.ceil(data.length / pageLimit),
           currentPage: page,
-        };
+        }
       }
 
-      // ✅ ساختار با داده‌های تو در تو
-      if (data.data && data.data.results && Array.isArray(data.data.results)) {
-        console.log('✅ Using nested results structure');
+      if (data.data?.results && Array.isArray(data.data.results)) {
         return {
           success: true,
           data: data.data.results,
           total: data.data.count || data.data.results.length,
-          totalPages: Math.ceil((data.data.count || data.data.results.length) / limit),
+          totalPages: Math.ceil(
+            (data.data.count || data.data.results.length) / pageLimit
+          ),
           currentPage: page,
-        };
+        }
       }
 
-      console.warn('⚠️ Unknown data structure:', data);
       return {
         success: true,
         data: [],
         total: 0,
         totalPages: 0,
         currentPage: page,
-      };
-
+      }
     } catch (error) {
-      console.error('❌ Error fetching news:', error);
+      console.error('❌ Error fetching news:', error)
       return {
         success: false,
-        error: error.response?.data?.message || error.message || 'خطا در دریافت اخبار',
+        error:
+          error.response?.data?.message ||
+          error.message ||
+          'خطا در دریافت اخبار',
         data: [],
         total: 0,
         totalPages: 0,
-      };
+      }
     }
   },
 
@@ -421,6 +448,69 @@ const newsService = {
     } catch (error) {
       console.error('❌ Error incrementing share:', error);
       return { success: false, error: error.message };
+    }
+  },
+
+  /**
+   * مطالب ارسالی کاربر لاگین‌شده (پروفایل)
+   */
+  async getMyContributions(headers = {}) {
+    try {
+      const url = Config.endpoints.news.myContributions()
+      const response = await axios.get(url, { headers })
+      const data = response.data
+      const list = data?.results || data?.data || (Array.isArray(data) ? data : [])
+      return {
+        success: true,
+        data: list,
+        total: data?.count ?? list.length,
+      }
+    } catch (error) {
+      console.error('❌ Error fetching my contributions:', error)
+      return {
+        success: false,
+        error:
+          error.response?.data?.detail ||
+          error.message ||
+          'خطا در دریافت مطالب',
+        data: [],
+        total: 0,
+      }
+    }
+  },
+
+  /**
+   * ارسال مطلب توسط مخاطب — وضعیت pending تا تایید مدیر
+   * data: FormData یا object
+   */
+  async contributeNews(data) {
+    try {
+      const url = Config.endpoints.news.contribute()
+      const isFormData =
+        typeof FormData !== 'undefined' && data instanceof FormData
+      const headers = {}
+      if (isFormData) {
+        /* Content-Type را نگذار تا boundary درست شود */
+      }
+      const response = await axios.post(url, data, { headers })
+      return {
+        success: true,
+        data: response.data?.data || response.data,
+        message: response.data?.message,
+      }
+    } catch (error) {
+      console.error('❌ Error contributing news:', error)
+      const errData = error.response?.data
+      let message = 'خطا در ارسال مطلب'
+      if (typeof errData === 'string') message = errData
+      else if (errData?.message) message = errData.message
+      else if (errData?.detail) message = errData.detail
+      else if (errData && typeof errData === 'object') {
+        const key = Object.keys(errData)[0]
+        const val = errData[key]
+        message = Array.isArray(val) ? val[0] : String(val)
+      }
+      return { success: false, error: message }
     }
   },
 

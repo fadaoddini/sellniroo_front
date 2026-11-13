@@ -49,6 +49,14 @@ export const DEMO_PRODUCTS = [
     is_featured: true,
     sales_count: 120,
     image: '',
+    number_min: 1,
+    number_max: 10,
+    stock: { remaining: 18, total: 40 },
+    stock_remaining: 18,
+    price_tiers: [
+      { min_quantity: 3, unit_price: 360000 },
+      { min_quantity: 6, unit_price: 340000 },
+    ],
   },
   {
     id: 9002,
@@ -65,6 +73,11 @@ export const DEMO_PRODUCTS = [
     is_featured: false,
     sales_count: 340,
     image: '',
+    number_min: 1,
+    number_max: 20,
+    stock: { remaining: 50, total: 80 },
+    stock_remaining: 50,
+    price_tiers: [{ min_quantity: 5, unit_price: 195000 }],
   },
   {
     id: 9003,
@@ -81,6 +94,11 @@ export const DEMO_PRODUCTS = [
     is_featured: true,
     sales_count: 55,
     image: '',
+    number_min: 1,
+    number_max: 5,
+    stock: { remaining: 7, total: 20 },
+    stock_remaining: 7,
+    price_tiers: [],
   },
   {
     id: 9004,
@@ -97,6 +115,11 @@ export const DEMO_PRODUCTS = [
     is_featured: false,
     sales_count: 12,
     image: '',
+    number_min: 2,
+    number_max: 12,
+    stock: { remaining: 25, total: 25 },
+    stock_remaining: 25,
+    price_tiers: [{ min_quantity: 4, unit_price: 155000 }],
   },
 ]
 
@@ -121,10 +144,18 @@ const shopApi = {
     } catch (e) {
       if (!demoFallback) throw e
       const source = params.source || 'latest'
-      const limit = Number(params.limit) || 8
+      const page = Math.max(1, Number(params.page) || 1)
+      const pageSize = Math.min(
+        48,
+        Math.max(1, Number(params.page_size) || Number(params.limit) || 8)
+      )
+      const all = demoBySource(source)
+      const start = (page - 1) * pageSize
       return {
-        count: demoBySource(source).length,
-        results: demoBySource(source).slice(0, limit),
+        count: all.length,
+        page,
+        page_size: pageSize,
+        results: all.slice(start, start + pageSize),
         demo: true,
       }
     }
@@ -145,9 +176,11 @@ const shopApi = {
       }
     }
   },
-  async getProduct(id, { demoFallback = true } = {}) {
+  async getProduct(id, { demoFallback = true, headers } = {}) {
     try {
-      return await getJson(Config.endpoints.shop.productDetail(id))
+      return await getJson(Config.endpoints.shop.productDetail(id), {
+        headers: headers || {},
+      })
     } catch (e) {
       if (!demoFallback) throw e
       const demo = DEMO_PRODUCTS.find((p) => String(p.id) === String(id)) || {

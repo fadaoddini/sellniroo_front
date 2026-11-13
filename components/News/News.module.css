@@ -1,16 +1,26 @@
 /* components/News/News.module.css — هماهنگ با برند سلنیرو */
 
 .newsContainer {
-  --ink: #2a241c;
+  --cream: #fef3e2;
+  --gold: #f4ae52;
+  --accent: #d4621a;
+  --ink: #2a1a0e;
   --muted: #6f675c;
-  --line: rgba(90, 60, 20, 0.12);
+  --line: rgba(42, 26, 14, 0.1);
+  --line-strong: rgba(212, 98, 26, 0.28);
+  --nlm-border-c: rgba(42, 26, 14, 0.1);
   max-width: 1200px;
   margin: 0 auto;
   padding: 1.5rem 1.25rem 3rem;
-  font-family: var(--font-iran);
+  font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
   color: var(--ink);
   background: transparent;
   min-height: 60vh;
+}
+
+.newsContainer button,
+.newsContainer input {
+  font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
 }
 
 /* ── Header ── */
@@ -44,7 +54,7 @@
 .title {
   font-size: 1.25rem;
   font-weight: 700;
-  font-family: var(--font-edameh);
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
   color: var(--ink);
   margin: 0;
   display: inline-flex;
@@ -322,14 +332,14 @@
 
 .card {
   background: #fff;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(42, 26, 14, 0.1);
   border-radius: 16px;
   overflow: hidden;
   transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   height: 100%;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 6px 18px rgba(80, 50, 0, 0.04);
+  box-shadow: 0 6px 18px rgba(212, 98, 26, 0.06);
 }
 
 .cardHover {
@@ -338,8 +348,8 @@
 
 .cardHover:hover {
   transform: translateY(-4px);
-  border-color: rgba(194, 120, 0, 0.3);
-  box-shadow: 0 14px 36px rgba(80, 50, 0, 0.1);
+  border-color: rgba(212, 98, 26, 0.32);
+  box-shadow: 0 14px 36px rgba(212, 98, 26, 0.12);
 }
 
 .cardHover:hover .cardImageInner {
@@ -408,7 +418,7 @@
 .cardTitle {
   font-size: 0.95rem;
   font-weight: 700;
-  font-family: var(--font-iran-bold);
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
   color: var(--ink);
   margin: 0 0 0.45rem;
   line-height: 1.55;
@@ -675,19 +685,27 @@
   background: var(--nlm-surface, #fff);
   border-style: solid;
   border-width: var(--nlm-border-w, 1px);
-  border-color: var(--nlm-border-c, var(--line));
+  border-color: var(
+    --nlm-border-c,
+    rgba(42, 26, 14, 0.1)
+  ); /* #2A1A0E نرم — نه سیاه */
   border-radius:
     var(--nlm-radius-tl, 16px)
     var(--nlm-radius-tr, 16px)
     var(--nlm-radius-br, 16px)
     var(--nlm-radius-bl, 16px);
-  box-shadow: var(--nlm-shadow, 0 6px 18px rgba(80, 50, 0, 0.04));
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: var(
+    --nlm-shadow,
+    0 6px 18px rgba(212, 98, 26, 0.06)
+  );
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   cursor: pointer;
 }
 
 .magCardShell:hover {
   transform: translateY(-3px);
+  border-color: rgba(212, 98, 26, 0.32); /* #D4621A */
+  box-shadow: 0 12px 28px rgba(212, 98, 26, 0.12);
 }
 
 /* کل کارت قابل‌کلیک — اشتراک بالای این لایه می‌ماند */
@@ -743,7 +761,7 @@
   margin: 0;
   font-size: 0.95rem;
   font-weight: 800;
-  font-family: var(--font-iran-bold);
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
   line-height: 1.5;
   color: var(--nlm-title-c, var(--ink));
   display: -webkit-box;
@@ -759,6 +777,7 @@
 .magExcerpt {
   margin: 0;
   font-size: 0.78rem;
+  font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
   color: var(--nlm-excerpt-c, var(--muted));
   line-height: 1.7;
   display: -webkit-box;
@@ -989,14 +1008,15 @@
 
 .magV_editorial .magTitle {
   font-size: 1.05rem;
-  font-family: var(--font-edameh, var(--font-iran-bold));
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
   -webkit-line-clamp: 3;
 }
 
 /* framed / polaroid */
 .magV_framed {
-  background: var(--nlm-surface, #fff);
   padding: 0;
+  border-color: rgba(244, 174, 82, 0.45); /* #F4AE52 */
+  background: linear-gradient(180deg, #fff 0%, #fef3e2 140%);
 }
 
 .magFramePad {
@@ -1010,7 +1030,7 @@
 .magV_framed .magMedia {
   border-radius: 6px;
   aspect-ratio: var(--nlm-aspect, 16 / 9);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(42, 26, 14, 0.08);
 }
 
 .magV_framed .magBodyPad {
@@ -1019,7 +1039,7 @@
 
 .magV_framed .magTitle {
   text-align: center;
-  font-family: var(--font-edameh, var(--font-iran-bold));
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
 }
 
 /* actions / share / like */
@@ -1263,9 +1283,14 @@
 
 .emptyState h3,
 .errorState h3 {
-  font-family: var(--font-iran-bold);
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
   margin-bottom: 0.4rem;
   color: var(--ink);
+}
+
+.emptyState p,
+.errorState p {
+  font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
 }
 
 .emptyState p {
@@ -1446,5 +1471,1180 @@
 @media (max-width: 767px) {
   .nlmHideMobile {
     display: none !important;
+  }
+}
+
+/* ============================================
+   لیست اخبار — فیلتر کناری + چند حالت نمایش
+   ============================================ */
+
+.nlShell {
+  --nl-cream: #fef3e2;
+  --nl-mid: #f4ae52;
+  --nl-accent: #d4621a;
+  --nl-ink: #2a1a0e;
+  --nl-muted: #6f675c;
+  --nl-line: rgba(42, 26, 14, 0.1);
+  --nl-soft: rgba(244, 174, 82, 0.16);
+  /* کارت‌های مجله داخل این شِل از همین بردر تم استفاده کنند */
+  --line: rgba(42, 26, 14, 0.1);
+  --nlm-border-c: rgba(42, 26, 14, 0.1);
+  --nlm-surface: #ffffff;
+  --ink: #2a1a0e;
+
+  font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
+  color: var(--nl-ink);
+  padding: 1.25rem 0 2.5rem;
+  background: transparent;
+  min-height: 60vh;
+}
+
+.nlShell button,
+.nlShell input,
+.nlShell select {
+  font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
+}
+
+.nlShell .magTitle,
+.nlShell .nlTitle,
+.nlShell .cardTitle,
+.nlShell .nlFiltersTitle {
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
+}
+
+.nlShell .magExcerpt,
+.nlShell .cardExcerpt,
+.nlShell .cardMeta,
+.nlShell .nlCount,
+.nlShell .nlPageHint,
+.nlShell .nlChip,
+.nlShell .nlQuickTab,
+.nlShell .nlCatBtn,
+.nlShell .nlSortBtn,
+.nlShell .nlSpecialBtn,
+.nlShell .nlSearchInput {
+  font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
+}
+
+.nlShell .magCardShell {
+  border-color: rgba(42, 26, 14, 0.1);
+}
+
+.nlShell .magCardShell:hover {
+  border-color: rgba(212, 98, 26, 0.35);
+}
+
+.nlShell .magV_framed {
+  border-color: rgba(244, 174, 82, 0.5);
+}
+
+.nlShell .magV_editorial {
+  border-color: rgba(212, 98, 26, 0.22);
+}
+
+.nlShell .magV_split {
+  border-color: rgba(42, 26, 14, 0.1);
+}
+
+.nlShell .magV_classic {
+  border-color: rgba(42, 26, 14, 0.1);
+}
+
+.nlLayout {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.nlAsideDesktop {
+  position: sticky;
+  top: 12px;
+  max-height: calc(100dvh - 24px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.nlFilters {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--nl-line);
+  border-radius: 18px;
+  padding: 1rem 1rem 1.15rem;
+  box-shadow: 0 8px 24px rgba(42, 26, 14, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.nlFiltersHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.nlFiltersTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.nlClearBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: none;
+  background: var(--nl-soft);
+  color: var(--nl-accent);
+  border-radius: 999px;
+  padding: 0.28rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.nlClearBtn em {
+  font-style: normal;
+  background: var(--nl-accent);
+  color: #fff;
+  min-width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+}
+
+.nlSearchForm {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.4rem 0.35rem 0.55rem;
+  background: var(--nl-cream);
+  border: 1px solid var(--nl-line);
+  border-radius: 12px;
+}
+
+.nlSearchIcon {
+  color: var(--nl-muted);
+  opacity: 0.75;
+}
+
+.nlSearchInput {
+  border: none;
+  background: transparent;
+  outline: none;
+  font: inherit;
+  font-size: 0.84rem;
+  color: var(--nl-ink);
+  min-width: 0;
+  width: 100%;
+}
+
+.nlSearchClear {
+  border: none;
+  background: transparent;
+  color: var(--nl-muted);
+  cursor: pointer;
+  display: inline-flex;
+  padding: 0.2rem;
+}
+
+.nlSearchSubmit {
+  border: none;
+  background: var(--nl-accent);
+  color: #fff;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 9px;
+  padding: 0.4rem 0.65rem;
+  cursor: pointer;
+}
+
+.nlFilterBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.nlFilterLabel {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--nl-muted);
+}
+
+.nlSpecialGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+}
+
+.nlSpecialBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  border: 1px solid var(--nl-line);
+  background: #fff;
+  color: var(--nl-ink);
+  border-radius: 11px;
+  padding: 0.5rem 0.4rem;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.nlSpecialBtn:hover {
+  border-color: rgba(212, 98, 26, 0.35);
+  background: rgba(254, 243, 226, 0.7);
+}
+
+.nlSpecialBtnOn {
+  background: linear-gradient(135deg, #fff8ec, #ffe8c4);
+  border-color: rgba(212, 98, 26, 0.4);
+  color: var(--nl-accent);
+}
+
+.nlCatList,
+.nlSortList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.nlCatBtn,
+.nlSortBtn {
+  border: 1px solid var(--nl-line);
+  background: #fff;
+  color: var(--nl-ink);
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nlCatBtn:hover,
+.nlSortBtn:hover {
+  border-color: rgba(212, 98, 26, 0.35);
+}
+
+.nlCatBtnOn,
+.nlSortBtnOn {
+  background: var(--nl-accent);
+  border-color: var(--nl-accent);
+  color: #fff;
+}
+
+.nlCatSkeleton {
+  width: 72px;
+  height: 28px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #fff4e7 25%, #ffe8c4 50%, #fff4e7 75%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.5s infinite;
+}
+
+.nlAdminRefresh {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  border: 1px solid rgba(194, 120, 0, 0.25);
+  background: linear-gradient(135deg, rgba(251, 195, 0, 0.16), rgba(251, 151, 0, 0.08));
+  color: #8a5a00;
+  border-radius: 12px;
+  padding: 0.55rem 0.75rem;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nlAdminRefresh:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.nlSpin {
+  animation: nlSpin 0.8s linear infinite;
+}
+
+@keyframes nlSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.nlMain {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.nlToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.85rem 1rem;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--nl-line);
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(42, 26, 14, 0.04);
+}
+
+.nlToolbarStart {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.nlTitle {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.2rem;
+  font-weight: 800;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
+  color: var(--nl-ink);
+}
+
+.nlCount {
+  font-size: 0.78rem;
+  color: var(--nl-muted);
+  white-space: nowrap;
+}
+
+.nlToolbarEnd {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.nlMobileFilterBtn {
+  display: none;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid var(--nl-line);
+  background: #fff;
+  color: var(--nl-ink);
+  border-radius: 11px;
+  padding: 0.45rem 0.7rem;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nlMobileFilterBtn em {
+  font-style: normal;
+  background: var(--nl-accent);
+  color: #fff;
+  border-radius: 999px;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+}
+
+.nlChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.nlChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid rgba(212, 98, 26, 0.28);
+  background: var(--nl-soft);
+  color: var(--nl-accent);
+  border-radius: 999px;
+  padding: 0.28rem 0.6rem;
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.nlQuickTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.nlQuickTab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px solid var(--nl-line);
+  background: #fff;
+  color: var(--nl-muted);
+  border-radius: 999px;
+  padding: 0.4rem 0.8rem;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nlQuickTab:hover {
+  color: var(--nl-ink);
+  border-color: rgba(212, 98, 26, 0.3);
+}
+
+.nlQuickTabOn {
+  background: var(--nl-accent);
+  border-color: var(--nl-accent);
+  color: #fff;
+}
+
+.nlViewList .magCardShell,
+.nlViewSplit .magCardShell {
+  min-height: 0;
+}
+
+/* عکس کنار محتوا — سه ستون افقی فشرده */
+.nlViewSplit {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0.9rem;
+}
+
+.nlViewSplit .magV_split {
+  grid-template-columns: 40% 1fr;
+  min-height: 118px;
+  align-items: stretch;
+}
+
+.nlViewSplit .magV_split .magMedia {
+  min-height: 118px;
+  height: 100%;
+}
+
+.nlViewSplit .magSplitBody {
+  padding: 0.65rem 0.75rem;
+  gap: 0.25rem;
+  justify-content: center;
+}
+
+.nlViewSplit .magTitle {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  -webkit-line-clamp: 3;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
+}
+
+.nlViewSplit .magExcerpt {
+  display: none;
+}
+
+.nlViewSplit .cardMeta {
+  font-size: 0.68rem;
+  margin-top: 0.15rem;
+}
+
+.nlViewSplit .magRmFlow {
+  margin-top: 0.2rem;
+}
+
+.nlViewSplit .magRm {
+  font-size: 0.7rem;
+}
+
+@media (max-width: 1024px) {
+  .nlViewSplit {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* در حالت افقی، کارت‌ها روی موبایل هم عکس کنار متن بمانند */
+  .nlViewSplit .magV_split {
+    grid-template-columns: 36% 1fr !important;
+    min-height: 100px;
+  }
+
+  .nlViewSplit .magV_split .magMedia {
+    min-height: 100px !important;
+    height: 100% !important;
+    aspect-ratio: auto !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .nlViewSplit {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.nlPaginationWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.5rem;
+  padding: 1rem 0.5rem 0.25rem;
+}
+
+.nlPageHint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--nl-muted);
+}
+
+/* شیت موبایل */
+.nlSheet {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.nlSheetBackdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(20, 12, 6, 0.45);
+  cursor: pointer;
+}
+
+.nlSheetPanel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 480px);
+  max-height: min(88dvh, 720px);
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -12px 40px rgba(42, 26, 14, 0.18);
+}
+
+.nlSheetHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--nl-line);
+}
+
+.nlSheetHead strong {
+  font-size: 0.95rem;
+}
+
+.nlSheetClose {
+  border: none;
+  background: var(--nl-cream);
+  color: var(--nl-ink);
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.nlSheetBody {
+  overflow: auto;
+  padding: 0.75rem 1rem 1rem;
+}
+
+.nlSheetBody .nlFilters {
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.nlSheetFoot {
+  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0));
+  border-top: 1px solid var(--nl-line);
+  background: #fff;
+}
+
+.nlSheetApply {
+  width: 100%;
+  border: none;
+  background: var(--nl-accent);
+  color: #fff;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 960px) {
+  .nlLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .nlAsideDesktop {
+    display: none;
+  }
+
+  .nlMobileFilterBtn {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 640px) {
+  .nlShell {
+    padding-top: 0.75rem;
+  }
+
+  .nlTitle {
+    font-size: 1.05rem;
+  }
+
+  .nlQuickTabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 0.15rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nlQuickTab {
+    flex: 0 0 auto;
+  }
+
+  .nlContributeBanner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .nlContributeBannerBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── مشارکت مخاطب ── */
+.nlContributeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid rgba(212, 98, 26, 0.35);
+  background: linear-gradient(135deg, #fff8ec, #ffe8c4);
+  color: var(--nl-accent);
+  border-radius: 11px;
+  padding: 0.45rem 0.75rem;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.nlContributeBtn:hover {
+  background: var(--nl-accent);
+  color: #fff;
+  border-color: var(--nl-accent);
+}
+
+.nlContributeBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.15rem;
+  border-radius: 16px;
+  border: 1px dashed rgba(212, 98, 26, 0.35);
+  background: rgba(254, 243, 226, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.nlContributeBannerText {
+  min-width: 0;
+}
+
+.nlContributeBannerText strong {
+  display: block;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
+  font-size: 0.95rem;
+  color: var(--nl-ink);
+  margin-bottom: 0.25rem;
+}
+
+.nlContributeBannerText p {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: var(--nl-muted);
+  font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
+}
+
+.nlContributeBannerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  border: none;
+  background: var(--nl-accent);
+  color: #fff;
+  border-radius: 12px;
+  padding: 0.65rem 1rem;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(212, 98, 26, 0.22);
+}
+
+.nlContributeBannerBtn:hover {
+  filter: brightness(1.05);
+}
+
+/* دیالوگ ارسال مطلب */
+.ncOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
+  direction: rtl;
+}
+
+.ncBackdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(42, 26, 14, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+
+.ncDialog {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 640px);
+  max-height: min(92dvh, 820px);
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #fff 0%, #fef3e2 120%);
+  border-radius: 22px;
+  border: 1px solid rgba(42, 26, 14, 0.1);
+  box-shadow: 0 24px 64px rgba(42, 26, 14, 0.22);
+  overflow: hidden;
+}
+
+.ncHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1.1rem 1.15rem 0.9rem;
+  border-bottom: 1px solid rgba(42, 26, 14, 0.1);
+  flex-shrink: 0;
+}
+
+.ncHeadText {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  min-width: 0;
+  color: var(--nl-accent, #d4621a);
+}
+
+.ncTitle {
+  margin: 0 0 0.25rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #2a1a0e;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
+}
+
+.ncSub {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: #6f675c;
+}
+
+.ncClose {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(42, 26, 14, 0.1);
+  border-radius: 11px;
+  background: #fef3e2;
+  color: #2a1a0e;
+  cursor: pointer;
+}
+
+.ncForm {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.ncBody {
+  overflow: auto;
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ncFieldset {
+  margin: 0;
+  padding: 0.85rem 0.9rem;
+  border: 1px solid rgba(42, 26, 14, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.75);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.ncFieldset legend {
+  padding: 0 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #d4621a;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.ncField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.ncField > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #6f675c;
+}
+
+.ncField input,
+.ncField textarea,
+.ncField select {
+  width: 100%;
+  border: 1px solid rgba(42, 26, 14, 0.12);
+  border-radius: 11px;
+  background: #fff;
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+  font-size: 0.86rem;
+  color: #2a1a0e;
+  font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.ncField input:focus,
+.ncField textarea:focus,
+.ncField select:focus {
+  border-color: rgba(212, 98, 26, 0.45);
+  box-shadow: 0 0 0 3px rgba(244, 174, 82, 0.22);
+}
+
+.ncField textarea {
+  resize: vertical;
+  min-height: 72px;
+  line-height: 1.7;
+}
+
+.ncEditor {
+  border: 1px solid rgba(42, 26, 14, 0.12);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  min-height: 220px;
+}
+
+.ncEditor:focus-within {
+  border-color: rgba(212, 98, 26, 0.45);
+  box-shadow: 0 0 0 3px rgba(244, 174, 82, 0.22);
+}
+
+.ncEditorLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  padding: 1rem;
+  color: #6f675c;
+  font-size: 0.84rem;
+  background: #fffaf3;
+}
+
+/* CKEditor داخل دیالوگ مشارکت */
+.ncEditor :global(.ck.ck-editor) {
+  width: 100%;
+}
+
+.ncEditor :global(.ck.ck-toolbar) {
+  border: none !important;
+  border-bottom: 1px solid rgba(42, 26, 14, 0.1) !important;
+  background: #fef3e2 !important;
+  padding: 0.2rem 0.35rem !important;
+  min-height: 36px !important;
+}
+
+.ncEditor :global(.ck.ck-toolbar .ck-toolbar__items) {
+  flex-wrap: nowrap !important;
+  gap: 1px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.ncEditor :global(.ck.ck-toolbar .ck-button) {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  min-height: 30px !important;
+  padding: 0 !important;
+  border-radius: 7px !important;
+}
+
+.ncEditor :global(.ck.ck-toolbar .ck-button .ck-icon) {
+  width: 15px !important;
+  height: 15px !important;
+}
+
+.ncEditor :global(.ck.ck-toolbar .ck-dropdown__button) {
+  min-width: 0 !important;
+  height: 30px !important;
+  padding: 0 0.35rem !important;
+  border-radius: 7px !important;
+  font-size: 0.72rem !important;
+}
+
+.ncEditor :global(.ck.ck-toolbar .ck-toolbar__separator) {
+  margin: 0 2px !important;
+  background: rgba(42, 26, 14, 0.12) !important;
+}
+
+.ncEditor :global(.ck.ck-editor__main > .ck-editor__editable) {
+  min-height: 160px;
+  max-height: 260px;
+  overflow-y: auto;
+  border: none !important;
+  box-shadow: none !important;
+  font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
+  font-size: 0.88rem;
+  line-height: 1.75;
+  color: #2a1a0e;
+  direction: rtl;
+  text-align: right;
+  padding: 0.75rem 0.85rem !important;
+}
+
+.ncEditor :global(.ck.ck-editor__main > .ck-editor__editable:focus) {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.ncEditor :global(.ck.ck-balloon-panel) {
+  z-index: 13000 !important;
+}
+
+.ncRow2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.ncHint {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #6f675c;
+}
+
+.ncDrop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  min-height: 110px;
+  border: 1.5px dashed rgba(212, 98, 26, 0.35);
+  border-radius: 12px;
+  background: rgba(254, 243, 226, 0.5);
+  color: #6f675c;
+  cursor: pointer;
+  padding: 0.75rem;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.ncDrop small {
+  font-size: 0.68rem;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.ncPreview {
+  width: 100%;
+  max-height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.ncClearImg {
+  align-self: flex-start;
+  border: none;
+  background: transparent;
+  color: #d4621a;
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ncError {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  background: #fff5f5;
+  border: 1px solid rgba(198, 40, 40, 0.2);
+  color: #c62828;
+  font-size: 0.8rem;
+}
+
+.ncFoot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  padding: 0.85rem 1.15rem;
+  border-top: 1px solid rgba(42, 26, 14, 0.1);
+  background: rgba(255, 255, 255, 0.85);
+  flex-shrink: 0;
+}
+
+.ncGhost {
+  border: 1px solid rgba(42, 26, 14, 0.12);
+  background: #fff;
+  color: #2a1a0e;
+  border-radius: 11px;
+  padding: 0.6rem 0.95rem;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ncPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  background: #d4621a;
+  color: #fff;
+  border-radius: 11px;
+  padding: 0.6rem 1rem;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
+  cursor: pointer;
+}
+
+.ncPrimary:disabled,
+.ncGhost:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.ncSuccess {
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  color: #2a1a0e;
+}
+
+.ncSuccess svg {
+  color: #2e7d32;
+}
+
+.ncSuccess h3 {
+  margin: 0;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
+  font-size: 1.1rem;
+}
+
+.ncSuccess p {
+  margin: 0 0 0.75rem;
+  font-size: 0.86rem;
+  line-height: 1.7;
+  color: #6f675c;
+  max-width: 28rem;
+}
+
+@media (max-width: 640px) {
+  .ncRow2 {
+    grid-template-columns: 1fr;
+  }
+
+  .ncDialog {
+    max-height: 94dvh;
+    border-radius: 18px 18px 0 0;
+    align-self: flex-end;
+    width: 100%;
+  }
+
+  .ncOverlay {
+    align-items: flex-end;
+    padding: 0;
   }
 }

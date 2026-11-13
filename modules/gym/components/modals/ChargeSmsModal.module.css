@@ -1,0 +1,194 @@
+/* modules/gym/components/tabs/modals/ChargeSmsModal.module.css */
+
+.chargeContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.rateInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--primary-glass);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+  line-height: 1.5;
+}
+
+.rateInfo svg { color: var(--primary); flex-shrink: 0; }
+.rateInfo strong {
+  color: var(--text-primary);
+  font-family: var(--font-edameh);
+  font-weight: 700;
+}
+
+.presetSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.presetLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+.presetGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.presetBtn {
+  padding: 0.6rem 1rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-edameh);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.presetBtn:hover {
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+}
+
+.presetBtnActive {
+  background: var(--primary-glass);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.formGroup label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+.formGroup input {
+  padding: 0.6rem 0.8rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-family: var(--font-edameh);
+  font-weight: 700;
+  transition: all var(--transition-fast);
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glass);
+}
+
+.errorText {
+  font-size: 0.72rem;
+  color: #ff4757;
+  font-family: var(--font-iran);
+}
+
+.previewBox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border-medium);
+}
+
+.previewBox svg { color: var(--primary); flex-shrink: 0; }
+
+.previewInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.previewLabel {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-family: var(--font-iran);
+}
+
+.previewValue {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--primary);
+  font-family: var(--font-edameh);
+}
+
+.modalActions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.modalCancel {
+  padding: 0.5rem 1.5rem;
+  background: transparent;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.modalCancel:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.modalConfirm {
+  padding: 0.5rem 1.5rem;
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-on-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modalConfirm:hover:not(:disabled) {
+  transform: var(--hover-lift);
+  box-shadow: var(--shadow-md), var(--shadow-glow-primary);
+}
+
+.modalConfirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .presetGrid { grid-template-columns: 1fr; }
+  .modalActions { flex-direction: column; }
+  .modalActions button { width: 100%; justify-content: center; }
+}

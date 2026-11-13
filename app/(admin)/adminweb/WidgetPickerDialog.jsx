@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useMemo, useState } from 'react'
+import { getModulePageDef } from '@/config/modulePageLayouts'
 import {
   X,
   Search,
@@ -30,6 +31,7 @@ import {
   Trophy,
   HelpCircle,
   GraduationCap,
+  AppWindow,
   Award,
   Package,
   LogIn,
@@ -39,6 +41,7 @@ import {
   Tags,
   BadgePercent,
   LayoutGrid,
+  Sparkles,
 } from 'lucide-react'
 import {
   availableBuilderWidgets,
@@ -75,6 +78,7 @@ const ICONS = {
   Trophy,
   HelpCircle,
   GraduationCap,
+  AppWindow,
   Award,
   Package,
   LogIn,
@@ -84,6 +88,7 @@ const ICONS = {
   Tags,
   BadgePercent,
   LayoutGrid,
+  Sparkles,
 }
 
 /**
@@ -120,6 +125,10 @@ export default function WidgetPickerDialog({
   const widgets = useMemo(() => {
     let list = availableBuilderWidgets(moduleMap, { layoutMode })
     /* ویجت محتوای کامل صفحه را اول لیست بیاور */
+    const moduleKey =
+      typeof layoutMode === 'string' && layoutMode.startsWith('module:')
+        ? layoutMode.slice('module:'.length)
+        : ''
     const pinType =
       layoutMode === 'news_single'
         ? 'news_article'
@@ -127,11 +136,15 @@ export default function WidgetPickerDialog({
           ? 'news_page'
           : layoutMode === 'job_single'
             ? 'job_article'
-            : layoutMode === 'product_single'
+            : layoutMode === 'product_single' ||
+                String(layoutMode || '').startsWith('product_single:')
               ? 'product_article'
-              : layoutMode === 'shop_list'
+              : layoutMode === 'shop_list' ||
+                  String(layoutMode || '').startsWith('shop_list:')
                 ? 'shop_page'
-                : null
+                : moduleKey
+                  ? getModulePageDef(moduleKey)?.contentWidget || null
+                  : null
     if (pinType) {
       list = [...list].sort((a, b) => {
         if (a.type === pinType) return -1

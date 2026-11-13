@@ -221,3 +221,27 @@ export function isValidPersianDate(year, month, day) {
   
   return day >= 1 && day <= pDaysInMonth[month - 1];
 }
+
+/**
+ * فرمت سریع تاریخ برای نمایش در جدول
+ * @param {string} dateString - تاریخ ISO مثل "2026-09-15"
+ * @returns {string} - "۱۵ شهریور ۱۴۰۵" یا "-"
+ */
+export function formatJalaliDate(dateString) {
+  if (!dateString) return '-';
+  const persianDate = toPersianDate(dateString);
+  if (!persianDate) return '-';
+  return formatPersianDate(persianDate, 'full');
+}
+
+/**
+ * فرمت کوتاه برای جدول
+ * @param {string} dateString
+ * @returns {string} - "۱۴۰۵/۰۶/۱۵"
+ */
+export function formatJalaliShort(dateString) {
+  if (!dateString) return '-';
+  const persianDate = toPersianDate(dateString);
+  if (!persianDate) return '-';
+  return formatPersianDate(persianDate, 'numeric');
+}

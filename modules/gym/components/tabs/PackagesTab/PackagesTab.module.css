@@ -1,0 +1,287 @@
+/* modules/gym/components/tabs/PackagesTab/PackagesTab.module.css */
+
+.tabContent {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  font-family: var(--font-iran, iran, Tahoma, sans-serif);
+}
+
+.tabHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.tabHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.tabTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.88rem;
+  font-weight: 800;
+  font-family: var(--font-edameh, var(--font-iran));
+  color: var(--text-primary, #10241c);
+  margin: 0;
+}
+
+.tabTitle svg {
+  color: #046c4e;
+}
+
+.tabCount {
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: #4d6a5c;
+  padding: 0.12rem 0.45rem;
+  background: #e8f5ef;
+  border-radius: 999px;
+}
+
+.addButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.35rem 0.75rem;
+  background: linear-gradient(165deg, #10b981, #046c4e);
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(4, 108, 78, 0.18);
+}
+
+.addButton:hover {
+  filter: brightness(1.05);
+}
+
+.emptyNote {
+  margin: 0;
+  padding: 1.2rem;
+  text-align: center;
+  font-size: 0.78rem;
+  color: #4d6a5c;
+  background: #fff;
+  border: 1px dashed #d5e5db;
+  border-radius: 12px;
+}
+
+.packagesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.packageCard {
+  background: #fff;
+  border: 1px solid #d5e5db;
+  border-radius: 12px;
+  padding: 0.7rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+  box-shadow: 0 1px 2px rgba(2, 60, 44, 0.04);
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.packageCard:hover {
+  border-color: rgba(4, 108, 78, 0.35);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(2, 60, 44, 0.08);
+}
+
+.packageCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.packageTitleBlock {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.packageCardTitle {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #10241c;
+  line-height: 1.3;
+}
+
+.packageCardActions {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.packageActionBtn {
+  width: 1.65rem;
+  height: 1.65rem;
+  border: 1px solid #d5e5db;
+  border-radius: 7px;
+  background: #e8f5ef;
+  color: #023c2c;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.packageActionBtn:hover {
+  background: #046c4e;
+  border-color: #046c4e;
+  color: #fff;
+}
+
+.packageActionBtnDanger:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #fff;
+}
+
+.packageCardPrice {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.packageCardPrice strong {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #023c2c;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.packageCardPrice span {
+  font-size: 0.64rem;
+  color: #7a9487;
+  font-weight: 600;
+}
+
+.packageCardPrice em {
+  margin-right: auto;
+  font-style: normal;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #046c4e;
+  background: #e8f5ef;
+  border-radius: 999px;
+  padding: 0.12rem 0.4rem;
+}
+
+.packageCardDiscount {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.1rem 0.4rem;
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px solid #fdba74;
+  border-radius: 999px;
+  font-size: 0.6rem;
+  font-weight: 800;
+}
+
+.packageChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.chipOn {
+  background: #d1fae5;
+  color: #065f46;
+  border-color: #6ee7b7;
+}
+
+.chipOff {
+  background: #f3f4f6;
+  color: #6b7280;
+  border-color: #e5e7eb;
+}
+
+.packageCardDesc {
+  margin: 0;
+  font-size: 0.68rem;
+  color: #4d6a5c;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.packageMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  margin-top: auto;
+}
+
+.packageMeta span {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.3rem;
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: #4d6a5c;
+  padding: 0.3rem 0.4rem;
+  background: #eef6f1;
+  border-radius: 8px;
+  line-height: 1.35;
+}
+
+.packageMeta svg {
+  color: #046c4e;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+@media (max-width: 980px) {
+  .packagesGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .tabContent {
+    padding: 0.55rem;
+  }
+
+  .packagesGrid {
+    grid-template-columns: 1fr;
+  }
+}

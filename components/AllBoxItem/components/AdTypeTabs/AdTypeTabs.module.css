@@ -28,18 +28,18 @@
 }
 
 .tabBtn:hover {
-  color: #2a241c;
-  background: rgba(251, 195, 0, 0.12);
+  color: #2A1A0E;
+  background: rgba(244, 174, 82, 0.14);
 }
 
 .tabBtn.active {
-  background: linear-gradient(135deg, #fbc300, #e8a000);
-  color: #2a241c;
-  box-shadow: 0 4px 12px rgba(200, 150, 20, 0.28);
+  background: linear-gradient(135deg, #F4AE52, #D4621A);
+  color: #FEF3E2;
+  box-shadow: 0 4px 12px rgba(212, 98, 26, 0.28);
 }
 
 .tabBtn.active .tabIcon {
-  color: #2a241c;
+  color: #FEF3E2;
 }
 
 .tabIcon {
@@ -65,7 +65,7 @@
 
 .tabBtn.active .tabCount {
   background: rgba(42, 36, 28, 0.12);
-  color: #2a241c;
+  color: #2A1A0E;
 }
 
 /* ============================================

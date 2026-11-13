@@ -127,9 +127,14 @@ const CompanyForm = ({ company, onSaved, onCancel }) => {
 
       if (logo) fd.append("logo", logo);
 
-      documents.forEach((doc) => {
-        fd.append("documents", doc);
-      });
+      const docsLocked =
+        company?.verification_status === "verified" ||
+        company?.verification_status === "pending";
+      if (!docsLocked) {
+        documents.forEach((doc) => {
+          fd.append("documents", doc);
+        });
+      }
 
       const url = isEdit
         ? Config.endpoints.jobisell.myCompany.update()
@@ -303,55 +308,93 @@ const CompanyForm = ({ company, onSaved, onCancel }) => {
           />
         </div>
 
-        {/* مدارک صحت‌سنجی */}
-        <div className={styles.docsSection}>
-          <label>مدارک صحت‌سنجی</label>
-          <p className={styles.docsHint}>
-            لطفاً مدارک مرتبط با شرکت و فعالیت خود را آپلود نمایید (حداکثر ۵
-            تصویر یا PDF)
-          </p>
-
-          <div className={styles.docsGrid}>
-            {documents.map((doc, idx) => (
-              <div key={idx} className={styles.docItem}>
-                <FileText size={20} />
-                <span className={styles.docName}>
-                  {doc.name.length > 20
-                    ? doc.name.slice(0, 20) + "..."
-                    : doc.name}
-                </span>
-                <button
-                  type="button"
-                  className={styles.removeDocBtn}
-                  onClick={() => removeDocument(idx)}
-                >
-                  <X size={14} />
-                </button>
+        {/* مدارک صحت‌سنجی — بعد از تایید/بررسی ادمین قفل می‌شود */}
+        {(() => {
+          const vStatus = company?.verification_status;
+          const docsLocked =
+            vStatus === "verified" || vStatus === "pending";
+          if (docsLocked) {
+            return (
+              <div className={styles.docsSection}>
+                <label>مدارک صحت‌سنجی</label>
+                <p className={styles.docsHint}>
+                  {vStatus === "verified"
+                    ? "این مدارک توسط ادمین تایید شده‌اند و دیگر قابل ویرایش یا حذف نیستند."
+                    : "مدارک در حال بررسی ادمین هستند و تا اعلام نتیجه قابل تغییر نیستند."}
+                </p>
+                {Array.isArray(company?.documents) &&
+                company.documents.length > 0 ? (
+                  <div className={styles.docsGrid}>
+                    {company.documents.map((doc) => (
+                      <div
+                        key={doc.id}
+                        className={`${styles.docItem} ${styles.docItemLocked}`}
+                      >
+                        <FileText size={18} />
+                        <span className={styles.docName}>
+                          {doc.title || "مدرک تاییدشده"}
+                        </span>
+                        <span className={styles.lockedBadge}>قفل</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
               </div>
-            ))}
+            );
+          }
+          return (
+            <div className={styles.docsSection}>
+              <label>مدارک صحت‌سنجی</label>
+              <p className={styles.docsHint}>
+                لطفاً مدارک مرتبط با شرکت و فعالیت خود را آپلود نمایید (حداکثر ۵
+                تصویر یا PDF)
+              </p>
 
-            {documents.length < 5 && (
-              <button
-                type="button"
-                className={styles.addDocBtn}
-                onClick={() => docsInputRef.current?.click()}
-              >
-                <Upload size={18} />
-                <span>افزودن مدرک</span>
-                <span className={styles.docCount}>{documents.length} / 5</span>
-              </button>
-            )}
-          </div>
+              <div className={styles.docsGrid}>
+                {documents.map((doc, idx) => (
+                  <div key={idx} className={styles.docItem}>
+                    <FileText size={20} />
+                    <span className={styles.docName}>
+                      {doc.name.length > 20
+                        ? doc.name.slice(0, 20) + "..."
+                        : doc.name}
+                    </span>
+                    <button
+                      type="button"
+                      className={styles.removeDocBtn}
+                      onClick={() => removeDocument(idx)}
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
 
-          <input
-            ref={docsInputRef}
-            type="file"
-            accept="image/*,application/pdf"
-            multiple
-            onChange={handleDocsChange}
-            hidden
-          />
-        </div>
+                {documents.length < 5 && (
+                  <button
+                    type="button"
+                    className={styles.addDocBtn}
+                    onClick={() => docsInputRef.current?.click()}
+                  >
+                    <Upload size={18} />
+                    <span>افزودن مدرک</span>
+                    <span className={styles.docCount}>
+                      {documents.length} / 5
+                    </span>
+                  </button>
+                )}
+              </div>
+
+              <input
+                ref={docsInputRef}
+                type="file"
+                accept="image/*,application/pdf"
+                multiple
+                onChange={handleDocsChange}
+                hidden
+              />
+            </div>
+          );
+        })()}
 
         {error && (
           <div className={styles.errorBox}>

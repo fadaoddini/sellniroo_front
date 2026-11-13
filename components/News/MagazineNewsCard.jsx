@@ -15,6 +15,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import Config from '@/config/config'
 import { iranShareTargets as buildIranShareTargets } from '@/utils/iranShare'
+import { getNewsHref, getNewsSlug } from '@/utils/newsSlug'
 import styles from './News.module.css'
 
 function getFullImageUrl(imagePath) {
@@ -55,8 +56,11 @@ function iranShareTargets(pageUrl, title, flags) {
   }))
 }
 
-function absoluteNewsUrl(slug) {
-  const href = `/news/${slug}`
+function absoluteNewsUrl(newsOrSlug) {
+  const href =
+    typeof newsOrSlug === 'string'
+      ? `/news/${newsOrSlug}`
+      : getNewsHref(newsOrSlug)
   if (typeof window === 'undefined') return href
   return `${window.location.origin}${href}`
 }
@@ -94,8 +98,6 @@ export default function MagazineNewsCard({
   if (!news) return null
 
   const {
-    slug,
-    id,
     title,
     excerpt,
     featured_image_display,
@@ -107,8 +109,8 @@ export default function MagazineNewsCard({
     likes,
   } = news
 
-  const newsSlug = slug || id || `news-${index}`
-  const href = `/news/${newsSlug}`
+  const newsSlug = getNewsSlug(news) || `news-${index}`
+  const href = getNewsHref(news) || `/news/${newsSlug}`
   const imageUrl = getFullImageUrl(
     featured_image_display || featured_image || images?.[0]?.image_display
   )

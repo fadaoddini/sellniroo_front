@@ -210,6 +210,76 @@
 /* ============================================
    پروفایل
    ============================================ */
+/* آیکن سبد کنار پروفایل — استایل از تنظیمات ویجت (--bn-cart-*) */
+.cartBtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--bn-cart-btn-size, 32px);
+  height: var(--bn-cart-btn-size, 32px);
+  flex-shrink: 0;
+  border-radius: var(--bn-cart-btn-radius, 8px);
+  text-decoration: none;
+  color: var(--bn-cart-icon, var(--bn-accent, var(--black)));
+  background: var(--bn-cart-bg, transparent);
+  border: 1px solid var(--bn-cart-border, transparent);
+  box-sizing: border-box;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cartBtn:hover {
+  background: var(
+    --bn-cart-hover-bg,
+    var(--bn-menu-hover-bg, rgba(0, 0, 0, 0.06))
+  );
+  color: var(
+    --bn-cart-hover-icon,
+    var(--bn-cart-icon, var(--bn-accent, var(--black)))
+  );
+}
+
+.cartBtn svg {
+  width: var(--bn-cart-icon-size, 16px);
+  height: var(--bn-cart-icon-size, 16px);
+}
+
+.cartBadge {
+  position: absolute;
+  top: -5px;
+  inset-inline-start: -4px;
+  min-width: var(--bn-cart-badge-size, 16px);
+  height: var(--bn-cart-badge-size, 16px);
+  padding: 0 4px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--bn-cart-badge-size, 16px) * 0.58);
+  font-weight: 800;
+  line-height: 1;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  color: var(--bn-cart-badge-text, #1c1c1e);
+  background: var(--bn-cart-badge-bg, var(--bn-accent, #dbbe00));
+  border: 1.5px solid var(--bn-cart-badge-border, var(--bn-bg, #fff));
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.breakingNewsConfigured .cartBtn {
+  color: var(--bn-cart-icon, var(--bn-accent, #b38c00));
+  background: var(--bn-cart-bg, transparent);
+  border-color: var(--bn-cart-border, transparent);
+}
+
+.breakingNewsConfigured .cartBadge {
+  background: var(--bn-cart-badge-bg, var(--bn-accent, #dbbe00));
+  color: var(--bn-cart-badge-text, #1c1c1e);
+  border-color: var(--bn-cart-badge-border, var(--bn-bg, #fff3cc));
+}
+
 .profileSection {
   position: relative;
   z-index: 1100;
@@ -263,19 +333,37 @@
    + فاصله و رنگ از تنظیمات ویجت (CSS vars)
    ============================================ */
 .breakingNewsConfigured {
+  /* visible تا دراور/پروفایل بریده نشود؛ خود بک‌گراند با border-radius گرد می‌شود */
   overflow: visible;
-  height: auto;
-  min-height: 40px;
+  /* پیش‌فرض غیرچسبان — کلاس sticky جداگانه روشن می‌شود */
+  position: relative !important;
+  top: auto !important;
+  height: var(--bn-h, 40px);
+  min-height: var(--bn-h, 40px);
   box-sizing: border-box;
   background: var(--bn-bg, var(--bg-main));
   color: var(--bn-text, inherit);
-  border-bottom-color: var(--bn-border, var(--bn-accent, var(--primary-dark)));
+  border-bottom: var(--bn-bw, 2px) solid
+    var(--bn-border, var(--bn-accent, var(--primary-dark)));
+  box-shadow: var(--bn-shadow, 0 2px 8px rgba(0, 0, 0, 0.15));
+  backdrop-filter: blur(var(--bn-blur, 0px));
+  -webkit-backdrop-filter: blur(var(--bn-blur, 0px));
   padding: var(--bn-pt, 0) var(--bn-pr, 0) var(--bn-pb, 0) var(--bn-pl, 0);
   margin: var(--bn-mt, 0) var(--bn-mr, 0) var(--bn-mb, 0) var(--bn-ml, 0);
-  border-radius: var(--bn-bar-radius, 0);
+  border-radius: var(--bn-rtl, 0) var(--bn-rtr, 0) var(--bn-rbr, 0)
+    var(--bn-rbl, 0);
 }
 
-/* دسکتاپ: تمام‌عرض صفحه */
+.breakingNewsConfigured.breakingNewsSticky {
+  position: sticky !important;
+  top: var(--bn-sticky-top, 0) !important;
+  z-index: 1001;
+}
+
+/*
+ * تمام‌عرض: لبه به لبهٔ ویوپورت
+ * (حتی اگر ستون صفحه‌ساز boxed باشد)
+ */
 .breakingNewsConfigured.barFullBleed {
   width: 100vw;
   max-width: 100vw;
@@ -283,20 +371,29 @@
   margin-right: calc(50% - 50vw);
   margin-top: var(--bn-mt, 0);
   margin-bottom: var(--bn-mb, 0);
-  border-radius: var(--bn-bar-radius, 0);
+  border-radius: var(--bn-rtl, 0) var(--bn-rtr, 0) var(--bn-rbr, 0)
+    var(--bn-rbl, 0);
 }
 
-/* موبایل/کارت: فاصله از کنار + گردی */
+/*
+ * کارت inset: محدود به عرض محتوا + مارجین افقی
+ * تا خاموش‌کردن «تمام‌عرض» واقعاً از لبهٔ صفحه جدا شود
+ */
 .breakingNewsConfigured.barInset {
-  width: auto;
-  max-width: 100%;
-  margin: var(--bn-mt, 0) var(--bn-mr, 0) var(--bn-mb, 0) var(--bn-ml, 0);
-  border-radius: var(--bn-bar-radius, 0);
-  overflow: hidden;
-  border-bottom-width: 0;
-  box-shadow:
+  box-sizing: border-box;
+  width: calc(100% - var(--bn-ml, 0px) - var(--bn-mr, 0px));
+  max-width: var(--home-max-width, 1200px);
+  margin-top: var(--bn-mt, 0);
+  margin-bottom: var(--bn-mb, 0);
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: var(--bn-rtl, 0) var(--bn-rtr, 0) var(--bn-rbr, 0)
+    var(--bn-rbl, 0);
+  box-shadow: var(
+    --bn-shadow,
     0 1px 0 rgba(20, 24, 31, 0.06),
-    0 8px 24px rgba(20, 24, 31, 0.08);
+    0 8px 24px rgba(20, 24, 31, 0.08)
+  );
 }
 
 .breakingNewsConfigured .container {
@@ -305,6 +402,7 @@
 
 .breakingNewsConfigured .newsText {
   color: var(--bn-text, var(--black));
+  font-size: var(--bn-fs, 0.8rem);
 }
 
 .breakingNewsConfigured .labelIcon,
@@ -312,14 +410,25 @@
   color: var(--bn-accent, var(--primary-dark));
 }
 
+.breakingNewsConfigured .inlineMenu {
+  gap: var(--bn-gap, 0.35rem);
+}
+
 .breakingNewsConfigured .inlineMenuLink {
   color: var(--bn-link, var(--bn-text, var(--black)));
   background: transparent;
+  border-radius: var(--bn-link-radius, 6px);
+  font-size: calc(var(--bn-fs, 13px) - 2px);
 }
 
 .breakingNewsConfigured .inlineMenuLink:hover {
   background: var(--bn-menu-hover-bg, var(--primary-dark));
   color: var(--bn-menu-hover-text, var(--white));
+}
+
+.breakingNewsConfigured.underlineLinks .inlineMenuLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .breakingNewsConfigured .loginButton,
@@ -377,6 +486,7 @@
 }
 
 .breakingNewsConfigured .menuDrawer {
+  width: min(var(--bn-drawer-w, 300px), 88vw);
   background: var(--bn-drawer-bg, var(--white));
 }
 
@@ -790,6 +900,19 @@
   font-weight: 400;
 }
 
+.breakingNewsConfigured .datetime {
+  color: var(--bn-date, var(--bn-text, var(--black)));
+  font-size: var(--bn-date-fs, 0.7rem);
+  border: none;
+  background: transparent;
+  padding-inline: 0.25rem;
+  border-radius: 0;
+}
+
+.breakingNewsConfigured .dateText {
+  font-weight: var(--bn-date-fw, 400);
+}
+
 /* ============================================
    انیمیشن
    ============================================ */
@@ -857,12 +980,14 @@
 
   /* —— حالت چیدمان: موبایل تمیز و لمس‌پذیر —— */
   .breakingNewsConfigured {
-    height: auto;
-    min-height: 52px;
-    border-bottom-width: 1px;
-    box-shadow:
+    height: var(--bn-h, 52px);
+    min-height: var(--bn-h, 52px);
+    border-bottom-width: var(--bn-bw, 1px);
+    box-shadow: var(
+      --bn-shadow,
       0 1px 0 rgba(20, 24, 31, 0.06),
-      0 8px 24px rgba(20, 24, 31, 0.06);
+      0 8px 24px rgba(20, 24, 31, 0.06)
+    );
   }
 
   .breakingNewsConfigured .container {
@@ -921,7 +1046,7 @@
   }
 
   .breakingNewsConfigured .newsText {
-    font-size: 0.8rem;
+    font-size: var(--bn-fs, 0.8rem);
     font-weight: 500;
     letter-spacing: -0.01em;
     line-height: 1.35;
@@ -943,6 +1068,17 @@
 
   .breakingNewsConfigured .avatarPlaceholder {
     font-size: 12px;
+  }
+
+  .breakingNewsConfigured .cartBtn {
+    /* اندازه از --bn-cart-* (تنظیمات ویجت) */
+    min-width: var(--bn-cart-btn-size, 36px);
+    min-height: var(--bn-cart-btn-size, 36px);
+  }
+
+  .breakingNewsConfigured .cartBadge {
+    top: -3px;
+    inset-inline-start: -2px;
   }
 
   .breakingNewsConfigured .loginButton {
@@ -1027,7 +1163,8 @@
   }
 
   .breakingNewsConfigured {
-    min-height: 50px;
+    height: var(--bn-h, 50px);
+    min-height: var(--bn-h, 50px);
   }
 
   .breakingNewsConfigured .container {
@@ -1054,7 +1191,7 @@
   }
 
   .breakingNewsConfigured .newsText {
-    font-size: 0.74rem;
+    font-size: var(--bn-fs, 0.74rem);
   }
 
   .breakingNewsConfigured .avatar {
@@ -1103,7 +1240,8 @@
   }
 
   .breakingNewsConfigured {
-    min-height: 48px;
+    height: var(--bn-h, 48px);
+    min-height: var(--bn-h, 48px);
   }
 
   .breakingNewsConfigured .container {
@@ -1111,7 +1249,7 @@
   }
 
   .breakingNewsConfigured .newsText {
-    font-size: 0.7rem;
+    font-size: var(--bn-fs, 0.7rem);
   }
 
   .breakingNewsConfigured .loginButton span {
@@ -1370,5 +1508,302 @@
 
   .profileInfo h4 {
     font-size: 0.95rem;
+  }
+}
+
+/* ============================================
+   دکمه‌های ساخت رزومه / شرکت
+   ============================================ */
+.jobCtaGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.jobCtaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: var(--bn-link-radius, 8px);
+  font-family: var(--font-iran, Tahoma, sans-serif);
+  font-size: max(0.68rem, calc(var(--bn-fs, 13px) - 1px));
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    color 0.18s ease;
+}
+
+.jobCtaBtn:active {
+  transform: scale(0.97);
+}
+
+.jobCtaResume {
+  background: var(--bn-resume-cta-bg, #fef3e2);
+  color: var(--bn-resume-cta-text, #2a1a0e);
+  border-color: var(--bn-resume-cta-border, #f4ae52);
+  box-shadow: 0 2px 8px rgba(42, 26, 14, 0.08);
+}
+
+.jobCtaResume:hover {
+  background: var(--bn-resume-cta-hover-bg, #fff8ec);
+  border-color: var(--bn-resume-cta-border, #f4ae52);
+  box-shadow: 0 4px 12px rgba(212, 98, 26, 0.16);
+}
+
+.jobCtaCompany {
+  background: var(--bn-company-cta-bg, #fef3e2);
+  color: var(--bn-company-cta-text, #2a1a0e);
+  border-color: var(--bn-company-cta-border, #f4ae52);
+  box-shadow: 0 2px 8px rgba(42, 26, 14, 0.08);
+}
+
+.jobCtaCompany:hover {
+  background: var(--bn-company-cta-hover-bg, #fff8ec);
+  border-color: var(--bn-company-cta-border, #f4ae52);
+  box-shadow: 0 4px 12px rgba(212, 98, 26, 0.16);
+}
+
+/* ============================================
+   دیالوگ «ابتدا وارد شوید»
+   ============================================ */
+.authOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 12050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(42, 26, 14, 0.52);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  direction: rtl;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.authOverlayIn {
+  animation: bnAuthFadeIn var(--bn-sheet-ms, 350ms) ease both;
+}
+
+.authOverlayOut {
+  animation: bnAuthFadeOut var(--bn-sheet-ms, 350ms) ease both;
+}
+
+.authDialog {
+  position: relative;
+  width: min(100%, 380px);
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid rgba(244, 174, 82, 0.35);
+  background: linear-gradient(165deg, #fff 0%, #fef3e2 55%, #fff8ec 100%);
+  box-shadow:
+    0 28px 64px rgba(42, 26, 14, 0.28),
+    0 1px 0 rgba(255, 255, 255, 0.85) inset;
+  padding: 1.55rem 1.35rem 1.25rem;
+  text-align: center;
+  font-family: var(--font-iran, Tahoma, sans-serif);
+}
+
+.authDialogIn {
+  animation: bnAuthPopIn var(--bn-sheet-ms, 350ms) cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+}
+
+.authDialogOut {
+  animation: bnAuthPopOut calc(var(--bn-sheet-ms, 350ms) * 0.85) ease both;
+}
+
+.authGlow {
+  position: absolute;
+  inset: -40% -20% auto;
+  height: 60%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(244, 174, 82, 0.35) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.authIconWrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  margin: 0 auto 0.9rem;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #f4ae52, #d4621a);
+  color: #fef3e2;
+  box-shadow: 0 10px 22px rgba(212, 98, 26, 0.35);
+}
+
+.authTitle {
+  position: relative;
+  margin: 0 0 0.45rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #2a1a0e;
+  font-family: var(--font-iran-bold, var(--font-iran, Tahoma, sans-serif));
+}
+
+.authBody {
+  position: relative;
+  margin: 0 0 1.2rem;
+  font-size: 0.84rem;
+  line-height: 1.7;
+  color: rgba(42, 26, 14, 0.72);
+}
+
+.authActions {
+  position: relative;
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.authCancel,
+.authLogin {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 2.55rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s ease, background 0.15s ease, filter 0.15s ease;
+}
+
+.authCancel {
+  border: 1px solid rgba(42, 26, 14, 0.12);
+  background: rgba(255, 255, 255, 0.75);
+  color: rgba(42, 26, 14, 0.72);
+}
+
+.authCancel:hover {
+  background: #fff;
+  color: #2a1a0e;
+}
+
+.authLogin {
+  border: none;
+  background: linear-gradient(135deg, #f4ae52 0%, #d4621a 100%);
+  color: #fef3e2;
+  box-shadow: 0 8px 18px rgba(212, 98, 26, 0.3);
+}
+
+.authLogin:hover {
+  filter: brightness(1.05);
+}
+
+.authCancel:active,
+.authLogin:active {
+  transform: scale(0.98);
+}
+
+@keyframes bnAuthFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bnAuthFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes bnAuthPopIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bnAuthPopOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+}
+
+@media (max-width: 560px) {
+  .jobCtaBtn span {
+    display: none;
+  }
+
+  .jobCtaBtn {
+    padding: 0.35rem 0.5rem;
+  }
+
+  .authOverlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .authDialog {
+    width: 100%;
+    border-radius: 22px 22px 0 0;
+    padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .authDialogIn {
+    animation-name: bnAuthSheetIn;
+  }
+
+  .authDialogOut {
+    animation-name: bnAuthSheetOut;
+  }
+}
+
+@keyframes bnAuthSheetIn {
+  from {
+    opacity: 0.6;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bnAuthSheetOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0.4;
+    transform: translateY(100%);
   }
 }

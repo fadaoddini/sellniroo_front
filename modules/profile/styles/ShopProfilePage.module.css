@@ -1,0 +1,78 @@
+.page {
+  --ink: #12241f;
+  --muted: rgba(18, 36, 31, 0.62);
+  --line: rgba(18, 36, 31, 0.1);
+  --accent: #26a680;
+  background:
+    radial-gradient(900px 360px at 100% -10%, rgba(38, 166, 128, 0.14), transparent 55%),
+    radial-gradient(700px 300px at -10% 0%, rgba(15, 118, 110, 0.08), transparent 50%),
+    #f4faf7;
+  color: var(--ink);
+}
+
+.container {
+  max-width: 1100px;
+}
+
+.loading {
+  background: #f4faf7;
+}
+
+.loading :global(.spinner),
+.loading .spinner {
+  color: var(--accent);
+}
+
+.walletBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  background: #12241f;
+  color: #f4faf7;
+  font-family: var(--font-iran, sans-serif);
+}
+
+.walletBar span {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.walletBar strong {
+  font-size: 1rem;
+}
+
+.accountCard {
+  padding: 0.25rem 0;
+}
+
+.infoList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.infoList li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+}
+
+.infoList span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.infoList strong {
+  font-size: 0.9rem;
+}

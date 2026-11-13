@@ -1,12 +1,8 @@
 'use client'
 
 import React, { useCallback, useEffect, useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import {
-  RefreshCw,
-  GraduationCap, Home, ArrowUpLeft,
-} from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import schoolService from '@/components/School/services/schoolService'
 import QuestionBankPanel from '@/components/School/QuestionBankPanel'
@@ -16,9 +12,19 @@ import HomeworkReviewPanel from '@/components/School/HomeworkReviewPanel'
 import StudentsPanel from '@/components/School/StudentsPanel'
 import ExamResultsPanel from '@/components/School/ExamResultsPanel'
 import TeacherOverviewCharts from '@/components/School/TeacherOverviewCharts'
+import TeacherSupportPanel from '@/components/School/TeacherSupportPanel'
+import AttendancePanel from '@/components/School/AttendancePanel'
+import MySchedulePanel from '@/components/School/MySchedulePanel'
+import TeacherProfilePanel from '@/components/School/TeacherProfilePanel'
+import TeacherReportCardPanel from '@/components/School/TeacherReportCardPanel'
 import styles from './School.module.css'
 
-export default function TeacherDashboard() {
+/** پنل معلم — در پروفایل با embedded بدون هیرو صفحهٔ جدا */
+export default function TeacherDashboard({
+  embedded = false,
+  previewTeacherId: previewTeacherIdProp,
+  onPreviewTeacherIdChange,
+} = {}) {
   const router = useRouter()
   const { isAuthenticated, loading } = useAuth()
   const [tab, setTab] = useState('overview')
@@ -33,10 +39,28 @@ export default function TeacherDashboard() {
 
   const [studentMobile, setStudentMobile] = useState('')
   const [studentName, setStudentName] = useState('')
-  const [previewTeacherId, setPreviewTeacherId] = useState('')
+  const [previewTeacherIdLocal, setPreviewTeacherIdLocal] = useState('')
+  const previewControlled = previewTeacherIdProp !== undefined
+  const previewTeacherId = previewControlled
+    ? String(previewTeacherIdProp || '')
+    : previewTeacherIdLocal
+  const setPreviewTeacherId = (id) => {
+    if (previewControlled) onPreviewTeacherIdChange?.(String(id || ''))
+    else setPreviewTeacherIdLocal(String(id || ''))
+  }
+
+  const notifyPanel = useCallback((m, isErr) => {
+    if (isErr) setErr(m)
+    else {
+      setMsg(m)
+      setErr(null)
+    }
+  }, [])
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) router.replace('/login?next=/school/teacher')
+    if (!loading && !isAuthenticated) {
+      router.replace('/login?next=' + encodeURIComponent('/profile?tab=teacher'))
+    }
   }, [loading, isAuthenticated, router])
 
   const load = useCallback(async () => {
@@ -170,24 +194,40 @@ export default function TeacherDashboard() {
 
   const addStudent = async () => {
     if (!studentMobile.trim()) return
+    const digits = String(studentMobile).replace(/\D/g, '')
+    const dup = (data?.students || []).find((s) => {
+      const m = String(s.mobile || '').replace(/\D/g, '')
+      return m && digits && m === digits
+    })
+    if (dup) {
+      setErr('این شماره از قبل در این کلاس ثبت شده است')
+      return
+    }
     const payload = {
       mobile: studentMobile.trim(),
       display_name: studentName.trim(),
     }
     if (activeTeacherId) payload.teacher_ids = [Number(activeTeacherId)]
+    setSaving(true)
     const res = await schoolService.createStudent(payload)
+    setSaving(false)
     if (res.success) {
       setStudentMobile('')
       setStudentName('')
-      setMsg('دانش‌آموز اضافه شد')
+      setMsg(res.message || 'دانش‌آموز اضافه شد')
+      setErr(null)
       load()
     } else setErr(res.error)
   }
 
+  const pageClass = embedded
+    ? `${styles.page} ${styles.pageInProfile}`
+    : styles.page
+
   if (loading || !isAuthenticated) return null
   if (!data) {
     return (
-      <div className={styles.page} dir="rtl">
+      <div className={pageClass} dir="rtl">
         <div className={styles.wrap}>
           {err ? <div className={styles.err}>{err}</div> : <div className={styles.empty}>در حال بارگذاری…</div>}
         </div>
@@ -196,40 +236,32 @@ export default function TeacherDashboard() {
   }
 
   return (
-    <div className={styles.page} dir="rtl">
+    <div className={pageClass} dir="rtl">
       <div className={styles.wrap}>
-        <header className={styles.hero}>
-          <div className={styles.heroGlow} aria-hidden />
-          <div className={styles.heroBrand}>
-            <span className={styles.badge}>
-              <GraduationCap size={12} />
-              School teacher
-            </span>
-            <h1 className={styles.brand}>
-              school<span className={styles.brandAccent}>teacher</span>
-            </h1>
-            <p className={styles.tagline}>
-              مدیریت دروس، تمرین‌ها، آزمون و بررسی تکالیف
-              {data.is_admin_preview ? ' · پیش‌نمایش مدیر' : ''}
-            </p>
-            <nav className={styles.heroNav} aria-label="میانبرها">
-              <Link href="/school"><Home size={12} /> هاب مدرسه</Link>
-              <Link href="/"><ArrowUpLeft size={12} /> سایت</Link>
-              <button type="button" onClick={load}><RefreshCw size={12} /> بروزرسانی</button>
-            </nav>
-          </div>
-          <div className={styles.heroIdentity}>
-            <div className={styles.avatar}>
-              <GraduationCap size={18} />
+        {!embedded ? (
+          <header className={styles.hero}>
+            <div className={styles.heroGlow} aria-hidden />
+            <div className={styles.heroBrand}>
+              <span className={styles.badge}>School teacher</span>
+              <h1 className={styles.brand}>
+                school<span className={styles.brandAccent}>teacher</span>
+              </h1>
+              <p className={styles.tagline}>
+                مدیریت دروس، تمرین‌ها، آزمون و بررسی تکالیف
+                {data.is_admin_preview ? ' · پیش‌نمایش مدیر' : ''}
+              </p>
+              <nav className={styles.heroNav} aria-label="میانبرها">
+                <button type="button" onClick={load}>
+                  <RefreshCw size={12} /> بروزرسانی
+                </button>
+              </nav>
             </div>
-            <div>
-              <p className={styles.ownerName}>{data.profile?.display_name || 'معلم'}</p>
-              <p className={styles.ownerRole}>{data.profile?.specialty || 'داشبورد معلم'}</p>
-            </div>
-          </div>
-        </header>
+          </header>
+        ) : null}
 
-        {data.is_admin_preview && (data.preview_teachers || []).length > 0 ? (
+        {!embedded &&
+        data.is_admin_preview &&
+        (data.preview_teachers || []).length > 0 ? (
           <div className={styles.previewBar}>
             <div className={styles.field}>
               <label>پیش‌نمایش به‌عنوان معلم</label>
@@ -238,7 +270,9 @@ export default function TeacherDashboard() {
                 onChange={(e) => setPreviewTeacherId(e.target.value)}
               >
                 {(data.preview_teachers || []).map((t) => (
-                  <option key={t.id} value={t.id}>{t.display_name} — {t.specialty || 'بدون تخصص'}</option>
+                  <option key={t.id} value={t.id}>
+                    {t.display_name} — {t.specialty || 'بدون تخصص'}
+                  </option>
                 ))}
               </select>
             </div>
@@ -248,35 +282,87 @@ export default function TeacherDashboard() {
         {msg ? <div className={styles.msg}>{msg}</div> : null}
         {err ? <div className={styles.err}>{err}</div> : null}
 
-        <div className={styles.stats}>
-          <div className={styles.stat}><p className={styles.statLabel}>دانش‌آموزان</p><p className={styles.statValue}>{data.stats?.students ?? 0}</p></div>
-          <div className={styles.stat}><p className={styles.statLabel}>دروس</p><p className={styles.statValue}>{data.stats?.lessons ?? 0}</p></div>
-          <div className={styles.stat}><p className={styles.statLabel}>بانک سوال</p><p className={styles.statValue}>{data.stats?.bank_questions ?? 0}</p></div>
-          <div className={styles.stat}><p className={styles.statLabel}>آزمون‌ها</p><p className={styles.statValue}>{data.stats?.exams ?? 0}</p></div>
-          <div className={`${styles.stat} ${styles.statOk}`}><p className={styles.statLabel}>میانگین</p><p className={styles.statValue}>{data.stats?.avg_percent ?? 0}٪</p></div>
-        </div>
+        {tab !== 'overview' ? (
+          <div className={styles.stats}>
+            <div className={styles.stat}>
+              <p className={styles.statLabel}>دانش‌آموزان</p>
+              <p className={styles.statValue}>{data.stats?.students ?? 0}</p>
+            </div>
+            <div className={styles.stat}>
+              <p className={styles.statLabel}>دروس</p>
+              <p className={styles.statValue}>{data.stats?.lessons ?? 0}</p>
+            </div>
+            <div className={styles.stat}>
+              <p className={styles.statLabel}>بانک سوال</p>
+              <p className={styles.statValue}>{data.stats?.bank_questions ?? 0}</p>
+            </div>
+            <div className={styles.stat}>
+              <p className={styles.statLabel}>آزمون‌ها</p>
+              <p className={styles.statValue}>{data.stats?.exams ?? 0}</p>
+            </div>
+            <div className={`${styles.stat} ${styles.statOk}`}>
+              <p className={styles.statLabel}>میانگین</p>
+              <p className={styles.statValue}>{data.stats?.avg_percent ?? 0}٪</p>
+            </div>
+            <div className={styles.stat}>
+              <p className={styles.statLabel}>حضور ۳۰روز</p>
+              <p className={styles.statValue}>{data.stats?.attendance_rate_30d ?? 0}٪</p>
+            </div>
+          </div>
+        ) : null}
 
-        <div className={styles.tabs}>
+        <div className={styles.tabs} role="tablist" aria-label="بخش‌های معلم">
           {[
             ['overview', 'نمای کلی'],
+            ['support', 'نیاز به حمایت'],
+            ['profile', 'پروفایل معلم'],
+            ['schedule', 'برنامه هفتگی'],
+            ['attendance', 'حضور و غیاب'],
             ['curriculum', 'برنامه درسی'],
             ['bank', 'بانک سوال'],
             ['exams', 'ایجاد آزمون'],
             ['reviews', 'بررسی تکالیف'],
             ['students', 'دانش‌آموزان'],
+            ['reportcard', 'کارنامه ماهانه'],
             ['results', 'نتایج آزمون'],
           ].map(([k, l]) => (
-            <button key={k} type="button" className={`${styles.tab} ${tab === k ? styles.tabOn : ''}`} onClick={() => setTab(k)}>{l}</button>
+            <button
+              key={k}
+              type="button"
+              role="tab"
+              aria-selected={tab === k}
+              className={`${styles.tab} ${tab === k ? styles.tabOn : ''}`}
+              onClick={() => setTab(k)}
+            >
+              {l}
+            </button>
           ))}
         </div>
+
+        {tab === 'profile' ? (
+          <div className={styles.panel}>
+            <TeacherProfilePanel
+              mode="self"
+              previewTeacherId={activeTeacherId || null}
+              onNotify={notifyPanel}
+            />
+          </div>
+        ) : null}
+
+        {tab === 'schedule' ? (
+          <div className={styles.panel}>
+            <MySchedulePanel
+              role="teacher"
+              params={activeTeacherId ? { teacher: activeTeacherId } : {}}
+              onNotify={notifyPanel}
+            />
+          </div>
+        ) : null}
 
         {tab === 'bank' ? (
           <QuestionBankPanel
             tree={tree}
-            onNotify={(m, isErr) => {
-              if (isErr) setErr(m)
-              else { setMsg(m); setErr(null) }
-            }}
+            onNotify={notifyPanel}
           />
         ) : null}
 
@@ -284,30 +370,38 @@ export default function TeacherDashboard() {
           <ExamBuilderPanel
             tree={tree}
             students={data.students || []}
-            onNotify={(m, isErr) => {
-              if (isErr) setErr(m)
-              else { setMsg(m); setErr(null) }
-            }}
+            onNotify={notifyPanel}
           />
         ) : null}
 
         {tab === 'overview' ? (
           <div className={styles.teacherOverviewPage}>
-            <TeacherOverviewCharts charts={data.charts || {}} />
-            <div className={styles.panel}>
-              <div className={styles.panelHead}>
-                <h2 className={styles.panelTitle}>تکالیف در انتظار بررسی</h2>
-              </div>
-              <HomeworkReviewPanel
-                compact
-                submissions={data.pending_submissions || []}
-                onDone={load}
-                onNotify={(m, isErr) => {
-                  if (isErr) setErr(m)
-                  else { setMsg(m); setErr(null) }
-                }}
-              />
-            </div>
+            <TeacherOverviewCharts
+              charts={data.charts || {}}
+              overview={data.overview || {}}
+              stats={data.stats || {}}
+              pendingSubmissions={data.pending_submissions || []}
+              onNavigate={setTab}
+              onDone={load}
+              onNotify={notifyPanel}
+            />
+          </div>
+        ) : null}
+
+        {tab === 'support' ? (
+          <TeacherSupportPanel
+            cases={data.support_cases || data.overview?.support_cases || []}
+            onNavigate={setTab}
+          />
+        ) : null}
+
+        {tab === 'attendance' ? (
+          <div className={styles.panel}>
+            <AttendancePanel
+              teacherId={activeTeacherId || null}
+              subjects={data.subjects || []}
+              onNotify={notifyPanel}
+            />
           </div>
         ) : null}
 
@@ -324,10 +418,7 @@ export default function TeacherDashboard() {
             onLessonFormChange={(patch) => setLessonForm((prev) => ({ ...prev, ...patch }))}
             onSaveLesson={saveLesson}
             onReload={load}
-            onNotify={(m, isErr) => {
-              if (isErr) setErr(m)
-              else { setMsg(m); setErr(null) }
-            }}
+            onNotify={notifyPanel}
             onAddAttachment={addAttachment}
             onAddExercise={addExercise}
             onDeleteExercise={async (id) => {
@@ -346,10 +437,7 @@ export default function TeacherDashboard() {
             <HomeworkReviewPanel
               submissions={data.pending_submissions || []}
               onDone={load}
-              onNotify={(m, isErr) => {
-                if (isErr) setErr(m)
-                else { setMsg(m); setErr(null) }
-              }}
+              onNotify={notifyPanel}
             />
           </div>
         ) : null}
@@ -363,16 +451,26 @@ export default function TeacherDashboard() {
             onNameChange={setStudentName}
             onAdd={addStudent}
             onReload={load}
+            busy={saving}
+            onNotify={notifyPanel}
+            teacherId={activeTeacherId || null}
           />
+        ) : null}
+
+        {tab === 'reportcard' ? (
+          <div className={styles.panel}>
+            <TeacherReportCardPanel
+              teacherId={activeTeacherId || null}
+              subjects={data.subjects || []}
+              onNotify={notifyPanel}
+            />
+          </div>
         ) : null}
 
         {tab === 'results' ? (
           <ExamResultsPanel
             teacherId={previewTeacherId || data?.profile?.id || null}
-            onNotify={(m, isErr) => {
-              if (isErr) setErr(m)
-              else { setMsg(m); setErr(null) }
-            }}
+            onNotify={notifyPanel}
           />
         ) : null}
       </div>

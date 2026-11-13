@@ -212,7 +212,7 @@ const NewsManagement = () => {
       setDetailLoading(true)
       console.log('📄 Fetching full news detail for:', item.slug)
 
-      const url = Config.endpoints.news.detail(item.slug)
+      const url = Config.endpoints.news.detail(item.slug || item.id)
       const res = await axios.get(url, { headers: getAuthHeaders() })
 
       const fullNews = res.data?.data || res.data

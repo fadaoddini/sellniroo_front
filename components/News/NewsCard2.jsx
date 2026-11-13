@@ -7,12 +7,12 @@ import { format } from 'date-fns';
 import { faCalendar, faEye, faImage } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './News.module.css';
+import { getNewsHref } from '@/utils/newsSlug';
 
 const NewsCard = ({ news, index }) => {
   if (!news) return null;
 
   const {
-    id,
     title,
     excerpt,
     featured_image_display,
@@ -21,6 +21,8 @@ const NewsCard = ({ news, index }) => {
     images = [],
     link
   } = news;
+
+  const href = link || getNewsHref(news);
 
   const imageUrl = featured_image_display || images?.[0]?.image_display || '/images/default-news.jpg';
   const hasImage = imageUrl && !imageUrl.includes('default-news.jpg');
@@ -41,7 +43,7 @@ const NewsCard = ({ news, index }) => {
   };
 
   return (
-    <Link href={`/news/${id}`} className={styles.cardLink}>
+    <Link href={href} className={styles.cardLink}>
       <div className={`${styles.card} ${styles.cardHover}`}>
         {/* تصویر شاخص */}
         <div className={styles.cardImage}>

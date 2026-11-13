@@ -1,0 +1,113 @@
+/* تم روشن باشگاه بدنسازی — هم‌تراز هیرو صفحه نخست (سبز زمردی) */
+
+.gymBbTheme {
+  /* برند — از GymHero / چیدمان خانه */
+  --gym-emerald: #046c4e;
+  --gym-emerald-deep: #023c2c;
+  --gym-jewel: #10b981;
+  --gym-mint: #a7f3d0;
+  --gym-navy: var(--gym-emerald-deep);
+  --gym-navy-deep: #01261c;
+  --gym-navy-soft: #e8f5ef;
+  --gym-orange: var(--gym-jewel);
+  --gym-orange-deep: var(--gym-emerald);
+  --gym-orange-soft: rgba(16, 185, 129, 0.14);
+  --gym-bg: #f0f7f3;
+  --gym-surface: #ffffff;
+  --gym-surface-muted: #f5faf7;
+  --gym-border: #d5e5db;
+  --gym-border-strong: #b5cfc2;
+  --gym-ink: #10241c;
+  --gym-muted: #4d6a5c;
+  --gym-faint: #7a9487;
+  --gym-success: #059669;
+  --gym-danger: #dc2626;
+  --gym-warning: #d97706;
+
+  /* سازگاری با ماژول‌های قدیمی باشگاه */
+  --primary: var(--gym-emerald);
+  --primary-dark: var(--gym-emerald-deep);
+  --primary-light: var(--gym-mint);
+  --primary-glass: rgba(4, 108, 78, 0.12);
+  --primary-glow: rgba(16, 185, 129, 0.28);
+  --secondary: var(--gym-jewel);
+  --secondary-glass: rgba(16, 185, 129, 0.12);
+
+  --bg-main: var(--gym-bg);
+  --bg-secondary: var(--gym-bg);
+  --bg-card: var(--gym-surface);
+  --bg-card-hover: #eef8f2;
+  --bg-input: #eef6f1;
+  --bg-overlay: rgba(2, 60, 44, 0.48);
+
+  --text-primary: var(--gym-ink);
+  --text-secondary: var(--gym-muted);
+  --text-muted: var(--gym-faint);
+  --text-inverse: #ffffff;
+  --text-on-primary: #ffffff;
+  --text-on-gold: var(--gym-emerald-deep);
+
+  --border-light: var(--gym-border);
+  --border-medium: var(--gym-border-strong);
+  --border-strong: #8fb5a3;
+  --border-primary: rgba(4, 108, 78, 0.4);
+
+  --gold: var(--gym-jewel);
+  --gold-glass: var(--gym-orange-soft);
+  --gradient-gold: linear-gradient(135deg, #34d399, #10b981);
+  --gradient-primary: linear-gradient(135deg, #023c2c, #046c4e);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(2, 60, 44, 0.06);
+  --shadow-md: 0 8px 20px rgba(2, 60, 44, 0.08);
+  --shadow-lg: 0 16px 36px rgba(2, 60, 44, 0.12);
+  --shadow-xl: 0 24px 48px rgba(2, 60, 44, 0.16);
+  --shadow-glow-primary: 0 8px 24px rgba(4, 108, 78, 0.22);
+
+  --transition-fast: 0.12s ease;
+  --transition-base: 0.18s ease;
+  --transition-slow: 0.28s ease;
+  --hover-lift: translateY(-2px);
+  --hover-scale: scale(1.02);
+
+  --container-max: 1120px;
+  --container-padding: 1.15rem;
+  --glass-blur: blur(10px);
+  --z-modal: 1200;
+
+  --font-iran: 'iran', Tahoma, Arial, sans-serif;
+  --font-iran-bold: 'iran_bold', 'iran', Tahoma, Arial, sans-serif;
+  --font-iran-extra: 'iran_extra', 'iran_bold', 'iran', Tahoma, Arial, sans-serif;
+  --font-edameh: 'iran_extra', 'iran_bold', 'iran', Tahoma, Arial, sans-serif;
+
+  background:
+    radial-gradient(ellipse 70% 42% at 100% 0%, rgba(16, 185, 129, 0.12), transparent 55%),
+    radial-gradient(ellipse 55% 40% at 0% 100%, rgba(2, 60, 44, 0.08), transparent 50%),
+    linear-gradient(180deg, #e8f3ed 0%, #f0f7f3 40%, #f7fbf8 100%);
+  color: var(--text-primary);
+  min-height: 100%;
+  font-family: var(--font-iran);
+}
+
+.gymBbTheme a {
+  color: inherit;
+}
+
+.gymBbTheme input,
+.gymBbTheme select,
+.gymBbTheme textarea,
+.gymBbTheme button {
+  font-family: var(--font-iran);
+}
+
+.gymBbTheme h1,
+.gymBbTheme h2,
+.gymBbTheme h3,
+.gymBbTheme h4 {
+  font-family: var(--font-edameh);
+  color: var(--gym-emerald-deep);
+}

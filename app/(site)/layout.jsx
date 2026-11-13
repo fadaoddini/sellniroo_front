@@ -5,6 +5,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import "@/styles/globals.css";
 import HomeLayoutBridge from "@/components/layout/HomeLayoutBridge";
+import CacheBustGuard from "@/components/layout/CacheBustGuard";
 import SiteChrome from "@/components/layout/SiteChrome";
 import {
   fetchSiteSettings,

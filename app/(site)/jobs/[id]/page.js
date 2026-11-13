@@ -1,57 +1,61 @@
-// app/jobs/[id]/page.js
-import { notFound } from 'next/navigation';
+// app/jobs/[id]/page.js — param می‌تواند id عددی یا slug عنوان باشد
+import { notFound, permanentRedirect } from 'next/navigation';
 import JobDetailClient from './JobDetailClient';
 import JobsPageSlot from '@/components/modules/JobsPageSlot';
 import Config from '@/config/config';
 import { isSiteModuleActive } from '@/services/siteModules';
 import { SITE_MODULE_KEYS } from '@/config/siteModules';
+import { getDemoJobByParam } from '@/components/AllBoxItem/constants/demoJobs';
 import {
-  getDemoJobById,
-  isDemoJobId,
-} from '@/components/AllBoxItem/constants/demoJobs';
+  buildBreadcrumbJsonLd,
+  buildJobMetadata,
+  buildJobPostingJsonLd,
+} from './jobSeo';
+import {
+  getJobSlug,
+  isNumericJobParam,
+} from '@/utils/jobSlug';
 
-// دریافت جزئیات آگهی از سرور (SSR) — با پشتیبانی آگهی‌های دمو ویجت
-async function getJob(id) {
-  if (isDemoJobId(id)) {
-    return getDemoJobById(id);
-  }
+async function getJob(param) {
+  const key = decodeURIComponent(String(param || '')).trim();
+  if (!key) return null;
+
+  // دمو: id یا slug
+  const demo = getDemoJobByParam(key);
+  if (demo) return demo;
 
   try {
-    const res = await fetch(Config.endpoints.jobisell.jobs.detail(id), {
+    const res = await fetch(Config.endpoints.jobisell.jobs.detail(key), {
       next: { revalidate: 60 },
     });
 
     if (!res.ok) {
-      if (res.status === 404) return getDemoJobById(id);
+      if (res.status === 404) return getDemoJobByParam(key);
       throw new Error(`Failed to fetch job: ${res.status}`);
     }
 
     return await res.json();
   } catch (err) {
     console.error('Error fetching job:', err);
-    return getDemoJobById(id);
+    return getDemoJobByParam(key);
   }
 }
 
-// Metadata برای SEO
 export async function generateMetadata({ params }) {
-  const job = await getJob(params.id);
+  const param = params?.id;
+  const job = await getJob(param);
+  return buildJobMetadata(job, param);
+}
 
-  if (!job) {
-    return {
-      title: 'آگهی یافت نشد | آریا استاد',
-    };
-  }
-
-  return {
-    title: `${job.title}${job.is_demo ? ' (دمو)' : ''} | آریا استاد`,
-    description: job.description?.substring(0, 160) || 'جزئیات آگهی شغلی',
-    openGraph: {
-      title: job.title,
-      description: job.description?.substring(0, 160),
-      images: job.image ? [job.image] : [],
-    },
-  };
+function JsonLd({ data }) {
+  if (!data) return null;
+  const json = JSON.stringify(data).replace(/</g, '\\u003c');
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: json }}
+    />
+  );
 }
 
 export default async function JobDetailPage({ params }) {
@@ -62,14 +66,30 @@ export default async function JobDetailPage({ params }) {
     notFound();
   }
 
-  const job = await getJob(params.id);
+  const param = params.id;
+  const job = await getJob(param);
 
   if (!job) {
     notFound();
   }
 
+  const slug = getJobSlug(job);
+  // /jobs/9004 → /jobs/مدیر-فروش-...
+  if (
+    slug &&
+    isNumericJobParam(param) &&
+    decodeURIComponent(String(param)) !== slug
+  ) {
+    permanentRedirect(`/jobs/${slug}`);
+  }
+
+  const jobPostingLd = buildJobPostingJsonLd(job);
+  const breadcrumbLd = buildBreadcrumbJsonLd(job);
+
   return (
     <JobsPageSlot>
+      <JsonLd data={jobPostingLd} />
+      <JsonLd data={breadcrumbLd} />
       <JobDetailClient initialJob={job} />
     </JobsPageSlot>
   );

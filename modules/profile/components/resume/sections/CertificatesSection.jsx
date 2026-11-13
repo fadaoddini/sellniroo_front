@@ -9,6 +9,7 @@ import styles from "../ResumeForm.module.css";
 import PersianDatePicker from "@/components/common/PersianDatePicker";
 import { Plus, Trash2, Edit2, Check, X, Loader2, Award } from "lucide-react";
 import moment from "moment-jalaali";
+
 moment.loadPersian({ dialect: "persian-modern" });
 
 const emptyForm = {
@@ -29,7 +30,11 @@ const CertificatesSection = ({ resume, onRefresh }) => {
   const [error, setError] = useState(null);
 
   if (!resume) {
-    return <div className={styles.infoBox}>ابتدا اطلاعات پایه رزومه را ذخیره کنید.</div>;
+    return (
+      <div className={styles.infoBox}>
+        ابتدا اطلاعات پایه رزومه را ذخیره کنید.
+      </div>
+    );
   }
 
   const handleSave = async () => {
@@ -49,14 +54,20 @@ const CertificatesSection = ({ resume, onRefresh }) => {
       if (!payload.description) delete payload.description;
 
       const url = editingId
-        ? Config.endpoints.jobisell.resumeSections.certificates.detail(editingId)
+        ? Config.endpoints.jobisell.resumeSections.certificates.detail(
+            editingId
+          )
         : Config.endpoints.jobisell.resumeSections.certificates.list();
 
       const method = editingId ? "patch" : "post";
-      const res = await axios[method](url, payload, { headers: getAuthHeaders() });
+      const res = await axios[method](url, payload, {
+        headers: getAuthHeaders(),
+      });
 
       if (editingId) {
-        setItems((prev) => prev.map((it) => (it.id === editingId ? res.data : it)));
+        setItems((prev) =>
+          prev.map((it) => (it.id === editingId ? res.data : it))
+        );
       } else {
         setItems((prev) => [...prev, res.data]);
       }
@@ -104,12 +115,17 @@ const CertificatesSection = ({ resume, onRefresh }) => {
   };
 
   return (
-    <div className={styles.sectionWrapper}>
+    <div className={`${styles.sectionWrapper} ${styles.miniPanel}`}>
       <div className={styles.sectionHeader}>
         <h3>دوره‌ها و گواهی‌نامه‌ها</h3>
         {!showForm && (
-          <button type="button" className={styles.addBtn} onClick={() => setShowForm(true)}>
-            <Plus size={14} /> افزودن
+          <button
+            type="button"
+            className={styles.addBtn}
+            onClick={() => setShowForm(true)}
+          >
+            <Plus size={13} strokeWidth={2.4} />
+            افزودن
           </button>
         )}
       </div>
@@ -119,20 +135,38 @@ const CertificatesSection = ({ resume, onRefresh }) => {
           {items.map((item) => (
             <div key={item.id} className={styles.listItem}>
               <div className={styles.listItemContent}>
-                <h4>{item.title}</h4>
-                {item.institution && <p>{item.institution}</p>}
-                {item.issue_date && (
+                <div className={styles.miniItemMain}>
+                  <h4>{item.title}</h4>
+                  {item.institution ? (
+                    <>
+                      <span className={styles.miniDot} aria-hidden>
+                        ·
+                      </span>
+                      <p>{item.institution}</p>
+                    </>
+                  ) : null}
+                </div>
+                {item.issue_date ? (
                   <span className={styles.listItemDate}>
                     {moment(item.issue_date).format("jYYYY/jMM")}
                   </span>
-                )}
+                ) : null}
               </div>
               <div className={styles.listItemActions}>
-                <button type="button" onClick={() => handleEdit(item)}>
-                  <Edit2 size={14} />
+                <button
+                  type="button"
+                  onClick={() => handleEdit(item)}
+                  aria-label="ویرایش"
+                >
+                  <Edit2 size={12} strokeWidth={2.2} />
                 </button>
-                <button type="button" onClick={() => handleDelete(item.id)} className={styles.deleteBtn}>
-                  <Trash2 size={14} />
+                <button
+                  type="button"
+                  onClick={() => handleDelete(item.id)}
+                  className={styles.deleteBtn}
+                  aria-label="حذف"
+                >
+                  <Trash2 size={12} strokeWidth={2.2} />
                 </button>
               </div>
             </div>
@@ -142,22 +176,27 @@ const CertificatesSection = ({ resume, onRefresh }) => {
 
       {showForm && (
         <div className={styles.subForm}>
-          <div className={styles.formGroup}>
-            <label>عنوان مدرک/دوره *</label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            />
-          </div>
-
-          <div className={styles.row}>
+          <div className={styles.grid3}>
+            <div className={styles.formGroup}>
+              <label>عنوان مدرک/دوره *</label>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                placeholder="عنوان"
+              />
+            </div>
             <div className={styles.formGroup}>
               <label>موسسه صادرکننده</label>
               <input
                 type="text"
                 value={formData.institution}
-                onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, institution: e.target.value })
+                }
+                placeholder="نام موسسه"
               />
             </div>
             <div className={styles.formGroup}>
@@ -170,35 +209,48 @@ const CertificatesSection = ({ resume, onRefresh }) => {
                 placeholder="تاریخ صدور"
               />
             </div>
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>لینک (اختیاری)</label>
-            <input
-              type="url"
-              value={formData.link}
-              onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-              dir="ltr"
-            />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>توضیحات</label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              rows={2}
-            />
+            <div className={`${styles.formGroup} ${styles.span2}`}>
+              <label>لینک</label>
+              <input
+                type="url"
+                value={formData.link}
+                onChange={(e) =>
+                  setFormData({ ...formData, link: e.target.value })
+                }
+                placeholder="https://..."
+                dir="ltr"
+              />
+            </div>
+            <div className={`${styles.formGroup} ${styles.spanFull}`}>
+              <label>توضیحات</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                rows={2}
+                placeholder="توضیح کوتاه"
+              />
+            </div>
           </div>
 
           {error && <div className={styles.errorBox}>{error}</div>}
 
           <div className={styles.subFormActions}>
             <button type="button" onClick={handleCancel} disabled={saving}>
-              <X size={14} /> لغو
+              <X size={13} /> لغو
             </button>
-            <button type="button" className={styles.saveBtn} onClick={handleSave} disabled={saving}>
-              {saving ? <Loader2 size={14} className={styles.spin} /> : <Check size={14} />}
+            <button
+              type="button"
+              className={styles.saveBtn}
+              onClick={handleSave}
+              disabled={saving}
+            >
+              {saving ? (
+                <Loader2 size={13} className={styles.spin} />
+              ) : (
+                <Check size={13} />
+              )}
               {editingId ? "بروزرسانی" : "افزودن"}
             </button>
           </div>
@@ -207,8 +259,8 @@ const CertificatesSection = ({ resume, onRefresh }) => {
 
       {items.length === 0 && !showForm && (
         <div className={styles.emptyBox}>
-          <Award size={32} />
-          <p>هنوز مدرکی اضافه نکرده‌اید</p>
+          <Award size={22} strokeWidth={1.6} />
+          <p>مدرکی ثبت نشده</p>
         </div>
       )}
     </div>

@@ -136,13 +136,13 @@
 }
 
 .viewBtn {
-  background: rgba(251, 195, 0, 0.16);
-  color: #c27800;
+  background: rgba(244, 174, 82, 0.16);
+  color: #D4621A;
 }
 
 .viewBtn:hover {
-  background: linear-gradient(135deg, #ffd54a, #fbc300);
-  color: #3a2a00;
+  background: linear-gradient(135deg, #F4AE52, #F4AE52);
+  color: #2A1A0E;
 }
 
 .removeBtn {

@@ -1,77 +1,52 @@
-/* StatusChangeModal.module.css — Sale Theme (Indigo Light) */
-
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(35, 38, 59, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   z-index: 10000;
-  padding: 1rem;
-  animation: fadeIn 0.25s ease-out;
+  animation: fadeIn 0.2s ease-out;
+  padding: 0;
 }
 
 .modal {
-  --s-surface: var(--sale-surface, #ffffff);
-  --s-surface-2: var(--sale-surface-2, #fff7ec);
-  --s-ink: var(--sale-ink, #2a241c);
-  --s-muted: var(--sale-muted, #6f675c);
-  --s-faint: var(--sale-faint, #a3988a);
-  --s-line: var(--sale-line, rgba(90, 60, 20, 0.12));
-  --s-primary: var(--sale-primary, #c27800);
-  --s-primary-soft: var(--sale-primary-soft, #fff3c4);
-  --s-danger: var(--sale-danger, #c62828);
-  --s-shadow-lg: var(--sale-shadow-lg, 0 18px 50px rgba(80, 50, 0, 0.14));
-  --s-font: var(--sale-font, var(--font-iran, Tahoma, Arial, sans-serif));
-  --s-display: var(--sale-display, var(--font-edameh, Tahoma, Arial, sans-serif));
-
-  background: var(--s-surface);
-  border-radius: 18px;
-  padding: 1.75rem;
-  max-width: 520px;
+  background: #ffffff;
+  border-radius: 24px 24px 0 0;
+  padding: 16px 16px calc(18px + env(safe-area-inset-bottom, 0px));
   width: 100%;
-  max-height: 90vh;
+  max-width: 520px;
+  max-height: 92vh;
   overflow-y: auto;
-  animation: slideUp 0.3s ease-out;
-  font-family: var(--s-font);
-  color: var(--s-ink);
-  border: 1px solid var(--s-line);
-  box-shadow: var(--s-shadow-lg);
+  animation: slideUp 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  font-family: var(--font-iran, sans-serif);
+  border: 1px solid #e2e8f0;
+  border-bottom: 0;
+  box-shadow: 0 -20px 50px rgba(15, 23, 42, 0.18);
 }
 
-.modal::-webkit-scrollbar {
-  width: 5px;
-}
-
-.modal::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.modal::-webkit-scrollbar-thumb {
-  background: #c6cde6;
-  border-radius: 99px;
+.handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: #cbd5e1;
+  margin: 0 auto 14px;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
-  padding-bottom: 0.8rem;
-  border-bottom: 1px solid var(--s-line);
+  margin-bottom: 14px;
+  gap: 10px;
 }
 
 .headerLeft {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 10px;
   min-width: 0;
 }
 
@@ -79,213 +54,443 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
   flex-shrink: 0;
 }
 
 .header h2 {
   margin: 0;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--s-ink);
-  font-family: var(--s-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  font-family: var(--font-iran-extra);
+  line-height: 1.3;
+}
+
+.headerHint {
+  margin: 2px 0 0;
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
 }
 
 .closeBtn {
-  background: var(--s-surface-2);
-  border: 1px solid var(--s-line);
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
   cursor: pointer;
-  color: var(--s-muted);
-  padding: 0.3rem;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  display: flex;
+  color: #64748b;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.15s ease;
   flex-shrink: 0;
 }
 
 .closeBtn:hover:not(:disabled) {
-  color: var(--s-danger);
-  background: rgba(220, 38, 38, 0.08);
-  border-color: rgba(220, 38, 38, 0.3);
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
 .closeBtn:disabled {
-  opacity: 0.35;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .itemInfo {
-  background: var(--s-surface-2);
-  border-radius: 12px;
-  padding: 0.8rem 1rem;
-  margin-bottom: 1.25rem;
-  border: 1px solid var(--s-line);
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border: 1px solid #e2e8f0;
 }
 
 .infoRow {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.76rem;
+  gap: 8px;
+  font-size: 0.82rem;
 }
 
 .infoRow:not(:last-child) {
-  margin-bottom: 0.35rem;
+  margin-bottom: 8px;
 }
 
 .infoLabel {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 5px;
   font-weight: 600;
-  color: var(--s-muted);
-  min-width: 78px;
-  flex-shrink: 0;
+  color: #94a3b8;
+  min-width: 72px;
 }
 
 .infoValue {
-  color: var(--s-ink);
+  color: #0f172a;
   font-weight: 600;
-  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .currentStatus {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.15rem 0.65rem;
-  border-radius: 99px;
-  font-size: 0.66rem;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
   font-weight: 700;
-  border: 1px solid transparent;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 12px;
 }
 
 .dateSection {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  gap: 10px;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
-  min-width: 0;
+  gap: 6px;
 }
 
 .formGroup label {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--s-muted);
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #475569;
 }
 
 .formGroup input,
 .formGroup textarea {
   width: 100%;
-  padding: 0.6rem 0.8rem;
-  border: 1.5px solid var(--s-line);
-  border-radius: 10px;
-  font-size: 0.8rem;
-  font-family: var(--s-font);
-  transition: all 0.2s ease;
+  box-sizing: border-box;
+  padding: 13px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  font-size: 0.92rem;
+  font-family: var(--font-iran, sans-serif);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
   outline: none;
-  background: var(--s-surface-2);
-  color: var(--s-ink);
+  background: #ffffff;
+  color: #0f172a;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .formGroup input::placeholder,
 .formGroup textarea::placeholder {
-  color: var(--s-faint);
+  color: #94a3b8;
 }
 
 .formGroup input:focus,
 .formGroup textarea:focus {
-  border-color: var(--s-primary);
-  background: var(--s-surface);
-  box-shadow: 0 0 0 4px rgba(251, 195, 0, 0.18);
-}
-
-.formGroup input[type="time"] {
-  color-scheme: light;
-  font-variant-numeric: tabular-nums;
+  border-color: #800020;
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.12);
 }
 
 .formGroup textarea {
   resize: vertical;
-  min-height: 80px;
-  line-height: 1.7;
+  min-height: 110px;
+  line-height: 1.55;
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.voicePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 16px;
+  border: 1.5px solid #99f6e4;
+  background: linear-gradient(180deg, #f0fdfa 0%, #ffffff 100%);
+}
+
+.voiceHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+
+.voiceTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #0f766e;
+}
+
+.voiceHint {
+  font-size: 0.68rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.voiceRecordBtn,
+.voiceStopBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
+  min-height: 48px;
+  border-radius: 14px;
+  font-family: var(--font-iran, sans-serif);
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  border: 0;
+}
+
+.voiceRecordBtn {
+  background: #0f766e;
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(15, 118, 110, 0.22);
+}
+
+.voiceRecordBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.voiceStopBtn {
+  background: #b91c1c;
+  color: #fff;
+  animation: pulseRec 1.2s ease-in-out infinite;
+}
+
+.voiceRecordingHint {
+  margin: 0;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #b91c1c;
+}
+
+.attachAudio {
+  width: 100%;
+  max-width: 240px;
+  height: 32px;
+  margin-top: 0.25rem;
+}
+
+.attachActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.attachBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 40px;
+  padding: 0.45rem 0.85rem;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  background: #fff;
+  color: #334155;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: var(--font-iran, sans-serif);
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.attachBtn:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.attachBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.micBtn {
+  color: #0f766e;
+  border-color: #99f6e4;
+  background: #f0fdfa;
+}
+
+.recordingBtn {
+  color: #b91c1c;
+  border-color: #fca5a5;
+  background: #fef2f2;
+  animation: pulseRec 1.2s ease-in-out infinite;
+}
+
+@keyframes pulseRec {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(185, 28, 28, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(185, 28, 28, 0);
+  }
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.attachList {
+  list-style: none;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.attachItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.attachMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.attachThumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.attachIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.attachText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.attachName {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.attachSize {
+  font-size: 0.68rem;
+  color: #94a3b8;
+}
+
+.attachRemove {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #fecaca;
+  background: #fff;
+  color: #b91c1c;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.attachRemove:hover {
+  background: #fef2f2;
 }
 
 .actions {
   display: flex;
-  gap: 0.75rem;
-  justify-content: flex-end;
-  padding-top: 1rem;
-  border-top: 1px solid var(--s-line);
-  margin-top: 0.25rem;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 6px;
+  margin-top: 4px;
+}
+
+.cancelBtn,
+.confirmBtn {
+  width: 100%;
+  min-height: 50px;
+  padding: 13px 16px;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  font-family: var(--font-iran, sans-serif);
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .cancelBtn {
-  padding: 0.55rem 1.6rem;
-  border: 1px solid var(--s-line);
-  border-radius: 10px;
-  background: var(--s-surface);
-  cursor: pointer;
-  font-size: 0.78rem;
-  font-weight: 600;
-  font-family: var(--s-font);
-  color: var(--s-muted);
-  transition: all 0.2s ease;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
 }
 
 .cancelBtn:hover:not(:disabled) {
-  background: var(--s-surface-2);
-  color: var(--s-ink);
+  background: #f8fafc;
 }
 
-.cancelBtn:disabled {
-  opacity: 0.35;
+.cancelBtn:disabled,
+.confirmBtn:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .confirmBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.55rem 1.6rem;
   border: none;
-  border-radius: 10px;
-  color: white;
-  cursor: pointer;
-  font-size: 0.78rem;
-  font-family: var(--s-font);
-  font-weight: 700;
-  transition: all 0.25s ease;
-  box-shadow: 0 6px 16px rgba(35, 38, 59, 0.25);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
 }
 
-.confirmBtn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(35, 38, 59, 0.3);
-}
-
-.confirmBtn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  transform: none !important;
+.confirmBtn:active:not(:disabled) {
+  transform: scale(0.985);
 }
 
 .spinner {
@@ -293,13 +498,18 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
@@ -313,94 +523,76 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (min-width: 640px) {
   .overlay {
-    padding: 0.6rem;
+    align-items: center;
+    padding: 20px;
   }
 
   .modal {
-    padding: 1.3rem;
+    border-radius: 22px;
+    border: 1px solid #e2e8f0;
+    padding: 22px;
+    max-height: 88vh;
   }
 
-  .dateSection {
-    grid-template-columns: 1fr;
+  .handle {
+    display: none;
   }
 
   .actions {
-    flex-direction: column-reverse;
+    flex-direction: row-reverse;
   }
 
   .cancelBtn,
   .confirmBtn {
-    width: 100%;
-    justify-content: center;
+    flex: 1;
   }
 }
 
-@media (max-width: 480px) {
-  .modal {
-    padding: 1.1rem;
-  }
-
-  .header h2 {
-    font-size: 0.9rem;
-  }
-
-  .iconWrapper {
-    width: 34px;
-    height: 34px;
+@media (max-width: 600px) {
+  .dateSection {
+    grid-template-columns: 1fr;
   }
 }
 
-
-/* ============================================
-   SUPPORT FOR PERSIAN DATE PICKER (هماهنگ با تم فروش)
-   ============================================ */
-
+/* Persian date picker — light */
 .dateSection .formGroup :global(.pickerWrapper) {
   width: 100%;
-  position: relative;
 }
 
 .dateSection .formGroup :global(.pickerInput) {
   width: 100%;
-  padding: 0.6rem 0.8rem;
-  border: 1.5px solid var(--s-line);
-  border-radius: 10px;
-  background: var(--s-surface-2);
-  color: var(--s-ink);
-  font-size: 0.8rem;
-  font-family: var(--s-font);
+  padding: 13px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 0.92rem;
+  font-family: var(--font-iran, sans-serif);
   cursor: pointer;
-  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  min-height: 42px;
-}
-
-.dateSection .formGroup :global(.pickerInput:hover) {
-  border-color: var(--sale-line-strong, #d3d9e9);
+  min-height: 48px;
 }
 
 .dateSection .formGroup :global(.pickerInput:focus-within) {
-  border-color: var(--s-primary);
-  background: var(--s-surface);
-  box-shadow: 0 0 0 4px rgba(251, 195, 0, 0.18);
+  border-color: #800020;
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.12);
 }
 
 .dateSection .formGroup :global(.calendarIcon) {
-  color: var(--s-primary);
-  flex-shrink: 0;
+  color: #94a3b8;
 }
 
 .dateSection .formGroup :global(.selectedDate) {
-  color: var(--s-ink);
+  color: #0f172a;
   flex: 1;
 }
 
 .dateSection .formGroup :global(.placeholder) {
-  color: var(--s-faint);
+  color: #94a3b8;
   flex: 1;
 }
 
@@ -408,87 +600,47 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  color: var(--s-faint);
-  padding: 0.15rem;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: #94a3b8;
+  padding: 0.1rem;
+  border-radius: 4px;
 }
 
-.dateSection .formGroup :global(.clearBtn:hover) {
-  color: var(--s-danger);
-  background: rgba(220, 38, 38, 0.08);
-}
-
-/* Dropdown استایل */
 .dateSection .formGroup :global(.pickerDropdown) {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 4px);
   left: 0;
   right: 0;
-  background: var(--s-surface);
-  border: 1px solid var(--s-line);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 14px;
-  padding: 0.8rem;
-  box-shadow: var(--s-shadow-lg);
+  padding: 0.75rem;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.14);
   z-index: 10001;
   min-width: 280px;
 }
 
-.dateSection .formGroup :global(.pickerHeader) {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.55rem;
-  direction: ltr;
-}
-
 .dateSection .formGroup :global(.monthYear) {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  color: var(--s-ink);
-  font-family: var(--s-font);
+  color: #0f172a;
+  font-family: var(--font-iran, sans-serif);
 }
 
 .dateSection .formGroup :global(.navBtn) {
-  background: var(--s-surface-2);
-  border: 1px solid var(--s-line);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
-  color: var(--s-muted);
+  color: #475569;
   cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.dateSection .formGroup :global(.navBtn:hover) {
-  background: var(--s-primary-soft);
-  color: var(--s-primary);
-}
-
-.dateSection .formGroup :global(.weekDays) {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
-  margin-bottom: 0.3rem;
+  padding: 0.25rem 0.45rem;
 }
 
 .dateSection .formGroup :global(.weekDay) {
   text-align: center;
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   font-weight: 600;
-  color: var(--s-faint);
-  padding: 0.25rem 0;
-}
-
-.dateSection .formGroup :global(.daysGrid) {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 3px;
+  color: #94a3b8;
+  padding: 0.2rem 0;
 }
 
 .dateSection .formGroup :global(.dayBtn) {
@@ -496,46 +648,23 @@
   border: none;
   border-radius: 8px;
   padding: 0.35rem 0;
-  font-size: 0.72rem;
-  font-weight: 500;
-  font-family: var(--s-font);
-  color: var(--s-ink);
+  font-size: 0.75rem;
+  font-family: var(--font-iran, sans-serif);
+  color: #334155;
   cursor: pointer;
-  transition: all 0.15s ease;
-  text-align: center;
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .dateSection .formGroup :global(.dayBtn:hover) {
-  background: var(--s-primary-soft);
-  color: var(--s-primary);
+  background: #f1f5f9;
 }
 
 .dateSection .formGroup :global(.dayBtn.today) {
-  color: var(--s-primary);
+  color: #800020;
   font-weight: 700;
-  box-shadow: inset 0 0 0 1.5px var(--s-primary);
 }
 
 .dateSection .formGroup :global(.dayBtn.selected) {
-  background: linear-gradient(135deg, var(--s-primary), var(--sale-primary-strong, #4338ca));
+  background: #800020;
   color: #ffffff;
   font-weight: 700;
-  box-shadow: 0 4px 10px rgba(194, 120, 0, 0.35);
-}
-
-.dateSection .formGroup :global(.emptyDay) {
-  padding: 0.25rem 0;
-}
-
-/* RTL برای PersianDatePicker */
-[dir="rtl"] .dateSection .formGroup :global(.pickerHeader) {
-  direction: rtl;
-}
-
-[dir="rtl"] .dateSection .formGroup :global(.navBtn svg) {
-  transform: scaleX(-1);
 }

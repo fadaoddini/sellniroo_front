@@ -42,6 +42,26 @@
   min-width: 0;
 }
 
+/*
+ * محتوای صفحات ماژول (پروفایل و …) هم‌عرض منو:
+ * سقف --home-max-width مثل JobWidgetShell / inner منو
+ */
+.modulePageContent {
+  /* هم‌عرض اینر منوی بالا (--home-max-width) — بدون gutter اضافه که مارجین القا کند */
+  width: 100%;
+  max-width: var(--home-max-width, 1200px);
+  margin-inline: auto;
+  box-sizing: border-box;
+  padding-inline: 0;
+  min-width: 0;
+}
+
+.pageBoxed .sectionBoxed .modulePageContent {
+  /* ستون boxed خودش سقف دارد — gutter کافی است، max دوبل نکن */
+  max-width: none;
+  padding-inline: 0;
+}
+
 .section {
   width: 100%;
   overflow: visible;
@@ -171,8 +191,23 @@
     box-sizing: border-box;
   }
 
+  /*
+   * سیستم کاریابی / جستجو: خودشان با منو هم‌عرض‌اند —
+   * gutter اضافه اینجا نسبت به منو «مارجین» می‌سازد.
+   */
+  .column > .widget:has([data-jb-widget]),
+  .column > .widget:has([data-jb-system]),
+  .column > .widget:has([data-tour='jb-board']) {
+    padding-inline: 0;
+  }
+
   /* سینگل خبر/آگهی: تمام‌عرض بدون gutter تا حس اپ به‌هم نریزد */
   .column > .widget:has([data-article-slot='1']) {
+    padding-inline: 0;
+  }
+
+  /* پروفایل و صفحات ماژول: gutter داخل خود modulePageContent است */
+  .column > .widget:has([data-module-page-content='1']) {
     padding-inline: 0;
   }
 
@@ -190,8 +225,7 @@
   }
 
   .page {
-    overflow-x: hidden;
-    overflow-x: clip;
+    /* بدون overflow-x تا sticky ویجت‌های کروم روی موبایل کار کند */
     max-width: 100%;
     width: 100%;
   }

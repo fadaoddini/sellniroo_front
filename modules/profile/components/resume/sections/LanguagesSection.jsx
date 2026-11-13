@@ -6,6 +6,7 @@ import axios from "axios";
 import Config from "@/config/config";
 import { useAuth } from "@/contexts/AuthContext";
 import styles from "../ResumeForm.module.css";
+import FieldSelect from "../FieldSelect";
 import { Plus, Trash2, Edit2, Check, X, Loader2, Globe } from "lucide-react";
 
 const LEVELS = [
@@ -56,10 +57,14 @@ const LanguagesSection = ({ resume, onRefresh }) => {
         : Config.endpoints.jobisell.resumeSections.languages.list();
 
       const method = editingId ? "patch" : "post";
-      const res = await axios[method](url, formData, { headers: getAuthHeaders() });
+      const res = await axios[method](url, formData, {
+        headers: getAuthHeaders(),
+      });
 
       if (editingId) {
-        setItems((prev) => prev.map((it) => (it.id === editingId ? res.data : it)));
+        setItems((prev) =>
+          prev.map((it) => (it.id === editingId ? res.data : it))
+        );
       } else {
         setItems((prev) => [...prev, res.data]);
       }
@@ -105,12 +110,17 @@ const LanguagesSection = ({ resume, onRefresh }) => {
   };
 
   return (
-    <div className={styles.sectionWrapper}>
+    <div className={`${styles.sectionWrapper} ${styles.miniPanel}`}>
       <div className={styles.sectionHeader}>
         <h3>زبان‌ها</h3>
         {!showForm && (
-          <button type="button" className={styles.addBtn} onClick={() => setShowForm(true)}>
-            <Plus size={14} /> افزودن زبان
+          <button
+            type="button"
+            className={styles.addBtn}
+            onClick={() => setShowForm(true)}
+          >
+            <Plus size={13} strokeWidth={2.4} />
+            افزودن
           </button>
         )}
       </div>
@@ -120,15 +130,32 @@ const LanguagesSection = ({ resume, onRefresh }) => {
           {items.map((item) => (
             <div key={item.id} className={styles.listItem}>
               <div className={styles.listItemContent}>
-                <h4>{item.name}</h4>
-                <p>{item.level_display}{item.certificate && ` • ${item.certificate}`}</p>
+                <div className={styles.miniItemMain}>
+                  <h4>{item.name}</h4>
+                  <span className={styles.miniDot} aria-hidden>
+                    ·
+                  </span>
+                  <p>
+                    {item.level_display}
+                    {item.certificate ? ` • ${item.certificate}` : ""}
+                  </p>
+                </div>
               </div>
               <div className={styles.listItemActions}>
-                <button type="button" onClick={() => handleEdit(item)}>
-                  <Edit2 size={14} />
+                <button
+                  type="button"
+                  onClick={() => handleEdit(item)}
+                  aria-label="ویرایش"
+                >
+                  <Edit2 size={12} strokeWidth={2.2} />
                 </button>
-                <button type="button" onClick={() => handleDelete(item.id)} className={styles.deleteBtn}>
-                  <Trash2 size={14} />
+                <button
+                  type="button"
+                  onClick={() => handleDelete(item.id)}
+                  className={styles.deleteBtn}
+                  aria-label="حذف"
+                >
+                  <Trash2 size={12} strokeWidth={2.2} />
                 </button>
               </div>
             </div>
@@ -138,47 +165,55 @@ const LanguagesSection = ({ resume, onRefresh }) => {
 
       {showForm && (
         <div className={styles.subForm}>
-          <div className={styles.row}>
+          <div className={styles.grid3}>
             <div className={styles.formGroup}>
               <label>نام زبان *</label>
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 placeholder="انگلیسی، عربی، ..."
               />
             </div>
-            <div className={styles.formGroup}>
-              <label>سطح</label>
-              <select
-                value={formData.level}
-                onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-              >
-                {LEVELS.map((l) => (
-                  <option key={l.value} value={l.value}>{l.label}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>مدرک (اختیاری)</label>
-            <input
-              type="text"
-              value={formData.certificate}
-              onChange={(e) => setFormData({ ...formData, certificate: e.target.value })}
-              placeholder="مثلاً: IELTS 7.0"
+            <FieldSelect
+              label="سطح"
+              value={formData.level}
+              onChange={(v) => setFormData({ ...formData, level: v })}
+              options={LEVELS}
+              placeholder="انتخاب سطح"
             />
+            <div className={styles.formGroup}>
+              <label>مدرک</label>
+              <input
+                type="text"
+                value={formData.certificate}
+                onChange={(e) =>
+                  setFormData({ ...formData, certificate: e.target.value })
+                }
+                placeholder="IELTS 7.0"
+              />
+            </div>
           </div>
 
           {error && <div className={styles.errorBox}>{error}</div>}
 
           <div className={styles.subFormActions}>
             <button type="button" onClick={handleCancel} disabled={saving}>
-              <X size={14} /> لغو
+              <X size={13} /> لغو
             </button>
-            <button type="button" className={styles.saveBtn} onClick={handleSave} disabled={saving}>
-              {saving ? <Loader2 size={14} className={styles.spin} /> : <Check size={14} />}
+            <button
+              type="button"
+              className={styles.saveBtn}
+              onClick={handleSave}
+              disabled={saving}
+            >
+              {saving ? (
+                <Loader2 size={13} className={styles.spin} />
+              ) : (
+                <Check size={13} />
+              )}
               {editingId ? "بروزرسانی" : "افزودن"}
             </button>
           </div>
@@ -187,8 +222,8 @@ const LanguagesSection = ({ resume, onRefresh }) => {
 
       {items.length === 0 && !showForm && (
         <div className={styles.emptyBox}>
-          <Globe size={32} />
-          <p>هنوز زبانی اضافه نکرده‌اید</p>
+          <Globe size={22} strokeWidth={1.6} />
+          <p>زبانی ثبت نشده</p>
         </div>
       )}
     </div>

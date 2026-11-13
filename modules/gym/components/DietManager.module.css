@@ -1,0 +1,2104 @@
+/* modules/gym/components/DietManager.module.css */
+
+/* ============================================
+   MAIN CONTAINER
+   ============================================ */
+.dietManager {
+  background: var(--bg-secondary);
+  min-height: 100vh;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.dietHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.dietHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.dietHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.dietBackButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dietBackButton:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+}
+
+.dietHeaderTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-family: var(--font-edameh);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.dietHeaderTitle svg {
+  color: var(--primary);
+}
+
+.dietUserBadge {
+  padding: 0.25rem 0.85rem;
+  background: var(--primary-glass);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--primary);
+  font-family: var(--font-iran);
+}
+
+.dietSearchBox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.dietSearchBox:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glass);
+}
+
+.dietSearchBox svg {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.dietSearchBox input {
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-family: var(--font-iran);
+  outline: none;
+  width: 140px;
+}
+
+.dietSearchBox input::placeholder {
+  color: var(--text-muted);
+}
+
+.dietPrimaryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1.1rem;
+  background: var(--gradient-primary);
+  color: var(--text-on-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.dietPrimaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--primary-glow);
+}
+
+.dietSecondaryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: #eef6f1;
+  color: #046c4e;
+  border: 1px solid #d5e5db;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.dietSecondaryButton:hover:not(:disabled) {
+  background: #e8f5ef;
+  border-color: #10b981;
+  color: #023c2c;
+}
+
+.dietEmptyActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  margin-top: 0.35rem;
+}
+
+.spinner {
+  animation: dietSpin 0.8s linear infinite;
+}
+
+@keyframes dietSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   BODY / LAYOUT
+   ============================================ */
+.dietBody {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.dietLayout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 0;
+  min-height: 600px;
+}
+
+.dietCalendarSidebar {
+  padding: 1.25rem;
+  background: var(--bg-input);
+  border-left: 1px solid var(--border-light);
+}
+
+.dietContentArea {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* ============================================
+   CALENDAR
+   ============================================ */
+.dietCalendar {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+}
+
+.dietCalendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dietCalendarHeaderRight,
+.dietCalendarHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.dietCalendarMonthButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.6rem;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: var(--font-edameh);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.dietCalendarMonthButton:hover {
+  background: var(--bg-card-hover);
+}
+
+.dietCalendarNavButton {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-input);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dietCalendarNavButton:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+}
+
+.dietCalendarTodayButton {
+  padding: 0.25rem 0.6rem;
+  background: transparent;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dietCalendarTodayButton:hover {
+  background: var(--primary-glass);
+  color: var(--primary);
+  border-color: var(--border-primary);
+}
+
+/* Month Picker */
+.dietMonthPicker {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  padding: 0.5rem;
+  margin-bottom: 0.75rem;
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
+}
+
+.dietMonthPickerButton {
+  padding: 0.4rem 0.2rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dietMonthPickerButton:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.dietMonthPickerButtonActive {
+  background: var(--primary);
+  color: var(--text-on-primary);
+  font-weight: 600;
+}
+
+/* Week Days */
+.dietWeekDays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.dietWeekDay {
+  text-align: center;
+  padding: 0.4rem 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-family: var(--font-iran);
+}
+
+.dietWeekend {
+  color: #ff6b6b;
+}
+
+/* Calendar Grid */
+.dietCalendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.dietDay {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  padding: 0;
+}
+
+.dietDay:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.dietDayNumber {
+  font-weight: 600;
+  line-height: 1;
+}
+
+.dietDayDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+.dietOtherMonth {
+  color: var(--text-muted);
+  opacity: 0.35;
+  cursor: default;
+}
+
+.dietOtherMonth:hover {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.dietToday {
+  background: var(--primary-glass);
+  border-color: var(--border-primary);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.dietSelected {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: var(--text-on-primary) !important;
+  font-weight: 700;
+  box-shadow: 0 0 0 3px var(--primary-glass);
+}
+
+.dietSelected .dietDayDot {
+  background: var(--text-on-primary);
+}
+
+.dietFriday {
+  color: #ff6b6b;
+}
+
+.dietFriday.dietSelected {
+  color: var(--text-on-primary);
+}
+
+.dietHasDiet {
+  background: rgba(201, 168, 76, 0.08);
+}
+
+.dietHasDiet:not(.dietSelected):not(.dietToday):hover {
+  background: rgba(201, 168, 76, 0.15);
+}
+
+/* Calendar Legend */
+.dietCalendarLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.dietLegendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-family: var(--font-iran);
+}
+
+.dietLegendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  border: 1px solid;
+}
+
+.dietLegendToday {
+  background: var(--primary-glass);
+  border-color: var(--border-primary);
+}
+
+.dietLegendDiet {
+  background: rgba(201, 168, 76, 0.15);
+  border-color: rgba(201, 168, 76, 0.4);
+}
+
+.dietLegendFriday {
+  background: rgba(255, 107, 107, 0.1);
+  border-color: rgba(255, 107, 107, 0.3);
+}
+
+/* ============================================
+   CONTENT - DIET LIST
+   ============================================ */
+.dietDateBanner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--primary-glass);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary);
+  font-family: var(--font-iran);
+  margin-bottom: 1rem;
+}
+
+.dietList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ============================================
+   DIET CARD
+   ============================================ */
+.dietCard {
+  background: #fff;
+  border: 1px solid #d5e5db;
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all var(--transition-base);
+  box-shadow: 0 8px 20px rgba(2, 60, 44, 0.06);
+}
+
+.dietCard:hover {
+  border-color: #b5cfc2;
+  box-shadow: 0 10px 24px rgba(2, 60, 44, 0.08);
+}
+
+.dietCardLocked {
+  border-color: #bbf7d0;
+  background: #fff;
+}
+
+.dietCardEditing {
+  border-color: #10b981;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+}
+
+.dietCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1rem;
+  background: #f7fbf8;
+  border-bottom: 1px solid #d5e5db;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.dietCardTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.dietCardTitle > span {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #10241c;
+  font-family: var(--font-iran);
+}
+
+.dietCardBadges {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.dietBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.18rem 0.55rem;
+  background: #fff;
+  border: 1px solid #d5e5db;
+  border-radius: var(--radius-full);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #4d6a5c;
+  font-family: var(--font-iran);
+}
+
+.dietBadge svg {
+  color: #046c4e;
+}
+
+.dietBadgeApproved {
+  background: #ecfdf5 !important;
+  color: #046c4e !important;
+  border-color: #bbf7d0 !important;
+}
+
+.dietBadgeApproved svg {
+  color: #046c4e !important;
+}
+
+.dietBadgeEditing {
+  background: #eef6f1 !important;
+  color: #023c2c !important;
+  border-color: #d5e5db !important;
+}
+
+.dietBadgeEditing svg {
+  color: #046c4e !important;
+}
+
+.dietCardActions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.dietActionButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.8rem;
+  background: #fff;
+  border: 1px solid #d5e5db;
+  border-radius: var(--radius-sm);
+  color: #374151;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dietActionButton:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+  transform: translateY(-1px);
+}
+
+.dietActionButtonSuccess {
+  background: var(--primary-glass);
+  color: var(--primary);
+  border-color: var(--border-primary);
+}
+
+.dietActionButtonSuccess:hover {
+  background: var(--primary);
+  color: var(--text-on-primary);
+  border-color: var(--primary);
+  box-shadow: 0 4px 16px var(--primary-glow);
+}
+
+.dietCardBody {
+  padding: 0.7rem 0.75rem;
+}
+
+/* ============================================
+   LOCKED / EDITING BANNERS
+   ============================================ */
+.dietLockedBanner,
+.dietEditingBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  font-size: 0.72rem;
+  font-family: var(--font-iran);
+  font-weight: 500;
+}
+
+.dietLockedBanner {
+  background: rgba(10, 122, 74, 0.06);
+  border-bottom: 1px solid rgba(10, 122, 74, 0.15);
+  color: var(--primary);
+}
+
+.dietLockedBanner svg {
+  flex-shrink: 0;
+}
+
+.dietEditingBanner {
+  background: #f0fdf4;
+  border-bottom: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+.dietEditingBanner svg {
+  flex-shrink: 0;
+}
+
+/* ============================================
+   MEALS BOARD (3 COLUMNS)
+   ============================================ */
+.dietBoardWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.dietBoard {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  align-items: start;
+}
+
+.dietBoardCol {
+  --col-accent: #046c4e;
+  --col-head: #023c2c;
+  --col-bg: #f7fbf8;
+  --col-border: #d5e5db;
+  --col-chip: #ecfdf5;
+  --col-food: #ffffff;
+  min-width: 0;
+  padding: 0.5rem;
+  border-radius: 14px;
+  background: var(--col-bg);
+  border: 1px solid var(--col-border);
+}
+
+.dietBoardCol_morning {
+  --col-accent: #d97706;
+  --col-head: #9a3412;
+  --col-bg: linear-gradient(180deg, #fff7ed 0%, #fffbeb 100%);
+  --col-border: #f3d19a;
+  --col-chip: #ffedd5;
+  --col-food: #fffdf8;
+  background: var(--col-bg);
+}
+
+.dietBoardCol_mid {
+  --col-accent: #047857;
+  --col-head: #023c2c;
+  --col-bg: linear-gradient(180deg, #ecfdf5 0%, #f0fdf4 100%);
+  --col-border: #a7f3d0;
+  --col-chip: #d1fae5;
+  --col-food: #f8fffb;
+  background: var(--col-bg);
+}
+
+.dietBoardCol_night {
+  --col-accent: #4f46e5;
+  --col-head: #312e81;
+  --col-bg: linear-gradient(180deg, #eef2ff 0%, #f5f3ff 100%);
+  --col-border: #c7d2fe;
+  --col-chip: #e0e7ff;
+  --col-food: #fafafe;
+  background: var(--col-bg);
+}
+
+.dietBoardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  margin-bottom: 0.45rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px dashed var(--col-border);
+}
+
+.dietBoardHeadTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.dietBoardHeadIcon {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: var(--col-chip);
+  color: var(--col-accent);
+  flex-shrink: 0;
+}
+
+.dietBoardHeadTitle strong {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--col-head);
+  line-height: 1.2;
+}
+
+.dietBoardHeadTitle p {
+  margin: 0;
+  font-size: 0.62rem;
+  font-weight: 650;
+  color: var(--col-accent);
+  opacity: 0.9;
+}
+
+.dietBoardKcal {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--col-head);
+  background: var(--col-chip);
+  border: 1px solid var(--col-border);
+  border-radius: 999px;
+  padding: 0.12rem 0.42rem;
+}
+
+.dietBoardEmpty {
+  margin: 0;
+  padding: 0.7rem 0.35rem;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 650;
+  color: var(--col-accent);
+  opacity: 0.7;
+}
+
+.dietMealList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dietBoardCol .dietMealCard {
+  background: var(--col-food);
+  border-color: var(--col-border);
+  padding: 0.5rem;
+  border-radius: 10px;
+  margin-bottom: 0.4rem;
+}
+
+.dietBoardCol .dietMealCard:last-of-type {
+  margin-bottom: 0;
+}
+
+.dietBoardCol .dietMealHeader {
+  margin-bottom: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
+.dietBoardCol .dietMealIcon {
+  width: 22px;
+  height: 22px;
+  background: var(--col-chip);
+  color: var(--col-accent);
+}
+
+.dietBoardCol .dietMealType {
+  font-size: 0.76rem;
+  color: var(--col-head);
+}
+
+.dietBoardCol .dietMealTime {
+  background: var(--col-chip);
+  border-color: var(--col-border);
+  color: var(--col-head);
+}
+
+.dietBoardCol .dietMealCalories {
+  background: var(--col-chip);
+  border-color: var(--col-border);
+  color: var(--col-accent);
+  font-size: 0.64rem;
+  padding: 0.1rem 0.38rem;
+}
+
+.dietBoardCol .dietFoodItem {
+  padding: 0.32rem 0.45rem;
+  background: var(--col-food);
+  border-color: var(--col-border);
+}
+
+.dietBoardCol .dietFoodDot {
+  background: var(--col-accent);
+}
+
+.dietBoardCol .dietFoodName {
+  font-size: 0.74rem;
+}
+
+.dietBoardCol .dietFoodAmount {
+  font-size: 0.64rem;
+  background: var(--col-chip);
+  border-color: var(--col-border);
+  color: var(--col-head);
+}
+
+.dietBoardCol .dietFoodCalories {
+  font-size: 0.64rem;
+  color: var(--col-accent);
+}
+
+.dietBoardCol .dietAddFoodButton {
+  border-color: var(--col-border);
+  color: var(--col-accent);
+}
+
+@media (max-width: 1100px) {
+  .dietBoard {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dietMealCard {
+  background: #f7fbf8;
+  border: 1px solid #d5e5db;
+  border-radius: 12px;
+  padding: 0.85rem;
+  transition: all var(--transition-fast);
+}
+
+.dietMealCard:hover {
+  border-color: var(--border-medium);
+}
+
+.dietMealCardEditable {
+  cursor: grab;
+}
+
+.dietMealCardEditable:hover {
+  border-color: #10b981;
+}
+
+.dietMealCardDragging {
+  opacity: 0.4;
+  transform: scale(0.98);
+  cursor: grabbing;
+}
+
+.dietMealHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px dashed var(--border-light);
+  flex-wrap: wrap;
+}
+
+.dietMealTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.dietDragHandle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+.dietMealIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--primary-glass);
+  color: var(--primary);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.dietMealType {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #10241c;
+  font-family: var(--font-iran);
+}
+
+.dietMealTime {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0.15rem 0.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-family: var(--font-iran);
+}
+
+.dietMealTime svg {
+  flex-shrink: 0;
+}
+
+.dietMealCalories {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0.15rem 0.5rem;
+  background: #ecfdf5;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  color: #046c4e;
+  font-family: var(--font-iran);
+  font-weight: 700;
+}
+
+.dietMealCalories svg {
+  flex-shrink: 0;
+}
+
+.dietMealActions {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   MOVE BUTTONS
+   ============================================ */
+.dietMoveButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.dietMoveButton {
+  width: 22px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dietMoveButton:hover:not(:disabled) {
+  background: var(--primary-glass);
+  color: var(--primary);
+}
+
+.dietMoveButton:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.dietMoveButton svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ============================================
+   ICON BUTTONS
+   ============================================ */
+.dietIconButton {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dietIconButton:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-light);
+  color: var(--text-primary);
+}
+
+.dietIconButtonDanger:hover {
+  background: rgba(255, 71, 87, 0.1);
+  border-color: rgba(255, 71, 87, 0.2);
+  color: #ff4757;
+}
+
+.dietIconButtonSmall {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dietIconButtonSmall:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+/* ============================================
+   FOOD LIST
+   ============================================ */
+.dietFoodList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.dietFoodItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.7rem;
+  background: #fff;
+  border: 1px solid #d5e5db;
+  border-radius: 10px;
+  transition: all var(--transition-fast);
+}
+
+.dietFoodItem:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-medium);
+}
+
+.dietFoodItemEditable {
+  cursor: grab;
+}
+
+.dietFoodItemDragging {
+  opacity: 0.4;
+  transform: scale(0.98);
+  cursor: grabbing;
+}
+
+.dietFoodMain {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.dietDragHandleSmall {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+.dietFoodDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  flex-shrink: 0;
+}
+
+.dietFoodName {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #10241c;
+  font-family: var(--font-iran);
+  flex-shrink: 0;
+}
+
+.dietFoodAmount {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #4d6a5c;
+  font-family: var(--font-iran);
+  padding: 0.1rem 0.45rem;
+  background: #eef6f1;
+  border: 1px solid #d5e5db;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.dietFoodCalories {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.72rem;
+  color: #046c4e;
+  font-family: var(--font-iran);
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.dietFoodActions {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  flex-shrink: 0;
+}
+
+.dietMoveButtonsSmall {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.dietMoveButtonSmall {
+  width: 18px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dietMoveButtonSmall:hover:not(:disabled) {
+  background: var(--primary-glass);
+  color: var(--primary);
+}
+
+.dietMoveButtonSmall:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.dietMoveButtonSmall svg {
+  width: 10px;
+  height: 10px;
+}
+
+/* ============================================
+   ADD BUTTONS
+   ============================================ */
+.dietAddMealButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px dashed var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  align-self: flex-start;
+}
+
+.dietAddMealButton:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-glass);
+}
+
+.dietAddFoodButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.7rem;
+  background: transparent;
+  border: 1px dashed var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  align-self: flex-start;
+  margin-top: 0.25rem;
+}
+
+.dietAddFoodButton:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: var(--gold-glass);
+}
+
+.dietAddButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 1rem;
+  background: var(--primary-glass);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-top: 0.5rem;
+}
+
+.dietAddButton:hover {
+  background: var(--primary);
+  color: var(--text-on-primary);
+}
+
+/* ============================================
+   EMPTY MEALS / EMPTY STATE
+   ============================================ */
+.dietEmptyMeals {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.dietEmptyMeals svg {
+  opacity: 0.4;
+}
+
+.dietEmptyMeals p {
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  margin: 0;
+}
+
+.dietEmptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.dietEmptyState svg {
+  opacity: 0.25;
+}
+
+.dietEmptyState h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+  margin: 0;
+}
+
+.dietEmptyState p {
+  font-size: 0.78rem;
+  font-family: var(--font-iran);
+  margin: 0;
+}
+
+/* ============================================
+   LOADING SPINNER
+   ============================================ */
+.spinner {
+  color: var(--primary);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   MODAL
+   ============================================ */
+.dietModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow-y: auto;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dietModal {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  max-height: 90vh;
+  overflow-y: auto;
+  width: 100%;
+  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 10000;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dietModalSm { max-width: 420px; }
+.dietModalMd { max-width: 600px; }
+.dietModalLg { max-width: 780px; }
+.dietModalXl { max-width: 1000px; }
+
+.dietModalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.1rem 1.4rem;
+  border-bottom: 1px solid var(--border-light);
+  position: sticky;
+  top: 0;
+  background: var(--bg-secondary);
+  z-index: 10;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.dietModalHeader h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: var(--font-edameh);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.dietModalClose {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-input);
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.dietModalClose:hover {
+  background: rgba(255, 71, 87, 0.1);
+  color: #ff4757;
+  border-color: rgba(255, 71, 87, 0.3);
+  transform: rotate(90deg);
+}
+
+.dietModalBody {
+  padding: 1.4rem;
+}
+
+/* ============================================
+   MODAL FORM
+   ============================================ */
+.dietModalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dietFormRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.dietFormGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dietFormGroup label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+.dietFormGroup input,
+.dietFormGroup select,
+.dietFormGroup textarea {
+  padding: 0.65rem 0.85rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  transition: all var(--transition-fast);
+  width: 100%;
+}
+
+.dietFormGroup input:focus,
+.dietFormGroup select:focus,
+.dietFormGroup textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glass);
+  background: var(--bg-card);
+}
+
+.dietFormGroup select option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* ============================================
+   LIBRARY PICKER BUTTON
+   ============================================ */
+.dietLibraryBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.1), rgba(201, 168, 76, 0.05));
+  border: 2px dashed rgba(201, 168, 76, 0.5);
+  border-radius: var(--radius-md);
+  color: var(--gold);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.dietLibraryBtn:hover {
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.2), rgba(201, 168, 76, 0.1));
+  border-color: var(--gold);
+  border-style: solid;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(201, 168, 76, 0.2);
+}
+
+.dietLibraryBtn svg {
+  flex-shrink: 0;
+}
+
+.dietSelectedLibraryInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  background: var(--gold-glass);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: var(--radius-sm);
+  color: var(--gold);
+  font-size: 0.78rem;
+  font-family: var(--font-iran);
+  margin-top: 0.5rem;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ============================================
+   MODAL ACTIONS
+   ============================================ */
+.dietModalActions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.dietCancelButton {
+  padding: 0.6rem 1.3rem;
+  background: transparent;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dietCancelButton:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.dietConfirmButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.3rem;
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-on-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.dietConfirmButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--primary-glow);
+}
+
+.dietConfirmButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   CONFIRM MODAL
+   ============================================ */
+.dietConfirmModal {
+  background: #fff;
+  border: 1px solid #d5e5db;
+  border-radius: 18px;
+  padding: 2rem 1.75rem 1.5rem;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  z-index: 10000;
+  box-shadow: 0 24px 64px rgba(2, 60, 44, 0.18);
+}
+
+.dietConfirmModalNotice {
+  border-color: #bbf7d0;
+  box-shadow: 0 24px 64px rgba(4, 108, 78, 0.16);
+}
+
+.dietConfirmHighlight {
+  display: inline;
+  color: #023c2c;
+  font-weight: 800;
+  background: #ecfdf5;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 0.05rem 0.4rem;
+}
+
+.dietConfirmModalIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+  background: var(--primary-glass);
+  color: var(--primary);
+  border: 2px solid var(--border-primary);
+  animation: iconPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes iconPop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.dietConfirmModalIconSuccess {
+  background: #ecfdf5;
+  color: #046c4e;
+  border-color: #10b981;
+}
+
+.dietConfirmButtonSuccess {
+  background: linear-gradient(165deg, #10b981, #046c4e) !important;
+  color: #fff !important;
+}
+
+.dietConfirmButtonSuccess:hover:not(:disabled) {
+  box-shadow: 0 8px 24px rgba(4, 108, 78, 0.28) !important;
+}
+
+.dietConfirmModalIconWarning {
+  background: rgba(255, 217, 61, 0.12);
+  color: #ffd93d;
+  border-color: rgba(255, 217, 61, 0.3);
+}
+
+.dietConfirmModalIconDanger {
+  background: rgba(255, 71, 87, 0.12);
+  color: #ff4757;
+  border-color: rgba(255, 71, 87, 0.3);
+}
+
+.dietConfirmModalTitle {
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-family: var(--font-edameh, var(--font-iran), iran, Tahoma, sans-serif);
+  color: #10241c;
+  margin: 0 0 0.6rem;
+}
+
+.dietConfirmModalMessage {
+  font-size: 0.9rem;
+  color: #4d6a5c;
+  font-family: var(--font-iran, iran, Tahoma, sans-serif);
+  font-weight: 600;
+  line-height: 1.8;
+  margin: 0 0 1.5rem;
+}
+
+.dietConfirmModalActions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.dietConfirmButtonDanger {
+  background: linear-gradient(135deg, #ff4757, #d63447) !important;
+}
+
+.dietConfirmButtonDanger:hover {
+  box-shadow: 0 8px 24px rgba(255, 71, 87, 0.3) !important;
+}
+
+.dietConfirmButtonWarning {
+  background: linear-gradient(135deg, #ffd93d, #e8b800) !important;
+  color: #1a1a1e !important;
+}
+
+.dietConfirmButtonWarning:hover {
+  box-shadow: 0 8px 24px rgba(255, 217, 61, 0.3) !important;
+}
+
+/* ============================================
+   RTL SUPPORT
+   ============================================ */
+[dir='rtl'] .dietFoodDot {
+  margin-left: 0;
+}
+
+/* ============================================
+   RESPONSIVE - TABLET (≤ 1024px)
+   ============================================ */
+@media (max-width: 1024px) {
+  .dietLayout {
+    grid-template-columns: 300px 1fr;
+  }
+
+  .dietCalendarSidebar {
+    padding: 1rem;
+  }
+
+  .dietContentArea {
+    padding: 1.25rem;
+  }
+}
+
+/* ============================================
+   RESPONSIVE - TABLET PORTRAIT (≤ 900px)
+   ============================================ */
+@media (max-width: 900px) {
+  .dietLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .dietCalendarSidebar {
+    border-left: none;
+    border-bottom: 1px solid var(--border-light);
+    padding: 1rem;
+  }
+
+  .dietCalendar {
+    max-width: 420px;
+    margin: 0 auto;
+  }
+}
+
+/* ============================================
+   RESPONSIVE - MOBILE (≤ 768px)
+   ============================================ */
+@media (max-width: 768px) {
+  .dietManager {
+    padding: 1rem;
+  }
+
+  .dietHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .dietHeaderLeft,
+  .dietHeaderRight {
+    justify-content: space-between;
+  }
+
+  .dietHeaderTitle {
+    font-size: 1rem;
+  }
+
+  .dietHeaderTitle svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .dietSearchBox {
+    flex: 1;
+  }
+
+  .dietSearchBox input {
+    width: 100%;
+  }
+
+  .dietContentArea {
+    padding: 1rem;
+  }
+
+  .dietFormRow {
+    grid-template-columns: 1fr;
+  }
+
+  .dietCardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dietCardActions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .dietActionButton {
+    font-size: 0.65rem;
+    padding: 0.35rem 0.65rem;
+  }
+
+  .dietModalActions {
+    flex-direction: column-reverse;
+  }
+
+  .dietModalActions button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Modal on mobile */
+  .dietModalOverlay {
+    padding: 0.5rem;
+    align-items: flex-start;
+    padding-top: 2rem;
+  }
+
+  .dietModal {
+    max-height: calc(100vh - 3rem);
+    border-radius: var(--radius-md);
+  }
+
+  .dietModalHeader {
+    padding: 0.9rem 1.1rem;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+  }
+
+  .dietModalHeader h3 {
+    font-size: 0.95rem;
+  }
+
+  .dietModalBody {
+    padding: 1.1rem;
+  }
+
+  .dietConfirmModal {
+    padding: 1.5rem 1.25rem 1.25rem;
+    margin: 0.5rem;
+  }
+
+  .dietConfirmModalIcon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .dietConfirmModalIcon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .dietConfirmModalActions {
+    flex-direction: column-reverse;
+  }
+
+  .dietConfirmModalActions button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .dietMoveButtons {
+    flex-direction: row;
+  }
+
+  .dietMoveButton {
+    width: 22px;
+    height: 20px;
+  }
+}
+
+/* ============================================
+   RESPONSIVE - SMALL MOBILE (≤ 480px)
+   ============================================ */
+@media (max-width: 480px) {
+  .dietManager {
+    padding: 0.5rem;
+  }
+
+  .dietBackButton {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.72rem;
+  }
+
+  .dietHeaderTitle {
+    font-size: 0.9rem;
+  }
+
+  .dietUserBadge {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.65rem;
+  }
+
+  .dietPrimaryButton {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.75rem;
+  }
+
+  .dietCalendarSidebar {
+    padding: 0.5rem;
+  }
+
+  .dietCalendar {
+    padding: 0.75rem;
+  }
+
+  .dietCalendarMonthButton {
+    font-size: 0.78rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .dietDay {
+    font-size: 0.7rem;
+  }
+
+  .dietDayNumber {
+    font-size: 0.72rem;
+  }
+
+  .dietMonthPicker {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .dietMonthPickerButton {
+    font-size: 0.65rem;
+    padding: 0.35rem 0.15rem;
+  }
+
+  .dietContentArea {
+    padding: 0.75rem;
+  }
+
+  .dietCardHeader {
+    padding: 0.7rem 0.75rem;
+  }
+
+  .dietCardBody {
+    padding: 0.6rem 0.75rem;
+  }
+
+  .dietMealCard {
+    padding: 0.65rem;
+  }
+
+  .dietMealType {
+    font-size: 0.78rem;
+  }
+
+  .dietMealTime,
+  .dietMealCalories {
+    font-size: 0.62rem;
+    padding: 0.1rem 0.4rem;
+  }
+
+  .dietFoodItem {
+    padding: 0.4rem 0.5rem;
+  }
+
+  .dietFoodName {
+    font-size: 0.75rem;
+  }
+
+  .dietFoodAmount,
+  .dietFoodCalories {
+    font-size: 0.65rem;
+  }
+
+  .dietLockedBanner,
+  .dietEditingBanner {
+    font-size: 0.65rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  /* Modal on small mobile - full screen */
+  .dietModalOverlay {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .dietModal {
+    max-height: 100vh;
+    border-radius: 0;
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  .dietModalHeader {
+    padding: 0.85rem 1rem;
+    border-radius: 0;
+  }
+
+  .dietModalHeader h3 {
+    font-size: 0.9rem;
+  }
+
+  .dietModalBody {
+    padding: 1rem;
+  }
+
+  .dietConfirmModalTitle {
+    font-size: 1rem;
+  }
+
+  .dietConfirmModalMessage {
+    font-size: 0.78rem;
+  }
+
+  .dietConfirmModal {
+    border-radius: var(--radius-md);
+    padding: 1.25rem 1rem 1rem;
+  }
+
+  .dietLibraryBtn {
+    padding: 0.75rem;
+    font-size: 0.78rem;
+    gap: 0.4rem;
+  }
+
+  .dietLibraryBtn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .dietSelectedLibraryInfo {
+    font-size: 0.72rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* ============================================
+   LANDSCAPE MOBILE
+   ============================================ */
+@media (max-height: 500px) and (orientation: landscape) {
+  .dietLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .dietCalendar {
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .dietModal {
+    max-height: 100vh;
+  }
+}

@@ -1,0 +1,146 @@
+.hub {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  color: var(--profile-ink, #1e3b2f);
+  font-family: var(--font-iran, Shabnam, Tahoma, sans-serif);
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.15rem 0.1rem;
+}
+
+.intro h2 {
+  margin: 0;
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: var(--profile-ink, #1e3b2f);
+}
+
+.intro p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.65;
+  color: var(--profile-muted, #7f8c6a);
+  max-width: 36rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 860px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 1rem 1.05rem;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, #7f8c6a 22%, transparent);
+  background: #ffffff;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+  box-shadow: 0 6px 18px color-mix(in srgb, #1e3b2f 4%, transparent);
+}
+
+.card:hover {
+  border-color: #c8b48a;
+  background: #f5f0e6;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px color-mix(in srgb, #1e3b2f 7%, transparent);
+}
+
+.iconWrap {
+  display: grid;
+  place-items: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 12px;
+  background: #f5f0e6;
+  border: 1px solid color-mix(in srgb, #c8b48a 45%, transparent);
+  color: #1e3b2f;
+}
+
+.card strong {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--profile-ink, #1e3b2f);
+}
+
+.card span {
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--profile-muted, #7f8c6a);
+}
+
+.cardCta {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--profile-ink, #1e3b2f);
+}
+
+.accountBlock {
+  margin-top: 0.35rem;
+  padding: 0.85rem 1rem;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, #7f8c6a 22%, transparent);
+  background: #ffffff;
+}
+
+.accountBlock h3 {
+  margin: 0 0 0.65rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.infoList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.infoList li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px dashed var(--profile-line, color-mix(in srgb, #7f8c6a 28%, transparent));
+  font-size: 0.86rem;
+}
+
+.infoList li:last-child {
+  border-bottom: 0;
+}
+
+.infoList span {
+  color: var(--profile-muted, #7f8c6a);
+  font-weight: 650;
+}
+
+.infoList strong {
+  color: var(--profile-ink, #1e3b2f);
+  font-weight: 800;
+  text-align: left;
+}

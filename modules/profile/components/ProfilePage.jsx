@@ -18,23 +18,27 @@ import ResumeTab from "./resume/ResumeTab";
 import QuizProfilePanel from "./QuizProfilePanel";
 import SchoolProfilePanel from "@/components/School/SchoolProfilePanel";
 import ShopProfilePanel from "./ShopProfilePanel";
+import ReboPackageOrdersPanel from "./ReboPackageOrdersPanel";
+import NewsContributionsPanel from "./NewsContributionsPanel";
 import styles from "../styles/ProfilePage.module.css";
 import { Loader2 } from "lucide-react";
 import { isSiteModuleActive } from "@/services/siteModules";
 import { SITE_MODULE_KEYS } from "@/config/siteModules";
 
 const JOB_TABS = [
-  { key: "hiring", label: "آگهی‌های استخدامی", icon: "briefcase" },
-  { key: "seeking", label: "آگهی‌های کاریابی", icon: "user" },
+  { key: "hiring", label: "استخدامی", icon: "briefcase" },
+  { key: "seeking", label: "کاریابی", icon: "user" },
   { key: "applications", label: "درخواست‌ها", icon: "send" },
-  { key: "bookmarks", label: "ذخیره‌شده‌ها", icon: "bookmark" },
-  { key: "company", label: "شرکت من", icon: "building" },
-  { key: "resume", label: "رزومه من", icon: "file-text" },
+  { key: "bookmarks", label: "ذخیره‌ها", icon: "bookmark" },
+  { key: "company", label: "شرکت", icon: "building" },
+  { key: "resume", label: "رزومه", icon: "file-text" },
 ];
 
+const REBO_TAB = { key: "rebo", label: "ربو", icon: "package" };
 const SHOP_TAB = { key: "shop", label: "فروشگاه", icon: "shopping" };
-const QUIZ_TAB = { key: "quiz", label: "آزمون‌ها", icon: "brain" };
+const QUIZ_TAB = { key: "quiz", label: "آزمون", icon: "brain" };
 const SCHOOL_TAB = { key: "school", label: "مدرسه", icon: "school" };
+const NEWS_TAB = { key: "news", label: "مطالب من", icon: "newspaper" };
 
 const EMPTY_STATS = {
   hiring: { total: 0, approved: 0, pending: 0, rejected: 0, expired: 0, views: 0, likes: 0 },
@@ -50,14 +54,18 @@ function ProfilePageInner() {
   const [quizOn, setQuizOn] = useState(false);
   const [schoolOn, setSchoolOn] = useState(false);
   const [shopOn, setShopOn] = useState(false);
+  const [reboOn, setReboOn] = useState(false);
+  const [newsOn, setNewsOn] = useState(false);
 
   const tabs = useMemo(() => {
     const list = [...JOB_TABS];
+    if (newsOn) list.push(NEWS_TAB);
+    if (reboOn) list.push(REBO_TAB);
     if (shopOn) list.push(SHOP_TAB);
     if (quizOn) list.push(QUIZ_TAB);
     if (schoolOn) list.push(SCHOOL_TAB);
     return list;
-  }, [quizOn, schoolOn, shopOn]);
+  }, [quizOn, schoolOn, shopOn, reboOn, newsOn]);
   const tabKeys = useMemo(() => new Set(tabs.map((t) => t.key)), [tabs]);
 
   const initialTab = useMemo(() => {
@@ -72,9 +80,11 @@ function ProfilePageInner() {
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      router.replace("/login?next=/profile");
+      const qs = searchParams.toString();
+      const next = qs ? `/profile?${qs}` : "/profile";
+      router.replace(`/login?next=${encodeURIComponent(next)}`);
     }
-  }, [authLoading, isAuthenticated, router]);
+  }, [authLoading, isAuthenticated, router, searchParams]);
 
   useEffect(() => {
     let cancelled = false;
@@ -83,11 +93,17 @@ function ProfilePageInner() {
         isSiteModuleActive(SITE_MODULE_KEYS.QUIZ, { force: true }),
         isSiteModuleActive(SITE_MODULE_KEYS.SCHOOL, { force: true }),
         isSiteModuleActive(SITE_MODULE_KEYS.SHOP, { force: true }),
-      ]).then(([quiz, school, shop]) => {
+        isSiteModuleActive(SITE_MODULE_KEYS.DATA_PACK_REBO_THEME_ONE, {
+          force: true,
+        }),
+        isSiteModuleActive(SITE_MODULE_KEYS.NEWS, { force: true }),
+      ]).then(([quiz, school, shop, rebo, news]) => {
         if (cancelled) return;
         setQuizOn(!!quiz);
         setSchoolOn(!!school);
         setShopOn(!!shop);
+        setReboOn(!!rebo);
+        setNewsOn(!!news);
       });
     };
     refresh();
@@ -156,7 +172,11 @@ function ProfilePageInner() {
       <div className={styles.container}>
         <ProfileHeader user={user} variant="job" showJobShortcuts />
 
-        {activeTab !== "quiz" && activeTab !== "shop" && activeTab !== "school" ? (
+        {activeTab !== "quiz" &&
+        activeTab !== "shop" &&
+        activeTab !== "school" &&
+        activeTab !== "rebo" &&
+        activeTab !== "news" ? (
           <ProfileStats
             stats={stats}
             loading={statsLoading}
@@ -191,6 +211,9 @@ function ProfilePageInner() {
           {activeTab === "resume" && (
             <ResumeTab key={`resume-${refreshKey}`} onRefresh={handleRefresh} />
           )}
+          {activeTab === "rebo" && reboOn && (
+            <ReboPackageOrdersPanel key={`rebo-${refreshKey}`} />
+          )}
           {activeTab === "shop" && shopOn && (
             <ShopProfilePanel key={`shop-${refreshKey}`} />
           )}
@@ -199,6 +222,9 @@ function ProfilePageInner() {
           )}
           {activeTab === "school" && schoolOn && (
             <SchoolProfilePanel key={`school-${refreshKey}`} />
+          )}
+          {activeTab === "news" && newsOn && (
+            <NewsContributionsPanel key={`news-${refreshKey}`} />
           )}
         </div>
       </div>

@@ -5,8 +5,8 @@
 .featuresContainer {
   margin: 0.25rem 0 0.5rem;
   padding: 0.5rem 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.04);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  border-top: 1px solid rgba(42, 26, 14, 0.06);
+  border-bottom: 1px solid rgba(42, 26, 14, 0.06);
 }
 
 .featuresContainer.compact {
@@ -17,7 +17,7 @@
 .featuresLabel {
   display: block;
   font-size: 0.6rem;
-  color: #999;
+  color: rgba(42, 26, 14, 0.5);
   margin-bottom: 0.3rem;
   font-family: 'iran', Tahoma, Arial, sans-serif;
 }
@@ -41,46 +41,46 @@
 
 /* حالت فعال (سبز) */
 .featureItem.active {
-  background: rgba(52, 199, 89, 0.1);
-  color: #2ecc71;
+  background: rgba(244, 174, 82, 0.2);
+  color: #d4621a;
 }
 
 .featureItem.active svg {
-  color: #2ecc71;
+  color: #d4621a;
 }
 
 .activeIcon {
-  color: #2ecc71;
+  color: #d4621a;
 }
 
 /* حالت غیرفعال (خاکستری) */
 .featureItem.inactive {
-  background: rgba(0, 0, 0, 0.04);
-  color: #999;
+  background: rgba(42, 26, 14, 0.06);
+  color: rgba(42, 26, 14, 0.5);
   opacity: 0.6;
 }
 
 .featureItem.inactive svg {
-  color: #ccc;
+  color: rgba(42, 26, 14, 0.28);
 }
 
 .inactiveIcon {
-  color: #ccc;
+  color: rgba(42, 26, 14, 0.28);
 }
 
 /* حالت نامشخص (برای کارجوها) */
 .featureItem.unknown {
-  background: rgba(0, 0, 0, 0.02);
-  color: #bbb;
+  background: rgba(42, 26, 14, 0.04);
+  color: rgba(42, 26, 14, 0.35);
   opacity: 0.4;
 }
 
 .featureItem.unknown svg {
-  color: #ddd;
+  color: rgba(42, 26, 14, 0.22);
 }
 
 .unknownIcon {
-  color: #ddd;
+  color: rgba(42, 26, 14, 0.22);
 }
 
 .featureLabel {
@@ -118,8 +118,8 @@
 .featuresContainer {
   margin: 0.25rem 0 0.5rem;
   padding: 0.5rem 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.04);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  border-top: 1px solid rgba(42, 26, 14, 0.06);
+  border-bottom: 1px solid rgba(42, 26, 14, 0.06);
 }
 
 .featuresContainer.compact {
@@ -130,7 +130,7 @@
 .featuresLabel {
   display: block;
   font-size: 0.6rem;
-  color: #999;
+  color: rgba(42, 26, 14, 0.5);
   margin-bottom: 0.3rem;
   font-family: 'iran', Tahoma, Arial, sans-serif;
 }
@@ -154,46 +154,46 @@
 
 /* حالت فعال (سبز) */
 .featureItem.active {
-  background: rgba(52, 199, 89, 0.1);
-  color: #2ecc71;
+  background: rgba(244, 174, 82, 0.2);
+  color: #d4621a;
 }
 
 .featureItem.active svg {
-  color: #2ecc71;
+  color: #d4621a;
 }
 
 .activeIcon {
-  color: #2ecc71;
+  color: #d4621a;
 }
 
 /* حالت غیرفعال (خاکستری) */
 .featureItem.inactive {
-  background: rgba(0, 0, 0, 0.04);
-  color: #999;
+  background: rgba(42, 26, 14, 0.06);
+  color: rgba(42, 26, 14, 0.5);
   opacity: 0.6;
 }
 
 .featureItem.inactive svg {
-  color: #ccc;
+  color: rgba(42, 26, 14, 0.28);
 }
 
 .inactiveIcon {
-  color: #ccc;
+  color: rgba(42, 26, 14, 0.28);
 }
 
 /* حالت نامشخص (برای کارجوها) */
 .featureItem.unknown {
-  background: rgba(0, 0, 0, 0.02);
-  color: #bbb;
+  background: rgba(42, 26, 14, 0.04);
+  color: rgba(42, 26, 14, 0.35);
   opacity: 0.4;
 }
 
 .featureItem.unknown svg {
-  color: #ddd;
+  color: rgba(42, 26, 14, 0.22);
 }
 
 .unknownIcon {
-  color: #ddd;
+  color: rgba(42, 26, 14, 0.22);
 }
 
 .featureLabel {

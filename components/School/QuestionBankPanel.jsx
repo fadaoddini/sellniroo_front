@@ -12,7 +12,21 @@ const DIFF = [
   { v: 'hard', l: 'سخت' },
 ]
 
+const TIME_BY_DIFF = { easy: 30, medium: 60, hard: 120 }
+const TIME_MIN = 10
+const TIME_MAX = 180
+
 const IMG_MAX = 5 * 1024 * 1024
+
+function defaultTimeForDifficulty(diff) {
+  return TIME_BY_DIFF[diff] || TIME_BY_DIFF.medium
+}
+
+function clampTimeSeconds(raw, fallback = 60) {
+  const n = Math.floor(Number(raw))
+  if (!Number.isFinite(n) || n <= 0) return fallback
+  return Math.min(TIME_MAX, Math.max(TIME_MIN, n))
+}
 
 const emptyForm = () => ({
   subject: '',
@@ -23,6 +37,7 @@ const emptyForm = () => ({
   questionImageFile: null,
   clear_question_image: false,
   difficulty: 'medium',
+  time_seconds: defaultTimeForDifficulty('medium'),
   points: 1,
   correct_option_id: 'a',
   options: [
@@ -54,6 +69,7 @@ function questionToForm(q) {
     const next = ids.find((id) => !opts.some((o) => o.id === id)) || `o${opts.length}`
     opts.push({ id: next, text: '', image: '' })
   }
+  const difficulty = q.difficulty || 'medium'
   return {
     subject: q.subject ? String(q.subject) : '',
     chapter: q.chapter ? String(q.chapter) : '',
@@ -62,7 +78,11 @@ function questionToForm(q) {
     question_image_url: q.question_image_url || '',
     questionImageFile: null,
     clear_question_image: false,
-    difficulty: q.difficulty || 'medium',
+    difficulty,
+    time_seconds: clampTimeSeconds(
+      q.time_seconds,
+      defaultTimeForDifficulty(difficulty),
+    ),
     points: q.points ?? 1,
     correct_option_id: String(q.correct_option_id || opts[0]?.id || 'a'),
     options: opts.slice(0, 4),
@@ -159,11 +179,13 @@ export default function QuestionBankPanel({ tree = [], onNotify }) {
 
   const startNew = () => {
     setEditingId(null)
+    const difficulty = filterDiff || 'medium'
     setForm((p) => ({
       ...emptyForm(),
       subject: p.subject || filterSubject || '',
       chapter: p.chapter || filterChapter || '',
-      difficulty: filterDiff || 'medium',
+      difficulty,
+      time_seconds: defaultTimeForDifficulty(difficulty),
     }))
   }
 
@@ -214,6 +236,15 @@ export default function QuestionBankPanel({ tree = [], onNotify }) {
       if (form.lesson) fd.append('lesson', String(form.lesson))
       fd.append('question_text', form.question_text.trim())
       fd.append('difficulty', form.difficulty)
+      fd.append(
+        'time_seconds',
+        String(
+          clampTimeSeconds(
+            form.time_seconds,
+            defaultTimeForDifficulty(form.difficulty),
+          ),
+        ),
+      )
       fd.append('points', String(Number(form.points) || 1))
       fd.append('correct_option_id', form.correct_option_id)
       fd.append('options', JSON.stringify(options))
@@ -245,6 +276,7 @@ export default function QuestionBankPanel({ tree = [], onNotify }) {
           chapter: p.chapter,
           lesson: '',
           difficulty: p.difficulty,
+          time_seconds: defaultTimeForDifficulty(p.difficulty),
         }))
       } else if (res.data) {
         setForm(questionToForm(res.data))
@@ -346,6 +378,7 @@ export default function QuestionBankPanel({ tree = [], onNotify }) {
                   <span className={styles.bankItemMeta}>
                     {q.subject_title}
                     {q.chapter_title ? ` · ${q.chapter_title}` : ''}
+                    {` · ${Number(q.time_seconds) || defaultTimeForDifficulty(q.difficulty)}ث`}
                     {q.hint_text || q.hint_image_url ? ' · راهنما' : ''}
                     {q.explanation_text || q.explanation_image_url ? ' · تشریحی' : ''}
                   </span>
@@ -415,9 +448,77 @@ export default function QuestionBankPanel({ tree = [], onNotify }) {
               </div>
               <div className={styles.field}>
                 <label>درجه سختی</label>
-                <select value={form.difficulty} onChange={(e) => setForm((p) => ({ ...p, difficulty: e.target.value }))}>
+                <select
+                  value={form.difficulty}
+                  onChange={(e) => {
+                    const difficulty = e.target.value
+                    setForm((p) => {
+                      const prevDefault = defaultTimeForDifficulty(p.difficulty)
+                      const nextDefault = defaultTimeForDifficulty(difficulty)
+                      const custom =
+                        Number(p.time_seconds) !== prevDefault
+                      return {
+                        ...p,
+                        difficulty,
+                        time_seconds: custom ? p.time_seconds : nextDefault,
+                      }
+                    })
+                  }}
+                >
                   {DIFF.map((d) => <option key={d.v} value={d.v}>{d.l}</option>)}
                 </select>
+              </div>
+            </div>
+
+            <div className={styles.formRow}>
+              <div className={styles.field}>
+                <label>زمان پاسخ (ثانیه)</label>
+                <p className={styles.fieldHint}>
+                  پیش‌فرض بر اساس سختی: آسان ۳۰ · متوسط ۶۰ · سخت ۱۲۰ (حداقل ۱۰)
+                </p>
+                <input
+                  type="number"
+                  min={TIME_MIN}
+                  max={TIME_MAX}
+                  value={form.time_seconds}
+                  onChange={(e) =>
+                    setForm((p) => ({
+                      ...p,
+                      time_seconds: e.target.value,
+                    }))
+                  }
+                  onBlur={() =>
+                    setForm((p) => ({
+                      ...p,
+                      time_seconds: clampTimeSeconds(
+                        p.time_seconds,
+                        defaultTimeForDifficulty(p.difficulty),
+                      ),
+                    }))
+                  }
+                />
+              </div>
+              <div className={styles.field}>
+                <label>میانبر زمان</label>
+                <p className={styles.fieldHint}>انتخاب سریع پیش‌فرض سطح سختی</p>
+                <div className={styles.bankTimePresets}>
+                  {DIFF.map((d) => {
+                    const sec = defaultTimeForDifficulty(d.v)
+                    const on = Number(form.time_seconds) === sec
+                    return (
+                      <button
+                        key={d.v}
+                        type="button"
+                        className={`${styles.bankTimePreset} ${on ? styles.bankTimePresetOn : ''}`}
+                        onClick={() =>
+                          setForm((p) => ({ ...p, time_seconds: sec }))
+                        }
+                      >
+                        {d.l} · {sec}ث
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
             </div>
 

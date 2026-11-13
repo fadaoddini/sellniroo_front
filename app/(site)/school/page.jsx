@@ -1,15 +1,15 @@
 import SchoolSlot from '@/components/modules/SchoolSlot'
-import SchoolHub from '@/components/School/SchoolHub'
+import ModulePageShell from '@/components/layout/ModulePageShell'
 
 export const metadata = {
   title: 'مدرسه | سلنیرو',
-  description: 'داشبورد معلم، دانش‌آموز و مدیریت مدرسه',
+  description: 'سامانه یکپارچه مدرسه — کارنامه، مشاور، معلم و دانش‌آموز',
 }
 
 export default function SchoolPage() {
   return (
     <SchoolSlot>
-      <SchoolHub />
+      <ModulePageShell pageKey="school" />
     </SchoolSlot>
   )
 }

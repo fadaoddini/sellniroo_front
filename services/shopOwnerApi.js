@@ -134,10 +134,33 @@ const shopOwnerApi = {
     }).then(parse)
   },
 
-  listCategories() {
-    return fetch(Config.endpoints.shop.ownerCategories(), {
+  listCategories(params = {}) {
+    return fetch(Config.endpoints.shop.ownerCategories(params), {
       headers: authHeaders(),
       cache: 'no-store',
+    }).then(parse)
+  },
+
+  createCategory(payload) {
+    return fetch(Config.endpoints.shop.ownerCategories(), {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify(payload),
+    }).then(parse)
+  },
+
+  updateCategory(id, payload) {
+    return fetch(Config.endpoints.shop.ownerCategoryDetail(id), {
+      method: 'PATCH',
+      headers: authHeaders(),
+      body: JSON.stringify(payload),
+    }).then(parse)
+  },
+
+  deleteCategory(id) {
+    return fetch(Config.endpoints.shop.ownerCategoryDetail(id), {
+      method: 'DELETE',
+      headers: authHeaders(),
     }).then(parse)
   },
 

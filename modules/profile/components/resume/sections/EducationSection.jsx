@@ -7,6 +7,7 @@ import Config from "@/config/config";
 import { useAuth } from "@/contexts/AuthContext";
 import styles from "../ResumeForm.module.css";
 import PersianDatePicker from "@/components/common/PersianDatePicker";
+import FieldSelect from "../FieldSelect";
 import {
   Plus, Trash2, Edit2, Check, X, Loader2, GraduationCap,
 } from "lucide-react";
@@ -146,13 +147,17 @@ const EducationSection = ({ resume, onRefresh }) => {
   };
 
   return (
-    <div className={styles.sectionWrapper}>
+    <div className={`${styles.sectionWrapper} ${styles.miniPanel}`}>
       <div className={styles.sectionHeader}>
         <h3>تحصیلات</h3>
         {!showForm && (
-          <button type="button" className={styles.addBtn} onClick={() => setShowForm(true)}>
-            <Plus size={14} />
-            افزودن تحصیلات
+          <button
+            type="button"
+            className={styles.addBtn}
+            onClick={() => setShowForm(true)}
+          >
+            <Plus size={13} strokeWidth={2.4} />
+            افزودن
           </button>
         )}
       </div>
@@ -162,19 +167,38 @@ const EducationSection = ({ resume, onRefresh }) => {
           {items.map((item) => (
             <div key={item.id} className={styles.listItem}>
               <div className={styles.listItemContent}>
-                <h4>{item.degree_display} {item.field_of_study}</h4>
-                <p>{item.institution}</p>
+                <div className={styles.miniItemMain}>
+                  <h4>
+                    {item.degree_display} {item.field_of_study}
+                  </h4>
+                  <span className={styles.miniDot} aria-hidden>
+                    ·
+                  </span>
+                  <p>{item.institution}</p>
+                </div>
                 <span className={styles.listItemDate}>
-                  {moment(item.start_date).format("jYYYY/jMM")} -{" "}
-                  {item.is_current ? "در حال تحصیل" : moment(item.end_date).format("jYYYY/jMM")}
+                  {moment(item.start_date).format("jYYYY/jMM")}
+                  {" – "}
+                  {item.is_current
+                    ? "در حال تحصیل"
+                    : moment(item.end_date).format("jYYYY/jMM")}
                 </span>
               </div>
               <div className={styles.listItemActions}>
-                <button type="button" onClick={() => handleEdit(item)}>
-                  <Edit2 size={14} />
+                <button
+                  type="button"
+                  onClick={() => handleEdit(item)}
+                  aria-label="ویرایش"
+                >
+                  <Edit2 size={12} strokeWidth={2.2} />
                 </button>
-                <button type="button" onClick={() => handleDelete(item.id)} className={styles.deleteBtn}>
-                  <Trash2 size={14} />
+                <button
+                  type="button"
+                  onClick={() => handleDelete(item.id)}
+                  className={styles.deleteBtn}
+                  aria-label="حذف"
+                >
+                  <Trash2 size={12} strokeWidth={2.2} />
                 </button>
               </div>
             </div>
@@ -184,52 +208,45 @@ const EducationSection = ({ resume, onRefresh }) => {
 
       {showForm && (
         <div className={styles.subForm}>
-          <div className={styles.row}>
-            <div className={styles.formGroup}>
-              <label>مقطع *</label>
-              <select
-                value={formData.degree}
-                onChange={(e) => setFormData({ ...formData, degree: e.target.value })}
-              >
-                {DEGREES.map((d) => (
-                  <option key={d.value} value={d.value}>{d.label}</option>
-                ))}
-              </select>
-            </div>
+          <div className={styles.grid3}>
+            <FieldSelect
+              label="مقطع *"
+              value={formData.degree}
+              onChange={(v) => setFormData({ ...formData, degree: v })}
+              options={DEGREES}
+              placeholder="انتخاب مقطع"
+            />
             <div className={styles.formGroup}>
               <label>رشته تحصیلی *</label>
               <input
                 type="text"
                 value={formData.field_of_study}
-                onChange={(e) => setFormData({ ...formData, field_of_study: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, field_of_study: e.target.value })
+                }
+                placeholder="مثلاً مهندسی کامپیوتر"
               />
             </div>
-          </div>
-
-          <div className={styles.row}>
             <div className={styles.formGroup}>
               <label>دانشگاه/موسسه *</label>
               <input
                 type="text"
                 value={formData.institution}
-                onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, institution: e.target.value })
+                }
+                placeholder="نام دانشگاه"
               />
             </div>
-            <div className={styles.formGroup}>
-              <label>شهر</label>
-              <select
-                value={formData.city}
-                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-              >
-                <option value="">انتخاب کنید</option>
-                {cities.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className={styles.row}>
+            <FieldSelect
+              label="شهر"
+              value={formData.city}
+              onChange={(v) => setFormData({ ...formData, city: v })}
+              options={cities.map((c) => ({ value: c.id, label: c.name }))}
+              placeholder="انتخاب شهر"
+              searchable
+              allowClear
+            />
             <div className={styles.formGroup}>
               <label>تاریخ شروع *</label>
               <PersianDatePicker
@@ -237,7 +254,7 @@ const EducationSection = ({ resume, onRefresh }) => {
                 onChange={(date) =>
                   setFormData({ ...formData, start_date: date || "" })
                 }
-                placeholder="تاریخ شروع"
+                placeholder="شروع"
               />
             </div>
             <div className={styles.formGroup}>
@@ -248,31 +265,32 @@ const EducationSection = ({ resume, onRefresh }) => {
                   setFormData({ ...formData, end_date: date || "" })
                 }
                 disabled={formData.is_current}
-                placeholder="تاریخ پایان"
+                placeholder="پایان"
               />
-            </div>
-          </div>
-
-          <div className={styles.row}>
-            <div className={styles.formGroup}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={formData.is_current}
-                  onChange={(e) => setFormData({ ...formData, is_current: e.target.checked })}
-                />
-                {" "}در حال تحصیل
-              </label>
             </div>
             <div className={styles.formGroup}>
               <label>معدل</label>
               <input
                 type="text"
                 value={formData.gpa}
-                onChange={(e) => setFormData({ ...formData, gpa: e.target.value })}
-                placeholder="مثلاً: 17.5"
+                onChange={(e) =>
+                  setFormData({ ...formData, gpa: e.target.value })
+                }
+                placeholder="۱۷.۵"
                 dir="ltr"
               />
+            </div>
+            <div className={`${styles.formGroup} ${styles.miniCheckGroup}`}>
+              <label className={styles.miniCheck}>
+                <input
+                  type="checkbox"
+                  checked={formData.is_current}
+                  onChange={(e) =>
+                    setFormData({ ...formData, is_current: e.target.checked })
+                  }
+                />
+                در حال تحصیل
+              </label>
             </div>
           </div>
 
@@ -280,10 +298,19 @@ const EducationSection = ({ resume, onRefresh }) => {
 
           <div className={styles.subFormActions}>
             <button type="button" onClick={handleCancel} disabled={saving}>
-              <X size={14} /> لغو
+              <X size={13} /> لغو
             </button>
-            <button type="button" className={styles.saveBtn} onClick={handleSave} disabled={saving}>
-              {saving ? <Loader2 size={14} className={styles.spin} /> : <Check size={14} />}
+            <button
+              type="button"
+              className={styles.saveBtn}
+              onClick={handleSave}
+              disabled={saving}
+            >
+              {saving ? (
+                <Loader2 size={13} className={styles.spin} />
+              ) : (
+                <Check size={13} />
+              )}
               {editingId ? "بروزرسانی" : "افزودن"}
             </button>
           </div>
@@ -292,8 +319,8 @@ const EducationSection = ({ resume, onRefresh }) => {
 
       {items.length === 0 && !showForm && (
         <div className={styles.emptyBox}>
-          <GraduationCap size={32} />
-          <p>هنوز تحصیلاتی اضافه نکرده‌اید</p>
+          <GraduationCap size={22} strokeWidth={1.6} />
+          <p>تحصیلاتی ثبت نشده</p>
         </div>
       )}
     </div>

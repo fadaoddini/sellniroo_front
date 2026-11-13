@@ -3,184 +3,293 @@
 
 import { useState } from "react";
 import styles from "./TemplateSelector.module.css";
-import ModernTemplate from "./templates/ModernTemplate";
-import ClassicTemplate from "./templates/ClassicTemplate";
-import MinimalTemplate from "./templates/MinimalTemplate";
-import CreativeTemplate from "./templates/CreativeTemplate";
-import ExecutiveTemplate from "./templates/ExecutiveTemplate";
-import { Check, Eye, X } from "lucide-react";
+import { Check, Eye, X, LayoutTemplate } from "lucide-react";
 
 const TEMPLATES = [
   {
     key: "modern",
     name: "مدرن و حرفه‌ای",
-    description: "دو ستونی، رنگی، سایدبار",
+    description: "دو ستونی با سایدبار رنگی",
     bestFor: "مهندس، برنامه‌نویس، طراح",
-    component: ModernTemplate,
-    color: "#c27800",
+    color: "#D4621A",
+    skeleton: "modern",
   },
   {
     key: "classic",
     name: "کلاسیک و شیک",
-    description: "تک ستونی، رسمی، ATS-friendly",
+    description: "تک ستونی، رسمی و ATS-friendly",
     bestFor: "فروش، بانک، اداری",
-    component: ClassicTemplate,
-    color: "#3a2a00",
+    color: "#2A1A0E",
+    skeleton: "classic",
   },
   {
     key: "minimal",
     name: "مینیمال",
-    description: "ساده، تمیز، بدون رنگ اضافی",
+    description: "ساده، تمیز، بدون رنگ اضافه",
     bestFor: "همه‌کاره، مدرن",
-    component: MinimalTemplate,
-    color: "#6f675c",
+    color: "#6B5344",
+    skeleton: "minimal",
   },
   {
     key: "creative",
     name: "خلاقانه",
-    description: "گرادیانت، رنگی، بولد",
+    description: "گرادیانت و ساختار بولد",
     bestFor: "طراح، بازاریاب، محتوا",
-    component: CreativeTemplate,
-    color: "#fb9700",
+    color: "#D4621A",
+    skeleton: "creative",
   },
   {
     key: "executive",
     name: "مدیریتی",
-    description: "شیک، تیره، حرفه‌ای",
+    description: "شیک، تیره و حرفه‌ای",
     bestFor: "مدیر، C-level، مشاور",
-    component: ExecutiveTemplate,
-    color: "#2a241c",
+    color: "#2A1A0E",
+    skeleton: "executive",
   },
 ];
 
-const TemplateSelector = ({ value, onChange, resumeData }) => {
-  const [previewTemplate, setPreviewTemplate] = useState(null);
+function SkeletonPreview({ type, color }) {
+  return (
+    <div
+      className={`${styles.skel} ${styles[`skel_${type}`] || ""}`}
+      style={{ "--skel-accent": color }}
+      aria-hidden
+    >
+      {type === "modern" ? (
+        <>
+          <div className={styles.skelSidebar}>
+            <span className={styles.skelAvatar} />
+            <span className={styles.skelLine} />
+            <span className={styles.skelLineSm} />
+            <span className={styles.skelBlock} />
+            <span className={styles.skelBlock} />
+          </div>
+          <div className={styles.skelMain}>
+            <span className={styles.skelTitle} />
+            <span className={styles.skelLine} />
+            <span className={styles.skelLine} />
+            <span className={styles.skelSection} />
+            <span className={styles.skelLine} />
+            <span className={styles.skelLineSm} />
+            <span className={styles.skelSection} />
+            <span className={styles.skelLine} />
+            <span className={styles.skelLineSm} />
+          </div>
+        </>
+      ) : null}
 
-  const handleSelect = (templateKey) => {
-    onChange(templateKey);
-  };
+      {type === "classic" ? (
+        <>
+          <div className={styles.skelClassicHead}>
+            <span className={styles.skelTitleWide} />
+            <span className={styles.skelLineSm} />
+          </div>
+          <span className={styles.skelRule} />
+          <span className={styles.skelSection} />
+          <span className={styles.skelLine} />
+          <span className={styles.skelLine} />
+          <span className={styles.skelLineSm} />
+          <span className={styles.skelSection} />
+          <span className={styles.skelLine} />
+          <span className={styles.skelLineSm} />
+          <span className={styles.skelSection} />
+          <span className={styles.skelLine} />
+          <span className={styles.skelLineSm} />
+        </>
+      ) : null}
+
+      {type === "minimal" ? (
+        <>
+          <span className={styles.skelTitleWide} />
+          <span className={styles.skelLineSm} />
+          <span className={styles.skelGap} />
+          <span className={styles.skelLine} />
+          <span className={styles.skelLine} />
+          <span className={styles.skelLineSm} />
+          <span className={styles.skelGap} />
+          <span className={styles.skelLine} />
+          <span className={styles.skelLineSm} />
+          <span className={styles.skelGap} />
+          <div className={styles.skelChips}>
+            <span />
+            <span />
+            <span />
+          </div>
+        </>
+      ) : null}
+
+      {type === "creative" ? (
+        <>
+          <div className={styles.skelCreativeBanner}>
+            <span className={styles.skelAvatarLight} />
+            <div>
+              <span className={styles.skelTitleLight} />
+              <span className={styles.skelLineLight} />
+            </div>
+          </div>
+          <div className={styles.skelCreativeBody}>
+            <span className={styles.skelSection} />
+            <span className={styles.skelLine} />
+            <span className={styles.skelLineSm} />
+            <span className={styles.skelSection} />
+            <span className={styles.skelLine} />
+            <span className={styles.skelLineSm} />
+          </div>
+        </>
+      ) : null}
+
+      {type === "executive" ? (
+        <>
+          <div className={styles.skelExecTop}>
+            <span className={styles.skelTitleLight} />
+            <span className={styles.skelLineLight} />
+          </div>
+          <div className={styles.skelExecBody}>
+            <span className={styles.skelSection} />
+            <span className={styles.skelLine} />
+            <span className={styles.skelLine} />
+            <span className={styles.skelSection} />
+            <span className={styles.skelLine} />
+            <span className={styles.skelLineSm} />
+            <div className={styles.skelTwoCol}>
+              <span className={styles.skelBlock} />
+              <span className={styles.skelBlock} />
+            </div>
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+const TemplateSelector = ({ value, onChange }) => {
+  const [previewKey, setPreviewKey] = useState(null);
+  const previewTpl = TEMPLATES.find((t) => t.key === previewKey);
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
-        <h3>انتخاب قالب رزومه</h3>
-        <p className={styles.subtitle}>
-          یک قالب انتخاب کنید. می‌توانید پیش‌نمایش رو ببینید و بعد انتخاب کنید.
-        </p>
+        <div className={styles.headerIcon}>
+          <LayoutTemplate size={16} strokeWidth={2.2} />
+        </div>
+        <div>
+          <h3>انتخاب قالب رزومه</h3>
+          <p className={styles.subtitle}>
+            اسکلت هر قالب را ببینید و مناسب‌ترین سبک را انتخاب کنید.
+          </p>
+        </div>
       </div>
 
       <div className={styles.grid}>
         {TEMPLATES.map((tpl) => {
           const isActive = value === tpl.key;
-          const PreviewComponent = tpl.component;
-
           return (
-            <div
+            <button
               key={tpl.key}
+              type="button"
               className={`${styles.card} ${isActive ? styles.activeCard : ""}`}
               style={{ "--tpl-color": tpl.color }}
+              onClick={() => onChange(tpl.key)}
+              aria-pressed={isActive}
             >
-              {/* پیش‌نمایش کوچک */}
               <div className={styles.thumbWrapper}>
-                <div className={styles.thumbInner}>
-                  <PreviewComponent resume={resumeData || {}} />
-                </div>
+                <SkeletonPreview type={tpl.skeleton} color={tpl.color} />
 
-                {/* Overlay */}
                 <div className={styles.overlay}>
-                  <button
-                    type="button"
+                  <span
                     className={styles.previewBtn}
+                    role="button"
+                    tabIndex={0}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setPreviewTemplate(tpl.key);
+                      setPreviewKey(tpl.key);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setPreviewKey(tpl.key);
+                      }
                     }}
                   >
-                    <Eye size={14} />
-                    پیش‌نمایش
-                  </button>
+                    <Eye size={13} strokeWidth={2.2} />
+                    بزرگ‌نمایی
+                  </span>
                 </div>
 
-                {/* Badge انتخاب شده */}
-                {isActive && (
+                {isActive ? (
                   <div className={styles.selectedBadge}>
-                    <Check size={14} />
-                    انتخاب شده
+                    <Check size={12} strokeWidth={2.5} />
+                    انتخاب‌شده
                   </div>
-                )}
+                ) : null}
               </div>
 
-              {/* اطلاعات */}
               <div className={styles.info}>
                 <h4 className={styles.name}>{tpl.name}</h4>
                 <p className={styles.description}>{tpl.description}</p>
-                <span className={styles.bestFor}>مناسب برای: {tpl.bestFor}</span>
+                <span className={styles.bestFor}>{tpl.bestFor}</span>
               </div>
 
-              {/* دکمه انتخاب */}
-              <button
-                type="button"
+              <span
                 className={`${styles.selectBtn} ${
                   isActive ? styles.selectBtnActive : ""
                 }`}
-                onClick={() => handleSelect(tpl.key)}
               >
                 {isActive ? (
                   <>
-                    <Check size={14} />
+                    <Check size={13} strokeWidth={2.4} />
                     انتخاب شده
                   </>
                 ) : (
-                  "انتخاب این قالب"
+                  "انتخاب قالب"
                 )}
-              </button>
-            </div>
+              </span>
+            </button>
           );
         })}
       </div>
 
-      {/* مودال پیش‌نمایش بزرگ */}
-      {previewTemplate && (
+      {previewTpl ? (
         <div
           className={styles.modalOverlay}
-          onClick={() => setPreviewTemplate(null)}
+          onClick={() => setPreviewKey(null)}
+          role="presentation"
         >
           <div
             className={styles.modal}
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="tpl-preview-title"
           >
             <div className={styles.modalHeader}>
-              <h3>
-                پیش‌نمایش:{" "}
-                {TEMPLATES.find((t) => t.key === previewTemplate)?.name}
-              </h3>
+              <h3 id="tpl-preview-title">اسکلت قالب: {previewTpl.name}</h3>
               <button
                 type="button"
                 className={styles.closeBtn}
-                onClick={() => setPreviewTemplate(null)}
+                onClick={() => setPreviewKey(null)}
+                aria-label="بستن"
               >
-                <X size={18} />
+                <X size={16} strokeWidth={2.2} />
               </button>
             </div>
 
             <div className={styles.modalBody}>
               <div className={styles.modalPreview}>
-                {(() => {
-                  const PreviewComp = TEMPLATES.find(
-                    (t) => t.key === previewTemplate
-                  )?.component;
-                  return PreviewComp ? (
-                    <PreviewComp resume={resumeData || {}} />
-                  ) : null;
-                })()}
+                <SkeletonPreview
+                  type={previewTpl.skeleton}
+                  color={previewTpl.color}
+                />
               </div>
+              <p className={styles.modalHint}>{previewTpl.description}</p>
             </div>
 
             <div className={styles.modalFooter}>
               <button
                 type="button"
                 className={styles.cancelBtn}
-                onClick={() => setPreviewTemplate(null)}
+                onClick={() => setPreviewKey(null)}
               >
                 بستن
               </button>
@@ -188,17 +297,17 @@ const TemplateSelector = ({ value, onChange, resumeData }) => {
                 type="button"
                 className={styles.confirmBtn}
                 onClick={() => {
-                  handleSelect(previewTemplate);
-                  setPreviewTemplate(null);
+                  onChange(previewTpl.key);
+                  setPreviewKey(null);
                 }}
               >
-                <Check size={14} />
+                <Check size={14} strokeWidth={2.3} />
                 انتخاب این قالب
               </button>
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 };

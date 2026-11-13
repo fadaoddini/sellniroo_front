@@ -9,12 +9,16 @@
 
 .inner {
   width: 100%;
-  max-width: var(--jb-max, 1200px);
+  max-width: var(--jb-max, var(--home-max-width, 1200px));
   margin-inline: auto;
+  box-sizing: border-box;
 }
 
+/* تمام‌عرض سکشن: پر کردن ستون — هنوز با --home-max-width سقف می‌خورد مگر صریح none */
 .shell[data-section-full='1'] .inner {
-  max-width: none;
+  max-width: var(--jb-max, var(--home-max-width, 1200px));
+  width: 100%;
+  margin-inline: auto;
 }
 
 .head {
@@ -30,14 +34,14 @@
   margin: 0;
   font-size: 1.15rem;
   font-weight: 800;
-  color: #1c1917;
+  color: #2A1A0E;
   font-family: var(--font-iran-bold, var(--font-iran, sans-serif));
 }
 
 .more {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #c27800;
+  color: #D4621A;
   text-decoration: none;
 }
 
@@ -86,55 +90,227 @@
   }
 }
 
-/* جستجو */
+/* جستجو — پالت #FEF3E2 · #F4AE52 · #D4621A · #2A1A0E */
 .searchForm {
+  --jb-search-cream: #fef3e2;
+  --jb-search-mid: #f4ae52;
+  --jb-search-accent: #d4621a;
+  --jb-search-accent-soft: rgba(212, 98, 26, 0.14);
+  --jb-search-ink: #2a1a0e;
+  --jb-search-muted: rgba(42, 26, 14, 0.55);
+
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.45rem;
   align-items: stretch;
-  background: #fff;
-  border: 1px solid rgba(28, 25, 23, 0.1);
-  border-radius: 14px;
-  padding: 0.45rem;
-  box-shadow: 0 8px 24px rgba(28, 25, 23, 0.05);
+  background: linear-gradient(180deg, #ffffff 0%, var(--jb-search-cream) 100%);
+  border: 1px solid rgba(42, 26, 14, 0.1);
+  border-radius: 18px;
+  padding: 0.4rem;
+  box-shadow:
+    0 10px 28px rgba(42, 26, 14, 0.07),
+    0 1px 0 rgba(255, 255, 255, 0.9) inset;
+  font-family: var(--jb-ff, var(--font-iran, Tahoma, sans-serif));
+  font-size: var(--jb-fs, 14px);
+  transition: box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.searchForm:focus-within {
+  border-color: rgba(244, 174, 82, 0.65);
+  box-shadow:
+    0 14px 36px rgba(212, 98, 26, 0.12),
+    0 0 0 3px var(--jb-search-accent-soft);
+}
+
+.cityTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex: 0 1 auto;
+  min-width: 7.5rem;
+  max-width: 11rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid rgba(42, 26, 14, 0.1);
+  border-radius: 13px;
+  background: var(--jb-search-cream);
+  color: var(--jb-search-muted);
+  font: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    transform 0.15s ease;
+}
+
+.cityTrigger:hover {
+  background: #fff8ec;
+  border-color: rgba(244, 174, 82, 0.55);
+  color: var(--jb-search-ink);
+}
+
+.cityTrigger:active {
+  transform: scale(0.985);
+}
+
+.cityTriggerActive {
+  background: var(--jb-search-accent-soft);
+  border-color: rgba(212, 98, 26, 0.4);
+  color: var(--jb-search-accent);
+  font-weight: 700;
+}
+
+.cityIconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 9px;
+  background: linear-gradient(145deg, var(--jb-search-mid), var(--jb-search-accent));
+  color: #fef3e2;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(212, 98, 26, 0.28);
+}
+
+.cityTriggerText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+  line-height: 1.3;
+}
+
+.cityChevron {
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: transform 0.2s ease;
+}
+
+.cityClear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  background: rgba(28, 25, 23, 0.08);
+  color: var(--jb-search-muted);
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.cityClear:hover {
+  background: rgba(212, 98, 26, 0.2);
+  color: var(--jb-search-accent);
+}
+
+.searchField {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.searchFieldIcon {
+  position: absolute;
+  right: 0.85rem;
+  color: #a8a29e;
+  pointer-events: none;
+  transition: color 0.18s ease;
+}
+
+.searchForm:focus-within .searchFieldIcon {
+  color: var(--jb-search-accent);
 }
 
 .searchInput {
-  flex: 1 1 180px;
+  width: 100%;
   min-width: 0;
   border: none;
   outline: none;
-  padding: 0.65rem 0.85rem;
+  padding: 0.7rem 2.5rem 0.7rem 0.85rem;
   font: inherit;
-  font-size: 0.9rem;
+  font-size: inherit;
   background: transparent;
+  color: var(--jb-search-ink);
+  border-radius: 13px;
 }
 
-.citySelect {
-  flex: 0 1 140px;
-  border: 1px solid rgba(28, 25, 23, 0.08);
-  border-radius: 10px;
-  padding: 0.45rem 0.65rem;
-  font: inherit;
-  font-size: 0.82rem;
-  background: #fafaf9;
+.searchInput::placeholder {
+  color: #a8a29e;
+}
+
+.searchInput::-webkit-search-decoration,
+.searchInput::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .searchBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   flex: 0 0 auto;
   border: none;
-  border-radius: 10px;
-  padding: 0.65rem 1.1rem;
-  font: inherit;
+  border-radius: 13px;
+  padding: 0.7rem 1.15rem;
+  font-family: var(--jb-btn-ff, var(--jb-ff, inherit));
+  font-size: var(--jb-btn-fs, 13px);
   font-weight: 750;
-  font-size: 0.82rem;
-  background: #1c1917;
-  color: #fafaf9;
+  letter-spacing: -0.01em;
+  background: linear-gradient(
+    135deg,
+    var(--jb-search-mid) 0%,
+    var(--jb-search-accent) 55%,
+    #b45309 100%
+  );
+  color: #fef3e2;
   cursor: pointer;
+  box-shadow:
+    0 8px 18px rgba(212, 98, 26, 0.32),
+    0 1px 0 rgba(254, 243, 226, 0.28) inset;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
 }
 
 .searchBtn:hover {
-  background: #44403c;
+  filter: brightness(1.05);
+  box-shadow:
+    0 10px 22px rgba(212, 98, 26, 0.4),
+    0 1px 0 rgba(254, 243, 226, 0.32) inset;
+}
+
+.searchBtn:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+@media (max-width: 560px) {
+  .searchForm {
+    padding: 0.35rem;
+    border-radius: 16px;
+  }
+
+  .cityTrigger {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+
+  .searchField {
+    flex: 1 1 auto;
+  }
+
+  .searchBtn {
+    flex: 0 0 auto;
+    padding-inline: 0.95rem;
+  }
 }
 
 /* دسته‌ها / شرکت / رزومه / آمار */
@@ -205,7 +381,7 @@
 .catCard:hover,
 .companyCard:hover,
 .resumeCard:hover {
-  border-color: rgba(230, 126, 34, 0.35);
+  border-color: rgba(212, 98, 26, 0.35);
   background: #fff;
   box-shadow: 0 6px 16px rgba(28, 25, 23, 0.06);
 }
@@ -225,8 +401,8 @@
   height: 34px;
   flex-shrink: 0;
   border-radius: 10px;
-  background: rgba(230, 126, 34, 0.1);
-  color: #e67e22;
+  background: rgba(212, 98, 26, 0.1);
+  color: #D4621A;
 }
 
 .cardBody {
@@ -242,7 +418,7 @@
 .resumeName {
   font-weight: 750;
   font-size: 0.84rem;
-  color: #1c1917;
+  color: #2A1A0E;
   line-height: 1.35;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -268,8 +444,8 @@
   width: 22px;
   height: 22px;
   border-radius: 999px;
-  background: rgba(3, 105, 161, 0.1);
-  color: #0369a1;
+  background: rgba(31, 107, 150, 0.12);
+  color: #1f6b96;
 }
 
 .quickRow {
@@ -309,7 +485,7 @@
   padding: 0.75rem 0.7rem;
   border-radius: 12px;
   background: linear-gradient(165deg, #fff8ef 0%, #fff 70%);
-  border: 1px solid rgba(230, 126, 34, 0.16);
+  border: 1px solid rgba(212, 98, 26, 0.16);
   min-width: 0;
 }
 
@@ -317,7 +493,7 @@
   display: block;
   font-size: 1.2rem;
   font-weight: 800;
-  color: #1c1917;
+  color: #2A1A0E;
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
   font-family: var(--font-iran-bold, var(--font-iran, sans-serif));

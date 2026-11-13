@@ -34,7 +34,7 @@ import {
 import { SITE_MODULE_KEYS } from '@/config/siteModules'
 import styles from '../news-list/NewsListAdmin.module.css'
 
-function toHexForPicker(value, fallback = '#e67e22') {
+function toHexForPicker(value, fallback = '#D4621A') {
   const v = String(value || '').trim()
   if (/^#[0-9a-fA-F]{6}$/.test(v)) return v
   if (/^#[0-9a-fA-F]{3}$/.test(v)) {

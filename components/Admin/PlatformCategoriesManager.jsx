@@ -2,6 +2,8 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
+  ArrowDown,
+  ArrowUp,
   Check,
   ChevronDown,
   ChevronLeft,
@@ -27,7 +29,7 @@ import {
   getCategoryPath,
   getChildren,
   isLeafCategory,
-} from '@/app/(site)/shop-panel/categoryTree'
+} from '@/components/Shop/owner/categoryTree'
 import GuidedTour, { useGuidedTour } from '@/components/Admin/GuidedTour'
 import styles from '@/app/(admin)/admincategories/AdminCategories.module.css'
 
@@ -94,11 +96,21 @@ function TreeNode({
   selectedId,
   onSelect,
   matchIds,
+  onMove,
+  onToggleStatus,
+  busyId,
 }) {
   const kids = getChildren(childrenOf, cat.id).filter((c) =>
     matchIds ? matchIds.has(String(c.id)) : true,
   )
   const rawKids = getChildren(childrenOf, cat.id)
+  const siblings = getChildren(
+    childrenOf,
+    cat.parent == null || cat.parent === '' ? null : cat.parent,
+  )
+  const sibIndex = siblings.findIndex((c) => String(c.id) === String(cat.id))
+  const canUp = sibIndex > 0
+  const canDown = sibIndex >= 0 && sibIndex < siblings.length - 1
   const hasKids = rawKids.length > 0
   const open = expanded.has(String(cat.id))
   const leaf = isLeafCategory(cat, childrenOf)
@@ -107,6 +119,7 @@ function TreeNode({
     cat.active_products_count ?? cat.products_count ?? 0,
   )
   const inactive = cat.status === 'inactive'
+  const rowBusy = String(busyId) === String(cat.id)
 
   return (
     <div>
@@ -152,6 +165,43 @@ function TreeNode({
             {inactive ? ' · غیرفعال' : ''}
           </span>
         </span>
+        <span className={styles.treeActions} onClick={(e) => e.stopPropagation()}>
+          <button
+            type="button"
+            className={styles.treeIconBtn}
+            title="بالاتر"
+            disabled={!canUp || rowBusy}
+            onClick={() => onMove?.(cat, -1)}
+          >
+            <ArrowUp size={13} />
+          </button>
+          <button
+            type="button"
+            className={styles.treeIconBtn}
+            title="پایین‌تر"
+            disabled={!canDown || rowBusy}
+            onClick={() => onMove?.(cat, 1)}
+          >
+            <ArrowDown size={13} />
+          </button>
+          <button
+            type="button"
+            className={`${styles.treeIconBtn} ${
+              inactive ? styles.treeIconBtnOn : styles.treeIconBtnWarn
+            }`}
+            title={inactive ? 'فعال‌سازی' : 'غیرفعال‌سازی'}
+            disabled={rowBusy}
+            onClick={() => onToggleStatus?.(cat)}
+          >
+            {rowBusy ? (
+              <Loader2 size={13} className={styles.spin} />
+            ) : inactive ? (
+              <Power size={13} />
+            ) : (
+              <PowerOff size={13} />
+            )}
+          </button>
+        </span>
         {inactive ? (
           <span className={styles.badgeOff}>خاموش</span>
         ) : leaf ? (
@@ -170,6 +220,9 @@ function TreeNode({
               selectedId={selectedId}
               onSelect={onSelect}
               matchIds={matchIds}
+              onMove={onMove}
+              onToggleStatus={onToggleStatus}
+              busyId={busyId}
             />
           ))
         : null}
@@ -354,6 +407,7 @@ export default function PlatformCategoriesManager({
 }) {
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
+  const [rowBusyId, setRowBusyId] = useState(null)
   const [error, setError] = useState('')
   const [msg, setMsg] = useState('')
   const [categories, setCategories] = useState([])
@@ -577,6 +631,58 @@ export default function PlatformCategoriesManager({
       setError(err?.message || err?.error || 'خطا در تغییر وضعیت')
     } finally {
       setBusy(false)
+    }
+  }
+
+  const moveCategory = async (cat, delta) => {
+    if (!cat?.id || !delta) return
+    const parentId =
+      cat.parent == null || cat.parent === '' ? null : cat.parent
+    const siblings = getChildren(childrenOf, parentId).map((c) => c.id)
+    const idx = siblings.findIndex((id) => String(id) === String(cat.id))
+    const next = idx + delta
+    if (idx < 0 || next < 0 || next >= siblings.length) return
+    const ordered = [...siblings]
+    const [item] = ordered.splice(idx, 1)
+    ordered.splice(next, 0, item)
+    setRowBusyId(cat.id)
+    setError('')
+    setMsg('')
+    try {
+      await platformShopApi.reorderCategories({
+        parent: parentId,
+        orderedIds: ordered,
+      })
+      setMsg('ترتیب به‌روز شد')
+      await load()
+    } catch (err) {
+      setError(err?.message || err?.error || 'خطا در جابه‌جایی')
+    } finally {
+      setRowBusyId(null)
+    }
+  }
+
+  const toggleStatusQuick = async (cat) => {
+    if (!cat?.id) return
+    const next = cat.status === 'active' ? 'inactive' : 'active'
+    setRowBusyId(cat.id)
+    setError('')
+    setMsg('')
+    try {
+      await platformShopApi.updateCategory(cat.id, { status: next })
+      if (String(selectedId) === String(cat.id)) {
+        setEditForm((f) => ({ ...f, status: next }))
+      }
+      setMsg(
+        next === 'active'
+          ? `«${cat.title}» فعال شد`
+          : `«${cat.title}» غیرفعال شد — محصولات این دسته در ویترین دیده نمی‌شوند`,
+      )
+      await load()
+    } catch (err) {
+      setError(err?.message || err?.error || 'خطا در تغییر وضعیت')
+    } finally {
+      setRowBusyId(null)
     }
   }
 
@@ -826,6 +932,9 @@ export default function PlatformCategoriesManager({
                           selectedId={selectedId}
                           onSelect={selectForEdit}
                           matchIds={matchingIds}
+                          onMove={moveCategory}
+                          onToggleStatus={toggleStatusQuick}
+                          busyId={rowBusyId}
                         />
                       ))
                   )}
@@ -883,7 +992,7 @@ export default function PlatformCategoriesManager({
                     <p className={styles.statusHint}>
                       {editForm.status === 'active'
                         ? 'فعال — در ویترین و انتخاب محصول دیده می‌شود'
-                        : 'غیرفعال — این دسته و زیرشاخه‌ها در ویترین مخفی‌اند'}
+                        : 'غیرفعال — این دسته، زیرشاخه‌ها و محصولاتشان در ویترین مخفی‌اند'}
                     </p>
                     <div className={styles.formActions}>
                       <button

@@ -27,6 +27,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import styles from './NewsSection.module.css'
 import newsService from '@/services/newsService'
 import Config from '@/config/config'
+import { getNewsHref } from '@/utils/newsSlug'
 
 const CKEditorWrapper = dynamic(
   () => import('@/components/newsAdmin/CKEditorWrapper'),
@@ -736,13 +737,12 @@ const NewsSection = () => {
         <div className={styles.newsGrid}>
           {currentNews.map((item) => {
             const imageUrl = getBestImage(item)
-            // ✅ استفاده از slug به جای id
-            const newsSlug = item.slug || item.id
+            const href = getNewsHref(item)
             const statusInfo = getStatusBadge(item.status)
             
             return (
               <a 
-                href={`/news/${newsSlug}`} 
+                href={href} 
                 key={item.id} 
                 className={styles.newsCardLink}
               >

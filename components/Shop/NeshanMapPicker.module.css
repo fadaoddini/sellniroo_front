@@ -34,8 +34,8 @@
   height: 18px;
   transform: translate(-50%, -100%) rotate(-45deg);
   border-radius: 50% 50% 50% 0;
-  background: #ff00a6;
-  border: 2px solid #fff;
+  background: #1E3B2F;
+  border: 2px solid #F5F0E6;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   z-index: 1100;
   pointer-events: none;

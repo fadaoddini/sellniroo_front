@@ -1,6 +1,19 @@
 import axios from 'axios'
 import Config from '@/config/config'
 
+/** پالت برند سلنیرو (کرم / طلایی) */
+export const VIDEO_INSTA_SITE_THEME = {
+  accent_color: '#D4621A',
+  accent_secondary: '#F4AE52',
+  section_bg_from: '#FEF3E2',
+  section_bg_to: '#FFF8EC',
+  title_color: '#2A1A0E',
+  ring_color_1: '#F4AE52',
+  ring_color_2: '#D4621A',
+  ring_color_3: '#B8860B',
+  rail_bg: '#FEF3E2',
+}
+
 export const DEFAULT_VIDEO_INSTA_SETTINGS = {
   show_desktop_section: true,
   show_mobile_rail: true,
@@ -12,15 +25,7 @@ export const DEFAULT_VIDEO_INSTA_SETTINGS = {
   title_en: 'Video Archive',
   subtitle_fa: 'مجموعه‌ای از ویدیوهای منتخب و پروژه‌های ما',
   subtitle_en: 'A collection of our selected videos and projects',
-  accent_color: '#be123c',
-  accent_secondary: '#f97316',
-  section_bg_from: '#1a1a2e',
-  section_bg_to: '#0a0a1a',
-  title_color: '',
-  ring_color_1: '#f09433',
-  ring_color_2: '#dc2743',
-  ring_color_3: '#bc1888',
-  rail_bg: '#0a0a0c',
+  ...VIDEO_INSTA_SITE_THEME,
 }
 
 let cache = null
@@ -78,7 +83,7 @@ export function buildVideoInstaCssVars(settings) {
     '--va-accent-2': s.accent_secondary || DEFAULT_VIDEO_INSTA_SETTINGS.accent_secondary,
     '--va-bg-from': s.section_bg_from || DEFAULT_VIDEO_INSTA_SETTINGS.section_bg_from,
     '--va-bg-to': s.section_bg_to || DEFAULT_VIDEO_INSTA_SETTINGS.section_bg_to,
-    '--va-title-solid': s.title_color || '',
+    '--va-title-solid': s.title_color || DEFAULT_VIDEO_INSTA_SETTINGS.title_color,
     '--va-ring-1': s.ring_color_1 || DEFAULT_VIDEO_INSTA_SETTINGS.ring_color_1,
     '--va-ring-2': s.ring_color_2 || DEFAULT_VIDEO_INSTA_SETTINGS.ring_color_2,
     '--va-ring-3': s.ring_color_3 || DEFAULT_VIDEO_INSTA_SETTINGS.ring_color_3,

@@ -1,0 +1,374 @@
+/* کارت‌های ویدیو داخل پوستهٔ NewsList (/news) */
+
+.videoGrid {
+  --accent: #d4621a;
+  --gold: #f4ae52;
+  --ink: #2a1a0e;
+  --muted: #6b5344;
+  --line: rgba(42, 26, 14, 0.1);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 0;
+  overflow: hidden;
+  background: #fff;
+  cursor: pointer;
+  text-align: right;
+  box-shadow: 0 6px 18px rgba(80, 50, 0, 0.06);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+  font: inherit;
+  color: inherit;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  box-shadow: 0 12px 28px rgba(80, 50, 0, 0.1);
+}
+
+.card_grid .thumb,
+.card_gridLarge .thumb {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  max-height: 260px;
+  background: #1a120c;
+  overflow: hidden;
+}
+
+.card_gridLarge .thumb {
+  max-height: 320px;
+}
+
+.card_split,
+.card_list {
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.card_split .thumb {
+  position: relative;
+  flex: 0 0 38%;
+  width: 38%;
+  min-height: 120px;
+  aspect-ratio: auto;
+  max-height: none;
+  background: #1a120c;
+  overflow: hidden;
+}
+
+.card_list .thumb {
+  position: relative;
+  flex: 0 0 220px;
+  width: 220px;
+  min-height: 140px;
+  aspect-ratio: auto;
+  max-height: none;
+  background: #1a120c;
+  overflow: hidden;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.card:hover .thumb img {
+  transform: scale(1.04);
+}
+
+.thumbFallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(254, 243, 226, 0.4);
+  background: linear-gradient(145deg, #3a2818, #1a120c);
+}
+
+.playBadge {
+  position: absolute;
+  inset-inline-start: 10px;
+  top: 10px;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, #2a1a0e 42%, transparent);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(8px);
+}
+
+.card:hover .playBadge {
+  background: linear-gradient(135deg, var(--gold), var(--accent));
+  border-color: transparent;
+}
+
+.card_grid .body,
+.card_gridLarge .body {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 1.7rem 0.75rem 0.7rem;
+  background: linear-gradient(
+    to top,
+    rgba(20, 12, 6, 0.9) 0%,
+    rgba(20, 12, 6, 0.4) 55%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.card_grid .thumb,
+.card_gridLarge .thumb {
+  /* body absolute نسبت به thumb */
+}
+
+.card_grid,
+.card_gridLarge {
+  position: relative;
+}
+
+.card_grid .body .cardTitle,
+.card_gridLarge .body .cardTitle {
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.card_grid .body .views,
+.card_gridLarge .body .views {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.card_split .body,
+.card_list .body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.9rem 1rem;
+  min-width: 0;
+}
+
+.cardTitle {
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
+  color: var(--ink);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card_grid .cardTitle,
+.card_gridLarge .cardTitle {
+  font-size: 0.78rem;
+  -webkit-line-clamp: 1;
+  white-space: nowrap;
+  display: block;
+  text-overflow: ellipsis;
+}
+
+.views {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-family: var(--font-iran), Tahoma, sans-serif;
+}
+
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.skeletonCard {
+  aspect-ratio: 3 / 4;
+  max-height: 240px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #f5ebe0, #fff8ec, #f5ebe0);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .skeletonGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .card_list .thumb {
+    flex-basis: 140px;
+    width: 140px;
+  }
+}
+
+/* Viewer */
+.viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.viewerBackdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(20, 12, 6, 0.72);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+}
+
+.viewerPanel {
+  position: relative;
+  z-index: 1;
+  width: min(420px, 100%);
+  background: #120c08;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(244, 174, 82, 0.28);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  color: #fef3e2;
+}
+
+.viewerTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 0.85rem;
+}
+
+.viewerTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--font-iran), Tahoma, sans-serif;
+}
+
+.viewerActions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.viewerBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fef3e2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.viewerStage {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  background: #000;
+  cursor: pointer;
+}
+
+.viewerVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.viewerPlay {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f4ae52, #d4621a);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewerBar {
+  padding: 0.65rem 0.85rem 0.9rem;
+}
+
+.viewerProgress {
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  overflow: hidden;
+  margin-bottom: 0.65rem;
+}
+
+.viewerProgress i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #f4ae52, #d4621a);
+  border-radius: inherit;
+}
+
+.viewerNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: rgba(254, 243, 226, 0.75);
+  font-family: var(--font-iran), Tahoma, sans-serif;
+}
+
+.viewerNav button {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fef3e2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}

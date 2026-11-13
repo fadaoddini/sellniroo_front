@@ -8,7 +8,7 @@ import styles from './JobListings.module.css';
 const JobListings = ({
   jobs,
   totalItems,
-  viewMode = 'grid-2',
+  viewMode = 'image-left',
   loading,
   loadingMore = false,
   hasMore = false,

@@ -11,7 +11,7 @@ import React, {
   memo,
 } from "react";
 import { createPortal } from "react-dom";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import moment from "moment-jalaali";
@@ -22,15 +22,18 @@ import {
   LogIn,
   LogOut,
   Phone,
-  Settings,
   LayoutDashboard,
   Brain,
   Gamepad2,
   User,
   HandCoins,
+  Radar,
   Info,
   Menu,
   Home,
+  FileText,
+  Building2,
+  ShieldAlert,
 } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "@/contexts/AuthContext";
@@ -42,6 +45,19 @@ import {
   navWidgetCssVars,
 } from "@/config/navWidgetSettings";
 import { resolveLucideIcon } from "@/utils/lucideIcons";
+import schoolService from "@/components/School/services/schoolService";
+import {
+  buildSchoolProfileMenuLinks,
+  resolveSchoolRole,
+  schoolRoleLabel,
+} from "@/components/School/schoolRoleNav";
+import {
+  buildGymProfileMenuLinks,
+  gymRoleLabel,
+} from "@/components/Gym/gymRoleNav";
+import { fetchSiteSettings } from "@/services/siteSettings";
+import { resolveProfileSystemId } from "@/services/profileSystem";
+import NavCartIcon from "./NavCartIcon";
 import styles from "./BreakingNews.module.css";
 
 function resolveMenuIcon(name) {
@@ -85,12 +101,86 @@ const LABELS = {
   challenge: "چالش مهندسین",
   game: "بازی",
   dearUser: "کاربر عزیز",
+  resumeCta: "ساخت رزومه",
+  companyCta: "ساخت شرکت",
+  authRequiredTitle: "ابتدا باید وارد شوید",
+  authRequiredBody:
+    "برای ساخت رزومه یا ثبت شرکت، ابتدا وارد حساب کاربری خود شوید.",
+  authRequiredCancel: "الان نه",
+  authRequiredLogin: "ورود به حساب",
 };
+
+const AuthRequiredDialog = memo(function AuthRequiredDialog({
+  open,
+  closing,
+  sheetMs,
+  intentLabel,
+  loginHref,
+  onClose,
+}) {
+  if (!open && !closing) return null;
+
+  return createPortal(
+    <div
+      className={[
+        styles.authOverlay,
+        closing ? styles.authOverlayOut : styles.authOverlayIn,
+      ].join(" ")}
+      style={{ "--bn-sheet-ms": `${sheetMs}ms` }}
+      role="presentation"
+      onClick={onClose}
+    >
+      <div
+        className={[
+          styles.authDialog,
+          closing ? styles.authDialogOut : styles.authDialogIn,
+        ].join(" ")}
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="bn-auth-title"
+        aria-describedby="bn-auth-desc"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className={styles.authGlow} aria-hidden />
+        <div className={styles.authIconWrap} aria-hidden>
+          <ShieldAlert size={28} strokeWidth={2.1} />
+        </div>
+        <h3 id="bn-auth-title" className={styles.authTitle}>
+          {LABELS.authRequiredTitle}
+        </h3>
+        <p id="bn-auth-desc" className={styles.authBody}>
+          {intentLabel
+            ? `برای «${intentLabel}» ابتدا وارد حساب کاربری خود شوید.`
+            : LABELS.authRequiredBody}
+        </p>
+        <div className={styles.authActions}>
+          <button
+            type="button"
+            className={styles.authCancel}
+            onClick={onClose}
+          >
+            {LABELS.authRequiredCancel}
+          </button>
+          <Link
+            href={loginHref}
+            className={styles.authLogin}
+            onClick={onClose}
+          >
+            <LogIn size={15} strokeWidth={2.3} />
+            <span>{LABELS.authRequiredLogin}</span>
+          </Link>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+});
 
 const PROFILE_LINKS = [
   { href: "/dashboard", icon: LayoutDashboard, label: LABELS.dashboard },
   { href: "/profile", icon: User, label: LABELS.profile },
   { href: "/sale", icon: HandCoins, label: LABELS.marketing },
+  { href: "/rasad", icon: Radar, label: "رصد" },
   { href: "/quiz", icon: Brain, label: LABELS.challenge },
   { href: "/game", icon: Gamepad2, label: LABELS.game },
 ];
@@ -266,6 +356,11 @@ const ProfileMenu = memo(function ProfileMenu({
   onClose,
   onLogout,
   menuItems = null,
+  canAccessSale = false,
+  schoolLinks = null,
+  schoolRoleLabel = "",
+  gymLinks = null,
+  gymRoleLabelText = "",
 }) {
   const displayName =
     user?.display_name ||
@@ -281,6 +376,34 @@ const ProfileMenu = memo(function ProfileMenu({
 
   const iconSize = isMobile ? 20 : 16;
   const useCustomMenu = Array.isArray(menuItems);
+  const useGymMenu = Array.isArray(gymLinks) && gymLinks.length > 0;
+  const useSchoolMenu =
+    !useGymMenu && Array.isArray(schoolLinks) && schoolLinks.length > 0;
+  const roleLabelText = useGymMenu
+    ? gymRoleLabelText
+    : useSchoolMenu
+      ? schoolRoleLabel
+      : "";
+  const profileLinks = PROFILE_LINKS.filter(
+    (item) => item.href !== "/sale" || canAccessSale
+  );
+
+  const renderLink = (item) => {
+    const Icon = item.icon;
+    const active = isActive(item.href);
+    return (
+      <Link
+        key={item.key || item.href}
+        href={item.href}
+        className={`${styles.profileMenuItem} ${active ? styles.activeMenuItem : ""}`}
+        onClick={onClose}
+      >
+        <Icon size={iconSize} />
+        <span>{item.label}</span>
+        {active && <Check size={14} className={styles.activeCheck} />}
+      </Link>
+    );
+  };
 
   return (
     <>
@@ -297,7 +420,11 @@ const ProfileMenu = memo(function ProfileMenu({
         </div>
         <div className={styles.profileInfo}>
           <h4>{displayName}</h4>
-          <p>{user?.mobile}</p>
+          <p>
+            {roleLabelText
+              ? `${roleLabelText} · ${user?.mobile || ""}`
+              : user?.mobile}
+          </p>
         </div>
         {isMobile && (
           <button
@@ -334,33 +461,12 @@ const ProfileMenu = memo(function ProfileMenu({
             );
           })
         )
+      ) : useGymMenu ? (
+        gymLinks.map(renderLink)
+      ) : useSchoolMenu ? (
+        schoolLinks.map(renderLink)
       ) : (
-        <>
-          {PROFILE_LINKS.map((item) => {
-            const active = isActive(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`${styles.profileMenuItem} ${active ? styles.activeMenuItem : ""}`}
-                onClick={onClose}
-              >
-                <item.icon size={iconSize} />
-                <span>{item.label}</span>
-                {active && <Check size={14} className={styles.activeCheck} />}
-              </Link>
-            );
-          })}
-          <div className={styles.profileDivider} />
-          <Link
-            href="/settings"
-            className={`${styles.profileMenuItem} ${isActive("/settings") ? styles.activeMenuItem : ""}`}
-            onClick={onClose}
-          >
-            <Settings size={iconSize} />
-            <span>{LABELS.settings}</span>
-          </Link>
-        </>
+        profileLinks.map(renderLink)
       )}
 
       {/* خط جداکننده + خروج — همیشه در انتها */}
@@ -384,8 +490,15 @@ const ProfileMenu = memo(function ProfileMenu({
  */
 const BreakingNews = ({ settings: rawSettings = null } = {}) => {
   const configured = rawSettings != null;
-  const { user, isAuthenticated, logout, loading } = useAuth();
+  const { user, isAuthenticated, logout, loading, hasPermission, getAuthHeaders } =
+    useAuth();
+  const canAccessSale =
+    !!user?.is_superuser ||
+    !!user?.is_staff ||
+    hasPermission('marketing') ||
+    hasPermission('sales');
   const pathname = usePathname();
+  const router = useRouter();
   const isMobile = useIsMobile(768);
   const viewport = isMobile ? 'mobile' : 'desktop';
   const settings = configured
@@ -401,6 +514,12 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
   const [menuClosing, setMenuClosing] = useState(false);
   const [menuItems, setMenuItems] = useState([]);
   const [imageError, setImageError] = useState(false);
+  const [authPrompt, setAuthPrompt] = useState(null);
+  const [authClosing, setAuthClosing] = useState(false);
+  const [schoolMe, setSchoolMe] = useState(null);
+  const [gymMe, setGymMe] = useState(null);
+  const [profileSystemId, setProfileSystemId] = useState(null);
+  const authCloseTimer = useRef(null);
 
   const profileDropdownRef = useRef(null);
   const profileCloseTimer = useRef(null);
@@ -459,6 +578,116 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
   }, [user?.image]);
 
   useEffect(() => {
+    let cancelled = false;
+    ;(async () => {
+      try {
+        const [settings, systemId] = await Promise.all([
+          fetchSiteSettings({ force: false }),
+          resolveProfileSystemId({ force: false }),
+        ])
+        if (cancelled) return
+        const primary = settings?.profile_layout?.primary
+        setProfileSystemId(
+          primary === 'gym_bodybuilding' || systemId === 'gym_bodybuilding'
+            ? 'gym_bodybuilding'
+            : systemId || primary || null,
+        )
+      } catch {
+        if (!cancelled) setProfileSystemId(null)
+      }
+    })()
+    const refresh = () => {
+      resolveProfileSystemId({ force: true })
+        .then((id) => {
+          if (!cancelled) setProfileSystemId(id || null)
+        })
+        .catch(() => {})
+    }
+    window.addEventListener('profile-layout-changed', refresh)
+    window.addEventListener('site-modules-changed', refresh)
+    return () => {
+      cancelled = true
+      window.removeEventListener('profile-layout-changed', refresh)
+      window.removeEventListener('site-modules-changed', refresh)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (profileSystemId === 'gym_bodybuilding') {
+      setSchoolMe(null)
+      return undefined
+    }
+    if (!isAuthenticated || !user) {
+      setSchoolMe(null);
+      return undefined;
+    }
+    let cancelled = false;
+    ;(async () => {
+      try {
+        const res = await schoolService.me();
+        if (cancelled) return;
+        if (res?.success) setSchoolMe(res.data || null);
+        else setSchoolMe(null);
+      } catch {
+        if (!cancelled) setSchoolMe(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, user?.id, user?.mobile, profileSystemId]);
+
+  useEffect(() => {
+    if (profileSystemId !== 'gym_bodybuilding') {
+      setGymMe(null)
+      return undefined
+    }
+    if (!isAuthenticated || !user) {
+      setGymMe(null)
+      return undefined
+    }
+    let cancelled = false
+    ;(async () => {
+      try {
+        const headers =
+          typeof getAuthHeaders === 'function' ? getAuthHeaders() : {}
+        const res = await axios.get(Config.endpoints.bodybuilding.me(), {
+          headers,
+        })
+        if (!cancelled) setGymMe(res.data || null)
+      } catch {
+        if (!cancelled) setGymMe(null)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [isAuthenticated, user?.id, user?.mobile, profileSystemId, getAuthHeaders])
+
+  const gymMenuLinks = useMemo(() => {
+    if (profileSystemId !== 'gym_bodybuilding') return null
+    const links = buildGymProfileMenuLinks(user, gymMe)
+    return links.length ? links : null
+  }, [profileSystemId, user, gymMe])
+
+  const gymRoleLabelText = useMemo(() => {
+    if (profileSystemId !== 'gym_bodybuilding') return ''
+    return gymRoleLabel(gymMe || user)
+  }, [profileSystemId, user, gymMe])
+
+  const schoolMenuLinks = useMemo(() => {
+    if (profileSystemId === 'gym_bodybuilding') return null
+    if (!schoolMe) return null;
+    const links = buildSchoolProfileMenuLinks(schoolMe, user);
+    return links.length ? links : null;
+  }, [schoolMe, user, profileSystemId]);
+
+  const schoolRoleLabelText = useMemo(() => {
+    if (profileSystemId === 'gym_bodybuilding' || !schoolMe) return "";
+    return schoolRoleLabel(resolveSchoolRole(schoolMe, user));
+  }, [schoolMe, user, profileSystemId]);
+
+  useEffect(() => {
     if (isMobile) return undefined;
 
     const handleClickOutside = (event) => {
@@ -504,8 +733,96 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
     return () => {
       clearTimeout(profileCloseTimer.current);
       clearTimeout(menuCloseTimer.current);
+      clearTimeout(authCloseTimer.current);
     };
   }, []);
+
+  const closeAuthPrompt = useCallback(() => {
+    if (authClosing || !authPrompt) return;
+    setAuthClosing(true);
+    clearTimeout(authCloseTimer.current);
+    authCloseTimer.current = setTimeout(() => {
+      setAuthPrompt(null);
+      setAuthClosing(false);
+    }, sheetMs);
+  }, [authClosing, authPrompt, sheetMs]);
+
+  useEffect(() => {
+    if (!authPrompt && !authClosing) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e) => {
+      if (e.key === "Escape") closeAuthPrompt();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [authPrompt, authClosing, closeAuthPrompt]);
+
+  const openAuthPrompt = useCallback((intent) => {
+    clearTimeout(authCloseTimer.current);
+    setAuthClosing(false);
+    setAuthPrompt(intent);
+  }, []);
+
+  const handleJobCta = useCallback(
+    (intent) => {
+      if (isAuthenticated) {
+        router.push(intent.href);
+        return;
+      }
+      openAuthPrompt(intent);
+    },
+    [isAuthenticated, openAuthPrompt, router]
+  );
+
+  const renderJobCtas = () => {
+    if (!configured) return null;
+    const showResume = settings.show_resume_cta;
+    const showCompany = settings.show_company_cta;
+    if (!showResume && !showCompany) return null;
+
+    return (
+      <div className={styles.jobCtaGroup} role="group" aria-label="اقدامات کاریابی">
+        {showResume ? (
+          <button
+            type="button"
+            className={`${styles.jobCtaBtn} ${styles.jobCtaResume}`}
+            onClick={() =>
+              handleJobCta({
+                key: "resume",
+                label: settings.resume_cta_label || LABELS.resumeCta,
+                href: settings.resume_cta_href || "/profile?tab=resume",
+              })
+            }
+            aria-label={settings.resume_cta_label || LABELS.resumeCta}
+          >
+            <FileText size={14} strokeWidth={2.25} aria-hidden />
+            <span>{settings.resume_cta_label || LABELS.resumeCta}</span>
+          </button>
+        ) : null}
+        {showCompany ? (
+          <button
+            type="button"
+            className={`${styles.jobCtaBtn} ${styles.jobCtaCompany}`}
+            onClick={() =>
+              handleJobCta({
+                key: "company",
+                label: settings.company_cta_label || LABELS.companyCta,
+                href: settings.company_cta_href || "/profile?tab=company",
+              })
+            }
+            aria-label={settings.company_cta_label || LABELS.companyCta}
+          >
+            <Building2 size={14} strokeWidth={2.25} aria-hidden />
+            <span>{settings.company_cta_label || LABELS.companyCta}</span>
+          </button>
+        ) : null}
+      </div>
+    );
+  };
 
   const closeProfile = useCallback(() => {
     if (!isMobile) {
@@ -651,7 +968,12 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
                   isMobile={false}
                   onClose={closeProfile}
                   onLogout={handleLogout}
-                  menuItems={configured ? menuItems : null}
+                  menuItems={null}
+                  canAccessSale={canAccessSale}
+                  schoolLinks={schoolMenuLinks}
+                  schoolRoleLabel={schoolRoleLabelText}
+                  gymLinks={gymMenuLinks}
+                  gymRoleLabelText={gymRoleLabelText}
                 />
               </div>
             )}
@@ -688,7 +1010,12 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
                       isMobile
                       onClose={closeProfile}
                       onLogout={handleLogout}
-                      menuItems={configured ? menuItems : null}
+                      menuItems={null}
+                      canAccessSale={canAccessSale}
+                      schoolLinks={schoolMenuLinks}
+                      schoolRoleLabel={schoolRoleLabelText}
+                      gymLinks={gymMenuLinks}
+                      gymRoleLabelText={gymRoleLabelText}
                     />
                   </div>
                 </div>,
@@ -727,17 +1054,24 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
     ? navWidgetCssVars(rawSettings, { viewport })
     : undefined;
   const barFullBleed = configured && settings?.bar_full_bleed !== false;
+  const barSticky = configured
+    ? settings?.sticky !== false
+    : true;
+  const showMenuIcons = !configured || settings?.show_menu_icons !== false;
+  const underlineLinks = configured && !!settings?.underline;
 
   return (
     <div
       className={[
         styles.breakingNews,
         configured ? styles.breakingNewsConfigured : "",
+        barSticky ? styles.breakingNewsSticky : "",
         configured
           ? barFullBleed
             ? styles.barFullBleed
             : styles.barInset
           : "",
+        underlineLinks ? styles.underlineLinks : "",
         hideOnMobile ? styles.hideOnMobile : "",
         hideOnDesktop ? styles.hideOnDesktop : "",
       ]
@@ -790,7 +1124,7 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
                     href={item.href || "#"}
                     className={styles.inlineMenuLink}
                   >
-                    <Icon size={13} />
+                    {showMenuIcons ? <Icon size={13} /> : null}
                     <span>{item.label_fa || item.label_en}</span>
                   </Link>
                 );
@@ -817,15 +1151,41 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
             </>
           ) : null}
 
+          {(!configured || settings?.cart_place !== 'after_profile') ? (
+            <NavCartIcon settings={configured ? settings : null} />
+          ) : null}
+          {configured && settings?.job_cta_place !== 'after_profile'
+            ? renderJobCtas()
+            : null}
           {renderProfileBlock()}
+          {configured && settings?.job_cta_place === 'after_profile'
+            ? renderJobCtas()
+            : null}
+          {configured && settings?.cart_place === 'after_profile' ? (
+            <NavCartIcon settings={settings} />
+          ) : null}
 
-          {!configured || !isMobile ? (
+          {(!configured || settings.show_date !== false) &&
+          (!configured || !isMobile) ? (
             <div className={styles.datetime} title={currentDate}>
               <span className={styles.dateText}>{currentDate}</span>
             </div>
           ) : null}
         </div>
       </div>
+
+      {portalReady ? (
+        <AuthRequiredDialog
+          open={!!authPrompt}
+          closing={authClosing}
+          sheetMs={sheetMs}
+          intentLabel={authPrompt?.label || ""}
+          loginHref={`/login?next=${encodeURIComponent(
+            authPrompt?.href || "/profile"
+          )}`}
+          onClose={closeAuthPrompt}
+        />
+      ) : null}
 
       {configured && settings.show_hamburger && menuSheetOpen && portalReady
         ? createPortal(

@@ -1,4 +1,4 @@
-// modules/home/components/sections/CTASection.jsx — بخش تماس (تم آبی تیره + دیالوگ نوع درخواست)
+// modules/home/components/sections/CTASection.jsx — بخش تماس (تم کرم/طلایی سایت + دیالوگ نوع درخواست)
 // ماژول سایت: cta_section ⊂ sales_marketing — از /adminweb فعال/غیرفعال می‌شود
 'use client';
 
@@ -326,7 +326,9 @@ export default function ContactSection({
       ? styles.layoutFormInfo
       : ws.layout === 'stack'
         ? styles.layoutStack
-        : '';
+        : ws.layout === 'centered'
+          ? styles.layoutCentered
+          : styles.layoutInfoForm
 
   const infoCol = (
     <div className={styles.infoCol}>
@@ -516,6 +518,7 @@ export default function ContactSection({
         .filter(Boolean)
         .join(' ')}
       style={cssVars}
+      data-site-theme={ws.use_site_theme ? '1' : '0'}
       dir={dir}
     >
       {ws.show_bg_grid ? <div className={styles.bgGrid} aria-hidden /> : null}

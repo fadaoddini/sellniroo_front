@@ -1,0 +1,333 @@
+.panel {
+  --ink: #1a1f2e;
+  --muted: rgba(26, 31, 46, 0.58);
+  --line: rgba(26, 31, 46, 0.1);
+  --accent: #c2410c;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  font-family: var(--font-iran, sans-serif);
+  color: var(--ink);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  min-height: 12rem;
+  color: var(--muted);
+}
+
+.spin {
+  animation: spin 0.85s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0 0 0.35rem;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.head h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.sub {
+  margin: 0;
+  max-width: 38rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1.1rem 1.15rem;
+  box-shadow: 0 8px 24px rgba(26, 31, 46, 0.04);
+}
+
+.card h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+
+.cardHint {
+  margin: 0 0 0.9rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.fabGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.55rem;
+}
+
+.fabCard {
+  appearance: none;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.85rem 0.9rem;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #faf8f6;
+  cursor: pointer;
+  font: inherit;
+}
+
+.fabCard strong {
+  font-size: 0.88rem;
+}
+
+.fabCard span {
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.fabOn {
+  border-color: rgba(194, 65, 12, 0.4);
+  background: rgba(194, 65, 12, 0.08);
+}
+
+.systems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.systemCard {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.systemHead {
+  width: 100%;
+  appearance: none;
+  border: none;
+  background: #fff;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.1rem;
+  cursor: pointer;
+  font: inherit;
+  text-align: right;
+}
+
+.systemHead strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.systemHead small {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.headMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+}
+
+.routeLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.moduleOff {
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #b45309;
+}
+
+.moduleOn {
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #0f6b52;
+}
+
+.moduleHidden {
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.systemBody {
+  padding: 0 1.1rem 1.1rem;
+  border-top: 1px solid var(--line);
+}
+
+.enableRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.85rem 0;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.systemBody h4 {
+  margin: 0.85rem 0 0.45rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.toggleList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.toggleList li label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fbfcfc;
+  cursor: pointer;
+}
+
+.toggleList li label span {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.toggleList strong {
+  font-size: 0.86rem;
+}
+
+.toggleList small {
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.toggleList input:disabled + span {
+  opacity: 0.5;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.save,
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 980px;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.save {
+  background: var(--accent);
+  color: #fff;
+}
+
+.ghost {
+  background: #fff;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.save:disabled,
+.ghost:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ok,
+.err {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.ok {
+  color: #0f6b52;
+  background: rgba(38, 166, 128, 0.1);
+  border: 1px solid rgba(38, 166, 128, 0.22);
+}
+
+.err {
+  color: #b91c1c;
+  background: rgba(185, 28, 28, 0.07);
+  border: 1px solid rgba(185, 28, 28, 0.16);
+}
+
+@media (max-width: 640px) {
+  .fabGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer {
+    flex-direction: column;
+  }
+
+  .save,
+  .ghost {
+    width: 100%;
+    justify-content: center;
+  }
+}

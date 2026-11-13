@@ -2,7 +2,28 @@
 import { templateById } from './sectionTemplates'
 import { createDefaultSiteTopNavSettings } from './siteTopNavWidgetSettings'
 import { createDefaultPostJobButtonSettings } from './postJobButtonWidgetSettings'
+import { createDefaultHeroWithMenuSettings } from './heroWithMenuSettings'
 import { createDefaultJobBoardWidgetSettings } from './jobBoardWidgetSettings'
+import {
+  getSoftAppsWidgetDefaults,
+  isSoftAppsWidgetType,
+} from './softappsWidgetSettings'
+import {
+  getRepairsWidgetDefaults,
+  isRepairsWidgetType,
+} from './repairsWidgetSettings'
+import {
+  createDefaultReboWidgetSettings,
+  isReboWidgetType,
+} from './reboWidgetSettings'
+import {
+  createDefaultInventoryWidgetSettings,
+  isInventoryWidgetType,
+} from './inventoryWidgetSettings'
+import {
+  createDefaultVideoArchiveWidgetSettings,
+  isVideoArchiveWidgetType,
+} from './videoArchiveWidgetSettings'
 
 export const PAGE_WIDTH_OPTIONS = [
   {
@@ -46,6 +67,48 @@ export function createColumn(span = 100, widgets = []) {
 
 export function createWidgetInstance(type, settings = {}) {
   let base = settings && typeof settings === 'object' ? { ...settings } : {}
+  if (type === 'latest_products' && Object.keys(base).length === 0) {
+    base = {
+      title_text: 'جدیدترین محصولات',
+      display_mode: 'recycler',
+      image_shape: 'rounded',
+      image_overflow: 'half_top',
+      image_placement: 'top',
+      image_ratio: '1_1',
+      image_size: 112,
+      image_radius: 18,
+      image_radius_tl: 18,
+      image_radius_tr: 18,
+      image_radius_br: 18,
+      image_radius_bl: 18,
+      padding_top: 16,
+      padding_bottom: 28,
+      show_title: true,
+      show_on_mobile: true,
+      show_on_desktop: true,
+    }
+  }
+  if (type === 'sadra_pixel_title' && Object.keys(base).length === 0) {
+    base = {
+      title: 'SADRA',
+      pixel_size: 4,
+      pixel_gap: 1,
+      letter_gap: 6,
+      theme: 'red',
+      color: '#ff1a1a',
+      color_glow: '#ff6b6b',
+      board_bg: '#100808',
+      board_border: '#3a1818',
+      animate: true,
+      scroll_direction: 'to_left',
+      text_direction: 'auto',
+      scroll_seconds: 12,
+      padding_top: 10,
+      padding_bottom: 10,
+      show_on_mobile: true,
+      show_on_desktop: true,
+    }
+  }
   if (
     (type === 'site_menu' ||
       type === 'site_top_nav' ||
@@ -53,6 +116,12 @@ export function createWidgetInstance(type, settings = {}) {
     Object.keys(base).length === 0
   ) {
     base = createDefaultSiteTopNavSettings()
+  }
+  if (
+    (type === 'hero_with_menu' || type === 'gym_hero') &&
+    Object.keys(base).length === 0
+  ) {
+    base = createDefaultHeroWithMenuSettings()
   }
   if (
     (type === 'post_job_button' || type === 'post_job_cta') &&
@@ -72,6 +141,9 @@ export function createWidgetInstance(type, settings = {}) {
       show_ticker: type === 'breaking_news',
       show_hamburger: true,
       show_menu_items: type === 'header_menu' || type === 'breaking_news' || type === 'nav_bar',
+      show_menu_icons: true,
+      show_date: true,
+      underline: false,
       show_on_mobile: true,
       show_on_desktop: true,
       profile_mode: 'avatar',
@@ -80,8 +152,24 @@ export function createWidgetInstance(type, settings = {}) {
       guest_label: 'ورود',
       guest_icon: 'LogIn',
       guest_href: '/login',
+      sticky: true,
+      sticky_offset: 0,
+      height: 40,
+      blur: 0,
+      shadow: true,
+      border_width: 2,
+      font_size: 13,
+      date_font_size: 11,
+      date_font_weight: 400,
+      nav_gap: 6,
+      link_radius: 6,
+      drawer_width: 300,
       bar_full_bleed: true,
       bar_radius: 0,
+      bar_radius_tl: 0,
+      bar_radius_tr: 0,
+      bar_radius_br: 0,
+      bar_radius_bl: 0,
       padding_top: 0,
       padding_right: 0,
       padding_bottom: 0,
@@ -94,6 +182,7 @@ export function createWidgetInstance(type, settings = {}) {
       color_text: '',
       color_accent: '',
       color_border: '',
+      color_date: '',
       color_link: '',
       color_menu_hover_bg: '',
       color_menu_hover_text: '',
@@ -114,6 +203,10 @@ export function createWidgetInstance(type, settings = {}) {
       base.mobile = {
         bar_full_bleed: false,
         bar_radius: 14,
+        bar_radius_tl: 14,
+        bar_radius_tr: 14,
+        bar_radius_br: 14,
+        bar_radius_bl: 14,
         margin_left: 12,
         margin_right: 12,
         margin_top: 8,
@@ -197,52 +290,68 @@ export function createWidgetInstance(type, settings = {}) {
   ) {
     base = createDefaultJobBoardWidgetSettings(type)
   }
+  if (isSoftAppsWidgetType(type) && Object.keys(base).length === 0) {
+    base = getSoftAppsWidgetDefaults(type)
+  }
+  if (isRepairsWidgetType(type) && Object.keys(base).length === 0) {
+    base = getRepairsWidgetDefaults(type)
+  }
+  if (isReboWidgetType(type) && Object.keys(base).length === 0) {
+    base = createDefaultReboWidgetSettings(type)
+  }
+  if (isVideoArchiveWidgetType(type) && Object.keys(base).length === 0) {
+    base = createDefaultVideoArchiveWidgetSettings(type)
+  }
+  if (isInventoryWidgetType(type) && Object.keys(base).length === 0) {
+    base = createDefaultInventoryWidgetSettings(type)
+  }
   if (type === 'cta_contact' && Object.keys(base).length === 0) {
     base = {
       show_on_mobile: true,
       section_full: true,
       layout: 'info_form',
-      max_width: 1120,
-      columns_gap: 40,
+      max_width: 960,
+      columns_gap: 28,
       show_eyebrow: true,
       show_channels: true,
       show_form: true,
       show_email_field: true,
       show_request_type: true,
-      show_bg_grid: true,
+      show_bg_grid: false,
       show_bg_orb: true,
+      use_site_theme: true,
       eyebrow_text: '',
       form_title: '',
       form_subtitle: '',
-      bg_from: '#0b1220',
-      bg_to: '#121c2e',
-      bg_accent: 'rgba(59, 130, 246, 0.22)',
-      text_color: '#e8eef8',
-      muted_color: '#93a4bd',
-      title_color: '#f4f8ff',
-      accent_color: '#60a5fa',
-      accent_deep: '#1d4ed8',
-      card_from: '#162033',
-      card_to: '#1a2740',
-      card_border: 'rgba(148, 180, 220, 0.16)',
-      input_bg: 'rgba(8, 14, 26, 0.55)',
-      input_border: 'rgba(148, 180, 220, 0.18)',
-      button_from: '#3b82f6',
-      button_to: '#1d4ed8',
-      button_text: '#ffffff',
-      channel_bg: 'rgba(22, 32, 51, 0.85)',
-      title_size: 28,
-      desc_size: 15,
-      form_radius: 20,
-      input_radius: 12,
-      button_radius: 12,
-      channel_radius: 14,
-      form_padding: 22,
+      bg_from: '#2A1A0E',
+      bg_to: '#2A1A0E',
+      bg_accent: '#D4621A',
+      text_color: '#FEF3E2',
+      muted_color: '#F4AE52',
+      title_color: '#FEF3E2',
+      accent_color: '#F4AE52',
+      accent_deep: '#D4621A',
+      card_from: '#FEF3E2',
+      card_to: '#FEF3E2',
+      card_border: 'transparent',
+      input_bg: 'color-mix(in srgb, #2A1A0E 6%, #FEF3E2)',
+      input_border: 'transparent',
+      button_from: '#F4AE52',
+      button_to: '#D4621A',
+      button_text: '#2A1A0E',
+      channel_bg: 'color-mix(in srgb, #FEF3E2 10%, transparent)',
+      title_size: 22,
+      desc_size: 13,
+      form_radius: 16,
+      input_radius: 10,
+      button_radius: 10,
+      channel_radius: 12,
+      form_padding: 16,
       form_shadow: true,
-      padding_top: 76,
-      padding_right: 20,
-      padding_bottom: 76,
-      padding_left: 20,
+      padding_top: 36,
+      padding_right: 16,
+      padding_bottom: 36,
+      padding_left: 16,
       margin_top: 0,
       margin_right: 0,
       margin_bottom: 0,
@@ -601,13 +710,106 @@ export const DEFAULT_PRODUCT_SINGLE_LAYOUT = {
         },
       ],
     },
+    {
+      id: 'sec_product_similar_default',
+      template: '1',
+      width: 'inherit',
+      padding_y: 'sm',
+      columns: [
+        {
+          id: 'col_product_similar_default',
+          span: 100,
+          widgets: [
+            {
+              id: 'w_product_similar_default',
+              type: 'product_similar',
+              settings: {
+                title_text: 'محصولات مشابه',
+                limit: 8,
+                display_mode: 'recycler',
+                recycler_preset: 'side_row',
+                show_title: true,
+                show_more_link: false,
+                accent_color: '#B38C00',
+                image_placement: 'start',
+                recycler_card_width: 260,
+                card_style: 'soft',
+                show_shop: false,
+                show_rating: false,
+                cta_style: 'icon',
+                btn_bg: '#B38C00',
+                btn_text: '#ffffff',
+                recycler_arrow_bg: '#dbbe00',
+                recycler_arrow_color: '#1c1c1e',
+              },
+            },
+          ],
+        },
+      ],
+    },
   ],
+}
+
+function layoutHasWidgetType(layout, type) {
+  return (layout?.rows || []).some((row) =>
+    (row.columns || []).some((col) =>
+      (col.widgets || []).some((w) => w?.type === type)
+    )
+  )
 }
 
 export function normalizeProductSingleLayout(raw) {
   const L = normalizeHomeLayout(raw)
   if (!L.rows?.length) {
     return normalizeHomeLayout(DEFAULT_PRODUCT_SINGLE_LAYOUT)
+  }
+  // مهاجرت سبک: فقط وقتی چیدمان تک‌ردیفهٔ قدیمی است (بدون ویجت مشابه)
+  if (
+    L.rows.length === 1 &&
+    layoutHasWidgetType(L, 'product_article') &&
+    !layoutHasWidgetType(L, 'product_similar')
+  ) {
+    const stamp = Date.now().toString(36)
+    L.rows = [
+      ...L.rows,
+      {
+        id: `sec_product_similar_${stamp}`,
+        template: '1',
+        width: 'inherit',
+        padding_y: 'sm',
+        columns: [
+          {
+            id: `col_product_similar_${stamp}`,
+            span: 100,
+            widgets: [
+              {
+                id: `w_product_similar_${stamp}`,
+                type: 'product_similar',
+                settings: {
+                  title_text: 'محصولات مشابه',
+                  limit: 8,
+                  display_mode: 'recycler',
+                  recycler_preset: 'side_row',
+                  show_title: true,
+                  show_more_link: false,
+                  accent_color: '#B38C00',
+                  image_placement: 'start',
+                  recycler_card_width: 260,
+                  card_style: 'soft',
+                  show_shop: false,
+                  show_rating: false,
+                  cta_style: 'icon',
+                  btn_bg: '#B38C00',
+                  btn_text: '#ffffff',
+                  recycler_arrow_bg: '#dbbe00',
+                  recycler_arrow_color: '#1c1c1e',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ]
   }
   return L
 }
@@ -632,7 +834,22 @@ export const DEFAULT_SHOP_LIST_LAYOUT = {
             {
               id: 'w_shop_page_default',
               type: 'shop_page',
-              settings: {},
+              settings: {
+                display_mode: 'grid-4',
+                image_shape: 'rounded',
+                image_ratio: '1_1',
+                image_radius: 12,
+                accent_color: '#B38C00',
+                more_link_color: '#B38C00',
+                lid_color: '#dbbe00',
+                discount_bg: '#B38C00',
+                btn_bg: '#B38C00',
+                btn_text: '#ffffff',
+                btn_border: '#dbbe00',
+                like_color: '#B38C00',
+                hover_fill: '#FFF9E8',
+                cta_style: 'solid',
+              },
             },
           ],
         },
@@ -708,11 +925,16 @@ export function normalizeHomeLayout(raw) {
     rows = base.rows.map(normalizeRow)
   }
 
+  const page_background = String(base.page_background || base.page_bg || '')
+    .trim()
+    .slice(0, 80)
+
   return {
     version: 2,
     page_width,
     max_width,
     gutter,
+    ...(page_background ? { page_background } : {}),
     rows,
   }
 }

@@ -1,0 +1,225 @@
+/* modules/gym/components/tabs/OverviewTab/PlanInfoCard.module.css */
+
+.planCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  padding: 0.85rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: 0;
+  transition: all var(--transition-base);
+}
+
+.planCard:hover {
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.planCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.planIconWrapper {
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.planHeaderInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.planLabel {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-family: var(--font-iran);
+}
+
+.planName {
+  font-size: 1rem;
+  font-weight: 800;
+  font-family: var(--font-edameh);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.planBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  background: var(--primary-glass);
+  color: var(--primary);
+  border-radius: var(--radius-full);
+  font-size: 0.65rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   DATES
+   ============================================ */
+.planDates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.planDateItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.55rem;
+  background: var(--bg-input);
+  border-radius: 10px;
+}
+
+.planDateItem svg {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.planDateItem > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.planDateLabel {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-family: var(--font-iran);
+}
+
+.planDateValue {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-edameh);
+}
+
+/* ============================================
+   PROGRESS
+   ============================================ */
+.planProgressSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.planProgressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+.progressNormal { color: var(--primary); font-weight: 700; }
+.progressWarning { color: #c2410c; font-weight: 700; }
+.progressExpired { color: #ff4757; font-weight: 700; }
+
+.planProgressBar {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-input);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.planProgressFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.fillNormal { background: var(--gradient-primary); }
+.fillWarning { background: linear-gradient(135deg, #ffd93d, #ffa500); }
+.fillExpired { background: linear-gradient(135deg, #ff4757, #c0392b); }
+
+/* ============================================
+   USERS ROW
+   ============================================ */
+.planUsersRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+.planUsersRow svg { color: var(--primary); flex-shrink: 0; }
+.planUsersRow strong {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-family: var(--font-edameh);
+}
+
+/* ============================================
+   FEATURES
+   ============================================ */
+.planFeaturesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.planFeaturesTitle {
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: var(--font-iran-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.planFeaturesList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem 0.75rem;
+}
+
+.planFeatureItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+.featureCheck { color: var(--primary); flex-shrink: 0; }
+.featureX { color: var(--text-muted); flex-shrink: 0; }
+
+.planFeatureInactive {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 480px) {
+  .planFeaturesList { grid-template-columns: 1fr; }
+  .planDates { grid-template-columns: 1fr; }
+}

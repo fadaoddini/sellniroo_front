@@ -9,6 +9,7 @@ import { getFullImageUrl } from "@/utils/imageUrl";
 import PersianDatePicker from "@/components/common/PersianDatePicker";
 import styles from "./ResumeForm.module.css";
 import TemplateSelector from "./TemplateSelector";
+import FieldSelect from "./FieldSelect";
 import {
   Loader2, Save, AlertCircle, Trash2,
   User, Briefcase, GraduationCap, Award, Globe, FileText,
@@ -272,18 +273,6 @@ const ResumeForm = ({ resume, onSaved, onCancel }) => {
           <TemplateSelector
             value={formData.template}
             onChange={handleTemplateChange}
-            resumeData={{
-              ...formData,
-              work_experiences: resume?.work_experiences || [],
-              educations: resume?.educations || [],
-              skills: resume?.skills || [],
-              languages: resume?.languages || [],
-              certificates: resume?.certificates || [],
-              projects: resume?.projects || [],
-              awards: resume?.awards || [],
-              interests: resume?.interests || [],
-              image_url: imagePreview,
-            }}
           />
         )}
 
@@ -291,11 +280,9 @@ const ResumeForm = ({ resume, onSaved, onCancel }) => {
             اطلاعات شخصی
             ============================================ */}
         {activeStep === "personal" && (
-          <>
-            {/* عکس */}
-            <div className={styles.imageSection}>
-              <label>عکس پروفایل</label>
-              <div className={styles.imageBox}>
+          <div className={styles.personalPanel}>
+            <div className={styles.personalTop}>
+              <div className={styles.avatarCol}>
                 {imagePreview ? (
                   <div className={styles.imagePreviewWrapper}>
                     <img
@@ -309,7 +296,14 @@ const ResumeForm = ({ resume, onSaved, onCancel }) => {
                       onClick={removeImage}
                       aria-label="حذف تصویر"
                     >
-                      <Trash2 size={14} />
+                      <Trash2 size={12} />
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.changeImageBtn}
+                      onClick={() => imageInputRef.current?.click()}
+                    >
+                      تغییر
                     </button>
                   </div>
                 ) : (
@@ -318,8 +312,8 @@ const ResumeForm = ({ resume, onSaved, onCancel }) => {
                     className={styles.uploadBox}
                     onClick={() => imageInputRef.current?.click()}
                   >
-                    <ImageIcon size={28} />
-                    <span>آپلود عکس</span>
+                    <ImageIcon size={22} strokeWidth={1.8} />
+                    <span>عکس</span>
                   </button>
                 )}
                 <input
@@ -330,230 +324,211 @@ const ResumeForm = ({ resume, onSaved, onCancel }) => {
                   hidden
                 />
               </div>
-            </div>
 
-            {/* عنوان رزومه - تمام عرض */}
-            <div className={styles.formGroup}>
-              <label>عنوان رزومه *</label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => handleChange("title", e.target.value)}
-                placeholder="مثلاً: رزومه کارشناس فروش"
-                required
-              />
-            </div>
-
-            {/* نام و عنوان شغلی */}
-            <div className={styles.row}>
-              <div className={styles.formGroup}>
-                <label>نام کامل *</label>
-                <input
-                  type="text"
-                  value={formData.full_name}
-                  onChange={(e) => handleChange("full_name", e.target.value)}
-                  placeholder="نام و نام خانوادگی"
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>عنوان شغلی</label>
-                <input
-                  type="text"
-                  value={formData.job_title}
-                  onChange={(e) => handleChange("job_title", e.target.value)}
-                  placeholder="مثلاً: کارشناس فروش"
-                />
+              <div className={styles.personalIdentity}>
+                <div className={`${styles.formGroup} ${styles.spanFull}`}>
+                  <label>عنوان رزومه *</label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => handleChange("title", e.target.value)}
+                    placeholder="مثلاً: رزومه کارشناس فروش"
+                    required
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>نام کامل *</label>
+                  <input
+                    type="text"
+                    value={formData.full_name}
+                    onChange={(e) => handleChange("full_name", e.target.value)}
+                    placeholder="نام و نام خانوادگی"
+                    required
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>عنوان شغلی</label>
+                  <input
+                    type="text"
+                    value={formData.job_title}
+                    onChange={(e) => handleChange("job_title", e.target.value)}
+                    placeholder="مثلاً: کارشناس فروش"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* ایمیل و موبایل */}
-            <div className={styles.row}>
-              <div className={styles.formGroup}>
-                <label>ایمیل</label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleChange("email", e.target.value)}
-                  placeholder="example@mail.com"
-                  dir="ltr"
-                />
+            <section className={styles.personalBlock}>
+              <h4 className={styles.blockTitle}>اطلاعات تماس</h4>
+              <div className={styles.grid3}>
+                <div className={styles.formGroup}>
+                  <label>ایمیل</label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleChange("email", e.target.value)}
+                    placeholder="example@mail.com"
+                    dir="ltr"
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>موبایل</label>
+                  <input
+                    type="text"
+                    value={formData.mobile}
+                    onChange={(e) => handleChange("mobile", e.target.value)}
+                    placeholder="09123456789"
+                    dir="ltr"
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>تلفن ثابت</label>
+                  <input
+                    type="text"
+                    value={formData.phone}
+                    onChange={(e) => handleChange("phone", e.target.value)}
+                    placeholder="02112345678"
+                    dir="ltr"
+                  />
+                </div>
               </div>
-              <div className={styles.formGroup}>
-                <label>موبایل</label>
-                <input
-                  type="text"
-                  value={formData.mobile}
-                  onChange={(e) => handleChange("mobile", e.target.value)}
-                  placeholder="09123456789"
-                  dir="ltr"
-                />
-              </div>
-            </div>
+            </section>
 
-            {/* تلفن و شهر */}
-            <div className={styles.row}>
-              <div className={styles.formGroup}>
-                <label>تلفن ثابت</label>
-                <input
-                  type="text"
-                  value={formData.phone}
-                  onChange={(e) => handleChange("phone", e.target.value)}
-                  placeholder="02112345678"
-                  dir="ltr"
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>شهر</label>
-                <select
+            <section className={styles.personalBlock}>
+              <h4 className={styles.blockTitle}>مشخصات فردی</h4>
+              <div className={styles.grid3}>
+                <FieldSelect
+                  label="شهر"
                   value={formData.city}
-                  onChange={(e) => handleChange("city", e.target.value)}
-                >
-                  <option value="">انتخاب کنید</option>
-                  {cities.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* آدرس */}
-            <div className={styles.formGroup}>
-              <label>آدرس</label>
-              <input
-                type="text"
-                value={formData.address}
-                onChange={(e) => handleChange("address", e.target.value)}
-                placeholder="آدرس"
-              />
-            </div>
-
-            {/* تاریخ تولد و جنسیت */}
-            <div className={styles.row}>
-              <div className={styles.formGroup}>
-                <label>تاریخ تولد</label>
-                <PersianDatePicker
-                  value={formData.birth_date}
-                  onChange={(date) => handleChange("birth_date", date || "")}
-                  placeholder="انتخاب تاریخ تولد"
-                  minYear={1300}
-                  maxYear={1410}
+                  onChange={(v) => handleChange("city", v)}
+                  options={cities.map((c) => ({ value: c.id, label: c.name }))}
+                  placeholder="انتخاب شهر"
+                  searchable
+                  allowClear
                 />
-              </div>
-              <div className={styles.formGroup}>
-                <label>جنسیت</label>
-                <select
+                <div className={styles.formGroup}>
+                  <label>تاریخ تولد</label>
+                  <PersianDatePicker
+                    value={formData.birth_date}
+                    onChange={(date) => handleChange("birth_date", date || "")}
+                    placeholder="انتخاب تاریخ"
+                    minYear={1300}
+                    maxYear={1410}
+                  />
+                </div>
+                <FieldSelect
+                  label="جنسیت"
                   value={formData.gender}
-                  onChange={(e) => handleChange("gender", e.target.value)}
-                >
-                  <option value="">انتخاب کنید</option>
-                  {genders.map((g) => (
-                    <option key={g.id} value={g.id}>
-                      {g.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* وضعیت تاهل و سربازی */}
-            <div className={styles.row}>
-              <div className={styles.formGroup}>
-                <label>وضعیت تاهل</label>
-                <select
+                  onChange={(v) => handleChange("gender", v)}
+                  options={genders.map((g) => ({ value: g.id, label: g.name }))}
+                  placeholder="انتخاب جنسیت"
+                  allowClear
+                />
+                <FieldSelect
+                  label="وضعیت تاهل"
                   value={formData.marital_status}
-                  onChange={(e) =>
-                    handleChange("marital_status", e.target.value)
-                  }
-                >
-                  <option value="">انتخاب کنید</option>
-                  <option value="single">مجرد</option>
-                  <option value="married">متاهل</option>
-                </select>
-              </div>
-              <div className={styles.formGroup}>
-                <label>وضعیت خدمت سربازی</label>
-                <select
+                  onChange={(v) => handleChange("marital_status", v)}
+                  options={[
+                    { value: "single", label: "مجرد" },
+                    { value: "married", label: "متاهل" },
+                  ]}
+                  placeholder="انتخاب کنید"
+                  allowClear
+                />
+                <FieldSelect
+                  label="وضعیت خدمت سربازی"
                   value={formData.military_status}
-                  onChange={(e) =>
-                    handleChange("military_status", e.target.value)
-                  }
-                >
-                  <option value="">انتخاب کنید</option>
-                  <option value="done">انجام شده</option>
-                  <option value="exempt">معاف</option>
-                  <option value="not_done">انجام نشده</option>
-                </select>
+                  onChange={(v) => handleChange("military_status", v)}
+                  options={[
+                    { value: "done", label: "انجام شده" },
+                    { value: "exempt", label: "معاف" },
+                    { value: "not_done", label: "انجام نشده" },
+                  ]}
+                  placeholder="انتخاب کنید"
+                  allowClear
+                />
+                <div className={`${styles.formGroup} ${styles.spanFull}`}>
+                  <label>آدرس</label>
+                  <input
+                    type="text"
+                    value={formData.address}
+                    onChange={(e) => handleChange("address", e.target.value)}
+                    placeholder="آدرس محل سکونت"
+                  />
+                </div>
               </div>
-            </div>
+            </section>
 
-            {/* وب‌سایت و لینکدین */}
-            <div className={styles.row}>
-              <div className={styles.formGroup}>
-                <label>وب‌سایت</label>
-                <input
-                  type="url"
-                  value={formData.website}
-                  onChange={(e) => handleChange("website", e.target.value)}
-                  placeholder="https://example.com"
-                  dir="ltr"
-                />
+            <section className={styles.personalBlock}>
+              <h4 className={styles.blockTitle}>شبکه‌ها و لینک‌ها</h4>
+              <div className={styles.grid3}>
+                <div className={styles.formGroup}>
+                  <label>وب‌سایت</label>
+                  <input
+                    type="url"
+                    value={formData.website}
+                    onChange={(e) => handleChange("website", e.target.value)}
+                    placeholder="https://example.com"
+                    dir="ltr"
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>لینکدین</label>
+                  <input
+                    type="url"
+                    value={formData.linkedin}
+                    onChange={(e) => handleChange("linkedin", e.target.value)}
+                    placeholder="https://linkedin.com/in/..."
+                    dir="ltr"
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>گیت‌هاب</label>
+                  <input
+                    type="url"
+                    value={formData.github}
+                    onChange={(e) => handleChange("github", e.target.value)}
+                    placeholder="https://github.com/..."
+                    dir="ltr"
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>تلگرام</label>
+                  <input
+                    type="text"
+                    value={formData.telegram}
+                    onChange={(e) => handleChange("telegram", e.target.value)}
+                    placeholder="@username"
+                    dir="ltr"
+                  />
+                </div>
               </div>
-              <div className={styles.formGroup}>
-                <label>لینکدین</label>
-                <input
-                  type="url"
-                  value={formData.linkedin}
-                  onChange={(e) => handleChange("linkedin", e.target.value)}
-                  placeholder="https://linkedin.com/in/..."
-                  dir="ltr"
-                />
-              </div>
-            </div>
-
-            {/* گیت‌هاب و تلگرام */}
-            <div className={styles.row}>
-              <div className={styles.formGroup}>
-                <label>گیت‌هاب</label>
-                <input
-                  type="url"
-                  value={formData.github}
-                  onChange={(e) => handleChange("github", e.target.value)}
-                  placeholder="https://github.com/..."
-                  dir="ltr"
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>تلگرام</label>
-                <input
-                  type="text"
-                  value={formData.telegram}
-                  onChange={(e) => handleChange("telegram", e.target.value)}
-                  placeholder="@username"
-                  dir="ltr"
-                />
-              </div>
-            </div>
-          </>
+            </section>
+          </div>
         )}
 
         {/* ============================================
             خلاصه حرفه‌ای
             ============================================ */}
         {activeStep === "summary" && (
-          <div className={styles.formGroup}>
-            <label>خلاصه حرفه‌ای</label>
-            <p className={styles.hint}>
-              ۲ تا ۳ خط معرفی از خودتان، تخصص‌ها و اهدافتان بنویسید.
-            </p>
-            <textarea
-              value={formData.summary}
-              onChange={(e) => handleChange("summary", e.target.value)}
-              rows={6}
-              placeholder="مثلاً: کارشناس فروش با ۵ سال سابقه در حوزه تجهیزات صنعتی..."
-            />
+          <div className={`${styles.sectionWrapper} ${styles.miniPanel}`}>
+            <div className={styles.sectionHeader}>
+              <h3>خلاصه حرفه‌ای</h3>
+            </div>
+            <div className={styles.subForm}>
+              <div className={styles.formGroup}>
+                <label>معرفی کوتاه</label>
+                <p className={styles.hint}>
+                  ۲ تا ۳ خط درباره تخصص‌ها و اهدافتان بنویسید.
+                </p>
+                <textarea
+                  value={formData.summary}
+                  onChange={(e) => handleChange("summary", e.target.value)}
+                  rows={5}
+                  placeholder="مثلاً: کارشناس فروش با ۵ سال سابقه در حوزه تجهیزات صنعتی..."
+                />
+              </div>
+            </div>
           </div>
         )}
 

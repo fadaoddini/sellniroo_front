@@ -19,7 +19,7 @@ import platformShopApi from '@/services/platformShopApi'
 import useShopMode from '@/hooks/useShopMode'
 import CategoryPicker, {
   useCategoryLabel,
-} from '@/app/(site)/shop-panel/CategoryPicker'
+} from '@/components/Shop/owner/CategoryPicker'
 import AdminProductCreateForm from '@/components/Admin/AdminProductCreateForm'
 import styles from '@/app/(admin)/adminproducts/AdminProducts.module.css'
 

@@ -1,6 +1,8 @@
 // config/pageBuilderWidgets.js — کاتالوگ ویجت‌های قابل افزودن به ستون‌ها
 // طبقه‌بندی بر اساس ماژول‌های سایت؛ status: ready | planned | skeleton
 
+import { getModulePageDef } from '@/config/modulePageLayouts'
+
 /**
  * type: کلید پایدار ویجت
  * moduleKey: وابستگی به ماژول سایت (اختیاری)
@@ -15,7 +17,11 @@ export const WIDGET_CATEGORIES = [
   { id: 'menus', label: 'منو و ناوبری سایت' },
   { id: 'corporate', label: 'برند / شرکتی' },
   { id: 'hero', label: 'اسلایدر هیرو' },
+  { id: 'layout', label: 'چیدمان و هیرو ترکیبی' },
+  { id: 'search', label: 'جستجو' },
   { id: 'jobs', label: 'سیستم کاریابی' },
+  { id: 'booking', label: 'سیستم نوبت‌دهی' },
+  { id: 'nobat', label: 'نوبت اختصاصی (صدرا)' },
   { id: 'shop', label: 'فروشگاه' },
   { id: 'news', label: 'اخبار' },
   { id: 'sales', label: 'بازاریابی و فروش' },
@@ -26,9 +32,14 @@ export const WIDGET_CATEGORIES = [
   { id: 'quiz', label: 'آزمون تخصصی' },
   { id: 'faq', label: 'سوالات متداول' },
   { id: 'school', label: 'مدرسه' },
+  { id: 'softapps', label: 'نرم‌افزارهای کاربردی' },
+  { id: 'repairs', label: 'تعمیرات و سرویس' },
   { id: 'nav', label: 'ناوبری عمومی' },
   { id: 'extra', label: 'سایر (بک‌اند آماده)' },
   { id: 'tools', label: 'ابزار صفحه' },
+  { id: 'platform', label: 'موتور ربو' },
+  { id: 'gym', label: 'باشگاه بدنسازی' },
+  { id: 'inventory', label: 'انبارداری پیشرفته' },
 ]
 
 function w(def) {
@@ -203,7 +214,7 @@ export const PAGE_BUILDER_WIDGETS = [
     type: 'job_search_bar',
     label: 'جستجوی شغل',
     desc: 'نوار جستجو + شهر → صفحه آگهی‌ها',
-    category: 'jobs',
+    category: 'search',
     icon: 'Search',
     moduleKey: 'job_board',
     settingsPanel: 'job_board',
@@ -415,10 +426,20 @@ export const PAGE_BUILDER_WIDGETS = [
     type: 'shop_search_bar',
     label: 'جستجوی فروشگاه',
     desc: 'نوار جستجو → صفحه /shop',
-    category: 'shop',
+    category: 'search',
     icon: 'Search',
     moduleKey: 'shop',
     settingsPanel: 'shop',
+    status: 'ready',
+  }),
+  w({
+    type: 'sadra_pixel_title',
+    label: 'تابلو روان',
+    desc: 'تابلو روان LED تمام‌عرض — فارسی/لاتین، تم رنگی و جهت حرکت',
+    category: 'corporate',
+    icon: 'Sparkles',
+    renderKey: 'sadra_pixel_title',
+    settingsPanel: 'sadra_pixel',
     status: 'ready',
   }),
 
@@ -534,7 +555,7 @@ export const PAGE_BUILDER_WIDGETS = [
   w({
     type: 'cta_contact',
     label: 'تماس و درخواست',
-    desc: 'فرم مشاوره / CTA',
+    desc: '۴ اسکلتون افقی/عمودی، فونت و فرم مشاوره',
     category: 'sales',
     icon: 'Phone',
     moduleKey: 'cta_section',
@@ -573,6 +594,252 @@ export const PAGE_BUILDER_WIDGETS = [
     category: 'sales',
     icon: 'Zap',
     moduleKey: 'cta_section',
+    status: 'ready',
+  }),
+  w({
+    type: 'feature_cards',
+    label: 'کارت‌های ویژگی / خطوط محصول',
+    desc: 'گرید کارت معرفی خدمات یا خطوط محصول شرکتی',
+    category: 'corporate',
+    icon: 'Layers',
+    moduleKey: 'about_us',
+    settingsPanel: 'feature_cards',
+    status: 'ready',
+  }),
+  w({
+    type: 'inventory_add_keeper',
+    label: 'انبار · افزودن انباردار',
+    desc: 'فراخوان ثبت فرد مجاز / انباردار',
+    category: 'inventory',
+    icon: 'UserPlus',
+    moduleKey: 'advanced_inventory',
+    status: 'ready',
+  }),
+  w({
+    type: 'inventory_top_operators',
+    label: 'انبار · پررونق‌ترین صادرکنندگان',
+    desc: 'رتبه‌بندی بیشترین ورود و خروج',
+    category: 'inventory',
+    icon: 'Users',
+    moduleKey: 'advanced_inventory',
+    status: 'ready',
+  }),
+  w({
+    type: 'inventory_stock_in_cta',
+    label: 'انبار · ورود کالا (سبز)',
+    desc: 'دکمه ورود به انبار با تم سبز',
+    category: 'inventory',
+    icon: 'ArrowDownToLine',
+    moduleKey: 'advanced_inventory',
+    status: 'ready',
+  }),
+  w({
+    type: 'inventory_stock_out_cta',
+    label: 'انبار · خروج کالا (قرمز)',
+    desc: 'دکمه خروج از انبار با تم قرمز',
+    category: 'inventory',
+    icon: 'ArrowUpFromLine',
+    moduleKey: 'advanced_inventory',
+    status: 'ready',
+  }),
+  w({
+    type: 'inventory_activity_chart',
+    label: 'انبار · نمودار ۳۰/۶۰/۹۰ روز',
+    desc: 'نمودار اتفاقات ورود و خروج اخیر',
+    category: 'inventory',
+    icon: 'BarChart3',
+    moduleKey: 'advanced_inventory',
+    status: 'ready',
+  }),
+  w({
+    type: 'inventory_today_vouchers',
+    label: 'انبار · حواله‌های امروز',
+    desc: 'لیست حواله‌های ثبت‌شده امروز',
+    category: 'inventory',
+    icon: 'ClipboardList',
+    moduleKey: 'advanced_inventory',
+    status: 'ready',
+  }),
+  w({
+    type: 'rebo_hero',
+    label: 'ربو · هیرو',
+    desc: 'اسلایدر تمام‌صفحه با مدار دایره‌ای تعاملی و تغییر نرم رنگ زمینه',
+    category: 'platform',
+    icon: 'Sparkles',
+    settingsPanel: 'rebo',
+    status: 'ready',
+  }),
+  w({
+    type: 'rebo_stack',
+    label: 'ربو · استک فنی',
+    desc: 'کارت‌های استک با آیکون Lucide — Python، Next، API، PWA…',
+    category: 'platform',
+    icon: 'Layers',
+    settingsPanel: 'rebo',
+    status: 'ready',
+  }),
+  w({
+    type: 'rebo_pillars',
+    label: 'ربو · ارکان موتور',
+    desc: 'کارت‌های ارکان با آیکون Lucide — منعطف، استاندارد، یکپارچه',
+    category: 'platform',
+    icon: 'Layers',
+    settingsPanel: 'rebo',
+    status: 'ready',
+  }),
+  w({
+    type: 'rebo_capabilities',
+    label: 'ربو · امکانات',
+    desc: 'کارت افقی با آیکون، فهرست امکانات و تصویر عمودی موبایل',
+    category: 'platform',
+    icon: 'Boxes',
+    settingsPanel: 'rebo',
+    status: 'ready',
+  }),
+  w({
+    type: 'rebo_dashboard',
+    label: 'ربو · پیش‌نمایش داشبورد',
+    desc: 'اسکلت داشبورد با تم تیره و تب سیستم‌ها',
+    category: 'platform',
+    icon: 'LayoutDashboard',
+    settingsPanel: 'rebo',
+    status: 'ready',
+  }),
+  w({
+    type: 'rebo_usecases',
+    label: 'انیمیشن ربو',
+    desc: 'صحنه پیکسلی متحرک ربو با صنایع، شهر، درخت، موزیک و تابلوی لامپی',
+    category: 'platform',
+    icon: 'Sparkles',
+    settingsPanel: 'rebo',
+    status: 'ready',
+  }),
+  w({
+    type: 'rebo_pricing',
+    label: 'ربو · برآورد هزینه',
+    desc: 'انتخاب موضوع و قابلیت با جمع لحظه‌ای و کارت‌های رنگی',
+    category: 'platform',
+    icon: 'Calculator',
+    settingsPanel: 'rebo',
+    status: 'ready',
+  }),
+  w({
+    type: 'rebo_ops',
+    label: 'ربو · پشتیبانی و سرور',
+    desc: 'هزینه پشتیبانی، سرور ابری و خدمات جانبی',
+    category: 'platform',
+    icon: 'Headphones',
+    settingsPanel: 'rebo',
+    status: 'ready',
+  }),
+  w({
+    type: 'rebo_cloud_order',
+    label: 'ربو · سفارش سرور ابری',
+    desc: 'فرم ثبت سفارش و پذیرش شرایط حذف داده',
+    category: 'platform',
+    icon: 'Cloud',
+    settingsPanel: 'rebo',
+    status: 'ready',
+  }),
+  w({
+    type: 'rebo_closing',
+    label: 'ربو · جمع‌بندی',
+    desc: 'CTA پایانی برند ربو',
+    category: 'platform',
+    icon: 'Sparkles',
+    settingsPanel: 'rebo',
+    status: 'ready',
+  }),
+  w({
+    type: 'rebo_showcase',
+    label: 'ربو · همه بخش‌ها (ترکیبی)',
+    desc: 'سازگاری قدیمی — ترجیحاً از ویجت‌های جداگانه ربو استفاده کنید',
+    category: 'platform',
+    icon: 'Sparkles',
+    settingsPanel: 'rebo',
+    status: 'planned',
+  }),
+
+  w({
+    type: 'hero_with_menu',
+    label: 'هیرو دارای منو',
+    desc: 'هیرو دو‌نیمه با تصاویر + منو — هماهنگ با تایم‌لاین منحنی',
+    category: 'layout',
+    icon: 'PanelTop',
+    moduleKey: 'hero_with_menu',
+    status: 'ready',
+  }),
+  w({
+    type: 'gym_hero',
+    label: 'باشگاه · هیرو (قدیمی)',
+    desc: 'همان هیرو دارای منو — برای سازگاری با چیدمان‌های قبلی',
+    category: 'gym',
+    icon: 'Dumbbell',
+    moduleKey: 'hero_with_menu',
+    status: 'ready',
+  }),
+  w({
+    type: 'gym_journey',
+    label: 'باشگاه · صحنه پیکسلی',
+    desc: 'انیمیشن پیکسلی ساده — ادمک‌ها در حال اسکوات، دمبل، بارفیکس و وزنه',
+    category: 'gym',
+    icon: 'Route',
+    moduleKey: 'gym_bodybuilding',
+    status: 'ready',
+  }),
+  w({
+    type: 'gym_features',
+    label: 'تایم لاین منحنی',
+    desc: 'تایم‌لاین عمودی منحنی با بافر اسکرول — محتوا از داشبورد',
+    category: 'gym',
+    icon: 'Layers',
+    moduleKey: 'curved_timeline',
+    status: 'ready',
+  }),
+  w({
+    type: 'gym_sessions',
+    label: 'باشگاه · سانس‌ها',
+    desc: 'نمایش سانس‌های آقایان و بانوان از دیتابیس با ظرفیت',
+    category: 'gym',
+    icon: 'CalendarClock',
+    moduleKey: 'gym_bodybuilding',
+    status: 'ready',
+  }),
+  w({
+    type: 'gym_trainers',
+    label: 'باشگاه · مربیان',
+    desc: 'معرفی مربیان فعال باشگاه از دیتابیس',
+    category: 'gym',
+    icon: 'UserRoundCog',
+    moduleKey: 'gym_bodybuilding',
+    status: 'ready',
+  }),
+  w({
+    type: 'gym_shop',
+    label: 'باشگاه · فروشگاه',
+    desc: 'کاتالوگ محصولات باشگاه با سبد خرید و سفارش مشترک ماژول فروشگاه',
+    category: 'gym',
+    icon: 'ShoppingBag',
+    moduleKey: 'gym_bodybuilding',
+    status: 'ready',
+  }),
+  w({
+    type: 'gym_pillars',
+    label: 'باشگاه · ارکان عملیاتی',
+    desc: 'چهار رکن عضو‌محور — سانس، مربی، فروشگاه، یادآوری',
+    category: 'gym',
+    icon: 'LayoutDashboard',
+    moduleKey: 'gym_bodybuilding',
+    status: 'ready',
+  }),
+  w({
+    type: 'gym_closing',
+    label: 'باشگاه · جمع‌بندی',
+    desc: 'CTA پایانی برای ورود به داشبورد مدیریت',
+    category: 'gym',
+    icon: 'Sparkles',
+    moduleKey: 'gym_bodybuilding',
+    status: 'ready',
   }),
 
   // ─── ویدیو و استوری (فقط از صفحه‌ساز — سراسری نیست) ───
@@ -584,6 +851,7 @@ export const PAGE_BUILDER_WIDGETS = [
     icon: 'Circle',
     moduleKey: 'videoinsta',
     renderKey: 'videoinsta',
+    settingsPanel: 'video_archive',
     status: 'ready',
   }),
   w({
@@ -594,6 +862,7 @@ export const PAGE_BUILDER_WIDGETS = [
     icon: 'Circle',
     moduleKey: 'videoinsta',
     renderKey: 'videoinsta',
+    settingsPanel: 'video_archive',
     status: 'ready',
   }),
   w({
@@ -604,6 +873,7 @@ export const PAGE_BUILDER_WIDGETS = [
     icon: 'Film',
     moduleKey: 'videoinsta',
     renderKey: 'videoinsta',
+    settingsPanel: 'video_archive',
     status: 'ready',
   }),
   w({
@@ -614,6 +884,18 @@ export const PAGE_BUILDER_WIDGETS = [
     icon: 'Film',
     moduleKey: 'videoinsta',
     renderKey: 'videoinsta',
+    settingsPanel: 'video_archive',
+    status: 'ready',
+  }),
+  w({
+    type: 'video_archive_recycler',
+    label: 'آرشیو ویدیویی ریسایکلر',
+    desc: 'اسکرول افقی ویدیوها در یک ردیف مثل ریسایکلرویو',
+    category: 'video',
+    icon: 'GalleryHorizontal',
+    moduleKey: 'videoinsta',
+    renderKey: 'videoinsta',
+    settingsPanel: 'video_archive',
     status: 'ready',
   }),
   w({
@@ -624,6 +906,7 @@ export const PAGE_BUILDER_WIDGETS = [
     icon: 'Film',
     moduleKey: 'videoinsta',
     renderKey: 'videoinsta',
+    settingsPanel: 'video_archive',
     status: 'ready',
   }),
 
@@ -770,16 +1053,108 @@ export const PAGE_BUILDER_WIDGETS = [
     type: 'faq_search',
     label: 'جستجوی FAQ',
     desc: 'جستجو در سوالات متداول',
-    category: 'faq',
+    category: 'search',
     icon: 'Search',
     moduleKey: 'faq',
   }),
 
   // ─── مدرسه ───
   w({
+    type: 'school_page',
+    label: 'محتوای کامل صفحه مدرسه',
+    desc: 'جایگاه محتوای /school در چیدمان ماژول',
+    category: 'school',
+    icon: 'GraduationCap',
+    moduleKey: 'school',
+    status: 'ready',
+    builderModes: ['module:school'],
+  }),
+  w({
+    type: 'school_animation',
+    label: 'ویجت انیمیشن مدرسه',
+    desc: 'صحنه پیکسلی مدرسه مثل ربو — موزیک، مهمانی، شهر رنگی، مدرسه آسمان علم',
+    category: 'school',
+    icon: 'Sparkles',
+    moduleKey: 'school',
+    settingsPanel: 'rebo',
+    status: 'ready',
+  }),
+  w({
+    type: 'school_landing',
+    label: 'مدرسه · لندینگ کامل',
+    desc: 'هیرو، چهار درگاه، کارنامه، نمودار، پنل مشاور و ابزار معلم',
+    category: 'school',
+    icon: 'GraduationCap',
+    moduleKey: 'school',
+    status: 'ready',
+  }),
+  w({
+    type: 'school_hero_breaking',
+    label: 'هیرو خبر فوری',
+    desc: 'خبر فوری شفاف روی گرادیان هیرو مدرسه — یک تکه، بدون درز رنگی',
+    category: 'school',
+    icon: 'Megaphone',
+    moduleKey: 'school',
+    status: 'ready',
+  }),
+  w({
+    type: 'school_role_bar',
+    label: 'مدرسه · نوار ورود نقش‌ها',
+    desc: 'یک ردیف جمع‌وجور: مدیر، مشاور، معلم و دانش‌آموز',
+    category: 'school',
+    icon: 'Users',
+    moduleKey: 'school',
+    status: 'ready',
+  }),
+  w({
+    type: 'school_hero',
+    label: 'مدرسه · هیرو',
+    desc: 'هیرو برند مدرسه با پیش‌نمایش کارنامه شناور',
+    category: 'school',
+    icon: 'Sparkles',
+    moduleKey: 'school',
+    status: 'ready',
+  }),
+  w({
+    type: 'school_portals',
+    label: 'مدرسه · درگاه نقش‌ها',
+    desc: 'ورود دانش‌آموز، معلم، مشاور و مدیر',
+    category: 'school',
+    icon: 'User',
+    moduleKey: 'school',
+    status: 'ready',
+  }),
+  w({
+    type: 'school_report_preview',
+    label: 'مدرسه · کارنامه و نمودار',
+    desc: 'پیش‌نمایش بصری کارنامه ماهانه و نمودار پیشرفت',
+    category: 'school',
+    icon: 'Trophy',
+    moduleKey: 'school',
+    status: 'ready',
+  }),
+  w({
+    type: 'school_counseling',
+    label: 'مدرسه · پنل مشاور',
+    desc: 'معرفی آزمون IQ/EQ و ورود مشاور',
+    category: 'school',
+    icon: 'Award',
+    moduleKey: 'school',
+    status: 'ready',
+  }),
+  w({
+    type: 'school_closing',
+    label: 'مدرسه · جمع‌بندی',
+    desc: 'CTA پایانی ورود به سامانه',
+    category: 'school',
+    icon: 'Sparkles',
+    moduleKey: 'school',
+    status: 'ready',
+  }),
+  w({
     type: 'school_overview',
-    label: 'نمای کلی مدرسه',
-    desc: 'خلاصه وضعیت مدرسه',
+    label: 'نمای کلی مدرسه (قدیمی)',
+    desc: 'جایگزین: school_landing',
     category: 'school',
     icon: 'GraduationCap',
     moduleKey: 'school',
@@ -815,6 +1190,242 @@ export const PAGE_BUILDER_WIDGETS = [
     category: 'school',
     icon: 'Trophy',
     moduleKey: 'school',
+  }),
+
+  // ─── نرم‌افزارهای کاربردی ───
+  w({
+    type: 'softapps_grid',
+    label: 'گرید نرم‌افزارها',
+    desc: '۴ اسکلتون افقی/عمودی، فونت، فیلتر و رنگ قابل‌تنظیم',
+    category: 'softapps',
+    icon: 'AppWindow',
+    moduleKey: 'softapps',
+    renderKey: 'softapps_grid',
+    settingsPanel: 'softapps',
+    status: 'ready',
+  }),
+  w({
+    type: 'softapps_featured',
+    label: 'نرم‌افزارهای ویژه',
+    desc: 'ویژه با تنظیمات کامل چیدمان و فیلتر',
+    category: 'softapps',
+    icon: 'Star',
+    moduleKey: 'softapps',
+    renderKey: 'softapps_featured',
+    settingsPanel: 'softapps',
+    status: 'ready',
+  }),
+  w({
+    type: 'softapps_cta',
+    label: 'لینک به صفحه نرم‌افزارها',
+    desc: 'دکمه CTA قابل‌تنظیم به /apps',
+    category: 'softapps',
+    icon: 'ExternalLink',
+    moduleKey: 'softapps',
+    renderKey: 'softapps_cta',
+    settingsPanel: 'softapps',
+    status: 'ready',
+  }),
+
+  // ─── تعمیرات و سرویس ───
+  w({
+    type: 'repairs_cta',
+    label: 'فراخوان تعمیرات',
+    desc: 'بنر دعوت به درخواست سرویس — دسکتاپ/موبایل جدا',
+    category: 'repairs',
+    icon: 'Wrench',
+    moduleKey: 'repairs',
+    renderKey: 'repairs_cta',
+    settingsPanel: 'repairs',
+    status: 'ready',
+  }),
+  w({
+    type: 'repairs_technicians',
+    label: 'تعمیرکاران',
+    desc: 'کارت‌های تیم سرویس — قابل سفارشی‌سازی کامل',
+    category: 'repairs',
+    icon: 'Users',
+    moduleKey: 'repairs',
+    renderKey: 'repairs_technicians',
+    settingsPanel: 'repairs',
+    status: 'ready',
+  }),
+  w({
+    type: 'repairs_services',
+    label: 'اجرت‌ها و خدمات',
+    desc: 'لیست اجرت‌های تعریف‌شده با قیمت و لینک درخواست',
+    category: 'repairs',
+    icon: 'ListChecks',
+    moduleKey: 'repairs',
+    renderKey: 'repairs_services',
+    settingsPanel: 'repairs',
+    status: 'ready',
+  }),
+  w({
+    type: 'repairs_request',
+    label: 'فرم درخواست تعمیر',
+    desc: 'ثبت درخواست سرویس داخل صفحه — دسکتاپ/موبایل جدا',
+    category: 'repairs',
+    icon: 'ClipboardList',
+    moduleKey: 'repairs',
+    renderKey: 'repairs_request',
+    settingsPanel: 'repairs',
+    status: 'ready',
+  }),
+  w({
+    type: 'repairs_track',
+    label: 'پیگیری سفارش تعمیر',
+    desc: 'جستجو با کد سفارش و موبایل',
+    category: 'repairs',
+    icon: 'Search',
+    moduleKey: 'repairs',
+    renderKey: 'repairs_track',
+    settingsPanel: 'repairs',
+    status: 'ready',
+  }),
+
+  // ─── نوبت‌دهی ───
+  w({
+    type: 'booking_form',
+    label: 'فرم رزرو نوبت',
+    desc: 'رزرو با تقویم شمسی، خدمت و پرسنل — قابل سفارشی‌سازی کامل',
+    category: 'booking',
+    icon: 'CalendarCheck',
+    moduleKey: 'booking_widget',
+    settingsPanel: 'booking',
+    status: 'ready',
+  }),
+  w({
+    type: 'booking_services',
+    label: 'خدمات نوبت‌دهی',
+    desc: 'کارت‌های خدمات — قابل سفارشی‌سازی کامل (دسکتاپ/موبایل)',
+    category: 'booking',
+    icon: 'ListChecks',
+    moduleKey: 'booking_services',
+    settingsPanel: 'booking_services',
+    status: 'ready',
+  }),
+  w({
+    type: 'booking_staff',
+    label: 'پرسنل نوبت‌دهی',
+    desc: 'کارت‌های تیم — قابل سفارشی‌سازی کامل (دسکتاپ/موبایل)',
+    category: 'booking',
+    icon: 'Users',
+    moduleKey: 'booking_staff',
+    settingsPanel: 'booking_staff',
+    status: 'ready',
+  }),
+  w({
+    type: 'booking_lookup',
+    label: 'پیگیری نوبت',
+    desc: 'جستجو با کد و موبایل — قابل سفارشی‌سازی کامل (دسکتاپ/موبایل)',
+    category: 'booking',
+    icon: 'Search',
+    moduleKey: 'booking_lookup',
+    settingsPanel: 'booking_lookup',
+    status: 'ready',
+  }),
+  w({
+    type: 'booking_cta',
+    label: 'فراخوان رزرو نوبت',
+    desc: 'بنر دعوت به رزرو — قابل سفارشی‌سازی کامل (دسکتاپ/موبایل)',
+    category: 'booking',
+    icon: 'Sparkles',
+    moduleKey: 'booking_cta',
+    settingsPanel: 'booking_cta',
+    status: 'ready',
+  }),
+
+  // ─── ویجت‌های اختصاصی نوبت / صدرا (nobat_) ───
+  w({
+    type: 'nobat_hero',
+    label: 'هیرو صدرا',
+    desc: 'هیرو برند مرکز خدمات لیزر — قطعات، رزرو، گزارش',
+    category: 'nobat',
+    icon: 'Sparkles',
+    moduleKey: 'nobat_hero',
+    settingsPanel: 'nobat',
+    status: 'ready',
+  }),
+  w({
+    type: 'nobat_pillars',
+    label: 'ارکان خدمات نوبت',
+    desc: 'چهار ستون: قطعات، رزرو، سرویس، استوری',
+    category: 'nobat',
+    icon: 'LayoutGrid',
+    moduleKey: 'nobat_pillars',
+    settingsPanel: 'nobat',
+    status: 'ready',
+  }),
+  w({
+    type: 'nobat_parts',
+    label: 'ویترین قطعات نوبت',
+    desc: 'دسته‌های قطعات لیزر با لینک فروشگاه',
+    category: 'nobat',
+    icon: 'Package',
+    moduleKey: 'nobat_parts',
+    settingsPanel: 'nobat',
+    status: 'ready',
+  }),
+  w({
+    type: 'nobat_search',
+    label: 'جستجوی قطعات نوبت',
+    desc: 'جستجوی مینیمال قطعات لیزر — تم اختصاصی صدرا',
+    category: 'search',
+    icon: 'Search',
+    moduleKey: 'nobat_search',
+    settingsPanel: 'nobat',
+    status: 'ready',
+  }),
+  w({
+    type: 'nobat_process',
+    label: 'فرآیند سرویس نوبت',
+    desc: 'مراحل رزرو تا گزارش تعمیر',
+    category: 'nobat',
+    icon: 'ListOrdered',
+    moduleKey: 'nobat_process',
+    settingsPanel: 'nobat',
+    status: 'ready',
+  }),
+  w({
+    type: 'nobat_book',
+    label: 'باند رزرو نوبت',
+    desc: 'فراخوان رزرو تعمیر دستگاه لیزر',
+    category: 'nobat',
+    icon: 'Calendar',
+    moduleKey: 'nobat_book',
+    settingsPanel: 'nobat',
+    status: 'ready',
+  }),
+  w({
+    type: 'nobat_team',
+    label: 'تیم فنی نوبت',
+    desc: 'معرفی تکنسین‌های اعزامی',
+    category: 'nobat',
+    icon: 'Users',
+    moduleKey: 'nobat_team',
+    settingsPanel: 'nobat',
+    status: 'ready',
+  }),
+  w({
+    type: 'nobat_report',
+    label: 'گزارش تعمیر نوبت',
+    desc: 'پیگیری تکنسین، مراحل و قطعات مصرفی',
+    category: 'nobat',
+    icon: 'ClipboardList',
+    moduleKey: 'nobat_report',
+    settingsPanel: 'nobat',
+    status: 'ready',
+  }),
+  w({
+    type: 'nobat_closing',
+    label: 'جمع‌بندی نوبت',
+    desc: 'CTA پایانی مرکز خدمات لیزر',
+    category: 'nobat',
+    icon: 'MessageCircle',
+    moduleKey: 'nobat_closing',
+    settingsPanel: 'nobat',
+    status: 'ready',
   }),
 
   // ─── ناوبری و هویت (بدون ماژول اجباری) ───
@@ -980,12 +1591,23 @@ export const PAGE_BUILDER_WIDGETS = [
   w({
     type: 'product_article',
     label: 'محتوای کامل سینگل محصول',
-    desc: 'گالری، قیمت، توضیحات و افزودن به سبد — قابل چیدمان کنار ویجت‌های فروشگاه',
+    desc: '۴ اسکلتون استاندارد + درصد ستون تصویر، سقف ارتفاع، گالری و سبد',
     category: 'shop',
     icon: 'ShoppingBag',
     status: 'ready',
     moduleKey: 'shop_product',
     builderModes: ['product_single'],
+  }),
+  w({
+    type: 'product_similar',
+    label: 'محصولات مشابه',
+    desc: 'ریسایکلر افقی مثل ویترین محصولات — تعداد و ظاهر کارت قابل تنظیم',
+    category: 'shop',
+    icon: 'GalleryHorizontal',
+    status: 'ready',
+    moduleKey: 'shop_product',
+    builderModes: ['product_single'],
+    settingsPanel: 'shop',
   }),
   w({
     type: 'shop_page',
@@ -997,6 +1619,106 @@ export const PAGE_BUILDER_WIDGETS = [
     moduleKey: 'shop',
     builderModes: ['shop_list'],
   }),
+  w({
+    type: 'repairs_page',
+    label: 'محتوای کامل صفحه تعمیرات',
+    desc: 'فرم درخواست تعمیر / سرویس صفحه /repairs',
+    category: 'repairs',
+    icon: 'Wrench',
+    status: 'ready',
+    moduleKey: 'repairs',
+    builderModes: ['module:repairs'],
+  }),
+  w({
+    type: 'apps_page',
+    label: 'محتوای کامل صفحه نرم‌افزارها',
+    desc: 'لیست نرم‌افزارهای صفحه /apps',
+    category: 'softapps',
+    icon: 'AppWindow',
+    status: 'ready',
+    moduleKey: 'softapps',
+    builderModes: ['module:apps'],
+  }),
+  w({
+    type: 'booking_page',
+    label: 'محتوای کامل صفحه نوبت‌دهی',
+    desc: 'فرم و پیگیری نوبت صفحه /booking',
+    category: 'booking',
+    icon: 'CalendarCheck',
+    status: 'ready',
+    moduleKey: 'booking',
+    builderModes: ['module:booking'],
+  }),
+  w({
+    type: 'about_page',
+    label: 'محتوای کامل صفحه درباره ما',
+    desc: 'متن و سکشن‌های /about',
+    category: 'about',
+    icon: 'Info',
+    status: 'ready',
+    moduleKey: 'about_us',
+    builderModes: ['module:about'],
+  }),
+  w({
+    type: 'profile_page',
+    label: 'محتوای کامل صفحه پروفایل',
+    desc: 'پروفایل کاربر در /profile',
+    category: 'jobs',
+    icon: 'UserRound',
+    status: 'ready',
+    moduleKey: 'job_profile',
+    builderModes: ['module:profile'],
+  }),
+  w({
+    type: 'contact_page',
+    label: 'محتوای کامل صفحه تماس با ما',
+    desc: 'فرم مشاوره و کانال‌های تماس /contact',
+    category: 'sales',
+    icon: 'Phone',
+    status: 'ready',
+    moduleKey: 'cta_section',
+    builderModes: ['module:contact'],
+  }),
+  w({
+    type: 'quiz_page',
+    label: 'محتوای کامل صفحه آزمون',
+    desc: 'آزمون تخصصی صفحه /quiz',
+    category: 'quiz',
+    icon: 'Brain',
+    status: 'ready',
+    moduleKey: 'quiz',
+    builderModes: ['module:quiz'],
+  }),
+  w({
+    type: 'sale_page',
+    label: 'محتوای کامل صفحه فروش',
+    desc: 'ماژول فروش و بازاریابی /sale',
+    category: 'sales',
+    icon: 'ShoppingCart',
+    status: 'ready',
+    moduleKey: 'sales_marketing',
+    builderModes: ['module:sale'],
+  }),
+  w({
+    type: 'inventory_page',
+    label: 'محتوای کامل صفحه انبار',
+    desc: 'ماژول انبارداری پیشرفته /inventory',
+    category: 'inventory',
+    icon: 'Warehouse',
+    status: 'ready',
+    moduleKey: 'advanced_inventory',
+    builderModes: ['module:inventory'],
+  }),
+  w({
+    type: 'gym_bodybuilding_page',
+    label: 'محتوای کامل باشگاه بدنسازی',
+    desc: 'محتوای پروفایل باشگاه بدنسازی /gym/profile',
+    category: 'gym',
+    icon: 'Dumbbell',
+    status: 'ready',
+    moduleKey: 'gym_bodybuilding',
+    builderModes: ['module:gym_bodybuilding'],
+  }),
 ]
 
 export function widgetMeta(type) {
@@ -1006,10 +1728,11 @@ export function widgetMeta(type) {
 /**
  * ویجت‌هایی که با ماژول‌های فعال (یا بدون وابستگی) قابل استفاده‌اند.
  * @param {Record<string, boolean>} moduleMap
- * @param {{ layoutMode?: 'home' | 'news_single' | 'news_list' | 'job_single' | 'product_single' | 'shop_list' }} [opts]
+ * @param {{ layoutMode?: string }} [opts]
  */
 export function availableBuilderWidgets(moduleMap = {}, opts = {}) {
   const mode = opts.layoutMode || 'home'
+  const isModuleMode = String(mode).startsWith('module:')
   return PAGE_BUILDER_WIDGETS.filter((w) => {
     // بسته‌های داده و ماژول‌های فقط‌داشبورد در لیست ویجت نیستند
     if (
@@ -1019,24 +1742,48 @@ export function availableBuilderWidgets(moduleMap = {}, opts = {}) {
     ) {
       return false
     }
+    const shopListMode =
+      mode === 'shop_list' || String(mode || '').startsWith('shop_list:')
+    const productSingleMode =
+      mode === 'product_single' ||
+      String(mode || '').startsWith('product_single:')
     if (Array.isArray(w.builderModes) && w.builderModes.length) {
-      if (!w.builderModes.includes(mode)) return false
+      if (
+        !(
+          w.builderModes.includes(mode) ||
+          (shopListMode && w.builderModes.includes('shop_list')) ||
+          (productSingleMode && w.builderModes.includes('product_single'))
+        )
+      ) {
+        return false
+      }
     } else if (
       mode === 'news_single' ||
       mode === 'news_list' ||
       mode === 'job_single' ||
-      mode === 'product_single' ||
-      mode === 'shop_list'
+      productSingleMode ||
+      shopListMode ||
+      isModuleMode
     ) {
-      // در حالت سینگل/لیست، ویجت‌های عمومی هم قابل افزودن‌اند
+      // در حالت سینگل/لیست/صفحه داخلی، ویجت‌های عمومی هم قابل افزودن‌اند
     }
     if (!w.moduleKey) return true
     if (moduleMap[w.moduleKey]) return true
     if (mode === 'news_list' && w.type === 'news_page') return true
     if (mode === 'news_single' && w.type === 'news_article') return true
     if (mode === 'job_single' && w.type === 'job_article') return true
-    if (mode === 'product_single' && w.type === 'product_article') return true
-    if (mode === 'shop_list' && w.type === 'shop_page') return true
+    if (
+      productSingleMode &&
+      (w.type === 'product_article' || w.type === 'product_similar')
+    ) {
+      return true
+    }
+    if (shopListMode && w.type === 'shop_page') return true
+    if (isModuleMode) {
+      const pageKey = mode.slice('module:'.length)
+      const def = getModulePageDef(pageKey)
+      if (def && w.type === def.contentWidget) return true
+    }
     if (
       mode === 'job_single' &&
       moduleMap.job_board &&
@@ -1048,7 +1795,7 @@ export function availableBuilderWidgets(moduleMap = {}, opts = {}) {
       return true
     }
     if (
-      (mode === 'product_single' || mode === 'shop_list') &&
+      (productSingleMode || shopListMode) &&
       moduleMap.shop &&
       (w.moduleKey === 'shop_listings' || w.moduleKey === 'shop_product')
     ) {
@@ -1058,8 +1805,8 @@ export function availableBuilderWidgets(moduleMap = {}, opts = {}) {
       (mode === 'news_list' ||
         mode === 'news_single' ||
         mode === 'job_single' ||
-        mode === 'product_single' ||
-        mode === 'shop_list') &&
+        productSingleMode ||
+        shopListMode) &&
       !Object.keys(moduleMap || {}).length
     ) {
       return (

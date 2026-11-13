@@ -1,0 +1,316 @@
+/* modules/gym/components/tabs/LibraryTab/modals/FoodLibraryDetailModal.module.css */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 1rem;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  background: var(--bg-secondary, #1e1e2e);
+  border-radius: 1rem;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  width: 100%;
+  max-width: 720px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalIn 0.2s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+}
+
+.header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-primary, #fff);
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted, rgba(255, 255, 255, 0.5));
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.4rem;
+  display: flex;
+  transition: all 0.2s;
+}
+
+.closeBtn:hover {
+  color: var(--text-primary, #fff);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.body {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+
+.mediaSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  background: var(--bg-primary, #12121c);
+}
+
+.imagePlaceholder {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 0.75rem;
+  background: var(--bg-primary, #12121c);
+  border: 1px dashed var(--border, rgba(255, 255, 255, 0.1));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--text-muted, rgba(255, 255, 255, 0.3));
+}
+
+.imagePlaceholder p {
+  margin: 0;
+  font-size: 0.78rem;
+}
+
+.caloriesBox {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(255, 107, 107, 0.12);
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.5rem;
+  color: var(--primary, #ff6b6b);
+}
+
+.caloriesBox > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.caloriesValue {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary, #fff);
+}
+
+.caloriesLabel {
+  font-size: 0.7rem;
+  color: var(--text-muted, rgba(255, 255, 255, 0.5));
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.infoRow {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-primary, #fff);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.05));
+}
+
+.infoRow:last-of-type {
+  border-bottom: none;
+}
+
+.label {
+  color: var(--text-muted, rgba(255, 255, 255, 0.5));
+  font-weight: 600;
+  min-width: 90px;
+  flex-shrink: 0;
+}
+
+.badges {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.badge {
+  background: rgba(255, 107, 107, 0.12);
+  color: var(--primary, #ff6b6b);
+  font-size: 0.72rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.macrosSection,
+.extraSection {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border, rgba(255, 255, 255, 0.06));
+}
+
+.macrosSection h4,
+.extraSection h4 {
+  margin: 0 0 0.85rem;
+  font-size: 0.85rem;
+  color: var(--primary, #ff6b6b);
+  font-weight: 700;
+}
+
+.macrosGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.macroCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--bg-primary, #12121c);
+  padding: 0.75rem 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.05));
+}
+
+.macroValue {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary, #fff);
+}
+
+.macroLabel {
+  font-size: 0.72rem;
+  color: var(--text-muted, rgba(255, 255, 255, 0.5));
+}
+
+.macroBar {
+  display: flex;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--bg-primary, #12121c);
+  margin-bottom: 0.6rem;
+}
+
+.macroBarSegment {
+  transition: width 0.4s ease;
+}
+
+.macroLegend {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  font-size: 0.72rem;
+  color: var(--text-muted, rgba(255, 255, 255, 0.6));
+}
+
+.macroLegend > span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.macroLegend > span > span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.extraGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.5rem;
+}
+
+.extraItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-primary, #12121c);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.05));
+  font-size: 0.8rem;
+}
+
+.extraLabel {
+  color: var(--text-muted, rgba(255, 255, 255, 0.5));
+}
+
+.extraValue {
+  color: var(--text-primary, #fff);
+  font-weight: 600;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+}
+
+.closeFooterBtn {
+  background: transparent;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.15));
+  color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+  padding: 0.6rem 1.4rem;
+  border-radius: 0.5rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.closeFooterBtn:hover {
+  border-color: var(--text-muted, rgba(255, 255, 255, 0.3));
+  color: var(--text-primary, #fff);
+}
+
+@media (max-width: 768px) {
+  .body {
+    grid-template-columns: 1fr;
+  }
+
+  .image,
+  .imagePlaceholder {
+    aspect-ratio: 16 / 9;
+  }
+}

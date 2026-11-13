@@ -21,6 +21,7 @@ import {
   newsWidgetCssVars,
 } from '@/config/newsWidgetSettings'
 import { fillNewsWithDemo } from './newsDemoData'
+import { getNewsHref } from '@/utils/newsSlug'
 import styles from './LatestNewsWidget.module.css'
 
 function getFullImageUrl(imagePath) {
@@ -77,7 +78,7 @@ function truncateTitle(title, maxChars, wrap) {
 }
 
 function newsHref(item) {
-  return `/news/${item.slug || item.id}`
+  return getNewsHref(item)
 }
 
 function absoluteNewsUrl(item) {
@@ -86,32 +87,40 @@ function absoluteNewsUrl(item) {
   return `${window.location.origin}${href}`
 }
 
-/** اشتراک در پیام‌رسان‌های ایرانی */
-function iranShareTargets(pageUrl, title) {
+/** اشتراک در پیام‌رسان‌های ایرانی — فقط آیکن (سفارشی یا حرف) */
+function iranShareTargets(pageUrl, title, iconMap = {}) {
   const url = encodeURIComponent(pageUrl || '')
   const text = encodeURIComponent(title || 'خبر')
   return [
     {
       id: 'rubika',
       label: 'روبیکا',
+      icon: 'ر',
+      img: getFullImageUrl(iconMap.rubika) || null,
       href: `https://rubika.ir/share?url=${url}&text=${text}`,
       className: styles.shareRubika,
     },
     {
       id: 'eitaa',
       label: 'ایتا',
+      icon: 'ا',
+      img: getFullImageUrl(iconMap.eitaa) || null,
       href: `https://eitaa.com/share/url?url=${url}&text=${text}`,
       className: styles.shareEitaa,
     },
     {
       id: 'bale',
       label: 'بله',
+      icon: 'ب',
+      img: getFullImageUrl(iconMap.bale) || null,
       href: `https://ble.ir/share/url?url=${url}`,
       className: styles.shareBale,
     },
     {
       id: 'soroush',
       label: 'سروش',
+      icon: 'س',
+      img: getFullImageUrl(iconMap.soroush) || null,
       href: `https://splus.ir/share/url?url=${url}&text=${text}`,
       className: styles.shareSoroush,
     },
@@ -509,7 +518,13 @@ export default function LatestNewsWidget({
           const shareKey = itemShareKey(item, index)
           const shareOpen = shareOpenKey === shareKey
           const pageUrl = absoluteNewsUrl(item)
-          const socials = iranShareTargets(pageUrl, item.title || title)
+          const socials = iranShareTargets(pageUrl, item.title || title, {
+            rubika: settings.share_icon_rubika,
+            eitaa: settings.share_icon_eitaa,
+            bale: settings.share_icon_bale,
+            soroush: settings.share_icon_soroush,
+          })
+          const copyIconUrl = getFullImageUrl(settings.share_icon_copy)
 
           return (
             <li
@@ -733,37 +748,80 @@ export default function LatestNewsWidget({
                             onClick={(e) => e.stopPropagation()}
                             onPointerDown={(e) => e.stopPropagation()}
                           >
-                            <p className={styles.shareMenuLabel}>
-                              اشتراک در شبکه‌ها
-                            </p>
-                            <div className={styles.shareGrid}>
-                              {socials.map((s) => (
-                                <a
-                                  key={s.id}
-                                  href={s.href}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className={`${styles.shareItem} ${s.className}`}
-                                  role="menuitem"
-                                  onClick={() => setShareOpenKey(null)}
-                                >
-                                  {s.label}
-                                </a>
-                              ))}
-                            </div>
+                            {socials.map((s) => (
+                              <a
+                                key={s.id}
+                                href={s.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`${styles.shareItem} ${s.className}${
+                                  s.img ? ` ${styles.shareItemHasImg}` : ''
+                                }`}
+                                role="menuitem"
+                                title={s.label}
+                                aria-label={s.label}
+                                onClick={() => setShareOpenKey(null)}
+                              >
+                                {s.img ? (
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img
+                                    src={s.img}
+                                    alt=""
+                                    className={styles.shareIconImg}
+                                  />
+                                ) : (
+                                  <span
+                                    className={styles.shareIconGlyph}
+                                    aria-hidden
+                                  >
+                                    {s.icon}
+                                  </span>
+                                )}
+                              </a>
+                            ))}
                             <button
                               type="button"
-                              className={styles.shareCopy}
+                              className={`${styles.shareItem} ${styles.shareCopy}${
+                                copyIconUrl && copiedKey !== shareKey
+                                  ? ` ${styles.shareItemHasImg}`
+                                  : ''
+                              }`}
+                              title={
+                                copiedKey === shareKey
+                                  ? 'لینک کپی شد'
+                                  : 'کپی لینک'
+                              }
+                              aria-label={
+                                copiedKey === shareKey
+                                  ? 'لینک کپی شد'
+                                  : 'کپی لینک'
+                              }
                               onClick={(e) => copyLink(e, item, shareKey)}
                             >
                               {copiedKey === shareKey ? (
-                                <Check size={14} />
+                                <Check
+                                  size={Math.max(
+                                    12,
+                                    Math.round((settings.share_icons_size || 22) * 0.55)
+                                  )}
+                                  strokeWidth={2.4}
+                                />
+                              ) : copyIconUrl ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                  src={copyIconUrl}
+                                  alt=""
+                                  className={styles.shareIconImg}
+                                />
                               ) : (
-                                <Link2 size={14} />
+                                <Link2
+                                  size={Math.max(
+                                    12,
+                                    Math.round((settings.share_icons_size || 22) * 0.55)
+                                  )}
+                                  strokeWidth={2.4}
+                                />
                               )}
-                              {copiedKey === shareKey
-                                ? 'لینک کپی شد'
-                                : 'کپی لینک'}
                             </button>
                           </div>
                         ) : null}
@@ -878,6 +936,7 @@ export default function LatestNewsWidget({
                   styles.list,
                   styles.listRecycler,
                   settings.recycler_drag_scroll ? styles.rvDragEnabled : '',
+                  shareOpenKey != null ? styles.listShareOpen : '',
                 ]
                   .filter(Boolean)
                   .join(' ')}

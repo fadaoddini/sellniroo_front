@@ -1212,6 +1212,49 @@
   flex-wrap: wrap !important;
 }
 
+/* نوار فشرده تک‌ردیفه */
+.ckEditorCompact :global(.ck.ck-toolbar) {
+  padding: 3px 6px !important;
+  min-height: 34px !important;
+  flex-wrap: nowrap !important;
+}
+
+.ckEditorCompact :global(.ck.ck-toolbar .ck-toolbar__items) {
+  flex-wrap: nowrap !important;
+  gap: 1px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.ckEditorCompact :global(.ck.ck-toolbar .ck-button) {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  padding: 0 !important;
+  border-radius: 6px !important;
+}
+
+.ckEditorCompact :global(.ck.ck-toolbar .ck-button .ck-icon) {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.ckEditorCompact :global(.ck.ck-toolbar .ck-dropdown__button) {
+  height: 28px !important;
+  min-height: 28px !important;
+  padding: 0 0.3rem !important;
+  font-size: 0.7rem !important;
+  border-radius: 6px !important;
+}
+
+.ckEditorCompact :global(.ck.ck-editor__main > .ck-editor__editable) {
+  min-height: 160px;
+  max-height: 260px;
+  padding: 12px 14px;
+  font-size: 13px;
+}
+
 .ckEditorRoot :global(.ck.ck-editor__main > .ck-editor__editable) {
   min-height: 320px;
   max-height: 600px;

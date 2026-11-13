@@ -4,15 +4,20 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
+  ArrowLeft,
   BadgeCheck,
   Briefcase,
   Building2,
+  ChevronDown,
+  MapPin,
   Search,
   User,
+  X,
 } from 'lucide-react'
 import ModuleGate from '@/components/modules/ModuleGate'
 import AllBoxItem from '@/components/AllBoxItem'
 import JobCard from '@/components/AllBoxItem/components/JobCard/JobCard'
+import FilterDialog from '@/components/AllBoxItem/components/FilterDialog/FilterDialog'
 import HeaderSlot from '@/components/modules/HeaderSlot'
 import MobileBottomNavSlot from '@/components/modules/MobileBottomNavSlot'
 import { SITE_MODULE_KEYS } from '@/config/siteModules'
@@ -30,6 +35,7 @@ import {
   DEMO_RESUMES,
   getDemoJobsBySource,
 } from '@/components/AllBoxItem/constants/demoJobs'
+import JobBoardHowItWorks from './JobBoardHowItWorks'
 import styles from './JobWidgetShell.module.css'
 
 function shellClass(settings) {
@@ -80,6 +86,8 @@ export function JobFullBoardWidget({ type = 'job_board_system', settings: raw })
     variant.showFilters !== false && settings.show_filters !== false
   const showList = variant.showList !== false
 
+  const showGuide = type === 'job_board_system' || type === 'job_listings'
+
   return (
     <ModuleGate moduleKey={gate}>
       <div
@@ -87,8 +95,10 @@ export function JobFullBoardWidget({ type = 'job_board_system', settings: raw })
         style={vars}
         data-jb-widget={type}
         data-section-full={settings.section_full ? '1' : '0'}
+        data-tour="jb-board"
       >
         <div className={styles.inner}>
+          {showGuide ? <JobBoardHowItWorks /> : null}
           <AllBoxItem
             embedded
             demoMode={settings.use_demo_data === true}
@@ -126,7 +136,14 @@ export function JobCardsStripWidget({ type = 'latest_jobs', settings: raw }) {
 
   const title =
     settings.title_text || variant.title || 'آگهی‌ها'
-  const viewMode = settings.default_view === 'list' ? 'list' : 'grid-2'
+  const viewMode =
+    settings.default_view === 'list'
+      ? 'list'
+      : settings.default_view === 'grid-2'
+        ? 'grid-2'
+        : settings.default_view === 'grid-3'
+          ? 'grid-3'
+          : 'image-left'
 
   useEffect(() => {
     let cancelled = false
@@ -226,10 +243,13 @@ export function JobSearchBarWidget({ settings: raw }) {
   const [q, setQ] = useState('')
   const [city, setCity] = useState('')
   const [cities, setCities] = useState([])
+  const [citiesLoading, setCitiesLoading] = useState(false)
+  const [cityOpen, setCityOpen] = useState(false)
 
   useEffect(() => {
     let cancelled = false
     ;(async () => {
+      setCitiesLoading(true)
       try {
         if (settings.use_demo_data === true) {
           if (!cancelled) setCities(DEMO_FILTER_OPTIONS.cities || [])
@@ -244,12 +264,29 @@ export function JobSearchBarWidget({ settings: raw }) {
         if (!cancelled) setCities(list)
       } catch {
         if (!cancelled) setCities(DEMO_FILTER_OPTIONS.cities || [])
+      } finally {
+        if (!cancelled) setCitiesLoading(false)
       }
     })()
     return () => {
       cancelled = true
     }
   }, [settings.use_demo_data])
+
+  const cityOptions = useMemo(
+    () =>
+      (cities || []).map((c) => ({
+        id: c.id,
+        name: c.name,
+        meta: c.province_name || '',
+      })),
+    [cities]
+  )
+
+  const selectedCity = useMemo(
+    () => cities.find((c) => String(c.id) === String(city)) || null,
+    [cities, city]
+  )
 
   const onSubmit = useCallback(
     (e) => {
@@ -263,6 +300,12 @@ export function JobSearchBarWidget({ settings: raw }) {
     [router, q, city]
   )
 
+  const clearCity = useCallback((e) => {
+    e?.preventDefault?.()
+    e?.stopPropagation?.()
+    setCity('')
+  }, [])
+
   return (
     <ModuleGate moduleKey={SITE_MODULE_KEYS.JOB_BOARD}>
       <div
@@ -274,34 +317,94 @@ export function JobSearchBarWidget({ settings: raw }) {
         <div className={styles.inner}>
           <form className={styles.searchForm} onSubmit={onSubmit} role="search">
             {settings.show_city_picker ? (
-              <select
-                className={styles.citySelect}
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                aria-label="شهر"
+              <button
+                type="button"
+                className={`${styles.cityTrigger} ${
+                  selectedCity ? styles.cityTriggerActive : ''
+                }`}
+                onClick={() => setCityOpen(true)}
+                aria-haspopup="dialog"
+                aria-expanded={cityOpen}
+                aria-label="انتخاب شهر"
               >
-                <option value="">همه شهرها</option>
-                {cities.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                    {c.province_name ? ` — ${c.province_name}` : ''}
-                  </option>
-                ))}
-              </select>
+                <span className={styles.cityIconWrap} aria-hidden>
+                  <MapPin size={16} strokeWidth={2.25} />
+                </span>
+                <span className={styles.cityTriggerText}>
+                  {selectedCity ? selectedCity.name : 'همه شهرها'}
+                </span>
+                {selectedCity ? (
+                  <span
+                    className={styles.cityClear}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="پاک کردن شهر"
+                    onClick={clearCity}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') clearCity(e)
+                    }}
+                  >
+                    <X size={13} strokeWidth={2.5} />
+                  </span>
+                ) : (
+                  <ChevronDown
+                    size={15}
+                    strokeWidth={2.25}
+                    className={styles.cityChevron}
+                    aria-hidden
+                  />
+                )}
+              </button>
             ) : null}
-            <input
-              className={styles.searchInput}
-              type="search"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder={settings.search_placeholder}
-              aria-label="جستجوی شغل"
-            />
+
+            <div className={styles.searchField}>
+              <Search
+                size={17}
+                strokeWidth={2.1}
+                className={styles.searchFieldIcon}
+                aria-hidden
+              />
+              <input
+                className={styles.searchInput}
+                type="search"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder={settings.search_placeholder}
+                aria-label="جستجوی شغل"
+                enterKeyHint="search"
+                autoComplete="off"
+              />
+            </div>
+
             <button type="submit" className={styles.searchBtn}>
-              <Search size={16} style={{ verticalAlign: 'middle' }} /> جستجو
+              <span>{settings.search_btn_label || 'جستجو'}</span>
+              <ArrowLeft size={16} strokeWidth={2.4} aria-hidden />
             </button>
           </form>
         </div>
+
+        {settings.show_city_picker ? (
+          <FilterDialog
+            isOpen={cityOpen}
+            title="انتخاب شهر"
+            options={cityOptions}
+            value={city}
+            emptyLabel="همه شهرها"
+            loading={citiesLoading}
+            onChange={(v) => setCity(v)}
+            onClose={() => setCityOpen(false)}
+            searchable
+            themeStyle={{
+              '--ink': '#2A1A0E',
+              '--muted': 'rgba(42, 26, 14, 0.58)',
+              '--line': 'rgba(42, 26, 14, 0.12)',
+              '--gold': '#F4AE52',
+              '--gold-deep': '#D4621A',
+              '--gold-soft': 'rgba(212, 98, 26, 0.14)',
+              '--surface': '#FEF3E2',
+            }}
+          />
+        ) : null}
       </div>
     </ModuleGate>
   )

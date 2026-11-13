@@ -8,6 +8,8 @@ export const DEFAULT_HEADER_MENU = [
   { id: 'news', label_fa: 'اخبار', label_en: 'News', href: '/news', icon: 'Newspaper', sort_order: 30, mobile_sort_order: 30 },
   { id: 'faq', label_fa: 'سوالات متداول', label_en: 'FAQ', href: '/faq', icon: 'HelpCircle', sort_order: 35, mobile_sort_order: 35 },
   { id: 'school', label_fa: 'مدرسه', label_en: 'School', href: '/school', icon: 'GraduationCap', sort_order: 37, mobile_sort_order: 37 },
+  { id: 'softapps', label_fa: 'نرم‌افزارها', label_en: 'Apps', href: '/apps', icon: 'AppWindow', sort_order: 38, mobile_sort_order: 38 },
+  { id: 'repairs', label_fa: 'تعمیرات', label_en: 'Repairs', href: '/repairs', icon: 'Wrench', sort_order: 39, mobile_sort_order: 39 },
   { id: 'about', label_fa: 'درباره ما', label_en: 'About', href: '/about', icon: 'Info', sort_order: 40, mobile_sort_order: 40 },
   { id: 'post', label_fa: 'ثبت آگهی', label_en: 'Post a job', href: '/post-job', icon: 'PlusCircle', sort_order: 50, mobile_sort_order: 50 },
 ]
@@ -32,6 +34,8 @@ const MENU_ITEM_MODULES = {
   news: SITE_MODULE_KEYS.NEWS,
   faq: SITE_MODULE_KEYS.FAQ,
   school: SITE_MODULE_KEYS.SCHOOL,
+  softapps: SITE_MODULE_KEYS.SOFTAPPS,
+  repairs: SITE_MODULE_KEYS.REPAIRS,
 }
 
 export function resolveHeaderMenuModuleKey(item) {
@@ -60,8 +64,26 @@ export function filterHeaderMenuByModules(items, moduleMap = {}) {
  * @param {Array} items
  * @param {{ centerItemId?: number|string|null, maxItems?: number }} [opts]
  */
+/**
+ * زیرمجموعهٔ آیتم‌ها به ترتیب idهای داده‌شده (برای انتخاب ویجت منو)
+ * @returns {Array|null} null = پیش‌فرض داشبورد؛ [] = هیچکدام
+ */
+export function pickHeaderMenuByIds(items = [], ids) {
+  if (!Array.isArray(ids)) return null
+  if (ids.length === 0) return []
+  const map = new Map(
+    (items || []).map((item) => [String(item?.id), item])
+  )
+  const out = []
+  ids.forEach((id) => {
+    const hit = map.get(String(id))
+    if (hit) out.push(hit)
+  })
+  return out
+}
+
 export function arrangeMobileNavItems(items = [], opts = {}) {
-  const maxItems = Math.max(3, Math.min(7, Number(opts.maxItems) || 5))
+  const maxItems = Math.max(1, Math.min(7, Number(opts.maxItems) || 5))
   let list = (items || []).slice()
   const centerId =
     opts.centerItemId != null && opts.centerItemId !== ''

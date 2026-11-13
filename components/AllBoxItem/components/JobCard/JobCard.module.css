@@ -1,33 +1,41 @@
 /* ============================================
-   کارت آگهی — UI استاندارد
+   کارت آگهی — پالت #FEF3E2 · #F4AE52 · #D4621A · #2A1A0E
+   هر ۴ حالت: image-left / grid-3 / grid-2 / list
    ============================================ */
 
 .jobCard {
-  --ink: #1a2332;
-  --muted: #6b7280;
-  --line: rgba(15, 23, 42, 0.08);
+  --cream: #fef3e2;
+  --mid: #f4ae52;
+  --accent: #d4621a;
+  --accent-dark: #b45309;
+  --ink: #2a1a0e;
+  --muted: rgba(42, 26, 14, 0.58);
+  --line: rgba(42, 26, 14, 0.1);
   --surface: #ffffff;
-  --accent: #e67e22;
-  --accent-dark: #cf6d17;
-  --verify: #1d9bf0;
+  --seeking: #8b5a2b;
+  --seeking-soft: rgba(139, 90, 43, 0.14);
+  /* آبی اعتماد — جدا از اکسنت نارنجی تم */
+  --verify: #1f6b96;
+  --verify-soft: rgba(31, 107, 150, 0.12);
 
   position: relative;
   display: flex;
   flex-direction: column;
-  background: var(--surface);
+  background: linear-gradient(180deg, #fff 0%, var(--cream) 160%);
   border: 1px solid var(--line);
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 2px 10px rgba(42, 26, 14, 0.05);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-  font-family: 'iran', Tahoma, Arial, sans-serif;
+  font-family: var(--font-iran, 'iran', Tahoma, Arial, sans-serif);
   height: 100%;
   overflow-anchor: none;
+  color: var(--ink);
 }
 
 .jobCard:hover {
-  border-color: rgba(230, 126, 34, 0.28);
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+  border-color: rgba(244, 174, 82, 0.55);
+  box-shadow: 0 12px 28px rgba(212, 98, 26, 0.12);
   transform: translateY(-2px);
 }
 
@@ -36,10 +44,9 @@
 }
 
 .jobCard:hover .detailsHint {
-  color: var(--accent-dark);
+  color: var(--accent);
 }
 
-/* لینک تمام‌سطح → جزئیات */
 .stretchedLink {
   position: absolute;
   inset: 0;
@@ -47,7 +54,6 @@
   border-radius: inherit;
 }
 
-/* دکمه‌های تعاملی بالای لینک */
 .likeBtn,
 .likeBtnInline,
 .contactBtn,
@@ -65,7 +71,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 10;
-  background: #f1f3f5;
+  background: var(--cream);
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -87,8 +93,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(145deg, #f3f4f6, #e5e7eb);
-  color: #c4c8ce;
+  background: linear-gradient(145deg, var(--cream), #f4ae5233);
+  color: rgba(42, 26, 14, 0.28);
 }
 
 .mediaTop {
@@ -112,18 +118,20 @@
   border-radius: 999px;
   font-size: 0.65rem;
   font-weight: 700;
-  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, Arial, sans-serif);
   backdrop-filter: blur(6px);
 }
 
 .hiringChip {
-  background: rgba(230, 126, 34, 0.92);
-  color: #fff;
+  background: linear-gradient(135deg, var(--mid), var(--accent));
+  color: var(--cream);
+  box-shadow: 0 2px 8px rgba(212, 98, 26, 0.28);
 }
 
 .seekingChip {
-  background: rgba(46, 204, 113, 0.92);
-  color: #fff;
+  background: var(--ink);
+  color: var(--cream);
+  box-shadow: 0 2px 8px rgba(42, 26, 14, 0.22);
 }
 
 .featuredBadge {
@@ -132,11 +140,11 @@
   gap: 0.2rem;
   padding: 0.22rem 0.55rem;
   border-radius: 999px;
-  background: rgba(17, 24, 39, 0.72);
-  color: #fff;
+  background: rgba(42, 26, 14, 0.78);
+  color: var(--cream);
   font-size: 0.62rem;
   font-weight: 700;
-  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, Arial, sans-serif);
 }
 
 .verifiedRibbon {
@@ -149,12 +157,13 @@
   gap: 0.25rem;
   padding: 0.22rem 0.55rem;
   border-radius: 999px;
-  background: rgba(29, 155, 240, 0.95);
-  color: #fff;
+  background: linear-gradient(135deg, #2a82b0, var(--verify));
+  color: #fef3e2;
   font-size: 0.58rem;
   font-weight: 700;
-  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, Arial, sans-serif);
   pointer-events: none;
+  box-shadow: 0 2px 8px rgba(31, 107, 150, 0.28);
 }
 
 .likeBtn {
@@ -165,8 +174,9 @@
   height: 34px;
   border: none;
   border-radius: 50%;
-  background: rgba(17, 24, 39, 0.45);
+  background: rgba(42, 26, 14, 0.42);
   backdrop-filter: blur(8px);
+  color: var(--cream);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -175,7 +185,7 @@
 }
 
 .likeBtn:hover {
-  background: rgba(17, 24, 39, 0.7);
+  background: rgba(42, 26, 14, 0.7);
   transform: scale(1.06);
 }
 
@@ -185,7 +195,7 @@
 }
 
 /* ============================================
-   بدنه
+   بدنه — grid-2 / grid-3
    ============================================ */
 
 .body {
@@ -213,13 +223,13 @@
   height: 40px;
   border-radius: 10px;
   overflow: hidden;
-  background: #fff7ed;
-  color: var(--accent-dark);
+  background: var(--cream);
+  color: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1px solid rgba(230, 126, 34, 0.15);
+  border: 1px solid rgba(244, 174, 82, 0.45);
 }
 
 .logo img {
@@ -229,7 +239,7 @@
 }
 
 .logoVerified {
-  box-shadow: 0 0 0 2px var(--verify);
+  box-shadow: 0 0 0 2px var(--mid);
 }
 
 .headerText {
@@ -242,7 +252,7 @@
   font-size: 0.92rem;
   font-weight: 700;
   color: var(--ink);
-  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, Arial, sans-serif);
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -252,13 +262,13 @@
 
 .compact .title {
   font-size: 0.82rem;
-  -webkit-line-clamp: 2;
 }
 
 .date {
   font-size: 0.62rem;
   color: var(--muted);
-  background: #f3f4f6;
+  background: var(--cream);
+  border: 1px solid rgba(42, 26, 14, 0.08);
   padding: 0.18rem 0.45rem;
   border-radius: 6px;
   white-space: nowrap;
@@ -282,7 +292,7 @@
 }
 
 .companyVerified .companyLabelName {
-  color: #0f2a44;
+  color: var(--ink);
   font-weight: 700;
 }
 
@@ -298,17 +308,17 @@
   font-style: normal;
   font-size: 0.62rem;
   font-weight: 700;
-  color: #0a6ebd;
-  background: rgba(29, 155, 240, 0.12);
+  color: var(--verify);
+  background: var(--verify-soft);
   padding: 0.1rem 0.4rem;
   border-radius: 999px;
-  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, Arial, sans-serif);
 }
 
 .desc {
   margin: 0;
   font-size: 0.76rem;
-  color: #4b5563;
+  color: rgba(42, 26, 14, 0.68);
   line-height: 1.65;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -320,10 +330,10 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  color: var(--accent-dark);
+  color: var(--accent);
   font-size: 0.78rem;
   font-weight: 700;
-  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, Arial, sans-serif);
 }
 
 .salary svg {
@@ -340,9 +350,9 @@
   font-size: 0.62rem;
   padding: 0.18rem 0.5rem;
   border-radius: 6px;
-  background: #fff7ed;
+  background: var(--cream);
   color: var(--accent-dark);
-  border: 1px solid rgba(230, 126, 34, 0.12);
+  border: 1px solid rgba(244, 174, 82, 0.4);
 }
 
 .metaRow {
@@ -366,7 +376,7 @@
 }
 
 .metaRow svg {
-  color: var(--accent);
+  color: var(--mid);
   flex-shrink: 0;
 }
 
@@ -382,6 +392,7 @@
   margin-top: auto;
   padding: 0.75rem 1rem 0.9rem;
   border-top: 1px solid var(--line);
+  background: rgba(254, 243, 226, 0.45);
 }
 
 .compact .footer {
@@ -396,7 +407,7 @@
   font-weight: 600;
   color: var(--muted);
   transition: color 0.2s ease;
-  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, Arial, sans-serif);
 }
 
 .contactBtn {
@@ -407,18 +418,20 @@
   padding: 0.45rem 0.85rem;
   border: none;
   border-radius: 9px;
-  background: var(--accent);
-  color: #fff;
+  background: linear-gradient(135deg, var(--mid), var(--accent));
+  color: var(--cream);
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease;
-  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  transition: filter 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, Arial, sans-serif);
   white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(212, 98, 26, 0.28);
 }
 
 .contactBtn:hover {
-  background: var(--accent-dark);
+  filter: brightness(1.05);
+  box-shadow: 0 6px 16px rgba(212, 98, 26, 0.36);
 }
 
 .contactBtn:active {
@@ -436,8 +449,8 @@
   gap: 0.35rem;
   padding: 0.45rem 0.85rem;
   border-radius: 9px;
-  background: #f3f4f6;
-  color: #9ca3af;
+  background: rgba(42, 26, 14, 0.06);
+  color: rgba(42, 26, 14, 0.38);
   font-size: 0.78rem;
   pointer-events: none;
 }
@@ -451,16 +464,16 @@
 }
 
 .seekingCard {
-  --ad-color: #2ecc71;
+  --ad-color: var(--seeking);
 }
 
 .verifiedHiringCard {
-  border-color: rgba(29, 155, 240, 0.3);
+  border-color: rgba(244, 174, 82, 0.55);
 }
 
 .verifiedHiringCard:hover {
-  border-color: rgba(29, 155, 240, 0.48);
-  box-shadow: 0 10px 28px rgba(29, 155, 240, 0.12);
+  border-color: rgba(212, 98, 26, 0.5);
+  box-shadow: 0 12px 28px rgba(212, 98, 26, 0.14);
 }
 
 /* ============================================
@@ -469,10 +482,12 @@
 
 .listMode {
   border-radius: 12px;
+  background: #fff;
 }
 
 .listMode:hover {
   transform: none;
+  background: linear-gradient(90deg, #fff 0%, var(--cream) 100%);
 }
 
 .listRow {
@@ -494,13 +509,13 @@
 }
 
 .hiringIcon {
-  background: rgba(230, 126, 34, 0.12);
-  color: var(--accent-dark);
+  background: rgba(212, 98, 26, 0.14);
+  color: var(--accent);
 }
 
 .seekingIcon {
-  background: rgba(46, 204, 113, 0.12);
-  color: #219a52;
+  background: var(--seeking-soft);
+  color: var(--seeking);
 }
 
 .listMain {
@@ -524,7 +539,7 @@
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--ink);
-  font-family: 'iran_bold', Tahoma, Arial, sans-serif;
+  font-family: var(--font-iran-bold, 'iran_bold', Tahoma, Arial, sans-serif);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -539,14 +554,16 @@
 
 .listMode .hiringChip,
 .imageLeftMode .hiringChip {
-  background: rgba(230, 126, 34, 0.12);
-  color: var(--accent-dark);
+  background: rgba(212, 98, 26, 0.12);
+  color: var(--accent);
+  box-shadow: none;
 }
 
 .listMode .seekingChip,
 .imageLeftMode .seekingChip {
-  background: rgba(46, 204, 113, 0.12);
-  color: #219a52;
+  background: var(--seeking-soft);
+  color: var(--seeking);
+  box-shadow: none;
 }
 
 .listMeta {
@@ -563,6 +580,10 @@
   gap: 0.25rem;
 }
 
+.listMeta svg {
+  color: var(--mid);
+}
+
 .listActions {
   display: flex;
   align-items: center;
@@ -571,16 +592,21 @@
 }
 
 .listChevron {
-  color: #9ca3af;
+  color: rgba(42, 26, 14, 0.35);
   flex-shrink: 0;
 }
 
 /* ============================================
-   حالت تصویر چپ
+   حالت تصویر چپ (سه‌ستونه افقی)
    ============================================ */
 
 .imageLeftMode {
   border-radius: 12px;
+  background: #fff;
+}
+
+.imageLeftMode:hover {
+  background: linear-gradient(135deg, #fff 0%, var(--cream) 100%);
 }
 
 .imageLeftLayout {
@@ -597,7 +623,8 @@
   border-radius: 10px;
   overflow: hidden;
   flex-shrink: 0;
-  background: #f1f3f5;
+  background: var(--cream);
+  border: 1px solid rgba(42, 26, 14, 0.06);
 }
 
 .thumb .featuredBadge {
@@ -630,18 +657,19 @@
   height: 32px;
   border-radius: 8px;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--cream);
   color: var(--muted);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: border-color 0.2s ease, color 0.2s ease;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
 }
 
 .likeBtnInline:hover {
-  border-color: rgba(230, 126, 34, 0.35);
+  border-color: rgba(212, 98, 26, 0.4);
   color: var(--accent);
+  background: #fff;
 }
 
 /* ============================================

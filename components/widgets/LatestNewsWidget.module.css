@@ -207,49 +207,79 @@
 
 .shareMenu {
   position: absolute;
-  z-index: 90;
-  top: calc(100% + 6px);
+  z-index: 120;
+  top: auto;
+  bottom: calc(100% + 14px);
   inset-inline-end: 0;
-  min-width: 10.5rem;
-  padding: 0.45rem;
-  border-radius: 12px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.22rem;
+  width: max-content;
+  min-width: 0;
+  max-width: none;
+  padding: 0.28rem;
+  border-radius: 999px;
   background: #fff;
-  border: 1px solid rgba(20, 24, 31, 0.08);
+  border: 1px solid rgba(42, 26, 14, 0.1);
   box-shadow:
-    0 4px 12px rgba(20, 24, 31, 0.06),
-    0 16px 36px rgba(20, 24, 31, 0.14);
-}
-
-.shareMenuLabel {
-  margin: 0 0.2rem 0.35rem;
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: #8b939e;
-}
-
-.shareGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.3rem;
-  margin-bottom: 0.35rem;
+    0 4px 14px rgba(42, 26, 14, 0.1),
+    0 14px 32px rgba(42, 26, 14, 0.16);
 }
 
 .shareItem {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 2.05rem;
-  border-radius: 9px;
-  font-size: 0.72rem;
+  flex: 0 0 auto;
+  width: var(--ln-share-icon, 22px);
+  height: var(--ln-share-icon, 22px);
+  min-width: var(--ln-share-icon, 22px);
+  min-height: var(--ln-share-icon, 22px);
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  font-size: calc(var(--ln-share-icon, 22px) * 0.42);
   font-weight: 800;
+  font-family: var(--font-iran, inherit);
+  line-height: 1;
   text-decoration: none;
   color: #fff;
+  cursor: pointer;
+  overflow: hidden;
   transition: filter 0.15s ease, transform 0.15s ease;
 }
 
 .shareItem:hover {
-  filter: brightness(1.06);
-  transform: translateY(-1px);
+  filter: brightness(1.08);
+  transform: translateY(-1px) scale(1.04);
+}
+
+.shareIconGlyph {
+  display: block;
+  font-style: normal;
+  line-height: 1;
+}
+
+.shareIconImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.shareItemHasImg {
+  background: #f4f1ea !important;
+  color: transparent;
+  border: 1px solid rgba(42, 26, 14, 0.1);
+}
+
+.shareItemHasImg .shareIconImg {
+  width: 72%;
+  height: 72%;
+  object-fit: contain;
 }
 
 .shareRubika {
@@ -270,25 +300,14 @@
 }
 
 .shareCopy {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.3rem;
-  width: 100%;
-  min-height: 2rem;
-  border: 1px dashed rgba(20, 24, 31, 0.14);
-  border-radius: 9px;
-  background: #f4f5f7;
-  color: #14181f;
-  font-family: inherit;
-  font-size: 0.7rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s ease;
+  background: #fef3e2;
+  color: #2a1a0e;
+  border: 1px solid rgba(42, 26, 14, 0.12);
 }
 
 .shareCopy:hover {
-  background: #e8eaee;
+  background: #f4ae52;
+  filter: none;
 }
 
 .thumb {
@@ -331,8 +350,8 @@
   height: var(--ln-marker, 8px);
   margin-top: calc(var(--ln-fs, 14px) * 0.45);
   box-sizing: border-box;
-  background: var(--ln-marker-color, var(--primary-dark, #8b1a2b));
-  border: 2px solid var(--ln-marker-color, var(--primary-dark, #8b1a2b));
+  background: var(--ln-marker-color, var(--primary-dark, #d4621a));
+  border: 2px solid var(--ln-marker-color, var(--primary-dark, #d4621a));
 }
 
 .marker_circle_filled {
@@ -483,7 +502,7 @@
   display: inline-block;
   font-size: var(--ln-rm-fs, 12px);
   font-weight: var(--ln-rm-fw, 700);
-  color: var(--ln-rm-color, var(--primary-dark, #8b1a2b));
+  color: var(--ln-rm-color, var(--primary-dark, #d4621a));
   border-radius:
     var(--ln-rm-rtl, 8px) var(--ln-rm-rtr, 8px) var(--ln-rm-rbr, 8px)
     var(--ln-rm-rbl, 8px);
@@ -496,8 +515,8 @@
 
 .readMoreBtn {
   padding: 0.28rem 0.7rem;
-  background: var(--ln-rm-bg, var(--primary-dark, #8b1a2b));
-  color: var(--ln-rm-color, #fff);
+  background: var(--ln-rm-bg, var(--primary-dark, #d4621a));
+  color: var(--ln-rm-color, #fef3e2);
 }
 
 /* فقط با هاور کارت — انیمیشن نرم */
@@ -548,7 +567,7 @@
 .item:hover .readMore,
 .item:focus-within .readMore,
 .item:hover .readMoreAbs .readMore {
-  color: var(--ln-rm-hover, var(--ln-rm-color, var(--primary-dark, #8b1a2b)));
+  color: var(--ln-rm-hover, var(--ln-rm-color, var(--primary-dark, #d4621a)));
 }
 
 .item:hover .readMoreBtn,
@@ -556,9 +575,9 @@
 .item:hover .readMoreAbs .readMoreBtn {
   background: var(
     --ln-rm-hover-bg,
-    var(--ln-rm-bg, var(--primary, #c0392b))
+    var(--ln-rm-bg, var(--primary, #f4ae52))
   );
-  color: var(--ln-rm-hover, var(--ln-rm-color, #fff));
+  color: var(--ln-rm-hover, var(--ln-rm-color, #2a1a0e));
 }
 
 .loading,
@@ -699,7 +718,7 @@
 
 /* ========== اسکین: اخبار دسته (نوار رنگی + پس‌زمینه نرم) ========== */
 .skinCategory {
-  --ln-cat-accent: var(--primary-dark, #8b1a2b);
+  --ln-cat-accent: var(--primary-dark, #d4621a);
 }
 
 .skinCategory .list {
@@ -726,8 +745,8 @@
 .skinCategory .item:focus-within .row {
   background: linear-gradient(
     270deg,
-    var(--ln-hover-bg, rgba(139, 26, 43, 0.06)) 0%,
-    rgba(139, 26, 43, 0.1) 100%
+    var(--ln-hover-bg, rgba(212, 98, 26, 0.08)) 0%,
+    rgba(244, 174, 82, 0.16) 100%
   );
 }
 
@@ -851,11 +870,11 @@
   width: 38px;
   height: 38px;
   padding: 0;
-  border: none;
+  border: 1px solid rgba(244, 174, 82, 0.35);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.95);
-  color: #14181f;
-  box-shadow: 0 4px 16px rgba(20, 24, 31, 0.16);
+  background: #fef3e2;
+  color: #2a1a0e;
+  box-shadow: 0 4px 16px rgba(42, 26, 14, 0.18);
   cursor: pointer;
   transition:
     background 0.2s ease,
@@ -864,7 +883,7 @@
 }
 
 .rvNav:hover {
-  background: #fff;
+  background: #f4ae52;
   transform: translateY(-50%) scale(1.05);
 }
 
@@ -949,6 +968,44 @@
   transform: translateY(-4px);
 }
 
+/* منوی اشتراک کامل دیده شود — بریده نشود */
+.listShareOpen {
+  overflow: visible !important;
+  padding-bottom: 3.25rem;
+}
+
+.skinRecycler .itemShareOpen {
+  z-index: 40;
+  overflow: visible;
+}
+
+.skinRecycler .itemShareOpen .rvCard {
+  overflow: visible !important;
+  z-index: 40;
+  transform: none;
+}
+
+.skinRecycler .itemShareOpen .rvStats {
+  z-index: 50;
+  overflow: visible;
+}
+
+.skinRecycler .itemShareOpen .shareWrap {
+  overflow: visible;
+  z-index: 60;
+}
+
+.skinRecycler .shareMenu {
+  bottom: auto;
+  top: calc(100% + 14px);
+  inset-inline-end: 0;
+}
+
+.skinRecycler .rvShell:has(.listShareOpen) {
+  overflow: visible;
+  z-index: 5;
+}
+
 .skinRecycler .item:hover .row,
 .skinRecycler .item:focus-within .row {
   background: transparent;
@@ -1017,8 +1074,8 @@
 }
 
 .rvCover .thumbEmpty {
-  background: linear-gradient(145deg, #045a8d, #022e4a);
-  color: rgba(255, 255, 255, 0.45);
+  background: linear-gradient(145deg, #d4621a, #2a1a0e);
+  color: rgba(254, 243, 226, 0.45);
 }
 
 /* نور عبوری از روی تصویر هنگام هاور */
@@ -1261,14 +1318,45 @@
   inset-inline-end: var(--ln-st-mx, 10px);
   margin: 0 !important;
   min-width: 0;
-  backdrop-filter: none;
-  box-shadow: none;
+  /* همیشه خوانا روی تصویر — حتی اگر stats_bg شفاف باشد */
+  background: var(--ln-st-bg-recycler, rgba(42, 26, 14, 0.78));
+  border: 1px solid rgba(254, 243, 226, 0.22);
+  backdrop-filter: blur(10px) saturate(1.2);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
 }
 
-/* فقط وقتی پس‌زمینه غیرشفاف است، شیشه و سایه */
+/* اگر کاربر رنگ پس‌زمینه سفارشی گذاشته */
 .rvStatsHasBg {
-  backdrop-filter: blur(8px);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  background: var(--ln-st-bg);
+}
+
+.skinRecycler .statLike,
+.skinRecycler .statLike svg {
+  color: var(--ln-like-color, #f4ae52);
+  fill: color-mix(in srgb, var(--ln-like-color, #f4ae52) 35%, transparent);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.skinRecycler .statViews,
+.skinRecycler .statViews svg {
+  color: var(--ln-views-color, #fef3e2);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.skinRecycler .shareBtn {
+  color: var(--ln-share-color, #fef3e2);
+}
+
+.skinRecycler .shareBtn:hover,
+.skinRecycler .shareBtnOn {
+  background: rgba(244, 174, 82, 0.22);
+  color: #fef3e2;
+}
+
+.skinRecycler .statNum {
+  color: inherit;
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 .skinRecycler .readMoreWrap {

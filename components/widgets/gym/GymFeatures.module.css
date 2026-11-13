@@ -1,0 +1,581 @@
+.section {
+  --emerald: #046c4e;
+  --emerald-deep: #023c2c;
+  --jewel: #10b981;
+  --mint: #a7f3d0;
+  --ink: #10241c;
+  --muted-dark: rgba(232, 245, 238, 0.74);
+  --muted-light: #4d6a5c;
+  --feat-bg: #ffffff;
+  --feat-bg-alt: #023c2c;
+  --f: 'iran', Tahoma, Arial, sans-serif;
+  --fb: 'iran_bold', 'iran', Tahoma, Arial, sans-serif;
+  --fx: 'iran_extra', 'iran_bold', 'iran', Tahoma, Arial, sans-serif;
+  position: relative;
+  isolation: isolate;
+  /* چسبیده به هیرو — مسیر مشترک بدون شکستگی */
+  padding: 0 0 clamp(2.8rem, 5vw, 4rem);
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--f);
+  overflow: clip;
+  background: var(--feat-bg, #fff);
+}
+
+.bgCurve {
+  background: var(--feat-bg, #fff);
+}
+
+.bgSimple {
+  background: var(--feat-bg, #fff);
+}
+
+.bgSimple::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  right: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--feat-bg-alt, #023c2c);
+}
+
+.bgGradient {
+  background: linear-gradient(
+    180deg,
+    var(--feat-bg-alt, #023c2c) 0%,
+    var(--feat-bg, #ffffff) 100%
+  );
+}
+
+/*
+  از وسط صفحه تا لبه راست مانیتور — رنگ یک‌دست، بدون گرادیان، بدون مارجین
+*/
+.curveSide {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  right: calc(50% - 50vw);
+  z-index: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.curveSideSvg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  shape-rendering: geometricPrecision;
+}
+
+/* عنوان دقیقاً در مرکز نیمه تیره (راست فیزیکی) */
+.head {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  width: 50%;
+  margin: 0 0 2rem;
+  margin-left: 50%;
+  margin-right: 0;
+  padding: clamp(1.6rem, 3.5vw, 2.4rem) clamp(0.85rem, 2.5vw, 1.5rem) 0;
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0 0 0.4rem;
+  color: var(--mint);
+  font-family: var(--fb);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.head h2 {
+  margin: 0 0 0.4rem;
+  font-family: var(--fx);
+  font-size: clamp(1.15rem, 2.4vw, 1.55rem);
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  line-height: 1.25;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.lead {
+  margin: 0 auto;
+  max-width: 20rem;
+  color: rgba(244, 255, 249, 0.82);
+  font-size: 0.8rem;
+  line-height: 1.7;
+}
+
+.timeline {
+  position: relative;
+  z-index: 2;
+  width: min(1100px, calc(100% - 1.25rem));
+  margin: 0 auto;
+}
+
+/* ستون باریک مسیر — آیکون‌ها روی خود منحنی بافر می‌نشینند */
+.pathStroke {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 48px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 3;
+  overflow: visible;
+}
+
+.pathIcon {
+  position: absolute;
+  z-index: 4;
+  width: 2.45rem;
+  height: 2.45rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--emerald-deep);
+  border: 1.5px solid var(--emerald-deep);
+  box-shadow: 0 0 0 3px #fff;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.pathIconOn {
+  border-color: var(--jewel);
+  color: var(--jewel);
+}
+
+.path {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  --draw: 0;
+}
+
+.pathTrack {
+  fill: none;
+  stroke: rgba(2, 60, 44, 0.22);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pathFill {
+  fill: none;
+  stroke: var(--emerald-deep);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--draw, 0));
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.cards {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.4rem, 5.5vw, 3.6rem);
+  padding: 0.5rem 0 1rem;
+}
+
+.card {
+  position: relative;
+  width: min(380px, 40%);
+  background: transparent;
+}
+
+/*
+  راست مسیر = تیره → نزدیک مسیر + چپ‌چین
+  چپ مسیر = روشن → نزدیک مسیر + راست‌چین
+*/
+.side_dark {
+  align-self: flex-start;
+  margin-inline-end: calc(50% + 0.7rem);
+  margin-inline-start: 0;
+  color: #f4fff9;
+  text-align: left;
+}
+
+.side_light {
+  align-self: flex-end;
+  margin-inline-start: calc(50% + 0.7rem);
+  margin-inline-end: 0;
+  color: var(--ink);
+  text-align: right;
+}
+
+.cardInner {
+  position: relative;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0.25rem 0.1rem;
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.7rem;
+}
+
+/*
+  راست مسیر (تیره): عدد کنار لبه چپ کارت = نزدیک مسیر
+  چپ مسیر (روشن): عدد کنار لبه راست کارت = نزدیک مسیر
+  در RTL: flex-end = چپ فیزیکی، flex-start = راست فیزیکی
+*/
+.side_dark .cardTop {
+  justify-content: flex-end;
+}
+
+.side_light .cardTop {
+  justify-content: flex-start;
+}
+
+.cardStep {
+  font-family: var(--fx);
+  font-size: 3.1rem;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.cardNeed {
+  margin: 0 0 0.3rem;
+  font-size: 0.74rem;
+  font-family: var(--fb);
+}
+
+.card h3 {
+  margin: 0 0 0.45rem;
+  font-family: var(--fx);
+  font-size: 1.28rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.cardText {
+  margin: 0 0 0.85rem;
+  font-size: 0.9rem;
+  line-height: 1.75;
+}
+
+.cardResult {
+  margin: 0 0 0.55rem;
+  display: inline-block;
+  font-family: var(--fb);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.cardHint {
+  display: block;
+  font-size: 0.68rem;
+  font-family: var(--fb);
+  letter-spacing: 0.03em;
+  opacity: 0.7;
+}
+
+.side_light .cardStep {
+  color: var(--emerald);
+}
+
+.side_light .cardNeed {
+  color: #c45c26;
+}
+
+.side_light .cardText,
+.side_light .cardHint {
+  color: var(--muted-light);
+}
+
+.side_light .cardResult {
+  color: var(--emerald);
+}
+
+.side_light h3 {
+  color: var(--emerald-deep);
+}
+
+.side_dark .cardStep {
+  color: var(--mint);
+}
+
+.side_dark .cardNeed {
+  color: #fbbf24;
+}
+
+.side_dark .cardText,
+.side_dark .cardHint {
+  color: var(--muted-dark);
+}
+
+.side_dark .cardResult {
+  color: #a7f3d0;
+}
+
+.side_dark h3 {
+  color: #fff;
+}
+
+/* —— تبلت / زیر دسکتاپ —— */
+@media (max-width: 1100px) {
+  .section {
+    padding: 0 0 2.6rem;
+  }
+
+  .card {
+    width: min(340px, 42%);
+  }
+
+  .cardStep {
+    font-size: 2.55rem;
+  }
+
+  .card h3 {
+    font-size: 1.15rem;
+  }
+
+  .cards {
+    gap: clamp(2rem, 4.5vw, 2.8rem);
+  }
+}
+
+/* —— موبایل: یک‌رنگ، حس اپلیکیشن —— */
+@media (max-width: 900px) {
+  .section {
+    padding: 0.35rem 0 2.4rem;
+    margin: 0;
+    background: var(--emerald-deep);
+    color: #f4fff9;
+  }
+
+  .curveSide,
+  .bgSimple::before {
+    display: none;
+  }
+
+  .bgGradient {
+    background: var(--emerald-deep);
+  }
+
+  .pathStroke {
+    left: 1.35rem;
+    width: 36px;
+    transform: none;
+  }
+
+  .pathIcon {
+    width: 2rem;
+    height: 2rem;
+    background: var(--emerald-deep);
+    color: var(--mint);
+    border-color: var(--mint);
+    box-shadow: 0 0 0 3px var(--emerald-deep);
+  }
+
+  .pathIconOn {
+    border-color: #fff;
+    color: #fff;
+  }
+
+  .pathTrack {
+    stroke: rgba(167, 243, 208, 0.28);
+    stroke-width: 2.2;
+  }
+
+  .pathFill {
+    stroke: var(--mint);
+    stroke-width: 2.4;
+  }
+
+  .head {
+    width: auto;
+    min-width: 0;
+    margin: 0 0 1.25rem;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 1rem 1.1rem 0.35rem 1.1rem;
+    text-align: right;
+    background: transparent;
+  }
+
+  .eyebrow {
+    font-size: 0.7rem;
+    color: var(--mint);
+  }
+
+  .head h2 {
+    font-size: clamp(1.15rem, 4.5vw, 1.4rem);
+    line-height: 1.35;
+    color: #fff;
+  }
+
+  .lead {
+    margin: 0;
+    max-width: none;
+    font-size: 0.8rem;
+    line-height: 1.65;
+    color: rgba(244, 255, 249, 0.78);
+  }
+
+  .timeline {
+    width: 100%;
+    margin: 0;
+    padding: 0 1.1rem;
+  }
+
+  .cards {
+    gap: 0.85rem;
+    padding: 0.35rem 0 0.5rem;
+  }
+
+  .card {
+    width: auto;
+    max-width: none;
+  }
+
+  .side_light,
+  .side_dark {
+    width: auto;
+    margin: 0;
+    margin-left: 2.85rem;
+    margin-right: 0;
+    align-self: stretch;
+    color: #f4fff9;
+    text-align: right;
+    padding: 0.85rem 0.95rem;
+    border-radius: 1.05rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(167, 243, 208, 0.14);
+  }
+
+  .side_dark .cardTop,
+  .side_light .cardTop {
+    justify-content: flex-start;
+  }
+
+  .cardInner {
+    padding: 0;
+  }
+
+  .cardStep {
+    font-size: 1.55rem;
+  }
+
+  .cardNeed {
+    font-size: 0.7rem;
+  }
+
+  .card h3 {
+    font-size: 1.02rem;
+  }
+
+  .cardText {
+    font-size: 0.82rem;
+    line-height: 1.65;
+    margin-bottom: 0.55rem;
+  }
+
+  .cardResult {
+    font-size: 0.72rem;
+  }
+
+  .cardHint {
+    font-size: 0.62rem;
+  }
+
+  .side_dark .cardStep,
+  .side_light .cardStep {
+    color: var(--mint);
+  }
+
+  .side_dark .cardNeed,
+  .side_light .cardNeed {
+    color: #fbbf24;
+  }
+
+  .side_dark .cardText,
+  .side_dark .cardHint,
+  .side_light .cardText,
+  .side_light .cardHint {
+    color: rgba(244, 255, 249, 0.72);
+  }
+
+  .side_dark .cardResult,
+  .side_light .cardResult {
+    color: var(--mint);
+  }
+
+  .side_dark h3,
+  .side_light h3 {
+    color: #fff;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding-bottom: 2rem;
+  }
+
+  .timeline {
+    padding: 0 1rem;
+  }
+
+  .head {
+    padding-inline: 1rem;
+  }
+
+  .pathStroke {
+    left: 1.15rem;
+  }
+
+  .side_light,
+  .side_dark {
+    margin-left: 2.65rem;
+    padding: 0.8rem 0.85rem;
+    border-radius: 0.95rem;
+  }
+
+  .cardStep {
+    font-size: 1.4rem;
+  }
+
+  .card h3 {
+    font-size: 0.98rem;
+  }
+
+  .cardText {
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .timeline,
+  .head {
+    padding-inline: 0.85rem;
+  }
+
+  .pathStroke {
+    left: 0.95rem;
+  }
+
+  .side_light,
+  .side_dark {
+    margin-left: 2.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pathFill {
+    transition: none !important;
+  }
+}

@@ -5,12 +5,14 @@ import React from "react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import SiteFooter from "@/components/common/SiteFooter";
+import CacheBustGuard from "@/components/layout/CacheBustGuard";
 import "@/styles/globals.css";
 
 export default function AdminLayout({ children }) {
   return (
     <html lang="fa" dir="rtl" suppressHydrationWarning>
       <body suppressHydrationWarning className="adminBody">
+        <CacheBustGuard />
         <LanguageProvider>
           <AuthProvider>
             <div className="adminShell">

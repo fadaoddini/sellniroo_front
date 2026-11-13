@@ -7,6 +7,7 @@ import {
   BookOpen, RefreshCw, CheckSquare, Play, ClipboardList,
   Sparkles, ChevronLeft, Timer, ImagePlus, CircleCheck,
   GraduationCap, Home, ArrowUpLeft, X, Paperclip, ExternalLink,
+  Trophy,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import schoolService from '@/components/School/services/schoolService'
@@ -14,6 +15,11 @@ import DropZone from '@/components/School/DropZone'
 import StudentCharts from '@/components/School/StudentCharts'
 import ExamResultsPanel from '@/components/School/ExamResultsPanel'
 import LessonVideoPlayer, { LessonShareBar } from '@/components/School/LessonVideoPlayer'
+import StudentAttendancePanel from '@/components/School/StudentAttendancePanel'
+import MySchedulePanel from '@/components/School/MySchedulePanel'
+import StudentCounselingPanel from '@/components/School/StudentCounselingPanel'
+import StudentReportCardPanel from '@/components/School/StudentReportCardPanel'
+import StudentReportChartsPanel from '@/components/School/StudentReportChartsPanel'
 import styles from './School.module.css'
 
 const RANK_FA = {
@@ -106,7 +112,11 @@ function hasLessonText(html) {
   return text.length > 0
 }
 
-export default function StudentDashboard() {
+export default function StudentDashboard({
+  embedded = false,
+  previewStudentId: previewStudentIdProp,
+  onPreviewStudentIdChange,
+} = {}) {
   const router = useRouter()
   const { isAuthenticated, loading } = useAuth()
   const [tab, setTab] = useState('home')
@@ -124,7 +134,15 @@ export default function StudentDashboard() {
   const [hwBusy, setHwBusy] = useState(false)
   const [msg, setMsg] = useState(null)
   const [err, setErr] = useState(null)
-  const [previewStudentId, setPreviewStudentId] = useState('')
+  const [previewStudentIdLocal, setPreviewStudentIdLocal] = useState('')
+  const previewControlled = previewStudentIdProp !== undefined
+  const previewStudentId = previewControlled
+    ? String(previewStudentIdProp || '')
+    : previewStudentIdLocal
+  const setPreviewStudentId = (id) => {
+    if (previewControlled) onPreviewStudentIdChange?.(String(id || ''))
+    else setPreviewStudentIdLocal(String(id || ''))
+  }
   const [examTimeLeft, setExamTimeLeft] = useState(null)
   const [examTimerAlert, setExamTimerAlert] = useState(null) // 'half' | 'twoMin' | 'ended' | null
   const [examSubmitting, setExamSubmitting] = useState(false)
@@ -134,9 +152,14 @@ export default function StudentDashboard() {
   const examWarnedTwoMinRef = useRef(false)
   const examAutoSubmittedRef = useRef(false)
   const examTimerStartedAtRef = useRef(0)
+  const examSubmittingRef = useRef(false)
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) router.replace('/login?next=/school/student')
+    if (!loading && !isAuthenticated) {
+      router.replace(
+        '/login?next=' + encodeURIComponent('/profile?tab=students'),
+      )
+    }
   }, [loading, isAuthenticated, router])
 
   const load = useCallback(async () => {
@@ -144,7 +167,7 @@ export default function StudentDashboard() {
     const params = previewStudentId ? { student: previewStudentId } : {}
     const [dash, tr] = await Promise.all([
       schoolService.studentDashboard(params),
-      schoolService.tree(),
+      schoolService.tree(params),
     ])
     if (!dash.success) {
       setErr(dash.error || 'دسترسی دانش‌آموز ندارید')
@@ -209,15 +232,24 @@ export default function StudentDashboard() {
     examTimerStartedAtRef.current = 0
   }
 
-  const studentScope = () => (
-    previewStudentId ? { student: previewStudentId } : {}
+  const studentScopeParams = useMemo(
+    () => (previewStudentId ? { student: previewStudentId } : {}),
+    [previewStudentId],
   )
+
+  const notifyPanel = useCallback((m, isErr) => {
+    if (isErr) setErr(m)
+    else {
+      setMsg(m)
+      setErr(null)
+    }
+  }, [])
 
   const startExamPaper = async (paperId) => {
     if (paperId == null || paperId === '') {
       return setErr('شناسه آزمون نامعتبر است')
     }
-    const res = await schoolService.startExamPaper(paperId, studentScope())
+    const res = await schoolService.startExamPaper(paperId, studentScopeParams)
     if (!res.success) return setErr(res.error)
     const allowBack = res.data?.allow_back ?? res.data?.quiz?.allow_back ?? res.data?.paper?.allow_back
     const questions = res.data.questions || res.data.paper?.questions || []
@@ -246,7 +278,7 @@ export default function StudentDashboard() {
     if (quizId == null || quizId === '') {
       return setErr('شناسه آزمون نامعتبر است')
     }
-    const res = await schoolService.startQuiz(quizId, studentScope())
+    const res = await schoolService.startQuiz(quizId, studentScopeParams)
     if (!res.success) return setErr(res.error)
     const questions = res.data.questions || []
     const deadline = buildExamDeadline(res.data, questions.length)
@@ -272,8 +304,10 @@ export default function StudentDashboard() {
 
   const submitQuiz = useCallback(async ({ timedOut = false } = {}) => {
     const session = quizSessionRef.current
-    if (!session || examAutoSubmittedRef.current) return
-    if (timedOut) examAutoSubmittedRef.current = true
+    if (!session || examAutoSubmittedRef.current || examSubmittingRef.current) return
+    // همیشه قفل کن تا ارسال دستی و auto-submit همزمان نشوند
+    examAutoSubmittedRef.current = true
+    examSubmittingRef.current = true
     setExamSubmitting(true)
     setConfirmNext(null)
     setErr(null)
@@ -285,7 +319,6 @@ export default function StudentDashboard() {
       : undefined
 
     let res
-    const scope = previewStudentId ? { student: previewStudentId } : {}
     if (session.mode === 'exam') {
       const payload = {
         paper_id: session.paper?.id || session.quiz?.id,
@@ -294,7 +327,7 @@ export default function StudentDashboard() {
           answer,
         })),
         duration_seconds: durationSeconds,
-        ...scope,
+        ...studentScopeParams,
       }
       res = await schoolService.submitExamPaper(payload)
     } else {
@@ -305,11 +338,12 @@ export default function StudentDashboard() {
           answer,
         })),
         duration_seconds: durationSeconds,
-        ...scope,
+        ...studentScopeParams,
       }
       res = await schoolService.submitQuiz(payload)
     }
 
+    examSubmittingRef.current = false
     setExamSubmitting(false)
     if (res.success) {
       setMsg(
@@ -317,15 +351,21 @@ export default function StudentDashboard() {
           ? `زمان آزمون تمام شد · نتیجه: ${faNum(res.data.percentage)}٪`
           : `نتیجه آزمون: ${faNum(res.data.percentage)}٪`,
       )
+      quizSessionRef.current = null
       setQuizSession(null)
       resetExamTimerState()
       setTab('results')
       load()
     } else {
-      if (timedOut) examAutoSubmittedRef.current = false
-      setErr(res.error || 'ثبت آزمون ناموفق بود')
+      // اجازه ارسال دستی دوباره؛ interval دیگر auto نمی‌کند تا کاربر بزند
+      examAutoSubmittedRef.current = false
+      if (timedOut) {
+        setErr((res.error || 'ثبت خودکار ناموفق بود') + ' — دوباره «ثبت آزمون» را بزنید')
+      } else {
+        setErr(res.error || 'ثبت آزمون ناموفق بود')
+      }
     }
-  }, [load, previewStudentId])
+  }, [load, studentScopeParams])
 
   useEffect(() => {
     answersRef.current = answers
@@ -336,8 +376,8 @@ export default function StudentDashboard() {
   }, [quizSession])
 
   useEffect(() => {
+    // تایمر و auto-submit حتی خارج از تب آزمون ادامه دارد (هم‌خوان با بنر «زمان واقعی»)
     if (!quizSession?.ends_at) {
-      setExamTimeLeft(null)
       return undefined
     }
 
@@ -367,6 +407,7 @@ export default function StudentDashboard() {
       const elapsedSinceOpen = Date.now() - (examTimerStartedAtRef.current || 0)
       if (left <= 0 && !examAutoSubmittedRef.current && elapsedSinceOpen > 1500) {
         setExamTimerAlert('ended')
+        if (tab !== 'quiz') setTab('quiz')
         submitQuiz({ timedOut: true })
       }
     }
@@ -374,11 +415,13 @@ export default function StudentDashboard() {
     tick()
     const id = window.setInterval(tick, 250)
     return () => window.clearInterval(id)
-  }, [quizSession?.ends_at, quizSession?.total_seconds, submitQuiz])
+  }, [quizSession?.ends_at, quizSession?.total_seconds, submitQuiz, tab])
 
   const pendingExams = data?.pending_exams || []
   const pendingQuizzes = data?.pending_quizzes || []
   const pendingHw = data?.pending_exercises || []
+  const homeworkScores = data?.homework_scores || []
+  const homeworkScoreTotal = Number(data?.homework_score_total) || 0
   const charts = data?.charts || {}
   const hwBySubject = useMemo(() => {
     const map = new Map()
@@ -437,9 +480,14 @@ export default function StudentDashboard() {
     const quizBadge = (pendingExams.length || pendingQuizzes.length) || null
     const list = [
       ['home', 'خانه', null],
+      ['schedule', 'برنامه', null],
       ['lessons', 'دروس', null],
       ['homework', 'تکالیف', pendingHw.length || null],
       ['quiz', 'آزمون', quizBadge],
+      ['counseling', 'مشاوره', null],
+      ['attendance', 'حضور', null],
+      ['reportcard', 'کارنامه', null],
+      ['reportcharts', 'نمودار', null],
       ['results', 'نتایج', null],
       ['tips', 'پیشنهادها', null],
     ]
@@ -447,10 +495,14 @@ export default function StudentDashboard() {
     return list
   }, [pendingHw.length, pendingExams.length, pendingQuizzes.length, lesson])
 
+  const pageClass = embedded
+    ? `${styles.page} ${styles.studentPage} ${styles.pageInProfile}`
+    : `${styles.page} ${styles.studentPage}`
+
   if (loading || !isAuthenticated) return null
   if (!data) {
     return (
-      <div className={`${styles.page} ${styles.studentPage}`} dir="rtl" lang="fa">
+      <div className={pageClass} dir="rtl" lang="fa">
         <div className={styles.wrap}>
           {err ? <div className={styles.err}>{err}</div> : <div className={styles.empty}>در حال بارگذاری…</div>}
         </div>
@@ -483,48 +535,52 @@ export default function StudentDashboard() {
   }
 
   return (
-    <div className={`${styles.page} ${styles.studentPage}`} dir="rtl" lang="fa">
+    <div className={pageClass} dir="rtl" lang="fa">
       <div className={styles.wrap}>
-        <header className={styles.hero}>
-          <div className={styles.heroGlow} aria-hidden />
-          <div className={styles.heroBrand}>
-            <span className={styles.badge}>
-              <GraduationCap size={12} />
-              پنل دانش‌آموز
-            </span>
-            <h1 className={styles.brand}>
-              مدرسه<span className={styles.brandAccent}> من</span>
-            </h1>
-            <p className={styles.tagline}>
-              دروس، تکالیف، آزمون و پیشرفت تحصیلی
-              {data.is_admin_preview ? ' · پیش‌نمایش مدیر' : ''}
-            </p>
-            <nav className={styles.heroNav} aria-label="میانبرها">
-              <Link href="/school"><Home size={12} /> هاب مدرسه</Link>
-              <Link href="/"><ArrowUpLeft size={12} /> سایت</Link>
-              <button type="button" onClick={load}><RefreshCw size={12} /> بروزرسانی</button>
-              {(charts.quiz_summary?.pending || 0) > 0 ? (
-                <button type="button" onClick={() => setTab('quiz')}>
-                  <Play size={12} /> {faNum(charts.quiz_summary.pending)} آزمون باز
-                </button>
-              ) : null}
-            </nav>
-          </div>
-          <div className={styles.heroIdentity}>
-            <div className={styles.avatar}>
-              <BookOpen size={18} />
-            </div>
-            <div>
-              <p className={styles.ownerName}>{profile.display_name || 'دانش‌آموز'}</p>
-              <p className={styles.ownerRole}>
-                {profile.grade ? `پایه ${faNum(profile.grade)}` : 'داشبورد دانش‌آموز'}
-                {' · '}رتبه {RANK_FA[rank.current] || rank.current}
+        {!embedded ? (
+          <header className={styles.hero}>
+            <div className={styles.heroGlow} aria-hidden />
+            <div className={styles.heroBrand}>
+              <span className={styles.badge}>
+                <GraduationCap size={12} />
+                پنل دانش‌آموز
+              </span>
+              <h1 className={styles.brand}>
+                مدرسه<span className={styles.brandAccent}> من</span>
+              </h1>
+              <p className={styles.tagline}>
+                دروس، تکالیف، آزمون و پیشرفت تحصیلی
+                {data.is_admin_preview ? ' · پیش‌نمایش مدیر' : ''}
               </p>
+              <nav className={styles.heroNav} aria-label="میانبرها">
+                <Link href="/school"><Home size={12} /> هاب مدرسه</Link>
+                <Link href="/"><ArrowUpLeft size={12} /> سایت</Link>
+                <button type="button" onClick={load}><RefreshCw size={12} /> بروزرسانی</button>
+                {(charts.quiz_summary?.pending || 0) > 0 ? (
+                  <button type="button" onClick={() => setTab('quiz')}>
+                    <Play size={12} /> {faNum(charts.quiz_summary.pending)} آزمون باز
+                  </button>
+                ) : null}
+              </nav>
             </div>
-          </div>
-        </header>
+            <div className={styles.heroIdentity}>
+              <div className={styles.avatar}>
+                <BookOpen size={18} />
+              </div>
+              <div>
+                <p className={styles.ownerName}>{profile.display_name || 'دانش‌آموز'}</p>
+                <p className={styles.ownerRole}>
+                  {profile.grade ? `پایه ${faNum(profile.grade)}` : 'داشبورد دانش‌آموز'}
+                  {' · '}رتبه {RANK_FA[rank.current] || rank.current}
+                </p>
+              </div>
+            </div>
+          </header>
+        ) : null}
 
-        {data.is_admin_preview && (data.preview_students || []).length > 0 ? (
+        {!embedded &&
+        data.is_admin_preview &&
+        (data.preview_students || []).length > 0 ? (
           <div className={styles.previewBar}>
             <div className={styles.field}>
               <label>پیش‌نمایش به‌عنوان دانش‌آموز</label>
@@ -533,7 +589,9 @@ export default function StudentDashboard() {
                 onChange={(e) => setPreviewStudentId(e.target.value)}
               >
                 {(data.preview_students || []).map((s) => (
-                  <option key={s.id} value={s.id}>{s.display_name} — {s.grade || 'بدون پایه'}</option>
+                  <option key={s.id} value={s.id}>
+                    {s.display_name} — {s.grade || 'بدون پایه'}
+                  </option>
                 ))}
               </select>
             </div>
@@ -559,6 +617,10 @@ export default function StudentDashboard() {
           <div className={styles.stat}>
             <p className={styles.statLabel}>آزمون باز</p>
             <p className={styles.statValue}>{faNum(pendingExams.length + pendingQuizzes.length)}</p>
+          </div>
+          <div className={styles.stat}>
+            <p className={styles.statLabel}>حضور</p>
+            <p className={styles.statValue}>{faNum(data.attendance?.attendance_rate ?? data.charts?.attendance?.attendance_rate ?? 0)}٪</p>
           </div>
         </div>
 
@@ -596,6 +658,18 @@ export default function StudentDashboard() {
             </button>
           ))}
         </div>
+
+        {quizSession && tab !== 'quiz' ? (
+          <div className={styles.examAwayBanner} role="status">
+            <Timer size={14} />
+            <span>
+              آزمون «{quizSession.quiz?.title || 'در حال اجرا'}» هنوز تمام نشده — زمان واقعی ادامه دارد.
+            </span>
+            <button type="button" className={styles.btnAccent} onClick={() => setTab('quiz')}>
+              بازگشت به آزمون
+            </button>
+          </div>
+        ) : null}
 
         {tab === 'home' ? (
           <div className={styles.homeLayout}>
@@ -829,6 +903,48 @@ export default function StudentDashboard() {
               </div>
             </div>
 
+            <section className={styles.hwScoreCenter}>
+              <div className={styles.hwScoreCenterHero}>
+                <span className={styles.hwScoreCenterIcon} aria-hidden>
+                  <Trophy size={22} strokeWidth={2.1} />
+                </span>
+                <div>
+                  <strong>مرکز امتیاز تکالیف</strong>
+                  <p>مجموع امتیازهایی که معلم برای تکالیف بررسی‌شده ثبت کرده</p>
+                </div>
+                <em className={homeworkScoreTotal >= 0 ? styles.hwScorePos : styles.hwScoreNeg}>
+                  {homeworkScoreTotal > 0
+                    ? `+${faNum(homeworkScoreTotal)}`
+                    : faNum(homeworkScoreTotal)}
+                </em>
+              </div>
+              {homeworkScores.length ? (
+                <div className={styles.hwScoreList}>
+                  {homeworkScores.map((row) => {
+                    const s = Number(row.score) || 0
+                    return (
+                      <article key={row.id} className={styles.hwScoreItem}>
+                        <div>
+                          <strong>{row.exercise_title || 'تکلیف'}</strong>
+                          <p>
+                            {row.subject_title || row.lesson_title || '—'}
+                            {row.status === 'approved' ? ' · تأیید' : row.status === 'rejected' ? ' · رد' : ''}
+                          </p>
+                        </div>
+                        <span className={s >= 0 ? styles.hwScoreChipPos : styles.hwScoreChipNeg}>
+                          {s > 0 ? `+${faNum(s)}` : faNum(s)}
+                        </span>
+                      </article>
+                    )
+                  })}
+                </div>
+              ) : (
+                <p className={styles.hwScoreEmpty}>
+                  هنوز امتیازی برای تکالیف ثبت نشده است
+                </p>
+              )}
+            </section>
+
             {hwBySubject.length ? (
               <div className={styles.hwSections}>
                 {hwBySubject.map((section) => (
@@ -927,6 +1043,8 @@ export default function StudentDashboard() {
                     className={styles.btnGhost}
                     disabled={examSubmitting}
                     onClick={() => {
+                      quizSessionRef.current = null
+                      examAutoSubmittedRef.current = true
                       setQuizSession(null)
                       setAnswers({})
                       setQIndex(0)
@@ -1241,6 +1359,52 @@ export default function StudentDashboard() {
           </div>
         ) : null}
 
+        {tab === 'schedule' ? (
+          <div className={styles.panel}>
+            <MySchedulePanel
+              role="student"
+              params={studentScopeParams}
+              onNotify={notifyPanel}
+            />
+          </div>
+        ) : null}
+
+        {tab === 'counseling' ? (
+          <div className={styles.panel}>
+            <StudentCounselingPanel
+              studentId={previewStudentId || profile?.id || null}
+              onNotify={notifyPanel}
+            />
+          </div>
+        ) : null}
+
+        {tab === 'attendance' ? (
+          <div className={styles.panel}>
+            <StudentAttendancePanel
+              studentParams={studentScopeParams}
+              onNotify={notifyPanel}
+            />
+          </div>
+        ) : null}
+
+        {tab === 'reportcard' ? (
+          <div className={styles.panel}>
+            <StudentReportCardPanel
+              studentParams={studentScopeParams}
+              onNotify={notifyPanel}
+            />
+          </div>
+        ) : null}
+
+        {tab === 'reportcharts' ? (
+          <div className={styles.panel}>
+            <StudentReportChartsPanel
+              studentParams={studentScopeParams}
+              onNotify={notifyPanel}
+            />
+          </div>
+        ) : null}
+
         {tab === 'results' ? (
           <div>
             {(charts.score_trend || []).length || (charts.subject_averages || []).length ? (
@@ -1252,10 +1416,7 @@ export default function StudentDashboard() {
             <ExamResultsPanel
               studentMode
               studentId={previewStudentId || profile?.id || null}
-              onNotify={(m, isErr) => {
-                if (isErr) setErr(m)
-                else { setMsg(m); setErr(null) }
-              }}
+              onNotify={notifyPanel}
             />
           </div>
         ) : null}

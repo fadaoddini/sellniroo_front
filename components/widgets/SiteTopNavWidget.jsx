@@ -11,29 +11,9 @@ import React, {
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import {
-  Home,
-  Info,
-  Briefcase,
-  Newspaper,
-  PlusCircle,
-  HelpCircle,
-  GraduationCap,
-  Building2,
-  Users,
-  Phone,
-  Search,
-  LayoutDashboard,
-  Menu,
-  X,
-  User as UserIcon,
-  Target,
-  Zap,
-  Award,
-  Shield,
-  Package,
-} from 'lucide-react'
+import { Home, Menu, X, LayoutDashboard, PlusCircle } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useAuth } from '@/contexts/AuthContext'
 import {
   fetchHeaderMenu,
   DEFAULT_HEADER_MENU,
@@ -51,37 +31,108 @@ import {
   normalizeSiteTopNavSettings,
   siteTopNavCssVars,
 } from '@/config/siteTopNavWidgetSettings'
+import { resolveHeaderMenuIcon } from '@/config/headerMenuIcons'
 import AppBottomNavWidget from '@/components/widgets/AppBottomNavWidget'
+import BreakingNews from '@/components/common/breakingnews/BreakingNews'
 import styles from './SiteTopNavWidget.module.css'
 
-const ICON_MAP = {
-  Home,
-  Info,
-  Briefcase,
-  Newspaper,
-  PlusCircle,
-  HelpCircle,
-  GraduationCap,
-  Building2,
-  Users,
-  Phone,
-  Search,
-  LayoutDashboard,
-  User: UserIcon,
-  UserIcon,
-  Target,
-  Zap,
-  Award,
-  Shield,
-  Package,
+const PROFILE_LEGACY_COLORS = new Set(
+  [
+    '#fdba74',
+    '#ea580c',
+    '#f4ae52',
+    '#d4621a',
+    '#fb923c',
+    '#fb9700',
+    '#0b3a5c',
+    '#135a87',
+    '#006bcf',
+  ].map((c) => c.toLowerCase()),
+)
+
+function scrubProfileColor(value, fallback) {
+  const v = String(value ?? '').trim()
+  if (!v || PROFILE_LEGACY_COLORS.has(v.toLowerCase())) return fallback
+  return v
+}
+
+function resolveSiteTopNavProfileChrome(raw = {}) {
+  const r = raw && typeof raw === 'object' ? raw : {}
+  const hasProfileConfig =
+    r.profile_mode != null ||
+    r.show_date != null ||
+    r.guest_visible != null ||
+    r.guest_label != null ||
+    r.color_date != null ||
+    r.color_profile_text != null
+  if (!hasProfileConfig) return null
+  const mode = String(r.profile_mode || 'avatar')
+  const showDate = r.show_date !== false
+  const showGuest = r.guest_visible !== false
+  if (!showDate && mode === 'hidden' && !showGuest) return null
+  const text = scrubProfileColor(
+    r.color_profile_text || r.color_text,
+    '#ffffff',
+  )
+  const icon = scrubProfileColor(r.color_icon || r.color_hover, '#ffffff')
+  const accent = scrubProfileColor(r.color_accent, '#10b981')
+  return {
+    show_ticker: false,
+    show_menu_items: false,
+    show_hamburger: false,
+    show_menu_icons: false,
+    show_cart: false,
+    sticky: false,
+    shadow: false,
+    bar_full_bleed: false,
+    border_width: 0,
+    height: 40,
+    padding_top: 0,
+    padding_bottom: 0,
+    padding_left: 0,
+    padding_right: 0,
+    margin_top: 0,
+    margin_bottom: 0,
+    margin_left: 0,
+    margin_right: 0,
+    color_bg: 'transparent',
+    color_border: 'transparent',
+    color_text: text,
+    color_link: icon,
+    color_accent: accent,
+    color_menu_hover_bg: scrubProfileColor(r.color_menu_hover_bg, '#046c4e'),
+    color_menu_hover_text: scrubProfileColor(r.color_menu_hover_text, '#a7f3d0'),
+    color_menu_icon: icon,
+    color_drawer_bg: scrubProfileColor(r.color_drawer_bg, '#023c2c'),
+    show_date: showDate,
+    date_font_size: r.date_font_size || 11,
+    date_font_weight: r.date_font_weight || 400,
+    profile_mode: mode || 'avatar',
+    avatar_shape: r.avatar_shape === 'rounded' ? 'rounded' : 'circle',
+    guest_visible: showGuest,
+    guest_label: r.guest_label || 'ورود',
+    guest_icon: r.guest_icon || 'LogIn',
+    guest_href: r.guest_href || '/login',
+    color_date: scrubProfileColor(r.color_date || r.color_icon, '#a7f3d0'),
+    color_profile_bg: r.color_profile_bg || 'transparent',
+    color_profile_text: text,
+    color_avatar_border: scrubProfileColor(
+      r.color_avatar_border || r.color_accent,
+      '#10b981',
+    ),
+    color_btn_bg: scrubProfileColor(r.color_btn_bg || r.color_accent, '#046c4e'),
+    color_btn_text: scrubProfileColor(r.color_btn_text, '#ffffff'),
+    show_on_mobile: true,
+    show_on_desktop: true,
+  }
 }
 
 function resolveIcon(name) {
-  if (!name) return Home
-  return ICON_MAP[name] || Home
+  return resolveHeaderMenuIcon(name)
 }
 
-function useIsMobile(breakpoint = 768) {
+/** هم‌تراز با نوار پایین شرکتی (max-width: 1023px) */
+function useIsMobile(breakpoint = 1024) {
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window === 'undefined') return false
     return window.matchMedia(`(max-width: ${breakpoint - 1}px)`).matches
@@ -112,6 +163,12 @@ function matchPath(pathname, href) {
   const path = raw.split('?')[0].split('#')[0] || '/'
   if (path === '/') return pathname === '/'
   return pathname === path || pathname.startsWith(`${path}/`)
+}
+
+/** لینک ورود — بعد از لاگین نباید CTA دیده شود */
+function isLoginCtaHref(href) {
+  const path = String(href || '').trim().split('?')[0].split('#')[0]
+  return path === '/login' || path.endsWith('/login')
 }
 
 function LogoMark({ src, name, height }) {
@@ -152,28 +209,27 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
   const baseCssVars = siteTopNavCssVars(raw, { viewport })
 
   const { language, dir } = useLanguage()
+  const { user, isAuthenticated } = useAuth()
   const pathname = usePathname() || '/'
   const [items, setItems] = useState(DEFAULT_HEADER_MENU)
   const [moduleMap, setModuleMap] = useState({})
   const [appearance, setAppearance] = useState(DEFAULT_CORPORATE_APPEARANCE)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const showAdminDashboard =
+    !!isAuthenticated && (!!user?.is_superuser || !!user?.is_staff)
+  const showCta =
+    !!settings.show_cta &&
+    !!settings.cta_label &&
+    !(!!isAuthenticated && isLoginCtaHref(settings.cta_href))
 
+  /* رنگ‌ها فقط از تنظیمات ویجت؛ ظاهر شرکتی داشبورد دیگر override نمی‌کند */
   const cssVars = useMemo(() => {
     const next = { ...baseCssVars }
-    if (!isMobile) {
-      if (appearance.header_bg) next['--stn-bg'] = appearance.header_bg
-      if (appearance.header_text) next['--stn-text'] = appearance.header_text
-      if (appearance.header_icon) next['--stn-icon'] = appearance.header_icon
-      if (appearance.header_icon_hover || appearance.header_hover) {
-        next['--stn-icon-hover'] =
-          appearance.header_icon_hover || appearance.header_hover
-      }
-      if (appearance.header_hover) next['--stn-hover'] = appearance.header_hover
-    } else {
-      next['--stn-icon-hover'] = next['--stn-hover']
+    if (!next['--stn-icon-hover']) {
+      next['--stn-icon-hover'] = next['--stn-hover'] || next['--stn-icon']
     }
     return next
-  }, [baseCssVars, appearance, isMobile])
+  }, [baseCssVars])
 
   useEffect(() => {
     let cancelled = false
@@ -255,6 +311,10 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
   const fullBleed = settings.full_bleed !== false
   const showBottomNav = isMobile && !!settings.mobile_bottom_nav
   const showTopBar = !isMobile || !!settings.mobile_show_top
+  const profileChrome = useMemo(
+    () => resolveSiteTopNavProfileChrome(raw),
+    [raw],
+  )
   const useDrawer =
     isMobile && showTopBar && settings.mobile_mode === 'drawer'
   const useInlineMobile =
@@ -361,7 +421,20 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
               )}
 
               <div className={styles.actions}>
-                {settings.show_cta && settings.cta_label ? (
+                {showAdminDashboard ? (
+                  <Link
+                    href="/dashboard"
+                    className={`${styles.dashboardBtn}${
+                      useDrawer ? ` ${styles.ctaMobileHide}` : ''
+                    }`}
+                    title="داشبورد"
+                  >
+                    <LayoutDashboard size={14} aria-hidden />
+                    <span>داشبورد</span>
+                  </Link>
+                ) : null}
+
+                {showCta ? (
                   <Link
                     href={settings.cta_href || '/'}
                     className={`${styles.cta}${
@@ -371,6 +444,12 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
                     <PlusCircle size={14} aria-hidden />
                     <span>{settings.cta_label}</span>
                   </Link>
+                ) : null}
+
+                {profileChrome ? (
+                  <div className={styles.profileChrome} data-stn-profile="1">
+                    <BreakingNews settings={profileChrome} />
+                  </div>
                 ) : null}
 
                 {useDrawer ? (
@@ -436,7 +515,17 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
                     forceLabels: true,
                   })}
                 </ul>
-                {settings.show_cta && settings.cta_label ? (
+                {showAdminDashboard ? (
+                  <Link
+                    href="/dashboard"
+                    className={styles.drawerDashboard}
+                    onClick={closeDrawer}
+                  >
+                    <LayoutDashboard size={16} aria-hidden />
+                    داشبورد
+                  </Link>
+                ) : null}
+                {showCta ? (
                   <Link
                     href={settings.cta_href || '/'}
                     className={styles.drawerCta}
@@ -452,7 +541,7 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
         </div>
       ) : null}
 
-      {showBottomNav ? <AppBottomNavWidget /> : null}
+      {showBottomNav ? <AppBottomNavWidget settings={raw} /> : null}
     </>
   )
 })

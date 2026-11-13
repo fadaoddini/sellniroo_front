@@ -21,6 +21,8 @@ export default function GuidedTour({
   stepIndex = 0,
   onStepChange,
   onClose,
+  tipClassName = '',
+  theme = 'default',
 }) {
   const [rect, setRect] = useState(null)
   const [tipPos, setTipPos] = useState({ top: 24, left: 24, tipW: 300 })
@@ -167,7 +169,13 @@ export default function GuidedTour({
       ) : null}
 
       <div
-        className={styles.tip}
+        className={[
+          styles.tip,
+          theme === 'job' ? styles.tipJob : '',
+          tipClassName,
+        ]
+          .filter(Boolean)
+          .join(' ')}
         style={{
           top: tipPos.top,
           left: tipPos.left,

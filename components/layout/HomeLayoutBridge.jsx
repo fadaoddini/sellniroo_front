@@ -20,26 +20,29 @@ function applyLayout(layout) {
 export default function HomeLayoutBridge() {
   useEffect(() => {
     let cancelled = false
-    fetchSiteSettings({ force: false })
-      .then((s) => {
-        if (!cancelled) applyLayout(s?.home_layout || DEFAULT_SITE_SETTINGS.home_layout)
-      })
-      .catch(() => {
-        if (!cancelled) applyLayout(DEFAULT_SITE_SETTINGS.home_layout)
-      })
+    const load = (force = true) => {
+      fetchSiteSettings({ force })
+        .then((s) => {
+          if (!cancelled) {
+            applyLayout(s?.home_layout || DEFAULT_SITE_SETTINGS.home_layout)
+          }
+        })
+        .catch(() => {
+          if (!cancelled) applyLayout(DEFAULT_SITE_SETTINGS.home_layout)
+        })
+    }
+    load(true)
 
     const onChange = (ev) => {
       if (ev?.detail) applyLayout(ev.detail)
-      else {
-        fetchSiteSettings({ force: true }).then((s) => {
-          applyLayout(s?.home_layout)
-        })
-      }
+      else load(true)
     }
     window.addEventListener('home-layout-changed', onChange)
+    window.addEventListener('site-data-bust', onChange)
     return () => {
       cancelled = true
       window.removeEventListener('home-layout-changed', onChange)
+      window.removeEventListener('site-data-bust', onChange)
     }
   }, [])
 

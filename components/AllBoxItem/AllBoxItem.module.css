@@ -3,9 +3,15 @@
    ============================================ */
 
 .allBoxItem {
+  --jb-cream: #fef3e2;
+  --jb-mid: #f4ae52;
+  --jb-accent: #d4621a;
+  --jb-ink: #2a1a0e;
+
   padding: 2rem 0;
-  background: var(--white);
+  background: linear-gradient(180deg, #fff 0%, var(--jb-cream) 140%);
   min-height: 100vh;
+  color: var(--jb-ink);
 }
 
 .allBoxItemNoFilters {
@@ -14,8 +20,21 @@
 
 .allBoxItemEmbedded {
   min-height: 0;
-  padding: 0.5rem 0 1.25rem;
+  padding: 0;
   background: transparent;
+  width: 100%;
+}
+
+/*
+ * داخل صفحه‌ساز: عرض را والد (سکشن/ستون) تعیین می‌کند —
+ * بدون max-width و padding افقی اضافه که نسبت به منو «مارجین‌دار» به نظر برسد
+ */
+.allBoxItemEmbedded .container {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding-inline: 0;
+  box-sizing: border-box;
 }
 
 .allBoxItemNoFilters .container {
@@ -59,7 +78,7 @@
   overscroll-behavior: contain;
   border-radius: 18px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(232, 160, 0, 0.45) transparent;
+  scrollbar-color: rgba(212, 98, 26, 0.45) transparent;
 }
 
 .filtersSticky::-webkit-scrollbar {
@@ -67,7 +86,7 @@
 }
 
 .filtersSticky::-webkit-scrollbar-thumb {
-  background: rgba(232, 160, 0, 0.45);
+  background: rgba(212, 98, 26, 0.45);
   border-radius: 999px;
 }
 
@@ -139,8 +158,8 @@
 
 .emptyResetBtn {
   padding: 0.55rem 1.4rem;
-  background: linear-gradient(135deg, #fbc300, #e8a000);
-  color: #2a241c;
+  background: linear-gradient(135deg, #F4AE52, #D4621A);
+  color: #2A1A0E;
   border: none;
   border-radius: 10px;
   font-size: 0.85rem;
@@ -148,7 +167,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: var(--font-iran), Tahoma, Arial, sans-serif;
-  box-shadow: 0 4px 12px rgba(200, 150, 20, 0.28);
+  box-shadow: 0 4px 12px rgba(212, 98, 26, 0.28);
 }
 
 .emptyResetBtn:hover {
@@ -257,8 +276,8 @@
 }
 
 .hiringStat {
-  background: rgba(230, 126, 34, 0.12);
-  color: #e67e22;
+  background: rgba(212, 98, 26, 0.12);
+  color: #D4621A;
 }
 
 .seekingStat {
@@ -313,7 +332,7 @@
 }
 
 .listingsTitle svg {
-  color: #e67e22;
+  color: #D4621A;
 }
 
 .listingsCount {
@@ -330,6 +349,14 @@
   align-items: center;
   gap: 0.75rem;
   flex-wrap: wrap;
+}
+
+.toolbarRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-inline-start: auto;
 }
 
 /* ============================================
@@ -354,8 +381,8 @@
 }
 
 .hiringStat {
-  background: rgba(230, 126, 34, 0.12);
-  color: #e67e22;
+  background: rgba(212, 98, 26, 0.12);
+  color: #D4621A;
 }
 
 .seekingStat {
@@ -384,6 +411,10 @@
     gap: 1rem;
   }
 
+  .allBoxItemEmbedded .container {
+    padding-inline: 0;
+  }
+
   .listingsHeader {
     flex-direction: column;
     align-items: stretch;
@@ -397,10 +428,7 @@
   .headerControls {
     flex-direction: column;
     width: 100%;
-  }
-
-  .headerControls > * {
-    width: 100%;
+    align-items: stretch;
   }
 
   .headerControls .tabsContainer {
@@ -413,9 +441,15 @@
     justify-content: center;
   }
 
-  .headerControls .viewToggle {
+  .toolbarRow {
     width: 100%;
-    justify-content: center;
+    margin-inline-start: 0;
+    display: flex;
+  }
+
+  .toolbarRow .viewToggle {
+    flex: 0 0 auto;
+    margin-inline-start: auto;
   }
 }
 
@@ -503,13 +537,13 @@
 }
 
 .filterSelect:hover:not(:disabled) {
-  border-color: #e67e22;
+  border-color: #D4621A;
 }
 
 .filterSelect:focus {
   outline: none;
-  border-color: #e67e22;
-  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+  border-color: #D4621A;
+  box-shadow: 0 0 0 3px rgba(212, 98, 26, 0.1);
 }
 
 .filterSelect:disabled {
@@ -545,6 +579,6 @@
 .checkboxLabel input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #e67e22;
+  accent-color: #D4621A;
   cursor: pointer;
 }

@@ -1,12 +1,12 @@
 /* JobsList — هماهنگ با تم طلایی پروفایل */
 
 .jobsList {
-  --ink: #2a241c;
-  --muted: #6f675c;
-  --line: rgba(90, 60, 20, 0.12);
-  --gold: #fbc300;
-  --gold-dark: #c27800;
-  --cream: #fff7ec;
+  --ink: #2A1A0E;
+  --muted: #6B5344;
+  --line: rgba(42, 26, 14, 0.12);
+  --gold: #F4AE52;
+  --gold-dark: #D4621A;
+  --cream: #FEF3E2;
 
   display: flex;
   flex-direction: column;
@@ -21,7 +21,7 @@
   background: #fff;
   border-radius: 16px;
   border: 1px solid var(--line);
-  box-shadow: 0 6px 16px rgba(80, 50, 0, 0.05);
+  box-shadow: 0 6px 16px rgba(42, 26, 14, 0.05);
   flex-wrap: wrap;
 }
 
@@ -35,14 +35,14 @@
   background: var(--cream);
   border: 1.5px solid var(--line);
   border-radius: 11px;
-  color: #a08960;
+  color: #6B5344;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .searchBox:focus-within {
   border-color: var(--gold);
   background: #fff;
-  box-shadow: 0 0 0 4px rgba(251, 195, 0, 0.16);
+  box-shadow: 0 0 0 4px rgba(244, 174, 82, 0.16);
 }
 
 .searchBox input {
@@ -85,10 +85,10 @@
 }
 
 .statusBtn.activeStatus {
-  background: linear-gradient(135deg, #ffd54a, #fbc300);
-  color: #3a2a00;
+  background: linear-gradient(135deg, #F4AE52, #F4AE52);
+  color: #2A1A0E;
   border-color: transparent;
-  box-shadow: 0 4px 12px rgba(201, 120, 0, 0.22);
+  box-shadow: 0 4px 12px rgba(212, 98, 26, 0.22);
 }
 
 .refreshBtn {
@@ -116,6 +116,116 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+}
+
+.listGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.listStack {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (max-width: 1100px) {
+  .listGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .listGrid,
+  .listStack {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 540px) {
+  .listGrid,
+  .listStack {
+    grid-template-columns: 1fr;
+  }
+}
+
+.listLoading {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.spinIcon {
+  animation: spin 0.85s linear infinite;
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.65rem 0.85rem;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(42, 26, 14, 0.04);
+}
+
+.pagerMeta {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 650;
+  color: var(--muted);
+}
+
+.pagerControls {
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+  flex-wrap: wrap;
+}
+
+.pageBtn {
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.45rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.pageBtn:hover:not(:disabled) {
+  background: var(--cream);
+  border-color: rgba(212, 98, 26, 0.28);
+}
+
+.pageBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pageBtnActive {
+  background: linear-gradient(135deg, #F4AE52, #D4621A);
+  border-color: transparent;
+  color: #FEF3E2;
+}
+
+.pageDots {
+  min-width: 1.2rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.75rem;
 }
 
 .loading,
@@ -154,8 +264,8 @@
   align-items: center;
   gap: 0.35rem;
   padding: 0.55rem 1.05rem;
-  background: #3a2a00;
-  color: #fff8e7;
+  background: #2A1A0E;
+  color: #FEF3E2;
   border: none;
   border-radius: 11px;
   cursor: pointer;

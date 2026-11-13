@@ -7,8 +7,8 @@
   --ns-blue: #045a8d;
   --ns-blue-mid: #0a6eab;
   --ns-blue-bright: #1a8fd0;
-  --ns-gold: #fbc300;
-  --ns-gold-deep: #e8a000;
+  --ns-gold: #F4AE52;
+  --ns-gold-deep: #D4621A;
   --ns-line: rgba(255, 255, 255, 0.12);
 
   position: relative;
@@ -768,7 +768,7 @@
 }
 
 .flagChip input {
-  accent-color: #e8a000;
+  accent-color: #D4621A;
   width: 14px;
   height: 14px;
 }

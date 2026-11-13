@@ -3,6 +3,7 @@
 import React from 'react'
 import ModuleGate from '@/components/modules/ModuleGate'
 import AllBoxItem from '@/components/AllBoxItem'
+import JobBoardHowItWorks from '@/components/widgets/jobs/JobBoardHowItWorks'
 import { SITE_MODULE_KEYS } from '@/config/siteModules'
 import {
   normalizeJobBoardWidgetSettings,
@@ -34,8 +35,10 @@ export default function JobBoardSystemSlot({
         style={vars}
         data-jb-system="1"
         data-section-full={settings.section_full ? '1' : '0'}
+        data-tour="jb-board"
       >
         <div className={styles.inner}>
+          <JobBoardHowItWorks />
           <AllBoxItem
             embedded
             demoMode={settings.use_demo_data === true}

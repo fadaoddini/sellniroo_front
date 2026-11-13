@@ -69,7 +69,6 @@ export default function RequestTypesPage() {
     confirmDelete: 'Delete this request type?',
     accessDenied: 'Access denied',
     needManager: 'Only managers and staff can manage request types',
-    hint: 'Active types appear in the contact form dialog on the homepage. Use Lucide icons (Handshake, Megaphone, MessageCircle, …).',
     nameRequired: 'Title is required',
     importDefaults: 'Import defaults',
     importConfirm:
@@ -100,7 +99,6 @@ export default function RequestTypesPage() {
     confirmDelete: 'آیا از حذف این نوع درخواست اطمینان دارید؟',
     accessDenied: 'دسترسی محدود',
     needManager: 'مدیریت انواع درخواست فقط برای مدیر و staff است',
-    hint: 'انواع فعال در دیالوگ فرم تماس دیده می‌شوند. آیکون باید از Lucide باشد (مثل Handshake، Megaphone، MessageCircle).',
     nameRequired: 'عنوان فارسی الزامی است',
     importDefaults: 'ایمپورت پیش‌فرض',
     importConfirm:
@@ -332,8 +330,6 @@ export default function RequestTypesPage() {
             </button>
           </div>
         </div>
-
-        <p className={styles.hint}>{t.hint}</p>
 
         <div className={styles.toolbar}>
           <button type="button" className={styles.ghostBtn} onClick={fetchList}>

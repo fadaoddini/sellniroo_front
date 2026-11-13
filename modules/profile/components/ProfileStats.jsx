@@ -63,6 +63,7 @@ const ProfileStats = ({ stats, loading = false, activeTab, onSelectTab }) => {
         { label: "در انتظار", value: applications.pending, icon: Clock },
         { label: "بررسی شده", value: applications.reviewed, icon: TrendingUp },
         { label: "پذیرفته", value: applications.accepted, icon: CheckCircle },
+        { label: "رد شده", value: applications.rejected, icon: XCircle },
       ],
     },
     {
@@ -94,13 +95,15 @@ const ProfileStats = ({ stats, loading = false, activeTab, onSelectTab }) => {
           <button
             key={card.key}
             type="button"
-            className={`${styles.statCard} ${styles[card.tone]} ${isActive ? styles.cardActive : ""}`}
+            className={`${styles.statCard} ${styles[card.tone]} ${
+              isActive ? styles.cardActive : ""
+            }`}
             onClick={() => onSelectTab?.(card.key)}
             aria-pressed={isActive}
           >
             <div className={styles.statHeader}>
               <div className={styles.statIconWrapper}>
-                <Icon size={20} aria-hidden />
+                <Icon size={18} strokeWidth={2.15} aria-hidden />
               </div>
               <div className={styles.statTitleWrapper}>
                 <h3>{card.title}</h3>
@@ -108,34 +111,39 @@ const ProfileStats = ({ stats, loading = false, activeTab, onSelectTab }) => {
               </div>
             </div>
 
-            {card.subItems.length > 0 && (
+            {card.subItems?.length > 0 ? (
               <div className={styles.subItems}>
                 {card.subItems.map((s) => {
                   const SIcon = s.icon;
                   return (
                     <div key={s.label} className={styles.subItem}>
-                      <SIcon size={13} aria-hidden />
+                      <SIcon size={12} strokeWidth={2.2} aria-hidden />
                       <span className={styles.subLabel}>{s.label}</span>
                       <span className={styles.subValue}>{faNum(s.value)}</span>
                     </div>
                   );
                 })}
               </div>
-            )}
+            ) : null}
 
-            {card.extraStats?.length > 0 && (
+            {card.extraStats?.length > 0 ? (
               <div className={styles.extraStats}>
                 {card.extraStats.map((e) => {
                   const EIcon = e.icon;
                   return (
-                    <span key={e.label} className={styles.extraItem} title={e.label}>
-                      <EIcon size={13} aria-hidden />
+                    <span
+                      key={e.label}
+                      className={styles.extraItem}
+                      title={e.label}
+                    >
+                      <EIcon size={12} strokeWidth={2.2} aria-hidden />
+                      <em>{e.label}</em>
                       {faNum(e.value)}
                     </span>
                   );
                 })}
               </div>
-            )}
+            ) : null}
           </button>
         );
       })}

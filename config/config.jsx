@@ -1,7 +1,17 @@
 // config/config.jsx
 
+/** آدرس API لوکال — :8001 مربوط به تنظیم قدیمی/اشتباه است و باید به :8000 برگردد */
+function resolveApiBaseUrl() {
+  const raw = String(
+    process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+  ).trim()
+  return raw
+    .replace(/\/$/, '')
+    .replace(/^(https?:\/\/(?:localhost|127\.0\.0\.1)):8001(?=\/|$)/i, '$1:8000')
+}
+
 const Config = {
-  baseUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000",
+  baseUrl: resolveApiBaseUrl(),
 
   defaultApiVersion: "v1",
   
@@ -21,7 +31,12 @@ const Config = {
         : `${Config.baseUrl}/${apiVersion}/${endpoint}`;
     }
     
-    const queryString = new URLSearchParams(params).toString();
+    const cleanParams = {};
+    Object.entries(params || {}).forEach(([key, value]) => {
+      if (value === undefined || value === null || value === '') return;
+      cleanParams[key] = value;
+    });
+    const queryString = new URLSearchParams(cleanParams).toString();
     return queryString ? `${url}?${queryString}` : url;
   },
   
@@ -170,6 +185,82 @@ karmandan: {
       noVersion: true
     });
   },
+  lookupMobile: (mobile) => {
+    return Config.getApiUrl({
+      segment: 'api/karmandan',
+      endpoint: 'employees/lookup-mobile/',
+      params: { mobile },
+      noVersion: true
+    });
+  },
+  saleAccessList: () => {
+    return Config.getApiUrl({
+      segment: 'api/karmandan',
+      endpoint: 'employees/sale-access/',
+      noVersion: true
+    });
+  },
+  setSaleAccess: (id) => {
+    return Config.getApiUrl({
+      segment: 'api/karmandan',
+      endpoint: `employees/${id}/sale-access/`,
+      noVersion: true
+    });
+  },
+  saleCompanies: {
+    list: () =>
+      Config.getApiUrl({
+        segment: 'api/karmandan',
+        endpoint: 'sale-companies/',
+        noVersion: true,
+      }),
+    detail: (id) =>
+      Config.getApiUrl({
+        segment: 'api/karmandan',
+        endpoint: `sale-companies/${id}/`,
+        noVersion: true,
+      }),
+  },
+  saleInvoices: {
+    list: (params = {}) =>
+      Config.getApiUrl({
+        segment: 'api/karmandan',
+        endpoint: 'sale-invoices/',
+        params,
+        noVersion: true,
+      }),
+    detail: (id) =>
+      Config.getApiUrl({
+        segment: 'api/karmandan',
+        endpoint: `sale-invoices/${id}/`,
+        noVersion: true,
+      }),
+    nextNumber: (docType, companyId) =>
+      Config.getApiUrl({
+        segment: 'api/karmandan',
+        endpoint: 'sale-invoices/next-number/',
+        params: {
+          doc_type: docType,
+          ...(companyId ? { company: companyId } : {}),
+        },
+        noVersion: true,
+      }),
+  },
+  saleCatalog: {
+    list: (params = {}) =>
+      Config.getApiUrl({
+        segment: 'api/karmandan',
+        endpoint: 'sale-catalog/',
+        params,
+        noVersion: true,
+      }),
+    detail: (id) =>
+      Config.getApiUrl({
+        segment: 'api/karmandan',
+        endpoint: `sale-catalog/${id}/`,
+        noVersion: true,
+      }),
+  },
 
   departments: {
     list: (params = {}) => Config.getApiUrl({
@@ -199,6 +290,27 @@ karmandan: {
   // ✅ لیدهای بازاریابی
   // ============================================
   leads: {
+    teamAnalytics: (params = {}) =>
+      Config.getApiUrl({
+        segment: 'api/karmandan',
+        endpoint: 'leads/team-analytics/',
+        params,
+        noVersion: true,
+      }),
+    employeeActivity: (params = {}) =>
+      Config.getApiUrl({
+        segment: 'api/karmandan',
+        endpoint: 'leads/employee-activity/',
+        params,
+        noVersion: true,
+      }),
+    pathMonitor: (params = {}) =>
+      Config.getApiUrl({
+        segment: 'api/karmandan',
+        endpoint: 'leads/path-monitor/',
+        params,
+        noVersion: true,
+      }),
     list: (params = {}) => {
       return Config.getApiUrl({
         segment: 'api/karmandan',
@@ -256,6 +368,12 @@ karmandan: {
         noVersion: true
       });
     },
+    assignableStaff: () =>
+      Config.getApiUrl({
+        segment: 'api/karmandan',
+        endpoint: 'leads/assignable-staff/',
+        noVersion: true,
+      }),
     changeStatus: (leadId) => {
       return Config.getApiUrl({
         segment: 'api/karmandan',
@@ -277,7 +395,36 @@ karmandan: {
         noVersion: true
       });
     },
+    archived: (params = {}) =>
+      Config.getApiUrl({
+        segment: 'api/karmandan',
+        endpoint: 'leads/archived/',
+        params,
+        noVersion: true,
+      }),
+    archive: (leadId) =>
+      Config.getApiUrl({
+        segment: 'api/karmandan',
+        endpoint: `leads/${leadId}/archive/`,
+        noVersion: true,
+      }),
+    unarchive: (leadId) =>
+      Config.getApiUrl({
+        segment: 'api/karmandan',
+        endpoint: `leads/${leadId}/unarchive/`,
+        noVersion: true,
+      }),
   },
+
+  // ============================================
+  // ✅ یادآور پیامک پیگیری فروش
+  // ============================================
+  followupSmsConfig: () =>
+    Config.getApiUrl({
+      segment: 'api/notifications',
+      endpoint: 'followup-sms-config/',
+      noVersion: true,
+    }),
 
   // ============================================
   // ✅ درخواست‌های مرخصی
@@ -469,6 +616,13 @@ karmandan: {
         removeStock: () => `${Config.baseUrl}/inventory/transactions/remove_stock/`,
         confirm: (id) => `${Config.baseUrl}/inventory/transactions/${id}/confirm/`,
         cancel: (id) => `${Config.baseUrl}/inventory/transactions/${id}/cancel/`,
+        reverse: (id) => `${Config.baseUrl}/inventory/transactions/${id}/reverse/`,
+        archive: (id) => `${Config.baseUrl}/inventory/transactions/${id}/archive/`,
+        unarchive: (id) => `${Config.baseUrl}/inventory/transactions/${id}/unarchive/`,
+        dailyReport: (params = {}) => {
+          const queryString = new URLSearchParams(params).toString();
+          return `${Config.baseUrl}/inventory/reports/transactions/${queryString ? '?' + queryString : ''}`;
+        },
       },
 
       // ---------- افراد مجاز (Authorized Persons) ----------
@@ -547,6 +701,10 @@ karmandan: {
         },
         // خلاصه کلی
         summary: () => `${Config.baseUrl}/inventory/reports/summary/`,
+        homeDashboard: (params = {}) => {
+          const queryString = new URLSearchParams(params).toString();
+          return `${Config.baseUrl}/inventory/reports/home-dashboard/${queryString ? '?' + queryString : ''}`;
+        },
         // گزارش خروجی‌ها
         outReport: (params = {}) => {
           const queryString = new URLSearchParams(params).toString();
@@ -707,10 +865,11 @@ news: {
       noVersion: true
     });
   },
-  detail: (slug) => {
+  detail: (idOrSlug) => {
+    const key = encodeURIComponent(String(idOrSlug || '').trim());
     return Config.getApiUrl({
       segment: 'api',
-      endpoint: `news/${slug}/`,
+      endpoint: `news/${key}/`,
       noVersion: true
     });
   },
@@ -721,17 +880,35 @@ news: {
       noVersion: true
     });
   },
-  update: (slug) => {
+  /** ارسال مطلب توسط مخاطب (در انتظار تایید) */
+  contribute: () => {
     return Config.getApiUrl({
       segment: 'api',
-      endpoint: `news/${slug}/`,
+      endpoint: 'news/contribute/',
       noVersion: true
     });
   },
-  delete: (slug) => {
+  /** مطالب ارسالی کاربر عضو */
+  myContributions: () => {
     return Config.getApiUrl({
       segment: 'api',
-      endpoint: `news/${slug}/`,
+      endpoint: 'news/my-contributions/',
+      noVersion: true
+    });
+  },
+  update: (idOrSlug) => {
+    const key = encodeURIComponent(String(idOrSlug || '').trim());
+    return Config.getApiUrl({
+      segment: 'api',
+      endpoint: `news/${key}/`,
+      noVersion: true
+    });
+  },
+  delete: (idOrSlug) => {
+    const key = encodeURIComponent(String(idOrSlug || '').trim());
+    return Config.getApiUrl({
+      segment: 'api',
+      endpoint: `news/${key}/`,
       noVersion: true
     });
   },
@@ -945,6 +1122,13 @@ news: {
       noVersion: true
     }),
   },
+  siteBackup: {
+    create: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'site-backup/',
+      noVersion: true
+    }),
+  },
   about: {
     get: () => Config.getApiUrl({
       segment: 'api',
@@ -1046,24 +1230,27 @@ news: {
       noVersion: true
     });
   },
-  view: (slug) => {
+  view: (idOrSlug) => {
+    const key = encodeURIComponent(String(idOrSlug || '').trim());
     return Config.getApiUrl({
       segment: 'api',
-      endpoint: `news/${slug}/view/`,
+      endpoint: `news/${key}/view/`,
       noVersion: true
     });
   },
-  like: (slug) => {
+  like: (idOrSlug) => {
+    const key = encodeURIComponent(String(idOrSlug || '').trim());
     return Config.getApiUrl({
       segment: 'api',
-      endpoint: `news/${slug}/like/`,
+      endpoint: `news/${key}/like/`,
       noVersion: true
     });
   },
-  share: (slug) => {
+  share: (idOrSlug) => {
+    const key = encodeURIComponent(String(idOrSlug || '').trim());
     return Config.getApiUrl({
       segment: 'api',
-      endpoint: `news/${slug}/share/`,
+      endpoint: `news/${key}/share/`,
       noVersion: true
     });
   },
@@ -1454,6 +1641,41 @@ news: {
     },
 
     // ============================================
+    // RASAD (رصد علاقه استانی)
+    // ============================================
+    rasad: {
+      provinces: (params = {}) => {
+        return Config.getApiUrl({
+          segment: 'rasad',
+          endpoint: 'provinces/',
+          params,
+          noVersion: true,
+        });
+      },
+      search: () => {
+        return Config.getApiUrl({
+          segment: 'rasad',
+          endpoint: 'search/',
+          noVersion: true,
+        });
+      },
+      refresh: () => {
+        return Config.getApiUrl({
+          segment: 'rasad',
+          endpoint: 'refresh/',
+          noVersion: true,
+        });
+      },
+      worldStats: () => {
+        return Config.getApiUrl({
+          segment: 'rasad',
+          endpoint: 'world-stats/',
+          noVersion: true,
+        });
+      },
+    },
+
+    // ============================================
     // VIDEO ARCHIVE
     // ============================================
     videoArchive: {
@@ -1630,6 +1852,72 @@ news: {
     // ============================================
     // FAQ MODULE
     // ============================================
+    // ============================================
+    // NOBAT — نوبت‌دهی
+    // ============================================
+    nobat: {
+      bundle: () => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: 'v1/bundle/', noVersion: true,
+      }),
+      availability: (params = {}) => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: 'v1/availability/', params, noVersion: true,
+      }),
+      book: () => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: 'v1/book/', noVersion: true,
+      }),
+      lookup: (params = {}) => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: 'v1/lookup/', params, noVersion: true,
+      }),
+      settings: () => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: 'v1/settings/', noVersion: true,
+      }),
+      categories: () => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: 'v1/categories/', noVersion: true,
+      }),
+      category: (id) => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: `v1/categories/${id}/`, noVersion: true,
+      }),
+      services: (params = {}) => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: 'v1/services/', params, noVersion: true,
+      }),
+      service: (id) => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: `v1/services/${id}/`, noVersion: true,
+      }),
+      staff: (params = {}) => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: 'v1/staff/', params, noVersion: true,
+      }),
+      staffMember: (id) => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: `v1/staff/${id}/`, noVersion: true,
+      }),
+      schedules: (params = {}) => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: 'v1/schedules/', params, noVersion: true,
+      }),
+      schedule: (id) => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: `v1/schedules/${id}/`, noVersion: true,
+      }),
+      exceptions: () => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: 'v1/exceptions/', noVersion: true,
+      }),
+      exception: (id) => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: `v1/exceptions/${id}/`, noVersion: true,
+      }),
+      appointments: (params = {}) => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: 'v1/appointments/', params, noVersion: true,
+      }),
+      appointment: (id) => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: `v1/appointments/${id}/`, noVersion: true,
+      }),
+      accounting: (params = {}) => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: 'v1/accounting/', params, noVersion: true,
+      }),
+      staffSettle: (id) => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: `v1/staff/${id}/settle/`, noVersion: true,
+      }),
+      staffAdjust: (id) => Config.getApiUrl({
+        segment: 'api/nobat', endpoint: `v1/staff/${id}/adjust/`, noVersion: true,
+      }),
+    },
+
     faq: {
       bundle: (params = {}) => Config.getApiUrl({
         segment: 'api',
@@ -1666,6 +1954,289 @@ news: {
       }),
     },
 
+    curvedTimeline: {
+      bundle: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/curved-timeline/',
+        noVersion: true,
+      }),
+      settings: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/curved-timeline/settings/',
+        noVersion: true,
+      }),
+      steps: (params = {}) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/curved-timeline/steps/',
+        params,
+        noVersion: true,
+      }),
+      step: (id) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: `v1/curved-timeline/steps/${id}/`,
+        noVersion: true,
+      }),
+    },
+
+    // ============================================
+    // REPAIRS — تعمیرات و سرویس
+    // ============================================
+    repairs: {
+      config: () => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/config/', noVersion: true,
+      }),
+      request: () => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/request/', noVersion: true,
+      }),
+      lookup: (params = {}) => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/lookup/', params, noVersion: true,
+      }),
+      my: () => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/my/', noVersion: true,
+      }),
+      techMe: () => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/tech/me/', noVersion: true,
+      }),
+      techJobs: (params = {}) => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/tech/jobs/', params, noVersion: true,
+      }),
+      techJob: (id) => Config.getApiUrl({
+        segment: 'api', endpoint: `v1/repairs/tech/jobs/${id}/`, noVersion: true,
+      }),
+      techJobProposals: (id) => Config.getApiUrl({
+        segment: 'api', endpoint: `v1/repairs/tech/jobs/${id}/proposals/`, noVersion: true,
+      }),
+      techShopProducts: (params = {}) => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/tech/shop-products/', params, noVersion: true,
+      }),
+      track: (token) => Config.getApiUrl({
+        segment: 'api', endpoint: `v1/repairs/track/${token}/`, noVersion: true,
+      }),
+      pay: (token) => Config.getApiUrl({
+        segment: 'api', endpoint: `v1/repairs/track/${token}/pay/`, noVersion: true,
+      }),
+      proposalAction: (token, id) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: `v1/repairs/track/${token}/proposals/${id}/`,
+        noVersion: true,
+      }),
+      manageSettings: () => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/manage/settings/', noVersion: true,
+      }),
+      manageBundle: () => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/manage/bundle/', noVersion: true,
+      }),
+      manageTechnicians: () => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/manage/technicians/', noVersion: true,
+      }),
+      manageTechnician: (id) => Config.getApiUrl({
+        segment: 'api', endpoint: `v1/repairs/manage/technicians/${id}/`, noVersion: true,
+      }),
+      manageUsers: (params = {}) => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/manage/users/', params, noVersion: true,
+      }),
+      manageLaborRates: () => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/manage/labor-rates/', noVersion: true,
+      }),
+      manageLaborRate: (id) => Config.getApiUrl({
+        segment: 'api', endpoint: `v1/repairs/manage/labor-rates/${id}/`, noVersion: true,
+      }),
+      manageParts: () => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/manage/parts/', noVersion: true,
+      }),
+      managePart: (id) => Config.getApiUrl({
+        segment: 'api', endpoint: `v1/repairs/manage/parts/${id}/`, noVersion: true,
+      }),
+      manageJobs: (params = {}) => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/manage/jobs/', params, noVersion: true,
+      }),
+      manageJob: (id) => Config.getApiUrl({
+        segment: 'api', endpoint: `v1/repairs/manage/jobs/${id}/`, noVersion: true,
+      }),
+      manageJobReport: (id) => Config.getApiUrl({
+        segment: 'api', endpoint: `v1/repairs/manage/jobs/${id}/report/`, noVersion: true,
+      }),
+      manageJobProposals: (id) => Config.getApiUrl({
+        segment: 'api', endpoint: `v1/repairs/manage/jobs/${id}/proposals/`, noVersion: true,
+      }),
+      manageProposal: (id) => Config.getApiUrl({
+        segment: 'api', endpoint: `v1/repairs/manage/proposals/${id}/`, noVersion: true,
+      }),
+      manageShopProducts: (params = {}) => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/manage/shop-products/', params, noVersion: true,
+      }),
+      managePayments: (params = {}) => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/manage/payments/', params, noVersion: true,
+      }),
+      confirmPayment: (id) => Config.getApiUrl({
+        segment: 'api', endpoint: `v1/repairs/manage/payments/${id}/confirm/`, noVersion: true,
+      }),
+      manageProposals: (params = {}) => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/manage/proposals/', params, noVersion: true,
+      }),
+      reminders: (params = {}) => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/manage/reminders/', params, noVersion: true,
+      }),
+      accounting: (params = {}) => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/manage/accounting/', params, noVersion: true,
+      }),
+    },
+
+    // ============================================
+    // CLOUD SERVER — سرور ابری اشتراکی
+    // ============================================
+    reboOrders: {
+      config: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/rebo-orders/config/',
+        noVersion: true,
+      }),
+      my: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/rebo-orders/my/',
+        noVersion: true,
+      }),
+      checkout: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/rebo-orders/checkout/',
+        noVersion: true,
+      }),
+      manageOrders: (params = {}) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/rebo-orders/manage/orders/',
+        params,
+        noVersion: true,
+      }),
+      manageOrderAction: (id) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: `v1/rebo-orders/manage/orders/${id}/action/`,
+        noVersion: true,
+      }),
+      manageSettings: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/rebo-orders/manage/settings/',
+        noVersion: true,
+      }),
+      manageStats: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/rebo-orders/manage/stats/',
+        noVersion: true,
+      }),
+    },
+
+    cloudServer: {
+      config: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/cloud-server/config/',
+        noVersion: true,
+      }),
+      my: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/cloud-server/my/',
+        noVersion: true,
+      }),
+      myLedger: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/cloud-server/my/ledger/',
+        noVersion: true,
+      }),
+      myTopups: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/cloud-server/my/topups/',
+        noVersion: true,
+      }),
+      manageSettings: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/cloud-server/manage/settings/',
+        noVersion: true,
+      }),
+      manageSubscriptions: (params = {}) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/cloud-server/manage/subscriptions/',
+        params,
+        noVersion: true,
+      }),
+      manageSubscription: (id) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: `v1/cloud-server/manage/subscriptions/${id}/`,
+        noVersion: true,
+      }),
+      manageTopups: (params = {}) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/cloud-server/manage/topups/',
+        params,
+        noVersion: true,
+      }),
+      manageTopupAction: (id) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: `v1/cloud-server/manage/topups/${id}/action/`,
+        noVersion: true,
+      }),
+      manageStats: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/cloud-server/manage/stats/',
+        noVersion: true,
+      }),
+      runBilling: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/cloud-server/manage/run-billing/',
+        noVersion: true,
+      }),
+    },
+
+    // ============================================
+    // SOFTAPPS — نرم‌افزارهای کاربردی
+    // ============================================
+    softapps: {
+      list: (params = {}) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/softapps/',
+        params,
+        noVersion: true,
+      }),
+      detail: (slug) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: `v1/softapps/${slug}/`,
+        noVersion: true,
+      }),
+      purchase: (id) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: `v1/softapps/${id}/purchase/`,
+        noVersion: true,
+      }),
+      download: (id) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: `v1/softapps/${id}/download/`,
+        noVersion: true,
+      }),
+      manageApps: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/softapps/manage/apps/',
+        noVersion: true,
+      }),
+      manageApp: (id) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: `v1/softapps/manage/apps/${id}/`,
+        noVersion: true,
+      }),
+      manageCategories: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/softapps/manage/categories/',
+        noVersion: true,
+      }),
+      manageCategory: (id) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: `v1/softapps/manage/categories/${id}/`,
+        noVersion: true,
+      }),
+      accounting: (params = {}) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/softapps/manage/accounting/',
+        params,
+        noVersion: true,
+      }),
+    },
+
     // ============================================
     // SCHOOL MODULE
     // ============================================
@@ -1677,8 +2248,31 @@ news: {
       upload: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/upload/', noVersion: true }),
       teachers: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/teachers/', params, noVersion: true }),
       teacher: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/teachers/${id}/`, noVersion: true }),
+      teacherMe: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/teachers/me/', params, noVersion: true }),
+      teacherPublic: (slug) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/teachers/public/${encodeURIComponent(slug)}/`, noVersion: true }),
+      counselors: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/counselors/', params, noVersion: true }),
+      counselor: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/counselors/${id}/`, noVersion: true }),
+      counselorMe: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/counselors/me/', params, noVersion: true }),
+      counselorPublic: (slug) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/counselors/public/${encodeURIComponent(slug)}/`, noVersion: true }),
+      counselorDashboard: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/dashboard/counselor/', params, noVersion: true }),
+      counselingTests: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/counseling/tests/', params, noVersion: true }),
+      counselingTest: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/counseling/tests/${id}/`, noVersion: true }),
+      counselingTestStart: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/counseling/tests/start/', noVersion: true }),
+      counselingTestSubmit: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/counseling/tests/submit/', noVersion: true }),
+      counselingAttempts: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/counseling/attempts/', params, noVersion: true }),
+      counselingAvailableTests: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/counseling/available-tests/', noVersion: true }),
+      counselingFiles: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/counseling/files/', params, noVersion: true }),
+      counselingFile: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/counseling/files/${id}/`, noVersion: true }),
+      counselingFileByStudent: (studentId) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/counseling/files/student/${studentId}/`, noVersion: true }),
+      counselingNotes: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/counseling/notes/', noVersion: true }),
+      counselingTeacherFiles: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/counseling/teacher-files/', params, noVersion: true }),
+      counselingTeacherFile: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/counseling/teacher-files/${id}/`, noVersion: true }),
+      counselingFileByTeacher: (teacherId) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/counseling/teacher-files/teacher/${teacherId}/`, noVersion: true }),
+      counselingTeacherNotes: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/counseling/teacher-notes/', noVersion: true }),
       students: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/students/', params, noVersion: true }),
+      studentsLookup: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/students/lookup/', params, noVersion: true }),
       student: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/students/${id}/`, noVersion: true }),
+      studentSnapshot: (id, params = {}) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/students/${id}/snapshot/`, params, noVersion: true }),
       subjects: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/subjects/', params, noVersion: true }),
       subject: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/subjects/${id}/`, noVersion: true }),
       chapters: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/chapters/', params, noVersion: true }),
@@ -1692,6 +2286,7 @@ news: {
       exerciseSubmit: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/exercises/${id}/submit/`, noVersion: true }),
       submissions: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/submissions/', params, noVersion: true }),
       submissionReview: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/submissions/${id}/review/`, noVersion: true }),
+      submissionArchive: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/submissions/${id}/archive/`, noVersion: true }),
       quizzes: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/quizzes/', params, noVersion: true }),
       quiz: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/quizzes/${id}/`, noVersion: true }),
       quizQuestions: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/quiz-questions/', params, noVersion: true }),
@@ -1708,8 +2303,26 @@ news: {
       examSubmit: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/exam/submit/', noVersion: true }),
       examPapers: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/exam-papers/', params, noVersion: true }),
       examPaper: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/exam-papers/${id}/`, noVersion: true }),
+      examPaperArchive: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/exam-papers/${id}/archive/`, noVersion: true }),
       teacherDashboard: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/dashboard/teacher/', params, noVersion: true }),
       studentDashboard: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/dashboard/student/', params, noVersion: true }),
+      attendanceSessions: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/attendance/sessions/', params, noVersion: true }),
+      attendanceSession: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/attendance/sessions/${id}/`, noVersion: true }),
+      attendanceMark: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/attendance/sessions/${id}/mark/`, noVersion: true }),
+      attendanceToday: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/attendance/today/', params, noVersion: true }),
+      attendanceStats: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/attendance/stats/', params, noVersion: true }),
+      attendanceStudent: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/attendance/student/', params, noVersion: true }),
+      attendanceOverview: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/attendance/overview/', params, noVersion: true }),
+      classes: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/classes/', params, noVersion: true }),
+      schoolClass: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/classes/${id}/`, noVersion: true }),
+      classStudents: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/classes/${id}/students/`, noVersion: true }),
+      classTimetable: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/classes/${id}/timetable/`, noVersion: true }),
+      periods: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/periods/', noVersion: true }),
+      period: (id) => Config.getApiUrl({ segment: 'api', endpoint: `v1/school/periods/${id}/`, noVersion: true }),
+      myTimetable: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/timetable/mine/', params, noVersion: true }),
+      reportCardSheet: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/report-card/sheet/', params, noVersion: true }),
+      reportCardBulk: () => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/report-card/bulk/', noVersion: true }),
+      reportCardMine: (params = {}) => Config.getApiUrl({ segment: 'api', endpoint: 'v1/school/report-card/mine/', params, noVersion: true }),
     },
 
     // ============================================
@@ -1991,6 +2604,8 @@ news: {
         return `${Config.baseUrl}/api/jobisell/companies/${qs ? '?' + qs : ''}`;
       },
       companyDetail: (id) => `${Config.baseUrl}/api/jobisell/companies/${id}/`,
+      companyBySlug: (slug) =>
+        `${Config.baseUrl}/api/jobisell/companies/by-slug/${encodeURIComponent(slug)}/`,
       sortOptions: () => `${Config.baseUrl}/api/jobisell/sort-options/`,
 
       // ---------- آگهی‌ها ----------
@@ -1999,11 +2614,14 @@ news: {
           const qs = new URLSearchParams(params).toString();
           return `${Config.baseUrl}/api/jobisell/jobs/${qs ? '?' + qs : ''}`;
         },
-        detail: (id) => `${Config.baseUrl}/api/jobisell/jobs/${id}/`,
+        detail: (idOrSlug) =>
+          `${Config.baseUrl}/api/jobisell/jobs/${encodeURIComponent(String(idOrSlug))}/`,
         create: () => `${Config.baseUrl}/api/jobisell/jobs/`,
-        update: (id) => `${Config.baseUrl}/api/jobisell/jobs/${id}/`,
-        partialUpdate: (id) => `${Config.baseUrl}/api/jobisell/jobs/${id}/`,
-        delete: (id) => `${Config.baseUrl}/api/jobisell/jobs/${id}/`,
+        update: (id) => `${Config.baseUrl}/api/jobisell/jobs/${encodeURIComponent(String(id))}/`,
+        partialUpdate: (id) =>
+          `${Config.baseUrl}/api/jobisell/jobs/${encodeURIComponent(String(id))}/`,
+        delete: (id) =>
+          `${Config.baseUrl}/api/jobisell/jobs/${encodeURIComponent(String(id))}/`,
 
         latest: (limit = 10) =>
           `${Config.baseUrl}/api/jobisell/jobs/latest/?limit=${limit}`,
@@ -2293,10 +2911,17 @@ news: {
           endpoint: `v1/owner/products/${id}/media/`,
           noVersion: true,
         }),
-      ownerCategories: () =>
+      ownerCategories: (params = {}) =>
         Config.getApiUrl({
           segment: 'api/shop',
           endpoint: 'v1/owner/categories/',
+          params,
+          noVersion: true,
+        }),
+      ownerCategoryDetail: (id) =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: `v1/owner/categories/${id}/`,
           noVersion: true,
         }),
       platformOverview: () =>
@@ -2360,6 +2985,12 @@ news: {
         Config.getApiUrl({
           segment: 'api/shop',
           endpoint: `v1/platform/categories/${id}/`,
+          noVersion: true,
+        }),
+      platformCategoryReorder: () =>
+        Config.getApiUrl({
+          segment: 'api/shop',
+          endpoint: 'v1/platform/categories/reorder/',
           noVersion: true,
         }),
       platformCategoryTemplates: () =>
@@ -2553,6 +3184,846 @@ news: {
           endpoint: scope ? `v1/callback/${scope}/` : 'v1/callback/',
           noVersion: true,
         }),
+    },
+
+
+    // ============================================
+    // CLUB (کسب‌وکارها و اشتراک‌ها)
+    // ============================================
+    club: {
+      categories: {
+        list: (params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: 'v1/categories/',
+            params,
+            noVersion: true,
+          }),
+        detail: (slug) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: `v1/categories/${slug}/`,
+            noVersion: true,
+          }),
+        subcategories: (slug) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: `v1/categories/${slug}/subcategories/`,
+            noVersion: true,
+          }),
+      },
+
+      subcategories: {
+        list: (params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: 'v1/subcategories/',
+            params,
+            noVersion: true,
+          }),
+        detail: (slug) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: `v1/subcategories/${slug}/`,
+            noVersion: true,
+          }),
+        plans: (slug) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: `v1/subcategories/${slug}/plans/`,
+            noVersion: true,
+          }),
+      },
+
+      plans: {
+        list: (params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: 'v1/plans/',
+            params,
+            noVersion: true,
+          }),
+        detail: (id) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: `v1/plans/${id}/`,
+            noVersion: true,
+          }),
+      },
+
+      purchase: () =>
+        Config.getApiUrl({
+          segment: 'api/club',
+          endpoint: 'v1/purchase/',
+          noVersion: true,
+        }),
+
+      businesses: {
+        list: (params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: 'v1/businesses/',
+            params,
+            noVersion: true,
+          }),
+        detail: (slug) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: `v1/businesses/${slug}/`,
+            noVersion: true,
+          }),
+        subscriptions: (slug) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: `v1/businesses/${slug}/subscriptions/`,
+            noVersion: true,
+          }),
+        transactions: (slug) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: `v1/businesses/${slug}/transactions/`,
+            noVersion: true,
+          }),
+      },
+
+      subscriptions: {
+        list: (params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: 'v1/subscriptions/',
+            params,
+            noVersion: true,
+          }),
+        detail: (id) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: `v1/subscriptions/${id}/`,
+            noVersion: true,
+          }),
+        cancel: (id) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: `v1/subscriptions/${id}/cancel/`,
+            noVersion: true,
+          }),
+      },
+
+      transactions: {
+        list: (params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: 'v1/transactions/',
+            params,
+            noVersion: true,
+          }),
+        detail: (id) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: `v1/transactions/${id}/`,
+            noVersion: true,
+          }),
+        confirm: (id) =>
+          Config.getApiUrl({
+            segment: 'api/club',
+            endpoint: `v1/transactions/${id}/confirm/`,
+            noVersion: true,
+          }),
+      },
+    },
+
+    // ============================================
+    // BODYBUILDING (مدیریت باشگاه بدنسازی)
+    // ============================================
+
+
+    bodybuilding: {
+      /** باشگاه سطح‌سایت — بدون اشتراک؛ فقط مدیر/سوپریوزر */
+      siteBusiness: () =>
+        Config.getApiUrl({
+          segment: 'api/bodybuilding',
+          endpoint: 'site-business/',
+          noVersion: true,
+        }),
+
+      me: () =>
+        Config.getApiUrl({
+          segment: 'api/bodybuilding',
+          endpoint: 'me/',
+          noVersion: true,
+        }),
+
+      myTrainerClients: () =>
+        Config.getApiUrl({
+          segment: 'api/bodybuilding',
+          endpoint: 'my-trainer/clients/',
+          noVersion: true,
+        }),
+
+      myMemberships: {
+        list: () =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: 'my-memberships/',
+            noVersion: true,
+          }),
+        detail: (slug) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `my-memberships/${encodeURIComponent(slug)}/`,
+            noVersion: true,
+          }),
+        workouts: (slug) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `my-memberships/${encodeURIComponent(slug)}/workouts/`,
+            noVersion: true,
+          }),
+        diets: (slug) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `my-memberships/${encodeURIComponent(slug)}/diets/`,
+            noVersion: true,
+          }),
+        tracking: (slug) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `my-memberships/${encodeURIComponent(slug)}/tracking/`,
+            noVersion: true,
+          }),
+        products: (slug) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `my-memberships/${encodeURIComponent(slug)}/products/`,
+            noVersion: true,
+          }),
+      },
+      // ============ آمار داشبورد ============
+      dashboardStats: (businessSlug) =>
+        Config.getApiUrl({
+          segment: 'api/bodybuilding',
+          endpoint: `${businessSlug}/dashboard-stats/`,
+          noVersion: true,
+        }),
+
+      // ============ اعضا ============
+      members: {
+        list: (businessSlug, params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/members/`,
+            params,
+            noVersion: true,
+          }),
+        detail: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/members/${id}/`,
+            noVersion: true,
+          }),
+        create: (businessSlug) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/members/`,
+            noVersion: true,
+          }),
+        update: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/members/${id}/`,
+            noVersion: true,
+          }),
+        partialUpdate: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/members/${id}/`,
+            noVersion: true,
+          }),
+        delete: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/members/${id}/`,
+            noVersion: true,
+          }),
+        toggleStatus: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/members/${id}/toggle-status/`,
+            noVersion: true,
+          }),
+        alerts: (businessSlug) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/members/alerts/`,
+            noVersion: true,
+          }),
+        bodyProfile: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/members/${id}/body-profile/`,
+            noVersion: true,
+          }),
+        progressLogs: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/members/${id}/progress-logs/`,
+            noVersion: true,
+          }),
+        progressLogDetail: (businessSlug, id, logId) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/members/${id}/progress-logs/${logId}/`,
+            noVersion: true,
+          }),
+        trackingSummary: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/members/${id}/tracking-summary/`,
+            noVersion: true,
+          }),
+      },
+
+      // ============ بسته‌ها ============
+      packages: {
+        list: (businessSlug, params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/packages/`,
+            params,
+            noVersion: true,
+          }),
+        detail: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/packages/${id}/`,
+            noVersion: true,
+          }),
+        create: (businessSlug) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/packages/`,
+            noVersion: true,
+          }),
+        update: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/packages/${id}/`,
+            noVersion: true,
+          }),
+        delete: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/packages/${id}/`,
+            noVersion: true,
+          }),
+      },
+
+      shopProducts: {
+        publicList: (params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: 'public/shop-products/',
+            params,
+            noVersion: true,
+          }),
+      },
+
+      // ============ سانس‌ها ============
+      sessions: {
+        publicList: (params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: 'public/sessions/',
+            params,
+            noVersion: true,
+          }),
+        list: (businessSlug, params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/sessions/`,
+            params,
+            noVersion: true,
+          }),
+        detail: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/sessions/${id}/`,
+            noVersion: true,
+          }),
+        create: (businessSlug) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/sessions/`,
+            noVersion: true,
+          }),
+        update: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/sessions/${id}/`,
+            noVersion: true,
+          }),
+        delete: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/sessions/${id}/`,
+            noVersion: true,
+          }),
+      },
+
+      // ============ مربیان ============
+      trainers: {
+        publicList: (params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: 'public/trainers/',
+            params,
+            noVersion: true,
+          }),
+        list: (businessSlug, params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/trainers/`,
+            params,
+            noVersion: true,
+          }),
+        detail: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/trainers/${id}/`,
+            noVersion: true,
+          }),
+        create: (businessSlug) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/trainers/`,
+            noVersion: true,
+          }),
+        update: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/trainers/${id}/`,
+            noVersion: true,
+          }),
+        delete: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/trainers/${id}/`,
+            noVersion: true,
+          }),
+        toggleStatus: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/trainers/${id}/toggle-status/`,
+            noVersion: true,
+          }),
+      },
+
+      // ============ محصولات ============
+      products: {
+        list: (businessSlug, params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/products/`,
+            params,
+            noVersion: true,
+          }),
+        detail: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/products/${id}/`,
+            noVersion: true,
+          }),
+        create: (businessSlug) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/products/`,
+            noVersion: true,
+          }),
+        update: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/products/${id}/`,
+            noVersion: true,
+          }),
+        delete: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/products/${id}/`,
+            noVersion: true,
+          }),
+      },
+
+
+      // ============ اطلاعات کسب‌وکار (اشتراک) ============
+      getBusinessInfo: (businessSlug) =>
+        Config.getApiUrl({
+          segment: 'api/club',
+          endpoint: `v1/businesses/${businessSlug}/info/`,
+          noVersion: true,
+        }),
+
+      
+
+      // ============ برنامه‌های تمرینی ============
+      workoutPrograms: {
+        list: (businessSlug, params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-programs/`,
+            params,
+            noVersion: true,
+          }),
+        detail: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-programs/${id}/`,
+            noVersion: true,
+          }),
+        create: (businessSlug) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-programs/`,
+            noVersion: true,
+          }),
+        update: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-programs/${id}/`,
+            noVersion: true,
+          }),
+        delete: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-programs/${id}/`,
+            noVersion: true,
+          }),
+        approve: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-programs/${id}/approve/`,
+            noVersion: true,
+          }),
+        unlock: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-programs/${id}/unlock/`,
+            noVersion: true,
+          }),
+        addExercise: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-programs/${id}/exercises/add/`,
+            noVersion: true,
+          }),
+        updateExercise: (businessSlug, programId, exerciseId) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-programs/${programId}/exercises/${exerciseId}/update/`,
+            noVersion: true,
+          }),
+        deleteExercise: (businessSlug, programId, exerciseId) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-programs/${programId}/exercises/${exerciseId}/delete/`,
+            noVersion: true,
+          }),
+        reorderExercises: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-programs/${id}/exercises/reorder/`,
+            noVersion: true,
+          }),
+        toggleSuperSet: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-programs/${id}/exercises/super-set/`,
+            noVersion: true,
+          }),
+        archive: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-programs/${id}/archive/`,
+            noVersion: true,
+          }),
+      },
+
+      // ============ آرشیو برنامه‌های تمرینی مربی ============
+      workoutProgramArchives: {
+        list: (businessSlug, params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-program-archives/`,
+            params,
+            noVersion: true,
+          }),
+        detail: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-program-archives/${id}/`,
+            noVersion: true,
+          }),
+        update: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-program-archives/${id}/`,
+            noVersion: true,
+          }),
+        delete: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-program-archives/${id}/`,
+            noVersion: true,
+          }),
+        apply: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/workout-program-archives/${id}/apply/`,
+            noVersion: true,
+          }),
+      },
+
+      // ============ برنامه‌های غذایی ============
+      dietPrograms: {
+        list: (businessSlug, params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-programs/`,
+            params,
+            noVersion: true,
+          }),
+        detail: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-programs/${id}/`,
+            noVersion: true,
+          }),
+        create: (businessSlug) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-programs/`,
+            noVersion: true,
+          }),
+        update: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-programs/${id}/`,
+            noVersion: true,
+          }),
+        delete: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-programs/${id}/`,
+            noVersion: true,
+          }),
+        approve: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-programs/${id}/approve/`,
+            noVersion: true,
+          }),
+        unlock: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-programs/${id}/unlock/`,
+            noVersion: true,
+          }),
+        addMeal: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-programs/${id}/meals/add/`,
+            noVersion: true,
+          }),
+        updateMeal: (businessSlug, programId, mealId) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-programs/${programId}/meals/${mealId}/update/`,
+            noVersion: true,
+          }),
+        deleteMeal: (businessSlug, programId, mealId) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-programs/${programId}/meals/${mealId}/delete/`,
+            noVersion: true,
+          }),
+        addFood: (businessSlug, programId, mealId) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-programs/${programId}/meals/${mealId}/items/add/`,
+            noVersion: true,
+          }),
+        updateFood: (businessSlug, programId, mealId, itemId) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-programs/${programId}/meals/${mealId}/items/${itemId}/update/`,
+            noVersion: true,
+          }),
+        deleteFood: (businessSlug, programId, mealId, itemId) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-programs/${programId}/meals/${mealId}/items/${itemId}/delete/`,
+            noVersion: true,
+          }),
+        archive: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-programs/${id}/archive/`,
+            noVersion: true,
+          }),
+      },
+
+      dietProgramArchives: {
+        list: (businessSlug, params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-program-archives/`,
+            params,
+            noVersion: true,
+          }),
+        detail: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-program-archives/${id}/`,
+            noVersion: true,
+          }),
+        update: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-program-archives/${id}/`,
+            noVersion: true,
+          }),
+        delete: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-program-archives/${id}/`,
+            noVersion: true,
+          }),
+        apply: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/diet-program-archives/${id}/apply/`,
+            noVersion: true,
+          }),
+      },
+
+      // ============ پنل پیامکی ============
+      sms: {
+        panel: (businessSlug) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/sms-panel/`,
+            noVersion: true,
+          }),
+        charge: (businessSlug) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/sms-panel/charge/`,
+            noVersion: true,
+          }),
+      },
+
+      // ============ هشدارها ============
+      alerts: {
+        list: (businessSlug, params = {}) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/alerts/`,
+            params,
+            noVersion: true,
+          }),
+        resolve: (businessSlug, id) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/alerts/${id}/resolve/`,
+            noVersion: true,
+          }),
+        generate: (businessSlug) =>
+          Config.getApiUrl({
+            segment: 'api/bodybuilding',
+            endpoint: `${businessSlug}/alerts/generate/`,
+            noVersion: true,
+          }),
+      },
+
+      // ============ کتابخانه (عمومی - بدون business slug) ============
+      library: {
+        exercises: {
+          list: (params = {}) =>
+            Config.getApiUrl({
+              segment: 'api/bodybuilding',
+              endpoint: 'library/exercises/',
+              params,
+              noVersion: true,
+            }),
+          detail: (slug) =>
+            Config.getApiUrl({
+              segment: 'api/bodybuilding',
+              endpoint: `library/exercises/${slug}/`,
+              noVersion: true,
+            }),
+          create: () =>
+            Config.getApiUrl({
+              segment: 'api/bodybuilding',
+              endpoint: 'library/exercises/',
+              noVersion: true,
+            }),
+          update: (slug) =>
+            Config.getApiUrl({
+              segment: 'api/bodybuilding',
+              endpoint: `library/exercises/${slug}/`,
+              noVersion: true,
+            }),
+          delete: (slug) =>
+            Config.getApiUrl({
+              segment: 'api/bodybuilding',
+              endpoint: `library/exercises/${slug}/`,
+              noVersion: true,
+            }),
+          grouped: () =>
+            Config.getApiUrl({
+              segment: 'api/bodybuilding',
+              endpoint: 'library/exercises/grouped/',
+              noVersion: true,
+            }),
+        },
+        foods: {
+          list: (params = {}) =>
+            Config.getApiUrl({
+              segment: 'api/bodybuilding',
+              endpoint: 'library/foods/',
+              params,
+              noVersion: true,
+            }),
+          detail: (slug) =>
+            Config.getApiUrl({
+              segment: 'api/bodybuilding',
+              endpoint: `library/foods/${slug}/`,
+              noVersion: true,
+            }),
+          create: () =>
+            Config.getApiUrl({
+              segment: 'api/bodybuilding',
+              endpoint: 'library/foods/',
+              noVersion: true,
+            }),
+          update: (slug) =>
+            Config.getApiUrl({
+              segment: 'api/bodybuilding',
+              endpoint: `library/foods/${slug}/`,
+              noVersion: true,
+            }),
+          delete: (slug) =>
+            Config.getApiUrl({
+              segment: 'api/bodybuilding',
+              endpoint: `library/foods/${slug}/`,
+              noVersion: true,
+            }),
+          grouped: () =>
+            Config.getApiUrl({
+              segment: 'api/bodybuilding',
+              endpoint: 'library/foods/grouped/',
+              noVersion: true,
+            }),
+        },
+      },
     },
 
     // ============================================

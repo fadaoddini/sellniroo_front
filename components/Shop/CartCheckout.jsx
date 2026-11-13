@@ -8,15 +8,22 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
 import orderApi from '@/services/orderApi'
 import shopApi from '@/services/shopApi'
+import { fetchSiteSettings } from '@/services/siteSettings'
+import {
+  checkoutThemeCssVars,
+  getCheckoutSystemConfig,
+  getCheckoutTheme,
+  normalizeCheckoutPipelines,
+} from '@/config/checkoutPipelines'
 import { getDeliveryCost } from '@/utils/deliveryCalculator'
 import AddressForm from './AddressForm'
 import styles from './CartCheckout.module.css'
 
-const STEPS = [
-  { id: 'cart', label: '۱. سبد' },
-  { id: 'shipping', label: '۲. ارسال' },
-  { id: 'confirm', label: '۳. تأیید' },
-  { id: 'done', label: '۴. ثبت' },
+const ALL_STEPS = [
+  { id: 'cart', label: 'سبد' },
+  { id: 'shipping', label: 'ارسال' },
+  { id: 'confirm', label: 'تأیید' },
+  { id: 'done', label: 'ثبت' },
 ]
 
 function formatPrice(n) {
@@ -26,8 +33,20 @@ function formatPrice(n) {
 export default function CartCheckout() {
   const router = useRouter()
   const { isAuthenticated, loading: authLoading, user } = useAuth()
-  const { cart, loading, delta, clear, refresh, itemsCount, subtotal } =
-    useCart()
+  const {
+    cart,
+    loading,
+    busyProductId,
+    delta,
+    clear,
+    refresh,
+    itemsCount,
+    subtotal,
+  } = useCart()
+  const [shopPipeline, setShopPipeline] = useState(() =>
+    getCheckoutSystemConfig({}, 'shop'),
+  )
+  const [cartThemeVars, setCartThemeVars] = useState(null)
   const [step, setStep] = useState('cart')
   const [pickup, setPickup] = useState(false)
   const [addresses, setAddresses] = useState([])
@@ -49,6 +68,109 @@ export default function CartCheckout() {
   const [receiptPreview, setReceiptPreview] = useState('')
   const [receiptNote, setReceiptNote] = useState('')
   const [receiptDone, setReceiptDone] = useState(false)
+  const [holdLeft, setHoldLeft] = useState(0)
+
+  // تایمر از زمان مطلق سرور؛ رفرش صفحه شمارش را از نو شروع نمی‌کند
+  useEffect(() => {
+    const expiresAt = cart?.hold_expires_at
+    if (!expiresAt || !itemsCount) {
+      setHoldLeft(0)
+      return undefined
+    }
+    const expiresMs = new Date(expiresAt).getTime()
+    if (!Number.isFinite(expiresMs)) {
+      setHoldLeft(Math.max(0, Number(cart?.hold_seconds_left) || 0))
+      return undefined
+    }
+    const tick = () => {
+      setHoldLeft(Math.max(0, Math.floor((expiresMs - Date.now()) / 1000)))
+    }
+    tick()
+    const t = window.setInterval(tick, 1000)
+    return () => window.clearInterval(t)
+  }, [cart?.hold_expires_at, cart?.hold_seconds_left, itemsCount])
+
+  useEffect(() => {
+    if (!isAuthenticated || !itemsCount) return undefined
+    const t = window.setInterval(() => {
+      refresh?.()
+    }, 45000)
+    return () => window.clearInterval(t)
+  }, [isAuthenticated, itemsCount, refresh])
+
+  // پایان تایمر → یک‌بار همگام با سرور تا رزرو واقعاً آزاد شود
+  useEffect(() => {
+    if (!isAuthenticated || holdLeft !== 0 || !cart?.hold_expires_at) return
+    refresh?.()
+  }, [holdLeft, cart?.hold_expires_at, isAuthenticated, refresh])
+
+  const holdLabel = useMemo(() => {
+    if (!holdLeft) return ''
+    const m = Math.floor(holdLeft / 60)
+    const s = holdLeft % 60
+    return `${m.toLocaleString('fa-IR')}:${String(s).padStart(2, '0')}`
+  }, [holdLeft])
+
+  useEffect(() => {
+    let cancelled = false
+    const loadPipeline = async () => {
+      try {
+        const settings = await fetchSiteSettings({ force: false })
+        if (cancelled) return
+        const pipes = normalizeCheckoutPipelines(settings?.checkout_pipelines)
+        setShopPipeline(getCheckoutSystemConfig(pipes, 'shop'))
+        const theme = getCheckoutTheme(pipes)
+        setCartThemeVars(theme ? checkoutThemeCssVars(theme) : null)
+      } catch {
+        /* defaults */
+      }
+    }
+    loadPipeline()
+    const onChange = () => loadPipeline()
+    window.addEventListener('checkout-pipelines-changed', onChange)
+    return () => {
+      cancelled = true
+      window.removeEventListener('checkout-pipelines-changed', onChange)
+    }
+  }, [])
+
+  const STEPS = useMemo(() => {
+    const enabled = shopPipeline?.steps || {}
+    const list = ALL_STEPS.filter((s) => enabled[s.id] !== false)
+    return list.length ? list : ALL_STEPS
+  }, [shopPipeline])
+
+  const opt = shopPipeline?.options || {}
+  const allowPickup = opt.allow_pickup !== false
+  const allowAddress = opt.allow_address !== false
+  const allowGateway = opt.payment_gateway !== false
+  const allowManual = opt.payment_manual !== false
+  const allowWallet = opt.payment_wallet !== false
+  const allowReceipt = opt.receipt_upload !== false
+
+  useEffect(() => {
+    // اگر فقط یکی از ارسال/حضوری روشن باشد، همان را اعمال کن
+    if (allowPickup && !allowAddress) setPickup(true)
+    else if (!allowPickup && allowAddress) setPickup(false)
+  }, [allowPickup, allowAddress])
+
+  const nextStepAfter = useCallback(
+    (currentId) => {
+      const idx = STEPS.findIndex((s) => s.id === currentId)
+      if (idx < 0) return STEPS[0]?.id || 'cart'
+      return STEPS[Math.min(idx + 1, STEPS.length - 1)]?.id || currentId
+    },
+    [STEPS],
+  )
+
+  const prevStepBefore = useCallback(
+    (currentId) => {
+      const idx = STEPS.findIndex((s) => s.id === currentId)
+      if (idx <= 0) return STEPS[0]?.id || 'cart'
+      return STEPS[idx - 1]?.id || currentId
+    },
+    [STEPS],
+  )
 
   useEffect(() => {
     if (!receiptFile) {
@@ -236,7 +358,21 @@ export default function CartCheckout() {
   )
 
   const bump = async (item, d) => {
-    const product = item.product_detail || { id: item.product, price_one: item.price }
+    const pid =
+      Number(item?.product) ||
+      Number(item?.product_detail?.id) ||
+      0
+    if (!pid) return
+    if (busyProductId && Number(busyProductId) === pid) return
+    // id را صریح از FK سبد می‌گیریم تا با فیلدهای دیگر product_detail قاطی نشود
+    const product = {
+      ...(item.product_detail || {}),
+      id: pid,
+      price_one: item.product_detail?.price_one ?? item.price,
+      // هنگام تغییر تعداد داخل سبد، سقف موجودی لیست را دوباره اعمال نکن
+      stock_remaining: undefined,
+      stock: undefined,
+    }
     try {
       await delta(product, d)
     } catch {
@@ -251,7 +387,7 @@ export default function CartCheckout() {
       return
     }
     setError('')
-    setStep('shipping')
+    setStep(nextStepAfter('cart'))
   }
 
   const saveAddress = async (payload) => {
@@ -289,7 +425,7 @@ export default function CartCheckout() {
       }
     }
     setError('')
-    setStep('confirm')
+    setStep(nextStepAfter('shipping'))
   }
 
   const placeOrder = async () => {
@@ -333,7 +469,7 @@ export default function CartCheckout() {
       })
       setOrderResult(result)
       await clear()
-      setStep('done')
+      setStep(nextStepAfter('confirm'))
       setReceiptDone(false)
       const payUrl = result?.payment?.payment_url
       if (
@@ -388,29 +524,44 @@ export default function CartCheckout() {
     }
   }
 
-  if (loading || authLoading) {
+  // فقط بارگذاری اولیه؛ همگام‌سازی بعدی کل صفحه را خالی نکند
+  const initialBooting = (loading || authLoading) && !cart?.id && !itemsCount
+  if (initialBooting) {
     return (
-      <div className={styles.page}>
+      <div
+        className={`${styles.page} ${styles.pageApp}`}
+        style={cartThemeVars || undefined}
+      >
         <p className={styles.empty}>در حال بارگذاری سبد…</p>
       </div>
     )
   }
 
   return (
-    <div className={styles.page}>
+    <div
+      className={`${styles.page} ${styles.pageApp}`}
+      data-step={step}
+      style={cartThemeVars || undefined}
+    >
       <div className={styles.head}>
-        <h1 className={styles.title}>سبد خرید</h1>
-        {cart.shop_title ? (
-          <span style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>
-            {cart.shop_title}
+        <div className={styles.headText}>
+          <h1 className={styles.title}>سبد خرید</h1>
+          {cart.shop_title ? (
+            <span className={styles.shopLabel}>{cart.shop_title}</span>
+          ) : null}
+        </div>
+        {itemsCount ? (
+          <span className={styles.countBadge}>
+            {Number(itemsCount).toLocaleString('fa-IR')} کالا
           </span>
         ) : null}
       </div>
 
-      <div className={styles.steps}>
+      <div className={styles.steps} role="list" aria-label="مراحل سفارش">
         {STEPS.map((s, i) => (
           <div
             key={s.id}
+            role="listitem"
             className={[
               styles.step,
               i === stepIndex ? styles.stepActive : '',
@@ -419,12 +570,35 @@ export default function CartCheckout() {
               .filter(Boolean)
               .join(' ')}
           >
-            {s.label}
+            <span className={styles.stepNum}>
+              {(i + 1).toLocaleString('fa-IR')}
+            </span>
+            <span className={styles.stepLabel}>{s.label}</span>
           </div>
         ))}
       </div>
 
       {error ? <div className={`${styles.msg} ${styles.msgErr}`}>{error}</div> : null}
+
+      {itemsCount && isAuthenticated ? (
+        <div
+          className={`${styles.msg} ${
+            holdLeft > 0 ? styles.msgOk : styles.msgErr
+          }`}
+        >
+          {holdLeft > 0 ? (
+            <>
+              موجودی سبد تا <strong>{holdLabel}</strong> برای شما رزرو است.
+              قبل از اتمام زمان، خرید را نهایی کنید.
+            </>
+          ) : (
+            <>
+              زمان رزرو موجودی تمام شده. با تغییر تعداد یا ادامه خرید دوباره
+              رزرو می‌شود (در صورت آزاد بودن موجودی).
+            </>
+          )}
+        </div>
+      ) : null}
 
       {step === 'cart' ? (
         !itemsCount ? (
@@ -442,7 +616,10 @@ export default function CartCheckout() {
                   item.line_total ??
                   (Number(item.price) || 0) * (Number(item.quantity) || 0)
                 return (
-                  <div key={item.id || item.product} className={styles.row}>
+                  <div
+                    key={`cart-line-${item.id ?? 'x'}-${item.product ?? item.product_detail?.id}`}
+                    className={styles.row}
+                  >
                     {img ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img className={styles.thumb} src={img} alt="" />
@@ -461,15 +638,46 @@ export default function CartCheckout() {
                         {formatPrice(line)} تومان
                       </div>
                     </div>
-                    <div>
-                      <div className={styles.qty}>
-                        <button type="button" onClick={() => bump(item, -1)}>
+                    <div className={styles.rowActions}>
+                      <div
+                        className={`${styles.qty} ${
+                          Number(busyProductId) ===
+                          Number(item.product || item.product_detail?.id || 0)
+                            ? styles.qtyBusy
+                            : ''
+                        }`}
+                      >
+                        <button
+                          type="button"
+                          aria-label="کاهش"
+                          disabled={
+                            Number(busyProductId) ===
+                            Number(item.product || item.product_detail?.id || 0)
+                          }
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            bump(item, -1)
+                          }}
+                        >
                           −
                         </button>
                         <span>
                           {(item.quantity || 0).toLocaleString('fa-IR')}
                         </span>
-                        <button type="button" onClick={() => bump(item, 1)}>
+                        <button
+                          type="button"
+                          aria-label="افزایش"
+                          disabled={
+                            Number(busyProductId) ===
+                            Number(item.product || item.product_detail?.id || 0)
+                          }
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            bump(item, 1)
+                          }}
+                        >
                           +
                         </button>
                       </div>
@@ -480,21 +688,32 @@ export default function CartCheckout() {
             </div>
 
             <div className={styles.summary}>
-              <div className={styles.summaryRow}>
-                <span>جمع اقلام</span>
-                <strong>{formatPrice(subtotal)} تومان</strong>
+              <div className={styles.summaryHead}>
+                <span>جمع سبد</span>
+                <span className={styles.orderSummaryBadge}>
+                  {(itemsCount || 0).toLocaleString('fa-IR')} قلم
+                </span>
               </div>
-              <div className={styles.summaryRow}>
-                <span>ارسال</span>
-                <strong style={{ color: 'var(--muted)', fontWeight: 600 }}>
-                  بعد از انتخاب آدرس روی نقشه محاسبه می‌شود
-                </strong>
+              <div className={styles.summaryBody}>
+                <div className={styles.summaryRow}>
+                  <span>جمع اقلام</span>
+                  <strong>{formatPrice(subtotal)} تومان</strong>
+                </div>
+                <div className={styles.summaryRow}>
+                  <span>ارسال</span>
+                  <strong className={styles.mutedStrong}>
+                    بعد از انتخاب آدرس محاسبه می‌شود
+                  </strong>
+                </div>
               </div>
               <div className={`${styles.summaryRow} ${styles.totalRow}`}>
-                <span>جمع اقلام</span>
-                <strong>{formatPrice(subtotal)} تومان</strong>
+                <span>قابل پرداخت (فعلاً)</span>
+                <strong className={styles.totalAccent}>
+                  {formatPrice(subtotal)}
+                  <small>تومان</small>
+                </strong>
               </div>
-              <div className={styles.actions}>
+              <div className={`${styles.actions} ${styles.actionsSticky}`}>
                 <button type="button" className={styles.btn} onClick={goShipping}>
                   ادامه — نحوه ارسال
                 </button>
@@ -513,42 +732,53 @@ export default function CartCheckout() {
 
       {step === 'shipping' ? (
         <>
-          <div className={styles.shipOpts}>
-            <label
-              className={`${styles.shipOpt} ${!pickup ? styles.shipOptActive : ''}`}
-            >
-              <input
-                type="radio"
-                name="ship"
-                checked={!pickup}
-                onChange={() => setPickup(false)}
-              />
-              <span>
-                <strong>ارسال به آدرس</strong>
-                <br />
-                <small style={{ color: 'var(--muted)' }}>
-                  فاصله با نقشه نشان و فرمول مسافت محاسبه می‌شود
-                </small>
-              </span>
-            </label>
-            <label
-              className={`${styles.shipOpt} ${pickup ? styles.shipOptActive : ''}`}
-            >
-              <input
-                type="radio"
-                name="ship"
-                checked={pickup}
-                onChange={() => setPickup(true)}
-              />
-              <span>
-                <strong>تحویل حضوری از فروشگاه</strong>
-                <br />
-                <small style={{ color: 'var(--muted)' }}>بدون هزینه ارسال</small>
-              </span>
-            </label>
-          </div>
+          {allowAddress || allowPickup ? (
+            <div className={styles.shipOpts}>
+              {allowAddress ? (
+                <label
+                  className={`${styles.shipOpt} ${!pickup ? styles.shipOptActive : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name="ship"
+                    checked={!pickup}
+                    onChange={() => setPickup(false)}
+                  />
+                  <span>
+                    <strong>ارسال به آدرس</strong>
+                    <br />
+                    <small style={{ color: 'var(--muted)' }}>
+                      فاصله با نقشه نشان و فرمول مسافت محاسبه می‌شود
+                    </small>
+                  </span>
+                </label>
+              ) : null}
+              {allowPickup ? (
+                <label
+                  className={`${styles.shipOpt} ${pickup ? styles.shipOptActive : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name="ship"
+                    checked={pickup}
+                    onChange={() => setPickup(true)}
+                  />
+                  <span>
+                    <strong>تحویل حضوری از فروشگاه</strong>
+                    <br />
+                    <small style={{ color: 'var(--muted)' }}>بدون هزینه ارسال</small>
+                  </span>
+                </label>
+              ) : null}
+            </div>
+          ) : (
+            <p className={styles.empty}>
+              هیچ روش ارسالی در تنظیمات سفارش فعال نیست — از ادمین «سفارش و سبد»
+              را بررسی کنید.
+            </p>
+          )}
 
-          {!pickup ? (
+          {!pickup && allowAddress ? (
             <>
               <div className={styles.addrSection}>
                 <h3 className={styles.addrSectionTitle}>آدرس تحویل</h3>
@@ -610,29 +840,33 @@ export default function CartCheckout() {
               </div>
 
               <div className={styles.summary} style={{ marginTop: '1rem' }}>
-                <div className={styles.summaryRow}>
-                  <span>فاصله تا فروشگاه</span>
-                  <strong>
-                    {shipLoading
-                      ? 'در حال محاسبه…'
-                      : shipInfo?.formatted_distance ||
-                        shipInfo?.formattedDistance ||
-                        '—'}
-                  </strong>
-                </div>
-                <div className={styles.summaryRow}>
+                <div className={styles.summaryHead}>
                   <span>هزینه ارسال</span>
-                  <strong>
-                    {shipLoading
-                      ? '…'
-                      : `${formatPrice(shipping)} تومان`}
+                </div>
+                <div className={styles.summaryBody}>
+                  <div className={styles.summaryRow}>
+                    <span>فاصله تا فروشگاه</span>
+                    <strong>
+                      {shipLoading
+                        ? 'در حال محاسبه…'
+                        : shipInfo?.formatted_distance ||
+                          shipInfo?.formattedDistance ||
+                          '—'}
+                    </strong>
+                  </div>
+                </div>
+                <div className={`${styles.summaryRow} ${styles.totalRow}`}>
+                  <span>مبلغ ارسال</span>
+                  <strong className={styles.totalAccent}>
+                    {shipLoading ? '…' : formatPrice(shipping)}
+                    {!shipLoading ? <small>تومان</small> : null}
                   </strong>
                 </div>
               </div>
             </>
           ) : null}
 
-          <div className={styles.actions}>
+          <div className={`${styles.actions} ${styles.actionsSticky}`}>
             <button
               type="button"
               className={styles.btn}
@@ -644,7 +878,7 @@ export default function CartCheckout() {
             <button
               type="button"
               className={`${styles.btn} ${styles.btnGhost}`}
-              onClick={() => setStep('cart')}
+              onClick={() => setStep(prevStepBefore('shipping'))}
             >
               بازگشت
             </button>
@@ -660,104 +894,113 @@ export default function CartCheckout() {
           </div>
 
           <div className={styles.confirmGrid}>
-            <div className={styles.confirmCard}>
-              <h3>خلاصه سفارش</h3>
-              <div className={styles.summaryRow}>
-                <span>فروشگاه</span>
-                <strong>{cart.shop_title || '—'}</strong>
+            <div className={`${styles.confirmCard} ${styles.orderSummary}`}>
+              <div className={styles.orderSummaryHead}>
+                <h3>خلاصه سفارش</h3>
+                <span className={styles.orderSummaryBadge}>
+                  {(itemsCount || 0).toLocaleString('fa-IR')} قلم
+                </span>
               </div>
-              <div className={styles.summaryRow}>
-                <span>اقلام</span>
-                <strong>{(itemsCount || 0).toLocaleString('fa-IR')} عدد</strong>
-              </div>
-              <div className={styles.summaryRow}>
-                <span>جمع کالا</span>
-                <strong>{formatPrice(subtotal)} تومان</strong>
-              </div>
-              <div className={styles.summaryRow}>
-                <span>نحوه دریافت</span>
-                <strong>{pickup ? 'حضوری از فروشگاه' : 'ارسال به آدرس'}</strong>
-              </div>
-              {!pickup && addressId ? (
+              <div className={styles.orderSummaryBody}>
                 <div className={styles.summaryRow}>
-                  <span>آدرس</span>
-                  <strong className={styles.addrValue}>
-                    {addresses.find((a) => a.id === addressId)?.address || '—'}
-                    {addresses.find((a) => a.id === addressId)?.description
-                      ? ` · ${addresses.find((a) => a.id === addressId).description}`
-                      : ''}
+                  <span>فروشگاه</span>
+                  <strong>{cart.shop_title || '—'}</strong>
+                </div>
+                <div className={styles.summaryRow}>
+                  <span>جمع کالا</span>
+                  <strong>{formatPrice(subtotal)} تومان</strong>
+                </div>
+                <div className={styles.summaryRow}>
+                  <span>نحوه دریافت</span>
+                  <strong className={styles.summaryChip}>
+                    {pickup ? 'حضوری از فروشگاه' : 'ارسال به آدرس'}
                   </strong>
                 </div>
-              ) : null}
-              {!pickup &&
-              (shipInfo?.formatted_distance || shipInfo?.formattedDistance) ? (
+                {!pickup && addressId ? (
+                  <div className={`${styles.summaryRow} ${styles.summaryRowStack}`}>
+                    <span>آدرس</span>
+                    <strong className={styles.addrValue}>
+                      {addresses.find((a) => a.id === addressId)?.address || '—'}
+                      {addresses.find((a) => a.id === addressId)?.description
+                        ? ` · ${addresses.find((a) => a.id === addressId).description}`
+                        : ''}
+                    </strong>
+                  </div>
+                ) : null}
+                {!pickup &&
+                (shipInfo?.formatted_distance || shipInfo?.formattedDistance) ? (
+                  <div className={styles.summaryRow}>
+                    <span>فاصله</span>
+                    <strong>
+                      {shipInfo.formatted_distance || shipInfo.formattedDistance}
+                    </strong>
+                  </div>
+                ) : null}
                 <div className={styles.summaryRow}>
-                  <span>فاصله</span>
+                  <span>هزینه ارسال</span>
                   <strong>
-                    {shipInfo.formatted_distance || shipInfo.formattedDistance}
+                    {pickup ? '۰' : formatPrice(shipping)} تومان
                   </strong>
                 </div>
-              ) : null}
-              <div className={styles.summaryRow}>
-                <span>هزینه ارسال</span>
-                <strong>
-                  {pickup ? '۰' : formatPrice(shipping)} تومان
-                </strong>
               </div>
               <div className={`${styles.summaryRow} ${styles.totalRow}`}>
                 <span>جمع کل</span>
                 <strong className={styles.totalAccent}>
-                  {formatPrice(total)} تومان
+                  {formatPrice(total)}
+                  <small>تومان</small>
                 </strong>
               </div>
               {useWallet && walletApplied > 0 ? (
-                <>
-                  <div className={styles.summaryRow}>
+                <div className={styles.orderSummaryWallet}>
+                  <div className={`${styles.summaryRow} ${styles.summaryRowDeduct}`}>
                     <span>از کیف پول</span>
                     <strong>−{formatPrice(walletApplied)} تومان</strong>
                   </div>
-                  <div className={`${styles.summaryRow} ${styles.totalRow}`}>
+                  <div className={`${styles.summaryRow} ${styles.totalRow} ${styles.totalRowRemain}`}>
                     <span>باقیمانده</span>
                     <strong className={styles.totalAccent}>
-                      {formatPrice(payableRemainder)} تومان
+                      {formatPrice(payableRemainder)}
+                      <small>تومان</small>
                     </strong>
                   </div>
-                </>
+                </div>
               ) : null}
             </div>
 
             <div className={styles.confirmCard}>
               <h3>روش پرداخت</h3>
 
-              <label
-                className={`${styles.walletToggle} ${
-                  useWallet ? styles.walletToggleOn : ''
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={useWallet}
-                  disabled={walletLoading || walletBalance <= 0}
-                  onChange={(e) => setUseWallet(e.target.checked)}
-                />
-                <span>
-                  <strong>استفاده از کیف پول</strong>
-                  <small>
-                    {walletLoading
-                      ? 'در حال دریافت موجودی…'
-                      : walletBalance > 0
-                        ? `موجودی: ${formatPrice(walletBalance)} تومان`
-                        : 'موجودی کیف پول صفر است'}
-                  </small>
-                  {useWallet && walletApplied > 0 ? (
-                    <small className={styles.walletSplit}>
-                      {walletCoversAll
-                        ? 'کل مبلغ از کیف پول پرداخت می‌شود'
-                        : `${formatPrice(walletApplied)} از کیف پول + ${formatPrice(payableRemainder)} باقیمانده`}
+              {allowWallet ? (
+                <label
+                  className={`${styles.walletToggle} ${
+                    useWallet ? styles.walletToggleOn : ''
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={useWallet}
+                    disabled={walletLoading || walletBalance <= 0}
+                    onChange={(e) => setUseWallet(e.target.checked)}
+                  />
+                  <span>
+                    <strong>استفاده از کیف پول</strong>
+                    <small>
+                      {walletLoading
+                        ? 'در حال دریافت موجودی…'
+                        : walletBalance > 0
+                          ? `موجودی: ${formatPrice(walletBalance)} تومان`
+                          : 'موجودی کیف پول صفر است'}
                     </small>
-                  ) : null}
-                </span>
-              </label>
+                    {useWallet && walletApplied > 0 ? (
+                      <small className={styles.walletSplit}>
+                        {walletCoversAll
+                          ? 'کل مبلغ از کیف پول پرداخت می‌شود'
+                          : `${formatPrice(walletApplied)} از کیف پول + ${formatPrice(payableRemainder)} باقیمانده`}
+                      </small>
+                    ) : null}
+                  </span>
+                </label>
+              ) : null}
 
               {!walletCoversAll ? (
               <div className={styles.payModes}>
@@ -766,48 +1009,52 @@ export default function CartCheckout() {
                     ? 'باقیمانده را چگونه پرداخت می‌کنید؟'
                     : 'روش پرداخت را انتخاب کنید:'}
                 </p>
-                <button
-                  type="button"
-                  className={`${styles.payMode} ${
-                    paymentMode === 'gateway' ? styles.payModeOn : ''
-                  }`}
-                  disabled={!onlineGateways.length || !payEnabled}
-                  onClick={() => {
-                    setPaymentMode('gateway')
-                    if (!gatewayCode && onlineGateways[0]) {
-                      setGatewayCode(onlineGateways[0].gateway_code)
-                    }
-                  }}
-                >
-                  <strong>پرداخت آنلاین</strong>
-                  <span>
-                    {onlineGateways.length && payEnabled
-                      ? useWallet && payableRemainder > 0
-                        ? `پرداخت باقیمانده ${formatPrice(payableRemainder)} تومان`
-                        : 'انتخاب درگاه بانکی'
-                      : 'درگاهی فعال نیست'}
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  className={`${styles.payMode} ${
-                    paymentMode === 'manual' ? styles.payModeOn : ''
-                  }`}
-                  disabled={!hasManualBank}
-                  onClick={() => {
-                    setPaymentMode('manual')
-                    setGatewayCode('manual')
-                  }}
-                >
-                  <strong>واریز دستی</strong>
-                  <span>
-                    {hasManualBank
-                      ? useWallet && payableRemainder > 0
-                        ? `واریز باقیمانده ${formatPrice(payableRemainder)} تومان`
-                        : 'کارت / شبا / حساب فروشگاه'
-                      : 'فروشگاه حساب اعلام نکرده'}
-                  </span>
-                </button>
+                {allowGateway ? (
+                  <button
+                    type="button"
+                    className={`${styles.payMode} ${
+                      paymentMode === 'gateway' ? styles.payModeOn : ''
+                    }`}
+                    disabled={!onlineGateways.length || !payEnabled}
+                    onClick={() => {
+                      setPaymentMode('gateway')
+                      if (!gatewayCode && onlineGateways[0]) {
+                        setGatewayCode(onlineGateways[0].gateway_code)
+                      }
+                    }}
+                  >
+                    <strong>پرداخت آنلاین</strong>
+                    <span>
+                      {onlineGateways.length && payEnabled
+                        ? useWallet && payableRemainder > 0
+                          ? `پرداخت باقیمانده ${formatPrice(payableRemainder)} تومان`
+                          : 'انتخاب درگاه بانکی'
+                        : 'درگاهی فعال نیست'}
+                    </span>
+                  </button>
+                ) : null}
+                {allowManual ? (
+                  <button
+                    type="button"
+                    className={`${styles.payMode} ${
+                      paymentMode === 'manual' ? styles.payModeOn : ''
+                    }`}
+                    disabled={!hasManualBank}
+                    onClick={() => {
+                      setPaymentMode('manual')
+                      setGatewayCode('manual')
+                    }}
+                  >
+                    <strong>واریز دستی</strong>
+                    <span>
+                      {hasManualBank
+                        ? useWallet && payableRemainder > 0
+                          ? `واریز باقیمانده ${formatPrice(payableRemainder)} تومان`
+                          : 'کارت / شبا / حساب فروشگاه'
+                        : 'فروشگاه حساب اعلام نکرده'}
+                    </span>
+                  </button>
+                ) : null}
               </div>
               ) : (
                 <div className={styles.walletFullNote}>
@@ -905,7 +1152,7 @@ export default function CartCheckout() {
             </div>
           </div>
 
-          <div className={styles.actions}>
+          <div className={`${styles.actions} ${styles.actionsSticky}`}>
             <button
               type="button"
               className={styles.btn}
@@ -936,7 +1183,7 @@ export default function CartCheckout() {
             <button
               type="button"
               className={`${styles.btn} ${styles.btnGhost}`}
-              onClick={() => setStep('shipping')}
+              onClick={() => setStep(prevStepBefore('confirm'))}
             >
               بازگشت
             </button>
@@ -991,8 +1238,9 @@ export default function CartCheckout() {
             </div>
           ) : null}
 
-          {orderResult?.payment?.mode === 'manual' ||
-          orderResult?.order?.payment_mode === 'manual' ? (
+          {allowReceipt &&
+          (orderResult?.payment?.mode === 'manual' ||
+            orderResult?.order?.payment_mode === 'manual') ? (
             <div className={styles.receiptPanel}>
               <h3>واریز دستی و ارسال رسید</h3>
               <p className={styles.payHint}>

@@ -523,6 +523,115 @@
   margin-top: 0.5rem;
 }
 
+.iconCell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #2a241c;
+}
+
+.iconCellName {
+  font-size: 11px;
+  color: #6f675c;
+  direction: ltr;
+}
+
+.iconPickerWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.iconPickerSearch {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(90, 60, 20, 0.16);
+  background: #fff;
+  font-family: var(--font-iran);
+  font-size: 12px;
+}
+
+.iconPickerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 6px;
+  max-height: 220px;
+  overflow: auto;
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid rgba(90, 60, 20, 0.12);
+  background: #fffdf8;
+}
+
+.iconPickBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 64px;
+  padding: 6px 4px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #2a241c;
+  cursor: pointer;
+  font-family: var(--font-iran);
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.iconPickBtn:hover {
+  background: #fff7ec;
+  border-color: rgba(201, 120, 0, 0.22);
+}
+
+.iconPickBtnOn {
+  background: linear-gradient(135deg, #fff3c4, #ffe082);
+  border-color: rgba(201, 120, 0, 0.35);
+  color: #5a3d00;
+}
+
+.iconPickId {
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  direction: ltr;
+}
+
+.iconPickHint {
+  margin: 0;
+  font-size: 11px;
+  color: #6f675c;
+}
+
+.iconSelectedRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: #fff7ec;
+  border: 1px solid rgba(201, 120, 0, 0.2);
+  font-size: 12px;
+  font-weight: 700;
+  color: #5a3d00;
+}
+
+.linksToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
 .successBar {
   font-size: 12px;
   border-radius: 12px;

@@ -49,13 +49,13 @@ export default function SchoolProfilePanel() {
   const links = []
   links.push({ href: '/school', label: 'مدرسه' })
   if (teacher || me.is_admin || me.can_view_teacher_panel) {
-    links.push({ href: '/school/teacher', label: 'پنل معلم' })
+    links.push({ href: '/profile?tab=teacher', label: 'پنل معلم' })
   }
   if (student || me.is_admin || me.can_view_student_panel) {
-    links.push({ href: '/school/student', label: 'پنل دانش‌آموز' })
+    links.push({ href: '/profile?tab=students', label: 'پنل دانش‌آموز' })
   }
   if (me.is_admin || me.can_view_manage_panel) {
-    links.push({ href: '/school-manage', label: 'مدیریت' })
+    links.push({ href: '/profile?tab=manage', label: 'مدیریت' })
   }
 
   return (

@@ -15,7 +15,6 @@ import {
   Clock,
   ShieldAlert,
 } from "lucide-react";
-
 const STATUS_MAP = {
   verified: {
     label: "تایید شده",
@@ -60,7 +59,7 @@ const CompanyView = ({ company, onEdit }) => {
               <img src={logoUrl} alt={company.name} className={styles.logo} />
             ) : (
               <div className={styles.logoPlaceholder}>
-                <Building2 size={36} />
+                <Building2 size={22} strokeWidth={1.8} />
               </div>
             )}
           </div>
@@ -72,7 +71,7 @@ const CompanyView = ({ company, onEdit }) => {
                 <span>{company.name}</span>
                 {isVerified && (
                   <BadgeCheck
-                    size={22}
+                    size={16}
                     className={styles.blueTick}
                     aria-label="شرکت تایید شده"
                     title="شرکت تایید شده"
@@ -82,7 +81,7 @@ const CompanyView = ({ company, onEdit }) => {
               <span
                 className={`${styles.statusBadge} ${styles[status.className]}`}
               >
-                <StatusIcon size={13} />
+                <StatusIcon size={11} strokeWidth={2.2} />
                 {status.label}
               </span>
             </div>
@@ -95,7 +94,7 @@ const CompanyView = ({ company, onEdit }) => {
           </div>
 
           <button type="button" className={styles.editBtn} onClick={onEdit}>
-            <Edit size={15} />
+            <Edit size={12} strokeWidth={2.2} />
             ویرایش
           </button>
         </div>
@@ -110,7 +109,7 @@ const CompanyView = ({ company, onEdit }) => {
         <div className={styles.contactGrid}>
           {company.email && (
             <div className={styles.contactItem}>
-              <Mail size={16} />
+              <Mail size={13} strokeWidth={2.2} />
               <div>
                 <span className={styles.contactLabel}>ایمیل</span>
                 <a href={`mailto:${company.email}`} dir="ltr">
@@ -122,7 +121,7 @@ const CompanyView = ({ company, onEdit }) => {
 
           {company.phone && (
             <div className={styles.contactItem}>
-              <Phone size={16} />
+              <Phone size={13} strokeWidth={2.2} />
               <div>
                 <span className={styles.contactLabel}>تلفن</span>
                 <a href={`tel:${company.phone}`} dir="ltr">
@@ -134,7 +133,7 @@ const CompanyView = ({ company, onEdit }) => {
 
           {company.website && (
             <div className={styles.contactItem}>
-              <Globe size={16} />
+              <Globe size={13} strokeWidth={2.2} />
               <div>
                 <span className={styles.contactLabel}>وب‌سایت</span>
                 <a
@@ -151,7 +150,7 @@ const CompanyView = ({ company, onEdit }) => {
 
           {company.city_name && (
             <div className={styles.contactItem}>
-              <MapPin size={16} />
+              <MapPin size={13} strokeWidth={2.2} />
               <div>
                 <span className={styles.contactLabel}>شهر</span>
                 <span>{company.city_name}</span>
@@ -166,10 +165,21 @@ const CompanyView = ({ company, onEdit }) => {
             <p>{company.address}</p>
           </div>
         )}
+      </div>
 
-        {company.documents && company.documents.length > 0 && (
+      {company.documents && company.documents.length > 0 ? (
+        <div className={styles.companyCard}>
           <div className={styles.docsSection}>
-            <h4>مدارک آپلود شده ({company.documents.length})</h4>
+            <div className={styles.docsHead}>
+              <h4>مدارک آپلود شده ({company.documents.length})</h4>
+              {isVerified || statusKey === "pending" ? (
+                <span className={styles.docsLockedNote}>
+                  {isVerified
+                    ? "تایید ادمین — غیرقابل ویرایش"
+                    : "در حال بررسی — غیرقابل ویرایش"}
+                </span>
+              ) : null}
+            </div>
             <div className={styles.docsGrid}>
               {company.documents.map((doc) => {
                 const docUrl = getFullImageUrl(doc.image);
@@ -190,8 +200,8 @@ const CompanyView = ({ company, onEdit }) => {
               })}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      ) : null}
     </div>
   );
 };

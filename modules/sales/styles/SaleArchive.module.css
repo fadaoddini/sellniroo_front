@@ -1,0 +1,253 @@
+.wrap {
+  --ar-ink: #0f172a;
+  --ar-muted: #64748b;
+  --ar-line: #e2e8f0;
+  --ar-ok: #0f766e;
+  background: #fff;
+  border: 1px solid var(--ar-line);
+  border-radius: 14px;
+  padding: 0.85rem;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.headText h2 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--ar-ink);
+}
+
+.headText p {
+  margin: 0.2rem 0 0;
+  font-size: 0.74rem;
+  color: var(--ar-muted);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.search {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: min(280px, 100%);
+  border: 1px solid var(--ar-line);
+  border-radius: 10px;
+  background: #f8fafc;
+  padding: 0.35rem 0.6rem;
+  color: var(--ar-muted);
+}
+
+.search input {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  width: 100%;
+  font-family: var(--font-iran);
+  font-size: 0.8rem;
+  color: var(--ar-ink);
+}
+
+.statusSelect {
+  min-height: 36px;
+  border: 1px solid var(--ar-line);
+  border-radius: 10px;
+  background: #fff;
+  font-family: var(--font-iran);
+  font-size: 0.78rem;
+  padding: 0.3rem 0.55rem;
+  color: var(--ar-ink);
+}
+
+.meta {
+  margin-bottom: 0.65rem;
+  font-size: 0.72rem;
+  color: var(--ar-muted);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.55rem;
+}
+
+.card {
+  border: 1px solid var(--ar-line);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
+  padding: 0.7rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.cardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.code {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-family: var(--font-iran-bold);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #334155;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.1rem 0.4rem;
+  direction: ltr;
+  margin-bottom: 0.3rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--ar-ink);
+  line-height: 1.45;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.66rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.customer,
+.phone,
+.date,
+.owner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  font-size: 0.72rem;
+  color: var(--ar-muted);
+}
+
+.desc {
+  margin: 0;
+  font-size: 0.74rem;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  margin-top: 0.15rem;
+}
+
+.btn,
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  min-height: 34px;
+  border-radius: 8px;
+  font-family: var(--font-iran);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn {
+  border: 0;
+  background: var(--ar-ink);
+  color: #fff;
+}
+
+.btn:disabled,
+.btnGhost:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btnGhost {
+  border: 1px solid var(--ar-line);
+  background: #fff;
+  color: #334155;
+}
+
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--ar-line);
+}
+
+.pagerInfo {
+  font-size: 0.74rem;
+  color: var(--ar-muted);
+}
+
+.pagerBtns {
+  display: inline-flex;
+  gap: 0.35rem;
+}
+
+.empty,
+.loading,
+.error {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--ar-muted);
+  font-size: 0.84rem;
+}
+
+.error {
+  color: #b91c1c;
+  background: #fef2f2;
+  border-radius: 10px;
+  border: 1px solid #fecaca;
+}
+
+.spin {
+  animation: arSpin 0.8s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 0.35rem;
+}
+
+@keyframes arSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .actions {
+    grid-template-columns: 1fr;
+  }
+
+  .search {
+    min-width: 100%;
+  }
+}

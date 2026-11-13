@@ -1,10 +1,10 @@
 .wrap {
-  --ink: #2a241c;
-  --muted: #6f675c;
-  --line: rgba(90, 60, 20, 0.1);
-  --gold: #fbc300;
-  --gold-dark: #c27800;
-  --cream: #fffaf0;
+  --ink: var(--profile-ink, #2a241c);
+  --muted: var(--profile-muted, #6f675c);
+  --line: var(--profile-line, rgba(90, 60, 20, 0.1));
+  --gold: var(--profile-accent, #F4AE52);
+  --gold-dark: var(--profile-accent-deep, #D4621A);
+  --cream: var(--profile-cream, #fffaf0);
   --surface: rgba(255, 255, 255, 0.78);
   --paid: #1a7a42;
   --paid-bg: rgba(26, 122, 66, 0.1);
@@ -115,7 +115,7 @@
   height: 1.25rem;
   padding: 0 0.35rem;
   border-radius: 999px;
-  background: rgba(251, 195, 0, 0.28);
+  background: rgba(244, 174, 82, 0.28);
   color: var(--gold-dark);
   font-size: 0.68rem;
   font-weight: 800;
@@ -148,7 +148,7 @@
 
 .ownerLink:hover {
   transform: translateY(-1px);
-  border-color: rgba(194, 120, 0, 0.35);
+  border-color: rgba(212, 98, 26, 0.35);
 }
 
 .cartLink {
@@ -162,7 +162,7 @@
   color: var(--ink);
   text-decoration: none;
   background: linear-gradient(135deg, var(--gold), #ffd84a);
-  box-shadow: 0 4px 14px rgba(194, 120, 0, 0.22);
+  box-shadow: 0 4px 14px rgba(212, 98, 26, 0.22);
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease;
@@ -170,7 +170,7 @@
 
 .cartLink:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(194, 120, 0, 0.28);
+  box-shadow: 0 6px 18px rgba(212, 98, 26, 0.28);
 }
 
 .err {
@@ -196,7 +196,7 @@
   border-radius: 18px;
   border: 1px dashed rgba(90, 60, 20, 0.18);
   background:
-    radial-gradient(420px 160px at 50% 0%, rgba(251, 195, 0, 0.12), transparent 70%),
+    radial-gradient(420px 160px at 50% 0%, rgba(244, 174, 82, 0.12), transparent 70%),
     var(--cream);
 }
 
@@ -260,7 +260,7 @@
 .card:hover {
   transform: translateY(-2px);
   box-shadow: 0 14px 36px rgba(90, 60, 20, 0.09);
-  border-color: rgba(194, 120, 0, 0.22);
+  border-color: rgba(212, 98, 26, 0.22);
 }
 
 .cardAccent {
@@ -380,9 +380,9 @@
 }
 
 .chipWallet {
-  background: rgba(251, 195, 0, 0.18);
+  background: rgba(244, 174, 82, 0.18);
   color: var(--gold-dark);
-  border-color: rgba(194, 120, 0, 0.18);
+  border-color: rgba(212, 98, 26, 0.18);
 }
 
 .chipMuted {
@@ -407,7 +407,7 @@
   margin-top: 0.7rem;
   padding: 0.55rem 0.7rem;
   border-radius: 10px;
-  background: rgba(251, 195, 0, 0.08);
+  background: rgba(244, 174, 82, 0.08);
   font-size: 0.78rem;
   color: var(--muted);
 }
@@ -499,7 +499,7 @@
   font-size: 0.88rem;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(194, 120, 0, 0.22);
+  box-shadow: 0 6px 18px rgba(212, 98, 26, 0.22);
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease;
@@ -507,7 +507,7 @@
 
 .addBtn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 22px rgba(194, 120, 0, 0.3);
+  box-shadow: 0 8px 22px rgba(212, 98, 26, 0.3);
 }
 
 .addBtn:disabled {

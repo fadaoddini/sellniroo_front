@@ -3,12 +3,13 @@
 
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { Briefcase } from 'lucide-react'
 import { useFilters } from './hooks/useFilters'
 import FiltersSection from './components/FiltersSection/FiltersSection'
 import JobListings from './components/JobListings/JobListings'
 import ViewToggle from './components/ViewToggle/ViewToggle'
+import SortControl from './components/SortControl/SortControl'
 import AdTypeTabs from './components/AdTypeTabs/AdTypeTabs'
 import styles from './AllBoxItem.module.css'
 
@@ -25,7 +26,11 @@ const AllBoxItem = ({
   const showTitle = showList && ui.showTitle !== false
   const showCount = showList && ui.showCount !== false
 
-  const [viewMode, setViewMode] = useState(ui.defaultView || 'grid-2')
+  const [viewMode, setViewMode] = useState(ui.defaultView || 'image-left')
+
+  useEffect(() => {
+    if (ui.defaultView) setViewMode(ui.defaultView)
+  }, [ui.defaultView])
 
   const [activeTab, setActiveTab] = useState(() => {
     if (initialFilters.adType === 'hiring') return 'hiring'
@@ -122,7 +127,11 @@ const AllBoxItem = ({
     >
       <div className={styles.container}>
         {showFilters ? (
-          <aside className={styles.filtersAside} aria-label="فیلترهای آگهی">
+          <aside
+            className={styles.filtersAside}
+            aria-label="فیلترهای آگهی"
+            data-tour="jb-filters"
+          >
             <div className={styles.filtersSticky}>
               <FiltersSection
                 filters={filters}
@@ -132,13 +141,11 @@ const AllBoxItem = ({
                 allProvinces={allProvinces}
                 availableCities={availableCities}
                 availableNeighborhoods={availableNeighborhoods}
-                sortBy={sortBy}
                 onFilterChange={handleFilterChange}
                 onFilterClear={handleFilterClear}
                 onClearAll={handleClearAll}
                 onVerifiedToggle={handleVerifiedToggle}
                 onFeatureToggle={handleFeatureToggle}
-                onSortChange={handleSortChange}
                 onSearchSubmit={handleSearchSubmit}
               />
             </div>
@@ -147,7 +154,11 @@ const AllBoxItem = ({
 
         {showList ? (
           <div className={styles.mainContent}>
-            {(showTitle || showCount || showTabs || showViewToggle) && (
+            {(showTitle ||
+              showCount ||
+              showTabs ||
+              showViewToggle ||
+              showList) && (
               <div className={styles.listingsHeader}>
                 {showTitle || showCount ? (
                   <div className={styles.listingsTitleWrapper}>
@@ -169,44 +180,61 @@ const AllBoxItem = ({
                   </div>
                 ) : null}
 
-                {(showTabs || showViewToggle) && (
+                {(showTabs || showViewToggle || showList) && (
                   <div className={styles.headerControls}>
                     {showTabs ? (
-                      <AdTypeTabs
-                        activeTab={activeTab}
-                        onTabChange={handleTabChange}
-                        hiringCount={hiringCount}
-                        seekingCount={seekingCount}
-                      />
+                      <div data-tour="jb-tabs">
+                        <AdTypeTabs
+                          activeTab={activeTab}
+                          onTabChange={handleTabChange}
+                          hiringCount={hiringCount}
+                          seekingCount={seekingCount}
+                        />
+                      </div>
                     ) : null}
-                    {showViewToggle ? (
-                      <ViewToggle viewMode={viewMode} onViewChange={setViewMode} />
-                    ) : null}
+                    <div className={styles.toolbarRow}>
+                      <div data-tour="jb-sort">
+                        <SortControl
+                          sortBy={sortBy}
+                          onSortChange={handleSortChange}
+                        />
+                      </div>
+                      {showViewToggle ? (
+                        <div data-tour="jb-views">
+                          <ViewToggle
+                            viewMode={viewMode}
+                            onViewChange={setViewMode}
+                          />
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                 )}
               </div>
             )}
 
-            <JobListings
-              jobs={visibleJobs}
-              totalItems={totalCount}
-              viewMode={viewMode}
-              loading={jobsLoading}
-              loadingMore={isLoadingMore}
-              hasMore={hasMore}
-              onLoadMore={loadMore}
-              error={jobsError}
-            >
-              {!jobsLoading && visibleJobs.length === 0 && (
-                <button
-                  className={styles.emptyResetBtn}
-                  onClick={handleClearAll}
-                  type="button"
-                >
-                  حذف همه فیلترها
-                </button>
-              )}
-            </JobListings>
+            <div data-tour="jb-listings">
+              <JobListings
+                jobs={visibleJobs}
+                totalItems={totalCount}
+                viewMode={viewMode}
+                loading={jobsLoading}
+                loadingMore={isLoadingMore}
+                hasMore={hasMore}
+                onLoadMore={loadMore}
+                error={jobsError}
+              >
+                {!jobsLoading && visibleJobs.length === 0 && (
+                  <button
+                    className={styles.emptyResetBtn}
+                    onClick={handleClearAll}
+                    type="button"
+                  >
+                    حذف همه فیلترها
+                  </button>
+                )}
+              </JobListings>
+            </div>
           </div>
         ) : null}
       </div>

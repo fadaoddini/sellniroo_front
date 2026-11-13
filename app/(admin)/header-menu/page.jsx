@@ -9,7 +9,7 @@ import {
   PanelTop, Plus, Pencil, Trash2, RefreshCw, Shield, Save,
   CheckCircle2, X, LayoutDashboard, Power, ExternalLink,
   List, Upload, ImagePlus, ChevronUp, ChevronDown, Star,
-  Monitor, Smartphone,
+  Monitor, Smartphone, Sparkles,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -21,6 +21,21 @@ import {
   findMobileNavCenterIndex,
   sortHeaderMenuItems,
 } from '@/services/headerMenu'
+import {
+  DEFAULT_CORPORATE_APPEARANCE,
+  MOBILE_STYLES,
+  normalizeCorporateAppearance,
+  clearCorporateAppearanceCache,
+} from '@/services/corporateAppearance'
+import {
+  HEADER_MENU_ICON_CATALOG,
+  normalizeHeaderMenuIconId,
+  resolveHeaderMenuIcon,
+  suggestHeaderMenuIcon,
+} from '@/config/headerMenuIcons'
+import { getFullImageUrl } from '@/utils/imageUrl'
+import styles from '../ticker/Ticker.module.css'
+import local from './HeaderMenu.module.css'
 
 const VALID_TABS = new Set(['desktop', 'mobile', 'links'])
 
@@ -29,21 +44,66 @@ function normalizeTab(raw) {
   if (VALID_TABS.has(raw)) return raw
   return 'desktop'
 }
-import {
-  DEFAULT_CORPORATE_APPEARANCE,
-  MOBILE_STYLES,
-  normalizeCorporateAppearance,
-  clearCorporateAppearanceCache,
-} from '@/services/corporateAppearance'
-import { getFullImageUrl } from '@/utils/imageUrl'
-import styles from '../ticker/Ticker.module.css'
-import local from './HeaderMenu.module.css'
 
-const ICON_OPTIONS = [
-  'Home', 'Info', 'Briefcase', 'Newspaper', 'PlusCircle', 'HelpCircle', 'GraduationCap',
-  'Building2', 'Users', 'Phone', 'Search', 'LayoutDashboard',
-  'Calculator', 'Target', 'Zap', 'Award', 'Shield', 'User',
-]
+function LucideIconPicker({ value, onChange, language = 'fa' }) {
+  const [q, setQ] = useState('')
+  const selected = normalizeHeaderMenuIconId(value)
+  const SelectedIcon = resolveHeaderMenuIcon(selected)
+  const filtered = useMemo(() => {
+    const needle = String(q || '').trim().toLowerCase()
+    if (!needle) return HEADER_MENU_ICON_CATALOG
+    return HEADER_MENU_ICON_CATALOG.filter(
+      (opt) =>
+        opt.id.toLowerCase().includes(needle) ||
+        String(opt.label || '').toLowerCase().includes(needle)
+    )
+  }, [q])
+
+  return (
+    <div className={local.iconPickerWrap}>
+      <div className={local.iconSelectedRow}>
+        <SelectedIcon size={18} strokeWidth={2.1} aria-hidden />
+        <span dir="ltr">{selected}</span>
+      </div>
+      <input
+        className={local.iconPickerSearch}
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder={
+          language === 'en'
+            ? 'Search Lucide icons…'
+            : 'جستجوی آیکن Lucide…'
+        }
+        dir="rtl"
+      />
+      <div className={local.iconPickerGrid} role="listbox" aria-label="Lucide icons">
+        {filtered.map((opt) => {
+          const on = opt.id === selected
+          const Icon = opt.Icon
+          return (
+            <button
+              key={opt.id}
+              type="button"
+              role="option"
+              aria-selected={on}
+              title={`${opt.id} — ${opt.label}`}
+              className={`${local.iconPickBtn} ${on ? local.iconPickBtnOn : ''}`}
+              onClick={() => onChange(opt.id)}
+            >
+              <Icon size={20} strokeWidth={2} aria-hidden />
+              <span className={local.iconPickId}>{opt.id}</span>
+            </button>
+          )
+        })}
+      </div>
+      <p className={local.iconPickHint}>
+        {language === 'en'
+          ? `${filtered.length} icons · pick visually`
+          : `${filtered.length} آیکن Lucide · با شکل انتخاب کنید`}
+      </p>
+    </div>
+  )
+}
 
 const emptyForm = {
   label_fa: '',
@@ -129,6 +189,7 @@ function HeaderMenuPage() {
   const [saving, setSaving] = useState(false)
   const [savingAppear, setSavingAppear] = useState(false)
   const [reordering, setReordering] = useState(false)
+  const [suggestingIcons, setSuggestingIcons] = useState(false)
 
   const canManage = user?.is_superuser || user?.is_staff || canManageEmployees
 
@@ -214,6 +275,9 @@ function HeaderMenuPage() {
     moveDown: 'Move down',
     previewOrder: 'Mobile bar preview',
     previewDesktop: 'Desktop menu preview',
+    suggestIcons: 'Auto-assign icons from links',
+    suggestIconsDone: 'Icons updated from link/title data',
+    suggesting: 'Updating…',
   } : {
     title: 'منوی سایت و ظاهر',
     subtitle: 'لوگو، رنگ‌ها و لینک‌های منوی بالا و نوار پایین موبایل',
@@ -271,6 +335,9 @@ function HeaderMenuPage() {
     moveDown: 'پایین',
     previewOrder: 'پیش‌نمایش نوار پایین',
     previewDesktop: 'پیش‌نمایش منوی دسکتاپ',
+    suggestIcons: 'آیکن مناسب از روی لینک/عنوان',
+    suggestIconsDone: 'آیکن‌ها بر اساس داده لینک‌ها به‌روز شد',
+    suggesting: 'در حال اعمال…',
   }
 
   const logoPreview = useMemo(() => {
@@ -374,12 +441,55 @@ function HeaderMenuPage() {
       label_fa: item.label_fa || '',
       label_en: item.label_en || '',
       href: item.href || '/',
-      icon: item.icon || 'Home',
+      icon: normalizeHeaderMenuIconId(item.icon || 'Home'),
       sort_order: item.sort_order ?? 100,
       is_active: item.is_active ?? true,
     })
     setFormError(null)
     setShowForm(true)
+  }
+
+  const applySuggestedIconToForm = () => {
+    const next = suggestHeaderMenuIcon({
+      href: form.href,
+      label_fa: form.label_fa,
+      label_en: form.label_en,
+    })
+    setForm((prev) => ({ ...prev, icon: next }))
+  }
+
+  const handleSuggestAllIcons = async () => {
+    if (!items.length) return
+    try {
+      setSuggestingIcons(true)
+      setError(null)
+      const headers = getAuthHeaders()
+      const updates = []
+      for (const item of items) {
+        const nextIcon = suggestHeaderMenuIcon(item)
+        const current = normalizeHeaderMenuIconId(item.icon)
+        if (nextIcon === current) continue
+        updates.push(
+          axios.patch(
+            Config.endpoints.news.headerMenu.update(item.id),
+            { icon: nextIcon },
+            { headers }
+          )
+        )
+      }
+      if (updates.length) {
+        await Promise.all(updates)
+        clearHeaderMenuCache()
+        await fetchAll()
+        setSuccess(t.suggestIconsDone)
+      } else {
+        setSuccess(t.suggestIconsDone)
+      }
+    } catch (err) {
+      setError(fmtErrors(err.response?.data) || err.message)
+    } finally {
+      setSuggestingIcons(false)
+    }
   }
 
   const fmtErrors = (data) => {
@@ -473,7 +583,7 @@ function HeaderMenuPage() {
         label_fa: form.label_fa.trim(),
         label_en: form.label_en.trim(),
         href: form.href.trim(),
-        icon: form.icon || 'Home',
+        icon: normalizeHeaderMenuIconId(form.icon || 'Home'),
         sort_order: Number(form.sort_order) || 100,
         is_active: !!form.is_active,
       }
@@ -981,6 +1091,17 @@ function HeaderMenuPage() {
 
         {tab === 'links' && (
           <>
+            <div className={local.linksToolbar}>
+              <button
+                type="button"
+                className={styles.headerGhost}
+                disabled={suggestingIcons || !items.length}
+                onClick={handleSuggestAllIcons}
+              >
+                <Sparkles size={15} />
+                {suggestingIcons ? t.suggesting : t.suggestIcons}
+              </button>
+            </div>
             <div className={styles.tableWrap}>
               <table className={styles.table}>
                 <thead>
@@ -994,7 +1115,9 @@ function HeaderMenuPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {allSorted.map((item, index) => (
+                  {allSorted.map((item, index) => {
+                    const IconCmp = resolveHeaderMenuIcon(item.icon)
+                    return (
                     <tr key={item.id} className={!item.is_active ? styles.rowInactive : ''}>
                       <td>
                         <strong>{item.label_fa}</strong>
@@ -1003,7 +1126,14 @@ function HeaderMenuPage() {
                         ) : null}
                       </td>
                       <td><span className={styles.codeBadge} dir="ltr">{item.href}</span></td>
-                      <td>{item.icon}</td>
+                      <td>
+                        <span className={local.iconCell}>
+                          <IconCmp size={16} strokeWidth={2.1} aria-hidden />
+                          <span className={local.iconCellName} dir="ltr">
+                            {item.icon || 'Home'}
+                          </span>
+                        </span>
+                      </td>
                       <td><span className={styles.codeBadge}>{item.sort_order}</span></td>
                       <td>
                         <span className={`${styles.statusPill} ${item.is_active ? styles.on : styles.off}`}>
@@ -1053,7 +1183,8 @@ function HeaderMenuPage() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                    )
+                  })}
                 </tbody>
               </table>
               {items.length === 0 && !error && (
@@ -1105,27 +1236,31 @@ function HeaderMenuPage() {
                     required
                   />
                 </div>
-                <div className={styles.formRow}>
-                  <div className={styles.formGroup}>
-                    <label>{t.icon}</label>
-                    <select
-                      value={form.icon}
-                      onChange={(e) => setForm({ ...form, icon: e.target.value })}
-                    >
-                      {ICON_OPTIONS.map((icon) => (
-                        <option key={icon} value={icon}>{icon}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label>{t.order}</label>
-                    <input
-                      type="number"
-                      dir="ltr"
-                      value={form.sort_order}
-                      onChange={(e) => setForm({ ...form, sort_order: e.target.value })}
-                    />
-                  </div>
+                <div className={styles.formGroup}>
+                  <label>{t.icon}</label>
+                  <LucideIconPicker
+                    value={form.icon}
+                    language={language}
+                    onChange={(id) => setForm({ ...form, icon: id })}
+                  />
+                  <button
+                    type="button"
+                    className={styles.headerGhost}
+                    style={{ marginTop: 8 }}
+                    onClick={applySuggestedIconToForm}
+                  >
+                    <Sparkles size={14} />
+                    {t.suggestIcons}
+                  </button>
+                </div>
+                <div className={styles.formGroup}>
+                  <label>{t.order}</label>
+                  <input
+                    type="number"
+                    dir="ltr"
+                    value={form.sort_order}
+                    onChange={(e) => setForm({ ...form, sort_order: e.target.value })}
+                  />
                 </div>
                 <label className={styles.switchRow}>
                   <span>{t.active}</span>

@@ -64,6 +64,7 @@ export default function PostJobClient() {
   const [submitError, setSubmitError] = useState(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [createdJobId, setCreatedJobId] = useState(null);
+  const [createdJobSlug, setCreatedJobSlug] = useState(null);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -206,6 +207,7 @@ export default function PostJobClient() {
 
       const result = await jobisellApi.createJob(formData);
       setCreatedJobId(result.id);
+      setCreatedJobSlug(result.slug || null);
       setSubmitSuccess(true);
       scrollToTop();
     } catch (err) {
@@ -273,7 +275,10 @@ export default function PostJobClient() {
             آگهی در انتظار بررسی مدیر است. پس از تایید، در سایت نمایش داده می‌شود.
           </p>
           <div className={styles.successActions}>
-            <Link href={`/jobs/${createdJobId}`} className={styles.successBtn}>
+            <Link
+              href={createdJobSlug ? `/jobs/${createdJobSlug}` : `/jobs/${createdJobId}`}
+              className={styles.successBtn}
+            >
               مشاهده آگهی
             </Link>
             <Link href="/" className={styles.successBtnSecondary}>

@@ -8,10 +8,10 @@ import styles from './ViewToggle.module.css'
 
 const ViewToggle = ({ viewMode, onViewChange }) => {
   const views = [
-    { id: 'grid-2', icon: LayoutGrid, label: 'نمایش دو ستونه' },
+    { id: 'image-left', icon: LayoutPanelLeft, label: 'نمایش سه‌ستونه افقی' },
     { id: 'grid-3', icon: Columns3, label: 'نمایش سه ستونه' },
-    { id: 'image-left', icon: LayoutPanelLeft, label: 'نمایش تصویر-چپ' },
-    { id: 'list', icon: List, label: 'نمایش لیستی' }
+    { id: 'grid-2', icon: LayoutGrid, label: 'نمایش دو ستونه' },
+    { id: 'list', icon: List, label: 'نمایش لیستی' },
   ]
 
   return (

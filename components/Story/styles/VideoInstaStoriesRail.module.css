@@ -1,14 +1,16 @@
 /* Instagram-like stories rail — mobile only */
 
 .rail {
-  --va-rail-bg: #0a0a0c;
-  --va-ring-1: #f09433;
-  --va-ring-2: #dc2743;
-  --va-ring-3: #bc1888;
+  --va-rail-bg: #fef3e2;
+  --va-ring-1: #f4ae52;
+  --va-ring-2: #d4621a;
+  --va-ring-3: #b8860b;
+  --va-story-size: 72px;
+  --va-story-gap: 14px;
   display: none;
   width: 100%;
   background: var(--va-rail-bg);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(42, 26, 14, 0.1);
   padding: 10px 0 8px;
   position: relative;
   z-index: 20;
@@ -22,7 +24,7 @@
 
 .railScroll {
   display: flex;
-  gap: 14px;
+  gap: var(--va-story-gap, 14px);
   overflow-x: auto;
   overflow-y: hidden;
   padding: 4px 14px 6px;
@@ -37,7 +39,7 @@
 
 .storyItem {
   flex: 0 0 auto;
-  width: 76px;
+  width: calc(var(--va-story-size, 72px) + 8px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -51,8 +53,8 @@
 }
 
 .ring {
-  width: 68px;
-  height: 68px;
+  width: var(--va-story-size, 72px);
+  height: var(--va-story-size, 72px);
   border-radius: 50%;
   padding: 2.5px;
   display: flex;
@@ -75,7 +77,7 @@
 }
 
 .ringSeen {
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(42, 26, 14, 0.22);
 }
 
 .avatar {
@@ -83,8 +85,8 @@
   height: 100%;
   border-radius: 50%;
   overflow: hidden;
-  background: #111;
-  border: 2.5px solid #0a0a0c;
+  background: #fff8ec;
+  border: 2.5px solid #fef3e2;
   display: block;
 }
 
@@ -101,15 +103,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.45);
-  background: linear-gradient(145deg, #1a1a24, #0d0d14);
+  color: #6b5344;
+  background: linear-gradient(145deg, #fff8ec, #f4ae52);
 }
 
 .storyLabel {
-  max-width: 74px;
+  max-width: calc(var(--va-story-size, 72px) + 8px);
   font-size: 0.68rem;
   line-height: 1.25;
-  color: rgba(255, 255, 255, 0.88);
+  color: #2a1a0e;
   font-family: var(--font-iran), Tahoma, sans-serif;
   white-space: nowrap;
   overflow: hidden;
@@ -131,7 +133,7 @@
   width: 68px;
   height: 68px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(42, 26, 14, 0.08);
   animation: pulse 1.2s ease-in-out infinite;
 }
 
@@ -139,7 +141,7 @@
   width: 48px;
   height: 8px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(42, 26, 14, 0.08);
   animation: pulse 1.2s ease-in-out infinite;
 }
 

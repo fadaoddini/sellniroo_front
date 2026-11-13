@@ -1,0 +1,349 @@
+.dashboard {
+  background: transparent;
+  min-height: 100vh;
+  padding-bottom: 4rem;
+  color: var(--text-primary);
+}
+
+.dashboardEmbedded {
+  min-height: 0;
+  padding-bottom: 0.5rem;
+}
+
+.dashboardEmbedded .dashboardTabs {
+  margin-top: 0;
+}
+
+.dashboardEmbedded .tabsNav {
+  gap: 4px;
+  padding: 4px;
+  overflow-x: auto;
+}
+
+.embeddedToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.embeddedStats {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted, #5b6b7c);
+}
+
+.dashboardHeader {
+  background: rgba(255, 255, 255, 0.92);
+  padding: 1.25rem 0 1.15rem;
+  border-bottom: 1px solid var(--border-light);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-sm);
+}
+
+.dashboardHeaderContent {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  text-decoration: none;
+  transition: color var(--transition-base), gap var(--transition-base);
+  margin-bottom: 0.7rem;
+}
+
+.backLink:hover {
+  color: var(--gym-navy, #023c2c);
+  gap: 0.65rem;
+}
+
+.backLink svg {
+  transition: transform var(--transition-base);
+}
+
+.backLink:hover svg {
+  transform: translateX(-3px);
+}
+
+.dashboardHeaderMain {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.dashboardTitle {
+  font-size: 1.35rem;
+  font-weight: 800;
+  font-family: var(--font-edameh);
+  color: var(--gym-navy, #023c2c);
+  margin: 0 0 0.2rem;
+}
+
+.dashboardSubtitle {
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  font-family: var(--font-iran);
+  margin: 0;
+}
+
+.dashboardHeaderStats {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.headerStat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  background: var(--gym-navy-soft, #e8f5ef);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--gym-navy, #023c2c);
+  font-family: var(--font-iran);
+}
+
+.headerStat svg {
+  color: var(--primary);
+}
+
+.refreshBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.2rem;
+  padding: 0.4rem 0.95rem;
+  border: 1px solid rgba(4, 108, 78, 0.28);
+  border-radius: 11px;
+  background: linear-gradient(165deg, #ffffff 0%, #e8f5ef 100%);
+  color: #023c2c;
+  font-size: 0.78rem;
+  font-weight: 800;
+  font-family: var(--font-iran, iran, Tahoma, sans-serif);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(2, 60, 44, 0.06);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.refreshBtn svg {
+  color: #046c4e;
+  flex-shrink: 0;
+}
+
+.refreshBtn:hover:not(:disabled) {
+  background: linear-gradient(165deg, #10b981 0%, #046c4e 100%);
+  border-color: #046c4e;
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(4, 108, 78, 0.22);
+}
+
+.refreshBtn:hover:not(:disabled) svg {
+  color: #a7f3d0;
+}
+
+.refreshBtn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.dashboardHeaderStats .refreshBtn {
+  min-width: 2.2rem;
+  padding: 0.4rem;
+}
+
+.spinning {
+  animation: spin 0.8s linear infinite;
+}
+
+.spinner {
+  animation: spin 0.8s linear infinite;
+  color: var(--primary);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.dashboardTabs {
+  max-width: var(--container-max);
+  margin: 1.35rem auto 0;
+  padding: 0 var(--container-padding);
+}
+
+.tabsNav {
+  display: flex;
+  gap: 0.4rem;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 1.25rem;
+  overflow-x: auto;
+  padding-bottom: 0.45rem;
+}
+
+.tabNavItem {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-base);
+  white-space: nowrap;
+  position: relative;
+}
+
+.tabNavItem:hover {
+  color: var(--gym-navy, #023c2c);
+  background: var(--bg-card);
+}
+
+.tabNavItemActive {
+  color: var(--gym-navy, #023c2c);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+  border-bottom: 2px solid var(--primary);
+}
+
+.tabNavItem svg {
+  flex-shrink: 0;
+}
+
+.alertBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius-full);
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.tabsContent {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
+}
+
+.dashboardEmbedded .tabsContent {
+  background: transparent;
+}
+
+.loadingState,
+.errorState {
+  min-height: 55vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+.errorState p {
+  margin: 0;
+  color: var(--gym-danger, #dc2626);
+  font-weight: 600;
+}
+
+.errorState button {
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  padding: 0.55rem 1.1rem;
+  cursor: pointer;
+  font-family: var(--font-iran);
+}
+
+.errorState button:hover {
+  background: var(--primary-dark);
+}
+
+.workoutManagerOverlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(8px);
+  z-index: var(--z-modal, 1200);
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+[dir='rtl'] .backLink:hover svg {
+  transform: translateX(3px);
+}
+
+@media (max-width: 768px) {
+  .dashboardHeader {
+    padding: 0.9rem 0;
+  }
+  .dashboardHeaderMain {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .dashboardTitle {
+    font-size: 1.1rem;
+  }
+  .dashboardSubtitle {
+    font-size: 0.75rem;
+  }
+  .tabsNav {
+    gap: 0.25rem;
+  }
+  .tabNavItem {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboardTitle {
+    font-size: 1rem;
+  }
+  .tabNavItem {
+    font-size: 0.68rem;
+    padding: 0.35rem 0.55rem;
+  }
+}

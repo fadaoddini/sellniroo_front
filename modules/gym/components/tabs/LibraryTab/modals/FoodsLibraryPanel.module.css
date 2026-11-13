@@ -1,0 +1,590 @@
+/* modules/gym/components/tabs/LibraryTab/FoodsLibraryPanel.module.css */
+/* هارمونی رنگ = تم سبز زمردی باشگاه */
+
+.panel {
+  --food-ink: #10241c;
+  --food-muted: #4d6a5c;
+  --food-faint: #7a9487;
+  --food-accent: #046c4e;
+  --food-jewel: #10b981;
+  --food-soft: #e8f5ef;
+  --food-soft-2: #eef6f1;
+  --food-border: #d5e5db;
+  --food-card: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-family: var(--font-iran, iran, Tahoma, sans-serif);
+  color: var(--food-ink);
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.stats {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.statItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--food-muted);
+  background: var(--food-soft);
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--food-border);
+}
+
+.statItem strong {
+  color: var(--food-accent);
+  font-weight: 800;
+}
+
+.actions {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--food-soft-2);
+  padding: 0.35rem 0.6rem;
+  border-radius: 9px;
+  border: 1px solid var(--food-border);
+  min-width: 11rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.searchBox:focus-within {
+  border-color: var(--food-accent);
+  box-shadow: 0 0 0 3px rgba(4, 108, 78, 0.12);
+  background: #fff;
+}
+
+.searchBox input {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--food-ink);
+  flex: 1;
+  font-family: inherit;
+  font-size: 0.74rem;
+  min-width: 0;
+}
+
+.searchBox input::placeholder {
+  color: var(--food-faint);
+}
+
+.clearBtn {
+  background: transparent;
+  border: none;
+  color: var(--food-faint);
+  cursor: pointer;
+  padding: 0.1rem;
+  display: flex;
+  border-radius: 0.25rem;
+}
+
+.clearBtn:hover {
+  color: var(--food-ink);
+  background: var(--food-soft);
+}
+
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  background: var(--food-soft-2);
+  border: 1px solid var(--food-border);
+  color: var(--food-muted);
+  padding: 0.35rem 0.65rem;
+  border-radius: 9px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.iconBtn:hover {
+  border-color: rgba(4, 108, 78, 0.4);
+  color: var(--food-ink);
+  background: var(--food-soft);
+}
+
+.iconBtnActive {
+  background: var(--food-accent);
+  border-color: var(--food-accent);
+  color: #fff;
+}
+
+.iconBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.filterBadge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #fff;
+  color: var(--food-accent);
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 0.08rem 0.3rem;
+  border-radius: 999px;
+  min-width: 16px;
+  text-align: center;
+  border: 2px solid var(--food-soft);
+}
+
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  background: linear-gradient(165deg, #10b981, #046c4e);
+  color: #fff;
+  border: none;
+  padding: 0.38rem 0.8rem;
+  border-radius: 9px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(4, 108, 78, 0.18);
+  white-space: nowrap;
+}
+
+.addBtn:hover {
+  filter: brightness(1.05);
+}
+
+.filtersPanel {
+  background: var(--food-card);
+  border: 1px solid var(--food-border);
+  border-radius: 12px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  box-shadow: 0 1px 2px rgba(2, 60, 44, 0.04);
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.filterGroup > label {
+  font-size: 0.68rem;
+  color: var(--food-muted);
+  font-weight: 700;
+}
+
+.chips {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.chip {
+  background: var(--food-soft-2);
+  border: 1px solid var(--food-border);
+  color: var(--food-muted);
+  padding: 0.28rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  border-color: rgba(4, 108, 78, 0.4);
+  color: var(--food-ink);
+}
+
+.chipActive {
+  background: #d1fae5;
+  border-color: #6ee7b7;
+  color: #065f46;
+}
+
+.clearFiltersBtn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: transparent;
+  border: 1px dashed rgba(4, 108, 78, 0.4);
+  color: var(--food-accent);
+  padding: 0.3rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.clearFiltersBtn:hover {
+  background: rgba(4, 108, 78, 0.08);
+}
+
+.categoryTabs {
+  display: flex;
+  gap: 0.3rem;
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+  scrollbar-width: thin;
+}
+
+.categoryTabs::-webkit-scrollbar {
+  height: 4px;
+}
+
+.categoryTabs::-webkit-scrollbar-thumb {
+  background: rgba(4, 108, 78, 0.25);
+  border-radius: 2px;
+}
+
+.categoryTab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--food-soft-2);
+  border: 1px solid var(--food-border);
+  color: var(--food-muted);
+  padding: 0.32rem 0.7rem;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+
+.categoryTab:hover {
+  border-color: rgba(4, 108, 78, 0.4);
+  color: var(--food-ink);
+}
+
+.categoryTabActive {
+  background: linear-gradient(165deg, #10b981, #046c4e);
+  border-color: #046c4e;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(4, 108, 78, 0.18);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.card {
+  background: var(--food-card);
+  border: 1px solid var(--food-border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  box-shadow: 0 1px 2px rgba(2, 60, 44, 0.04);
+}
+
+.card:hover {
+  border-color: rgba(4, 108, 78, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(2, 60, 44, 0.08);
+}
+
+.cardImage {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: var(--food-soft-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.cardImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imagePlaceholder {
+  color: var(--food-faint);
+}
+
+.badge {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  background: rgba(2, 60, 44, 0.72);
+  color: #fff;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.75rem;
+  backdrop-filter: blur(4px);
+}
+
+.cardBody {
+  padding: 0.5rem 0.55rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--food-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardTitleEn {
+  font-size: 0.6rem;
+  color: var(--food-faint);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nutritionRow {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  background: var(--food-soft);
+  padding: 0.35rem 0.45rem;
+  border-radius: 8px;
+  margin-top: 0.1rem;
+  border: 1px solid rgba(4, 108, 78, 0.1);
+}
+
+.nutritionItem {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--food-accent);
+  font-size: 0.68rem;
+}
+
+.nutritionValue {
+  font-weight: 800;
+  color: var(--food-ink);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.nutritionLabel {
+  color: var(--food-faint);
+  font-size: 0.6rem;
+  font-weight: 600;
+}
+
+.macros {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.28rem;
+  margin-top: 0.1rem;
+}
+
+.macro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--food-soft-2);
+  padding: 0.28rem 0.2rem;
+  border-radius: 8px;
+  border: 1px solid var(--food-border);
+}
+
+.macroLabel {
+  font-size: 0.56rem;
+  color: var(--food-faint);
+  font-weight: 600;
+}
+
+.macroValue {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--food-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.baseInfo {
+  font-size: 0.6rem;
+  color: var(--food-faint);
+  text-align: center;
+  margin-top: 0.1rem;
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.2rem;
+  padding: 0.35rem 0.45rem;
+  border-top: 1px solid #e8f0eb;
+  background: rgba(4, 108, 78, 0.04);
+}
+
+.cardBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  background: transparent;
+  border: 1px solid var(--food-border);
+  color: var(--food-muted);
+  padding: 0.3rem;
+  border-radius: 7px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.62rem;
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+
+.cardBtn:hover {
+  border-color: var(--food-accent);
+  color: var(--food-accent);
+  background: rgba(4, 108, 78, 0.08);
+}
+
+.cardBtnDanger:hover {
+  border-color: #dc2626;
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.loadingState,
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  gap: 0.55rem;
+  color: var(--food-faint);
+  text-align: center;
+  border: 1px dashed var(--food-border);
+  border-radius: 12px;
+  background: var(--food-card);
+}
+
+.emptyState h4 {
+  margin: 0;
+  color: var(--food-ink);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.emptyState p {
+  margin: 0;
+  font-size: 0.74rem;
+  color: var(--food-muted);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  color: var(--food-accent);
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.retryBtn {
+  background: linear-gradient(165deg, #10b981, #046c4e);
+  color: #fff;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 9px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.74rem;
+  font-weight: 800;
+  margin-top: 0.35rem;
+}
+
+.retryBtn:hover {
+  filter: brightness(1.05);
+}
+
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .topBar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions {
+    justify-content: space-between;
+  }
+
+  .searchBox {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

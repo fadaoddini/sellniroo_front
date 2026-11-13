@@ -16,8 +16,13 @@
 }
 
 .shellInset {
-  width: auto;
-  max-width: 100%;
+  box-sizing: border-box;
+  width: calc(100% - var(--stn-ml, 0px) - var(--stn-mr, 0px));
+  max-width: var(--home-max-width, 1200px);
+  margin-top: var(--stn-mt, 0);
+  margin-bottom: var(--stn-mb, 0);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hideOnMobile {
@@ -75,7 +80,7 @@
 }
 
 .shellFullBleed .inner {
-  max-width: min(1200px, calc(100% - 0px));
+  max-width: var(--home-max-width, 1200px);
   padding-inline: 0;
 }
 
@@ -213,6 +218,48 @@
   flex-shrink: 0;
 }
 
+.profileChrome {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  max-width: min(280px, 46vw);
+}
+
+.profileChrome :global([class*='breakingNews']) {
+  position: relative !important;
+  top: auto !important;
+  width: auto !important;
+  max-width: 100%;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.profileChrome :global([class*='container']) {
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  gap: 0.45rem;
+  justify-content: flex-end;
+}
+
+.profileChrome :global([class*='newsLeft']),
+.profileChrome :global([class*='newsLeftSpacer']) {
+  display: none !important;
+}
+
+.profileChrome :global([class*='newsRight']) {
+  margin: 0 !important;
+  gap: 0.45rem;
+}
+
 .cta {
   display: inline-flex;
   align-items: center;
@@ -223,7 +270,7 @@
   font-size: calc(var(--stn-fs, 13px) - 1px);
   font-weight: 700;
   font-family: var(--font-iran, inherit);
-  background: var(--stn-cta-bg, #fbc300);
+  background: var(--stn-cta-bg, #F4AE52);
   color: var(--stn-cta-text, #14181f);
   white-space: nowrap;
   transition: transform 0.25s ease, filter 0.25s ease;
@@ -232,6 +279,29 @@
 .cta:hover {
   transform: translateY(-1px);
   filter: brightness(1.05);
+}
+
+.dashboardBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: calc(var(--stn-fs, 13px) - 1px);
+  font-weight: 750;
+  font-family: var(--font-iran, inherit);
+  white-space: nowrap;
+  color: var(--stn-hover, #fff);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  transition: transform 0.25s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.dashboardBtn:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
 }
 
 .burger {
@@ -403,14 +473,35 @@
   border-radius: 14px;
   text-decoration: none;
   font-weight: 800;
-  background: var(--stn-cta-bg, #fbc300);
+  background: var(--stn-cta-bg, #F4AE52);
   color: var(--stn-cta-text, #14181f);
+}
+
+.drawerDashboard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: auto;
+  margin-bottom: 0.55rem;
+  padding: 0.8rem 1rem;
+  border-radius: 14px;
+  text-decoration: none;
+  font-weight: 800;
+  color: var(--stn-hover, #fff);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.drawerDashboard + .drawerCta {
+  margin-top: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .navLink,
   .logoImg,
   .cta,
+  .dashboardBtn,
   .drawer,
   .backdrop {
     transition: none !important;

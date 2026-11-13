@@ -195,12 +195,12 @@
   background: linear-gradient(135deg, var(--primary-dark), var(--primary));
   color: #ffffff;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(251, 195, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(244, 174, 82, 0.3);
 }
 
 .saveBtn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(251, 195, 0, 0.4);
+  box-shadow: 0 6px 20px rgba(244, 174, 82, 0.4);
 }
 
 .saveBtn:disabled,

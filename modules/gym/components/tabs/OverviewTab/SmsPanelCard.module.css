@@ -1,0 +1,212 @@
+/* modules/gym/components/tabs/OverviewTab/SmsPanelCard.module.css */
+
+.smsCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  padding: 0.85rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: 0;
+  transition: all var(--transition-base);
+}
+
+.smsCard:hover {
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.smsCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.smsIconWrapper {
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 11px;
+  background: var(--secondary-glass);
+  color: var(--secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.smsHeaderInfo { flex: 1; display: flex; flex-direction: column; gap: 0.1rem; }
+
+.smsLabel {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-family: var(--font-iran);
+}
+
+.smsTitle {
+  font-size: 1rem;
+  font-weight: 800;
+  font-family: var(--font-edameh);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.chargeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.9rem;
+  background: var(--gradient-primary);
+  color: var(--text-on-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.chargeButton:hover {
+  transform: var(--hover-lift);
+  box-shadow: var(--shadow-md), var(--shadow-glow-primary);
+}
+
+/* ============================================
+   BALANCE
+   ============================================ */
+.smsBalance {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.smsBalanceItem {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.55rem;
+  background: var(--bg-input);
+  border-radius: 10px;
+}
+
+.smsBalanceIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-glass);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.smsBalanceInfo { display: flex; flex-direction: column; gap: 0.1rem; }
+
+.smsBalanceLabel {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-family: var(--font-iran);
+}
+
+.smsBalanceValue {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-family: var(--font-edameh);
+}
+
+.lowCredit { color: #ff4757; }
+
+/* ============================================
+   META
+   ============================================ */
+.smsMeta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
+}
+
+.smsMetaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.smsMetaItem span {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-family: var(--font-iran);
+}
+
+.smsMetaItem strong {
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  font-family: var(--font-edameh);
+  font-weight: 700;
+}
+
+/* ============================================
+   STATS
+   ============================================ */
+.smsStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.smsStatItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+}
+
+.smsStatItem svg { color: var(--text-muted); flex-shrink: 0; }
+
+.smsStatItem > div { display: flex; flex-direction: column; gap: 0.1rem; }
+
+.smsStatLabel {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-family: var(--font-iran);
+}
+
+.smsStatValue {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   LOW CREDIT WARNING
+   ============================================ */
+.lowCreditWarning {
+  padding: 0.6rem 0.8rem;
+  background: rgba(255, 71, 87, 0.1);
+  border: 1px solid rgba(255, 71, 87, 0.2);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  color: #ff4757;
+  font-family: var(--font-iran);
+  text-align: center;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 480px) {
+  .smsBalance { grid-template-columns: 1fr; }
+  .smsStats { grid-template-columns: 1fr; }
+  .smsMeta { grid-template-columns: 1fr; }
+}

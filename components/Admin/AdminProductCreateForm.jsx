@@ -3,14 +3,14 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { Check, ImagePlus, Loader2, Plus, X } from 'lucide-react'
-import ProductFormExtras from '@/app/(site)/shop-panel/ProductFormExtras'
+import ProductFormExtras from '@/components/Shop/owner/ProductFormExtras'
 import {
   buildCategoryIndex,
   filterAssignableCategories,
   isLeafCategory,
-} from '@/app/(site)/shop-panel/categoryTree'
+} from '@/components/Shop/owner/categoryTree'
 import platformShopApi from '@/services/platformShopApi'
-import styles from '@/app/(site)/shop-panel/ShopPanel.module.css'
+import styles from '@/components/Shop/owner/ShopPanel.module.css'
 
 const CKEditorWrapper = dynamic(
   () => import('@/components/newsAdmin/CKEditorWrapper'),
@@ -29,6 +29,8 @@ function emptyExtrasForm() {
     price_one: '',
     discount: '0',
     stock: '',
+    number_min: '1',
+    number_max: '',
     lid: '',
     description: '',
     has_colors: false,
@@ -132,6 +134,16 @@ export default function AdminProductCreateForm({
         }))
         .filter((t) => t.min_quantity >= 1 && t.unit_price >= 0)
 
+      const minOrder = Math.max(1, Number(form.number_min) || 1)
+      const maxOrderRaw = Number(form.number_max)
+      const maxOrder =
+        Number.isFinite(maxOrderRaw) && maxOrderRaw > 0
+          ? Math.max(minOrder, maxOrderRaw)
+          : Math.max(minOrder, stockNum || 1)
+      if (minOrder > stockNum && stockNum > 0) {
+        throw new Error('حداقل سفارش نمی‌تواند بیشتر از موجودی باشد')
+      }
+
       const created = await platformShopApi.createProduct({
         shop: Number(sid),
         title: form.title.trim(),
@@ -141,7 +153,8 @@ export default function AdminProductCreateForm({
         stock: stockNum,
         stock_remaining: stockNum,
         stock_total: stockNum,
-        number_max: Math.max(stockNum, 1),
+        number_min: minOrder,
+        number_max: maxOrder,
         lid: form.lid,
         description: form.description,
         price_tiers: tiersPayload,
@@ -281,9 +294,40 @@ export default function AdminProductCreateForm({
                 />
               </label>
             </div>
+            <div className={styles.priceRow}>
+              <label>
+                حداقل سفارش
+                <input
+                  type="number"
+                  min="1"
+                  inputMode="numeric"
+                  value={form.number_min}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, number_min: e.target.value }))
+                  }
+                />
+              </label>
+              <label>
+                حداکثر سفارش
+                <input
+                  type="number"
+                  min="1"
+                  inputMode="numeric"
+                  placeholder="مثلاً ۱۰"
+                  value={form.number_max}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, number_max: e.target.value }))
+                  }
+                />
+              </label>
+            </div>
+            <p className={styles.fileHint}>
+              مشتری بیشتر از موجودی و بیشتر از «حداکثر سفارش» نمی‌تواند انتخاب
+              کند. برای فروش عمده پله قیمت را هم تعریف کنید.
+            </p>
             <div className={styles.tierBlock}>
               <div className={styles.tierHead}>
-                <span>قیمت تعدادی (اختیاری)</span>
+                <span>قیمت عمده / تعدادی (اختیاری)</span>
                 <button
                   type="button"
                   className={styles.tierAddBtn}

@@ -201,3 +201,60 @@
   color: #9a9184;
   line-height: 1.4;
 }
+
+/* تم تور سیستم کاریابی */
+.tipJob {
+  font-family: var(--font-iran, Tahoma, sans-serif);
+  background: linear-gradient(165deg, #fff 0%, #fef3e2 100%);
+  border-color: rgba(244, 174, 82, 0.45);
+  max-width: min(380px, calc(100vw - 24px));
+}
+
+.tipJob .tipTitle {
+  font-family: var(--font-iran-extra, var(--font-iran-bold, Tahoma, sans-serif));
+  color: #2a1a0e;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.tipJob .tipText,
+.tipJob .tipHint,
+.tipJob .tipHowTo,
+.tipJob .nextBtn,
+.tipJob .skipBtn,
+.tipJob .endBtn,
+.tipJob .stepBadge {
+  font-family: var(--font-iran, Tahoma, sans-serif);
+}
+
+.tipJob .stepBadge {
+  background: linear-gradient(135deg, #fef3e2, #fff);
+  border-color: rgba(212, 98, 26, 0.28);
+  color: #d4621a;
+}
+
+.tipJob .tipHowTo {
+  background: rgba(244, 174, 82, 0.14);
+  border-color: rgba(212, 98, 26, 0.18);
+  color: #2a1a0e;
+}
+
+.tipJob .tipHowTo li::marker {
+  color: #d4621a;
+}
+
+.tipJob .tipHint {
+  color: #d4621a;
+}
+
+.tipJob .nextBtn {
+  background: linear-gradient(135deg, #f4ae52, #d4621a);
+  border-color: transparent;
+  color: #fef3e2;
+}
+
+.tipJob .endBtn {
+  background: rgba(42, 26, 14, 0.06);
+  color: #2a1a0e;
+  border-color: rgba(42, 26, 14, 0.12);
+}

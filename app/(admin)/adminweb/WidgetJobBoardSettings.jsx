@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ChevronDown, ExternalLink, Smartphone } from 'lucide-react'
 import {
   DEFAULT_JOB_BOARD_WIDGET_SETTINGS,
+  JOB_BOARD_FONTS,
   JOB_BOARD_MARGIN_FIELDS,
   JOB_BOARD_SPACE_FIELDS,
   JOB_BOARD_VIEW_MODES,
@@ -312,9 +313,12 @@ export default function WidgetJobBoardSettings({
                 نمای کارت
               </p>
               <Seg
-                options={JOB_BOARD_VIEW_MODES.filter((v) => v.id !== 'grid-3')}
+                options={JOB_BOARD_VIEW_MODES.filter(
+                  (v) => v.id !== 'grid-3' && v.id !== 'image-left'
+                )}
                 value={
-                  settings.default_view === 'grid-3'
+                  settings.default_view === 'grid-3' ||
+                  settings.default_view === 'image-left'
                     ? 'grid-2'
                     : settings.default_view
                 }
@@ -358,16 +362,28 @@ export default function WidgetJobBoardSettings({
             </>
           ) : null}
           {isSearch ? (
-            <label className={styles.wsPxField}>
-              <span>متن placeholder</span>
-              <input
-                type="text"
-                className={styles.wsColorHex}
-                style={{ width: '100%', maxWidth: 'none' }}
-                value={settings.search_placeholder || ''}
-                onChange={(e) => patch('search_placeholder', e.target.value)}
-              />
-            </label>
+            <>
+              <label className={styles.wsPxField}>
+                <span>متن placeholder</span>
+                <input
+                  type="text"
+                  className={styles.wsColorHex}
+                  style={{ width: '100%', maxWidth: 'none' }}
+                  value={settings.search_placeholder || ''}
+                  onChange={(e) => patch('search_placeholder', e.target.value)}
+                />
+              </label>
+              <label className={styles.wsPxField} style={{ marginTop: '0.65rem' }}>
+                <span>متن دکمه جستجو</span>
+                <input
+                  type="text"
+                  className={styles.wsColorHex}
+                  style={{ width: '100%', maxWidth: 'none' }}
+                  value={settings.search_btn_label || ''}
+                  onChange={(e) => patch('search_btn_label', e.target.value)}
+                />
+              </label>
+            </>
           ) : null}
           <label className={styles.wsPxField} style={{ marginTop: '0.75rem' }}>
             <span>حداکثر عرض محتوا</span>
@@ -388,6 +404,51 @@ export default function WidgetJobBoardSettings({
               <em>px</em>
             </span>
           </label>
+        </Accordion>
+      ) : null}
+
+      {isSearch ? (
+        <Accordion
+          id="fonts"
+          title="فونت و اندازه"
+          openId={openId}
+          setOpenId={setOpenId}
+        >
+          <p className={styles.wsMiniLabel || styles.wsLabel}>فونت ورودی و شهر</p>
+          <Seg
+            options={JOB_BOARD_FONTS.map((f) => ({ id: f.id, label: f.label }))}
+            value={settings.font_family}
+            onChange={(v) => patch('font_family', v)}
+            cols={2}
+          />
+          <p
+            className={styles.wsMiniLabel || styles.wsLabel}
+            style={{ marginTop: '0.75rem' }}
+          >
+            فونت دکمه جستجو
+          </p>
+          <Seg
+            options={JOB_BOARD_FONTS.map((f) => ({ id: f.id, label: f.label }))}
+            value={settings.btn_font_family}
+            onChange={(v) => patch('btn_font_family', v)}
+            cols={2}
+          />
+          <div className={styles.wsPxGrid} style={{ marginTop: '0.75rem' }}>
+            <PxField
+              label="اندازه متن"
+              value={settings.font_size}
+              min={11}
+              max={22}
+              onChange={(v) => patch('font_size', v)}
+            />
+            <PxField
+              label="اندازه دکمه"
+              value={settings.btn_font_size}
+              min={11}
+              max={20}
+              onChange={(v) => patch('btn_font_size', v)}
+            />
+          </div>
         </Accordion>
       ) : null}
 

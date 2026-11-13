@@ -12,7 +12,6 @@ import {
   Layers,
   BadgeCheck,
   Sparkles,
-  ArrowUpDown,
   SlidersHorizontal,
   Check,
 } from 'lucide-react'
@@ -20,14 +19,6 @@ import FilterDialog, {
   FilterSelectTrigger,
 } from '../FilterDialog/FilterDialog'
 import styles from './FiltersSection.module.css'
-
-const SORT_OPTIONS = [
-  { id: '-created_at', name: 'جدیدترین' },
-  { id: 'created_at', name: 'قدیمی‌ترین' },
-  { id: '-min_salary', name: 'بیشترین حقوق' },
-  { id: 'min_salary', name: 'کمترین حقوق' },
-  { id: '-views_count', name: 'پربازدیدترین' },
-]
 
 const FiltersSection = ({
   filters,
@@ -41,9 +32,7 @@ const FiltersSection = ({
   onClearAll,
   onVerifiedToggle,
   onFeatureToggle,
-  onSortChange,
   onSearchSubmit,
-  sortBy,
 }) => {
   const [searchValue, setSearchValue] = useState(filters.q || '')
   const [sheetOpen, setSheetOpen] = useState(false)
@@ -215,7 +204,6 @@ const FiltersSection = ({
   const coopName = nameOf(filterOptions?.cooperation_types, filters.cooperationType)
   const jobTitleName = nameOf(filterOptions?.job_titles, filters.jobTitle)
   const categoryName = nameOf(filterOptions?.categories, filters.category)
-  const sortName = nameOf(SORT_OPTIONS, sortBy) || 'جدیدترین'
 
   const filtersBody = (
     <>
@@ -376,27 +364,6 @@ const FiltersSection = ({
           </div>
         </section>
       )}
-
-      <section className={`${styles.block} ${styles.sortBlock}`}>
-        <h4 className={styles.blockTitle}>
-          <ArrowUpDown size={14} />
-          مرتب‌سازی
-        </h4>
-        <FilterSelectTrigger
-          displayValue={sortName}
-          placeholder="مرتب‌سازی"
-          onClick={() =>
-            openPicker({
-              key: 'sort',
-              title: 'مرتب‌سازی',
-              options: SORT_OPTIONS,
-              value: sortBy || '-created_at',
-              showEmpty: false,
-              onPick: (v) => onSortChange(v || '-created_at'),
-            })
-          }
-        />
-      </section>
     </>
   )
 
@@ -460,7 +427,7 @@ const FiltersSection = ({
           onClick={() => setSheetOpen(true)}
         >
           <SlidersHorizontal size={16} />
-          <span>فیلترها و مرتب‌سازی</span>
+          <span>فیلترها</span>
           {sheetFilterCount > 0 && (
             <span className={styles.filterBadge}>{sheetFilterCount}</span>
           )}

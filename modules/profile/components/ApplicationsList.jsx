@@ -132,7 +132,11 @@ const ApplicationsList = () => {
 
             <div className={styles.cardActions}>
               <Link
-                href={`/jobs/${app.job_listing}`}
+                href={
+                  app.job_slug
+                    ? `/jobs/${app.job_slug}`
+                    : `/jobs/${app.job_listing}`
+                }
                 className={styles.viewBtn}
                 target="_blank"
               >

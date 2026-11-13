@@ -14,6 +14,7 @@ import {
   ChevronDown,
   Settings2,
   Layers,
+  Paintbrush,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { fetchSiteModules } from '@/services/siteModules'
@@ -25,8 +26,18 @@ import {
   saveJobSingleLayout,
   saveProductSingleLayout,
   saveShopListLayout,
+  saveShopListLayoutVariant,
+  saveProductSingleLayoutVariant,
+  saveModulePageLayout,
+  syncHomeChromeTheme,
   clearSiteSettingsCache,
 } from '@/services/siteSettings'
+import { getShopLayoutModeDef } from '@/config/shopLayoutModes'
+import {
+  createDefaultModulePageLayout,
+  getModulePageDef,
+  normalizeModulePageLayout,
+} from '@/config/modulePageLayouts'
 import {
   DEFAULT_HOME_LAYOUT,
   DEFAULT_NEWS_SINGLE_LAYOUT,
@@ -62,6 +73,18 @@ import { isNewsWidgetType } from '@/config/newsWidgetSettings'
 import { isCtaWidgetType } from '@/config/ctaWidgetSettings'
 import { isJobBoardWidgetType } from '@/config/jobBoardWidgetSettings'
 import { isShopWidgetType } from '@/config/shopWidgetSettings'
+import { isSoftAppsWidgetType } from '@/config/softappsWidgetSettings'
+import { isRepairsWidgetType } from '@/config/repairsWidgetSettings'
+import { isReboWidgetType } from '@/config/reboWidgetSettings'
+import { isHeroWithMenuWidgetType } from '@/config/heroWithMenuSettings'
+import WidgetHeroWithMenuSettings from './WidgetHeroWithMenuSettings'
+import {
+  isBookingCtaWidgetType,
+  isBookingFormWidgetType,
+  isBookingLookupWidgetType,
+  isBookingServicesWidgetType,
+  isBookingStaffWidgetType,
+} from '@/config/bookingWidgetSettings'
 import WidgetPickerDialog from './WidgetPickerDialog'
 import WidgetNavSettings from './WidgetNavSettings'
 import WidgetSliderSettings from './WidgetSliderSettings'
@@ -71,6 +94,22 @@ import WidgetNewsSettings from './WidgetNewsSettings'
 import WidgetCtaSettings from './WidgetCtaSettings'
 import WidgetJobBoardSettings from './WidgetJobBoardSettings'
 import WidgetShopSettings from './WidgetShopSettings'
+import WidgetShopSearchSettings from './WidgetShopSearchSettings'
+import WidgetSoftAppsSettings from './WidgetSoftAppsSettings'
+import WidgetRepairsSettings from './WidgetRepairsSettings'
+import WidgetBookingSettings from './WidgetBookingSettings'
+import WidgetBookingCtaSettings from './WidgetBookingCtaSettings'
+import WidgetBookingServicesSettings from './WidgetBookingServicesSettings'
+import WidgetBookingStaffSettings from './WidgetBookingStaffSettings'
+import WidgetBookingLookupSettings from './WidgetBookingLookupSettings'
+import WidgetReboSettings from './WidgetReboSettings'
+import WidgetNobatSettings from './WidgetNobatSettings'
+import WidgetSadraPixelSettings from './WidgetSadraPixelSettings'
+import WidgetFeatureCardsSettings from './WidgetFeatureCardsSettings'
+import WidgetVideoArchiveSettings from './WidgetVideoArchiveSettings'
+import { isFeatureCardsWidgetType } from '@/config/featureCardsWidgetSettings'
+import { isVideoArchiveWidgetType } from '@/config/videoArchiveWidgetSettings'
+import { isNobatWidgetType } from '@/config/nobatWidgetSettings'
 import {
   LayoutDndProvider,
   DroppableColumn,
@@ -140,18 +179,106 @@ const LAYOUT_MODE_META = {
   },
 }
 
+function resolveLayoutModeMeta(layoutMode, moduleMap = {}) {
+  const mode = String(layoutMode || 'home')
+  if (mode.startsWith('module:')) {
+    const pageKey = mode.slice('module:'.length)
+    const def = getModulePageDef(pageKey)
+    return {
+      empty: createDefaultModulePageLayout(pageKey),
+      normalize: (raw) => normalizeModulePageLayout(raw, pageKey),
+      settingsKey: 'module_page_layouts',
+      getRaw: (settings) => settings?.module_page_layouts?.[pageKey],
+      save: (layout, headers) => saveModulePageLayout(pageKey, layout, headers),
+      event: def?.event || `module-page-layout-changed:${pageKey}`,
+      title: def ? `طراحی ${def.label}` : `طراحی صفحه ${pageKey}`,
+      hint: def
+        ? `چیدمان ${def.path} از اینجاست. ویجت «محتوای کامل» را بگذارید و اطرافش منو، CTA و ویجت‌های دیگر را بچینید.`
+        : 'چیدمان صفحه داخلی ماژول',
+      savedMsg: def
+        ? `چیدمان ${def.label} ذخیره شد`
+        : 'چیدمان صفحه داخلی ذخیره شد',
+      modulePageKey: pageKey,
+      contentWidget: def?.contentWidget || null,
+    }
+  }
+  if (mode === 'shop_list' || mode.startsWith('shop_list:')) {
+    const variant =
+      mode === 'shop_list' ? 'default' : mode.slice('shop_list:'.length) || 'default'
+    const def = getShopLayoutModeDef(variant)
+    const isDefault = variant === 'default'
+    return {
+      empty: DEFAULT_SHOP_LIST_LAYOUT,
+      normalize: normalizeShopListLayout,
+      settingsKey: isDefault ? 'shop_list_layout' : 'shop_list_layouts',
+      getRaw: (settings) => {
+        const fromMap = settings?.shop_list_layouts?.[variant]
+        if (fromMap && typeof fromMap === 'object') return fromMap
+        if (isDefault) return settings?.shop_list_layout
+        return null
+      },
+      save: (layout, headers) =>
+        saveShopListLayoutVariant(variant, layout, headers, {
+          alsoPublish: false,
+          moduleMap,
+        }),
+      event: 'shop-list-layout-changed',
+      title: `طراحی فروشگاه · ${def.label}`,
+      hint: isDefault
+        ? 'چیدمان /shop برای حالت پیش‌فرض فروشگاه. ویجت «محتوای کامل لیست فروشگاه» را بگذارید.'
+        : `چیدمان /shop مخصوص «${def.label}». با فعال بودن این سیستم، همین چیدمان روی /shop دیده می‌شود. منو و CTA را مطابق همان سیستم تنظیم کنید.`,
+      savedMsg: `چیدمان فروشگاه «${def.label}» ذخیره شد`,
+      shopLayoutVariant: variant,
+      contentWidget: 'shop_page',
+    }
+  }
+  if (mode === 'product_single' || mode.startsWith('product_single:')) {
+    const variant =
+      mode === 'product_single'
+        ? 'default'
+        : mode.slice('product_single:'.length) || 'default'
+    const def = getShopLayoutModeDef(variant)
+    const isDefault = variant === 'default'
+    return {
+      empty: DEFAULT_PRODUCT_SINGLE_LAYOUT,
+      normalize: normalizeProductSingleLayout,
+      settingsKey: isDefault ? 'product_single_layout' : 'product_single_layouts',
+      getRaw: (settings) => {
+        const fromMap = settings?.product_single_layouts?.[variant]
+        if (fromMap && typeof fromMap === 'object') return fromMap
+        if (isDefault) return settings?.product_single_layout
+        return null
+      },
+      save: (layout, headers) =>
+        saveProductSingleLayoutVariant(variant, layout, headers, {
+          alsoPublish: false,
+          moduleMap,
+        }),
+      event: 'product-single-layout-changed',
+      title: `طراحی سینگل محصول · ${def.label}`,
+      hint: isDefault
+        ? 'چیدمان /shop/products برای حالت پیش‌فرض. ویجت «محتوای کامل سینگل محصول» را بگذارید.'
+        : `چیدمان سینگل محصول مخصوص «${def.label}». با فعال بودن این سیستم روی /shop/products دیده می‌شود.`,
+      savedMsg: `چیدمان سینگل «${def.label}» ذخیره شد`,
+      shopLayoutVariant: variant,
+      contentWidget: 'product_article',
+    }
+  }
+  return LAYOUT_MODE_META[mode] || LAYOUT_MODE_META.home
+}
+
 /**
  * بیلدر صفحه: بوم | تنظیمات
- * layoutMode: 'home' | 'news_single' | 'news_list' | 'job_single' | 'product_single' | 'shop_list'
+ * layoutMode: 'home' | 'news_single' | … | 'module:repairs' | 'module:apps' | …
  */
 export default function SiteSkeletonStudio({
   moduleMap: moduleMapProp = {},
   standalone = false,
   layoutMode = 'home',
 }) {
-  const modeMeta = LAYOUT_MODE_META[layoutMode] || LAYOUT_MODE_META.home
   const { getAuthHeaders } = useAuth()
   const [moduleMap, setModuleMap] = useState(moduleMapProp)
+  const modeMeta = resolveLayoutModeMeta(layoutMode, moduleMap)
   const emptyLayout = modeMeta.empty
   const [layout, setLayout] = useState(emptyLayout)
   const [savedLayout, setSavedLayout] = useState(emptyLayout)
@@ -163,11 +290,13 @@ export default function SiteSkeletonStudio({
   const [showTemplates, setShowTemplates] = useState(false)
   const [msg, setMsg] = useState(null)
   const [err, setErr] = useState(null)
+  const [syncingChrome, setSyncingChrome] = useState(false)
   const layoutRef = useRef(layout)
   const savingRef = useRef(false)
   const layoutEvent = modeMeta.event
   const studioTitle = modeMeta.title
   const studioHint = modeMeta.hint
+  const isHomeStudio = String(layoutMode || 'home') === 'home'
 
   useEffect(() => {
     layoutRef.current = layout
@@ -192,7 +321,10 @@ export default function SiteSkeletonStudio({
         fetchSiteSettings({ force: true }),
         fetchSiteModules({ force: true }).catch(() => ({ map: {} })),
       ])
-      const raw = settings?.[modeMeta.settingsKey]
+      const raw =
+        typeof modeMeta.getRaw === 'function'
+          ? modeMeta.getRaw(settings)
+          : settings?.[modeMeta.settingsKey]
       const L = normalizeLayout(raw)
       setLayout(L)
       setSavedLayout(L)
@@ -205,7 +337,7 @@ export default function SiteSkeletonStudio({
     } finally {
       setLoading(false)
     }
-  }, [selectedSectionId, modeMeta.settingsKey, normalizeLayout])
+  }, [selectedSectionId, modeMeta, normalizeLayout])
 
   useEffect(() => {
     refresh()
@@ -324,6 +456,31 @@ export default function SiteSkeletonStudio({
     }
   }
 
+  const syncChromeToAllPages = async () => {
+    if (!isHomeStudio) return
+    setSyncingChrome(true)
+    setErr(null)
+    setMsg(null)
+    try {
+      // اول چیدمان خانه را اگر dirty است ذخیره کن
+      if (dirty) {
+        await persistLayout(layoutRef.current, 'چیدمان صفحه اصلی ذخیره شد')
+      }
+      const result = await syncHomeChromeTheme(getAuthHeaders())
+      const n = result?.summary?.targets?.length || 0
+      const types = (result?.chrome?.types || []).join('، ')
+      setMsg(
+        `هدر و رنگ‌ها روی ${n.toLocaleString('fa-IR')} چیدمان اعمال شد` +
+          (types ? ` (${types})` : '') +
+          '. صفحات داخلی، پروفایل، فروشگاه، سینگل محصول، سینگل آگهی و اخبار هم‌سبک شدند.',
+      )
+    } catch (e) {
+      setErr(e?.message || 'همگام‌سازی هدر ناموفق بود')
+    } finally {
+      setSyncingChrome(false)
+    }
+  }
+
   const onPickWidget = (type) => {
     if (!picker) return
     updateRow(picker.sectionId, (sec) =>
@@ -379,11 +536,27 @@ export default function SiteSkeletonStudio({
           <p>{studioHint}</p>
         </div>
         <div className={styles.studioRightActions}>
+          {isHomeStudio ? (
+            <button
+              type="button"
+              className={styles.extBtnGhost}
+              onClick={syncChromeToAllPages}
+              disabled={loading || saving || syncingChrome}
+              title="هدر و ترکیب رنگی صفحه اصلی را به صفحات داخلی، پروفایل، فروشگاه، سینگل محصول، سینگل آگهی و اخبار منتقل می‌کند"
+            >
+              {syncingChrome ? (
+                <RefreshCw size={14} className={styles.spin} />
+              ) : (
+                <Paintbrush size={14} />
+              )}
+              اعمال هدر و رنگ به همه
+            </button>
+          ) : null}
           <button
             type="button"
             className={styles.extBtnGhost}
             onClick={refresh}
-            disabled={loading || saving}
+            disabled={loading || saving || syncingChrome}
           >
             <RefreshCw size={14} className={loading ? styles.spin : undefined} />
           </button>
@@ -391,7 +564,7 @@ export default function SiteSkeletonStudio({
             type="button"
             className={styles.primaryBtn}
             onClick={saveAll}
-            disabled={loading || saving || !dirty}
+            disabled={loading || saving || syncingChrome || !dirty}
           >
             {saving ? <RefreshCw size={14} className={styles.spin} /> : <Save size={14} />}
             ذخیره
@@ -704,8 +877,224 @@ export default function SiteSkeletonStudio({
                     )
                   }}
                 />
+              ) : selectedWidgetInfo.widget.type === 'shop_search_bar' ? (
+                <WidgetShopSearchSettings
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
               ) : isShopWidgetType(selectedWidgetInfo.widget.type) ? (
                 <WidgetShopSettings
+                  type={selectedWidgetInfo.widget.type}
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : isSoftAppsWidgetType(selectedWidgetInfo.widget.type) ? (
+                <WidgetSoftAppsSettings
+                  type={selectedWidgetInfo.widget.type}
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : isRepairsWidgetType(selectedWidgetInfo.widget.type) ? (
+                <WidgetRepairsSettings
+                  type={selectedWidgetInfo.widget.type}
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : isBookingFormWidgetType(selectedWidgetInfo.widget.type) ? (
+                <WidgetBookingSettings
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : isBookingCtaWidgetType(selectedWidgetInfo.widget.type) ? (
+                <WidgetBookingCtaSettings
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : isBookingServicesWidgetType(selectedWidgetInfo.widget.type) ? (
+                <WidgetBookingServicesSettings
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : isBookingStaffWidgetType(selectedWidgetInfo.widget.type) ? (
+                <WidgetBookingStaffSettings
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : isBookingLookupWidgetType(selectedWidgetInfo.widget.type) ? (
+                <WidgetBookingLookupSettings
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : isHeroWithMenuWidgetType(selectedWidgetInfo.widget.type) ? (
+                <WidgetHeroWithMenuSettings
+                  type={selectedWidgetInfo.widget.type}
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : isReboWidgetType(selectedWidgetInfo.widget.type) ? (
+                <WidgetReboSettings
+                  type={selectedWidgetInfo.widget.type}
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : isNobatWidgetType(selectedWidgetInfo.widget.type) ? (
+                <WidgetNobatSettings
+                  type={selectedWidgetInfo.widget.type}
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : selectedWidgetInfo.widget.type === 'sadra_pixel_title' ? (
+                <WidgetSadraPixelSettings
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : isFeatureCardsWidgetType(selectedWidgetInfo.widget.type) ? (
+                <WidgetFeatureCardsSettings
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : isVideoArchiveWidgetType(selectedWidgetInfo.widget.type) ? (
+                <WidgetVideoArchiveSettings
                   type={selectedWidgetInfo.widget.type}
                   settings={selectedWidgetInfo.widget.settings}
                   onChange={(patch) => {

@@ -570,7 +570,7 @@ export default function JobsManagePage() {
                   </button>
                   {item.id && item.status === 'approved' && (
                     <Link
-                      href={`/jobs/${item.id}`}
+                      href={item.slug ? `/jobs/${item.slug}` : `/jobs/${item.id}`}
                       className={styles.iconBtn}
                       target="_blank"
                       title={t.openPublic}
@@ -687,7 +687,11 @@ export default function JobsManagePage() {
                 </button>
               )}
               {drawer.id && drawer.status === 'approved' && (
-                <Link href={`/jobs/${drawer.id}`} className={styles.ghostBtn} target="_blank">
+                <Link
+                  href={drawer.slug ? `/jobs/${drawer.slug}` : `/jobs/${drawer.id}`}
+                  className={styles.ghostBtn}
+                  target="_blank"
+                >
                   <ExternalLink size={14} /> {t.openPublic}
                 </Link>
               )}

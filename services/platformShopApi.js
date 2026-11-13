@@ -212,6 +212,17 @@ const platformShopApi = {
     }).then(parse)
   },
 
+  reorderCategories({ parent = null, orderedIds = [] } = {}) {
+    return fetch(Config.endpoints.shop.platformCategoryReorder(), {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({
+        parent,
+        ordered_ids: orderedIds,
+      }),
+    }).then(parse)
+  },
+
   deleteCategory(id, { cascade = false } = {}) {
     const url = `${Config.endpoints.shop.platformCategoryDetail(id)}${
       cascade ? '?cascade=1' : ''

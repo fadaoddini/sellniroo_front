@@ -20,6 +20,7 @@ import {
 } from '@/services/siteModules'
 import TopicPackPanel from './TopicPackPanel'
 import JobBoardDataPanel from './JobBoardDataPanel'
+import JobThemeTwoPackPanel from './JobThemeTwoPackPanel'
 import styles from './AdminWeb.module.css'
 
 function mergeCatalogWithApi(list) {
@@ -160,7 +161,8 @@ function SoloModuleRow({ mod, busy, onToggle, selected, onSelect }) {
 
 /** کارت کوچک زیرمجموعه */
 function ChildCard({ mod, busy, parentOff, onToggle, selected, onSelect }) {
-  const on = !!(mod.is_active)
+  // وضعیت واقعی برای کاربر = مؤثر (والد خاموش ⇒ خاموش دیده شود)
+  const on = !parentOff && !!(mod.effective_active ?? mod.is_active)
   const exclusive = EXCLUSIVE_SHOP_MODE_KEYS.includes(mod.key)
   const meta = getCatalogMeta(mod.key)
   const shared = meta?.shopRole === 'shared'
@@ -265,7 +267,12 @@ function ModuleGroupBlock({ root, busyKey, onToggle, selectedKey, onSelect }) {
         </div>
       )}
 
-      {isJobBoard ? <JobBoardDataPanel embedded active={on} /> : null}
+      {isJobBoard ? (
+        <>
+          <JobThemeTwoPackPanel embedded />
+          <JobBoardDataPanel embedded active={on} />
+        </>
+      ) : null}
     </div>
   )
 }
@@ -302,11 +309,14 @@ export default function AdminWebModules({
 
   const load = useCallback(async () => {
     setLoading(true)
-    setError('')
     try {
       clearSiteModulesCache()
-      const { list } = await fetchSiteModules({ force: true })
+      const { list, error: fetchError } = await fetchSiteModules({
+        force: true,
+        soft: false,
+      })
       applyList(list)
+      setError(fetchError || '')
     } catch (err) {
       setError(err?.message || 'خطا در دریافت ماژول‌ها')
       applyList([])
@@ -335,16 +345,45 @@ export default function AdminWebModules({
     }
     setBusyKey(mod.key)
     setError('')
+    // به‌روزرسانی خوش‌بینانه تا سوییچ بلافاصله واکنش نشان دهد
+    setModules((prev) =>
+      prev.map((m) => {
+        if (m.key !== mod.key) {
+          // اگر فرزند را روشن می‌کنیم، والد را هم در UI روشن نشان بده
+          if (
+            turningOn &&
+            mod.parent_key &&
+            m.key === mod.parent_key
+          ) {
+            return { ...m, is_active: true, effective_active: true }
+          }
+          return m
+        }
+        return {
+          ...m,
+          is_active: turningOn,
+          effective_active: turningOn,
+        }
+      }),
+    )
     try {
-      const result = await toggleSiteModule(mod.key, getAuthHeaders())
+      const headers = getAuthHeaders()
+      const result = await toggleSiteModule(mod.key, headers)
       if (Array.isArray(result?.list) && result.list.length) {
         applyList(result.list, result.map)
       } else {
         await load()
       }
     } catch (err) {
-      setError(err?.message || 'تغییر وضعیت ناموفق بود')
-      await load()
+      const msg = err?.message || 'تغییر وضعیت ناموفق بود'
+      setError(msg)
+      try {
+        clearSiteModulesCache()
+        const { list } = await fetchSiteModules({ force: true, soft: false })
+        applyList(list)
+      } catch {
+        /* وضعیت قبلی خوش‌بینانه را با لیست خالی عوض نکن */
+      }
     } finally {
       setBusyKey(null)
     }

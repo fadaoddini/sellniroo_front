@@ -1,0 +1,291 @@
+.wrap {
+  margin: 0;
+  padding: 0;
+}
+
+.sectionHead {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.sectionHead h2 {
+  margin: 0 0 0.55rem;
+  font-size: clamp(1.45rem, 3.2vw, 1.95rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: #ecfdf5;
+}
+
+.sectionHead p {
+  margin: 0 auto;
+  max-width: 36rem;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: rgba(236, 253, 245, 0.62);
+}
+
+.grid {
+  display: grid;
+  gap: 1.15rem;
+}
+
+.card {
+  padding: 1.35rem 1.25rem 1.15rem;
+  border-radius: 22px;
+  border: 1px solid transparent;
+  overflow: hidden;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* روشن */
+.grid > .card:nth-child(odd) {
+  background: #fff;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
+  color: #0b1f18;
+}
+
+.grid > .card:nth-child(odd) .head svg {
+  color: #0f766e;
+  background: rgba(16, 149, 111, 0.12);
+}
+
+.grid > .card:nth-child(odd) .head h3 {
+  color: #0b1f18;
+}
+
+.grid > .card:nth-child(odd) .head p {
+  color: #5b6f66;
+}
+
+.grid > .card:nth-child(odd) .table th {
+  color: #0f766e;
+  background: rgba(15, 118, 110, 0.08);
+  border-bottom-color: rgba(15, 61, 46, 0.1);
+}
+
+.grid > .card:nth-child(odd) .table td {
+  color: #1a2e28;
+  border-bottom-color: rgba(15, 61, 46, 0.07);
+}
+
+.grid > .card:nth-child(odd) .table tbody tr:nth-child(even) td {
+  background: rgba(15, 118, 110, 0.03);
+}
+
+.grid > .card:nth-child(odd) .reboCell {
+  color: #0f766e;
+}
+
+.grid > .card:nth-child(odd) .rowOn {
+  background: rgba(16, 149, 111, 0.12);
+}
+
+.grid > .card:nth-child(odd) .rowHighlight {
+  background: rgba(16, 149, 111, 0.16);
+  box-shadow: inset 3px 0 0 #0f766e;
+}
+
+.grid > .card:nth-child(odd) .rowHighlight td {
+  color: #0b1f18;
+}
+
+.grid > .card:nth-child(odd) .rowHighlight td:first-child,
+.grid > .card:nth-child(odd) .rowHighlight td:nth-child(2),
+.grid > .card:nth-child(odd) .rowHighlight td:nth-child(3) {
+  color: #047857;
+}
+
+.grid > .card:nth-child(odd) .badge {
+  color: #065f46;
+  background: rgba(16, 185, 129, 0.14);
+}
+
+/* تیره */
+.grid > .card:nth-child(even) {
+  color: #ecfdf5;
+  background:
+    radial-gradient(ellipse 60% 50% at 100% 0%, rgba(16, 149, 111, 0.18), transparent 55%),
+    linear-gradient(160deg, #0a1a15 0%, #0f2920 100%);
+  border-color: rgba(110, 231, 183, 0.2);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+}
+
+.grid > .card:nth-child(even) .head svg {
+  color: #6ee7b7;
+  background: rgba(16, 149, 111, 0.22);
+}
+
+.grid > .card:nth-child(even) .head h3 {
+  color: #fff;
+}
+
+.grid > .card:nth-child(even) .head p {
+  color: rgba(236, 253, 245, 0.58);
+}
+
+.grid > .card:nth-child(even) .table th {
+  color: #a7f3d0;
+  background: rgba(16, 149, 111, 0.16);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.grid > .card:nth-child(even) .table td {
+  color: rgba(236, 253, 245, 0.82);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.grid > .card:nth-child(even) .table tbody tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.grid > .card:nth-child(even) .reboCell {
+  color: #6ee7b7;
+}
+
+.grid > .card:nth-child(even) .rowOn {
+  background: rgba(52, 211, 153, 0.14);
+}
+
+.grid > .card:nth-child(even) .rowOn td:first-child {
+  color: #6ee7b7;
+}
+
+.grid > .card:nth-child(even) .rowHighlight {
+  background: rgba(52, 211, 153, 0.18);
+  box-shadow: inset 3px 0 0 #6ee7b7;
+}
+
+.grid > .card:nth-child(even) .rowHighlight td {
+  color: #ecfdf5;
+}
+
+.grid > .card:nth-child(even) .rowHighlight td:first-child,
+.grid > .card:nth-child(even) .rowHighlight td:nth-child(2),
+.grid > .card:nth-child(even) .rowHighlight td:nth-child(3) {
+  color: #6ee7b7;
+}
+
+.grid > .card:nth-child(even) .badge {
+  color: #a7f3d0;
+  background: rgba(52, 211, 153, 0.2);
+}
+
+.head {
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+  margin-bottom: 1.05rem;
+}
+
+.head svg {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  box-sizing: border-box;
+  margin-top: 0;
+  border-radius: 12px;
+}
+
+.head h3 {
+  margin: 0 0 0.3rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.head p {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+.scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 14px;
+}
+
+.table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.8rem;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem 0.7rem;
+  text-align: right;
+  border-bottom: 1px solid transparent;
+  vertical-align: top;
+}
+
+.table th {
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.table th:first-child {
+  border-radius: 12px 0 0 0;
+}
+
+.table th:last-child {
+  border-radius: 0 12px 0 0;
+}
+
+.table td {
+  line-height: 1.6;
+}
+
+.rowOn td {
+  font-weight: 650;
+}
+
+.rowOn td:first-child {
+  font-weight: 800;
+}
+
+.rowHighlight td {
+  font-weight: 750;
+}
+
+.rowHighlight td:first-child {
+  font-weight: 800;
+}
+
+.rowHighlight td:nth-child(2),
+.rowHighlight td:nth-child(3) {
+  font-weight: 800;
+  font-size: 0.92rem;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.reboCell {
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .table {
+    min-width: 460px;
+  }
+
+  .card {
+    padding: 1.15rem 1rem 1rem;
+    border-radius: 18px;
+  }
+}

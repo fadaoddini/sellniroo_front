@@ -1,5 +1,7 @@
 /** اخبار فیک برای پیش‌نمایش ویجت‌ها وقتی API خالی/کم است */
 
+import { slugifyNewsTitle } from '@/utils/newsSlug'
+
 const DEMO_TITLES = [
   'افتتاح فاز جدید شهرک صنعتی با حضور مقامات استانی',
   'افزایش صادرات محصولات کشاورزی در سه ماه اخیر',
@@ -35,10 +37,12 @@ export function getDemoNews(count = 20) {
   const n = Math.max(1, Math.min(20, count))
   return Array.from({ length: n }, (_, i) => {
     const id = `demo-news-${i + 1}`
+    const title = DEMO_TITLES[i % DEMO_TITLES.length]
+    const slug = slugifyNewsTitle(title) || id
     return {
       id,
-      slug: id,
-      title: DEMO_TITLES[i % DEMO_TITLES.length],
+      slug: `${slug}-${i + 1}`,
+      title,
       lid: DEMO_LEADS[i % DEMO_LEADS.length],
       excerpt: DEMO_LEADS[i % DEMO_LEADS.length],
       writer_name: ['سارا محمدی', 'علی رضایی', 'مریم احمدی', 'حسین کریمی'][i % 4],

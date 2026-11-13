@@ -36,13 +36,36 @@ const schoolService = {
 
   listTeachers: (params) => wrap(() => axios.get(Config.endpoints.school.teachers(params), { headers: authHeaders() })),
   createTeacher: (payload) => wrap(() => axios.post(Config.endpoints.school.teachers(), payload, { headers: authHeaders() })),
-  updateTeacher: (id, payload) => wrap(() => axios.patch(Config.endpoints.school.teacher(id), payload, { headers: authHeaders() })),
+  getTeacher: (id) => wrap(() => axios.get(Config.endpoints.school.teacher(id), { headers: authHeaders() })),
+  updateTeacher: (id, payload) => {
+    const isFd = typeof FormData !== 'undefined' && payload instanceof FormData
+    return wrap(() => axios.patch(
+      Config.endpoints.school.teacher(id),
+      payload,
+      { headers: authHeaders(isFd) },
+    ))
+  },
   deleteTeacher: (id) => wrap(() => axios.delete(Config.endpoints.school.teacher(id), { headers: authHeaders() })),
+  getMyTeacherProfile: (params = {}) => wrap(() => axios.get(
+    Config.endpoints.school.teacherMe(params),
+    { headers: authHeaders() },
+  )),
+  updateMyTeacherProfile: (payload, params = {}) => {
+    const isFd = typeof FormData !== 'undefined' && payload instanceof FormData
+    return wrap(() => axios.patch(
+      Config.endpoints.school.teacherMe(params),
+      payload,
+      { headers: authHeaders(isFd) },
+    ))
+  },
+  getPublicTeacherProfile: (slug) => wrap(() => axios.get(Config.endpoints.school.teacherPublic(slug))),
 
   listStudents: (params) => wrap(() => axios.get(Config.endpoints.school.students(params), { headers: authHeaders() })),
+  lookupStudents: (params) => wrap(() => axios.get(Config.endpoints.school.studentsLookup(params), { headers: authHeaders() })),
   createStudent: (payload) => wrap(() => axios.post(Config.endpoints.school.students(), payload, { headers: authHeaders() })),
   updateStudent: (id, payload) => wrap(() => axios.patch(Config.endpoints.school.student(id), payload, { headers: authHeaders() })),
   getStudent: (id) => wrap(() => axios.get(Config.endpoints.school.student(id), { headers: authHeaders() })),
+  studentSnapshot: (id, params = {}) => wrap(() => axios.get(Config.endpoints.school.studentSnapshot(id, params), { headers: authHeaders() })),
 
   listSubjects: (params) => wrap(() => axios.get(Config.endpoints.school.subjects(params), { headers: authHeaders() })),
   createSubject: (payload) => wrap(() => axios.post(Config.endpoints.school.subjects(), payload, { headers: authHeaders() })),
@@ -77,6 +100,7 @@ const schoolService = {
   },
   listSubmissions: (params) => wrap(() => axios.get(Config.endpoints.school.submissions(params), { headers: authHeaders() })),
   reviewSubmission: (id, payload) => wrap(() => axios.post(Config.endpoints.school.submissionReview(id), payload, { headers: authHeaders() })),
+  archiveSubmission: (id, payload = { archived: true }) => wrap(() => axios.post(Config.endpoints.school.submissionArchive(id), payload, { headers: authHeaders() })),
 
   listQuizzes: (params) => wrap(() => axios.get(Config.endpoints.school.quizzes(params), { headers: authHeaders() })),
   createQuiz: (payload) => wrap(() => axios.post(Config.endpoints.school.quizzes(), payload, { headers: authHeaders() })),
@@ -133,9 +157,113 @@ const schoolService = {
     { teacher_feedback, ...extra },
     { headers: authHeaders() },
   )),
+  archiveExamPaper: (id, payload = { archived: true }) => wrap(() => axios.post(
+    Config.endpoints.school.examPaperArchive(id),
+    payload,
+    { headers: authHeaders() },
+  )),
 
   teacherDashboard: (params = {}) => wrap(() => axios.get(Config.endpoints.school.teacherDashboard(params), { headers: authHeaders() })),
   studentDashboard: (params = {}) => wrap(() => axios.get(Config.endpoints.school.studentDashboard(params), { headers: authHeaders() })),
+
+  attendanceToday: (params = {}) => wrap(() => axios.get(Config.endpoints.school.attendanceToday(params), { headers: authHeaders() })),
+  attendanceSessions: (params = {}) => wrap(() => axios.get(Config.endpoints.school.attendanceSessions(params), { headers: authHeaders() })),
+  createAttendanceSession: (payload, params = {}) => wrap(() => axios.post(
+    Config.endpoints.school.attendanceSessions(params),
+    payload,
+    { headers: authHeaders() },
+  )),
+  getAttendanceSession: (id, params = {}) => wrap(() => axios.get(
+    Config.endpoints.school.attendanceSession(id),
+    { headers: authHeaders(), params },
+  )),
+  updateAttendanceSession: (id, payload, params = {}) => wrap(() => axios.patch(
+    Config.endpoints.school.attendanceSession(id),
+    payload,
+    { headers: authHeaders(), params },
+  )),
+  deleteAttendanceSession: (id, params = {}) => wrap(() => axios.delete(
+    Config.endpoints.school.attendanceSession(id),
+    { headers: authHeaders(), params },
+  )),
+  markAttendance: (id, payload, params = {}) => wrap(() => axios.post(
+    Config.endpoints.school.attendanceMark(id),
+    payload,
+    { headers: authHeaders(), params },
+  )),
+  attendanceStats: (params = {}) => wrap(() => axios.get(Config.endpoints.school.attendanceStats(params), { headers: authHeaders() })),
+  attendanceStudent: (params = {}) => wrap(() => axios.get(Config.endpoints.school.attendanceStudent(params), { headers: authHeaders() })),
+  attendanceOverview: (params = {}) => wrap(() => axios.get(Config.endpoints.school.attendanceOverview(params), { headers: authHeaders() })),
+
+  classes: (params = {}) => wrap(() => axios.get(Config.endpoints.school.classes(params), { headers: authHeaders() })),
+  createClass: (payload) => wrap(() => axios.post(Config.endpoints.school.classes(), payload, { headers: authHeaders() })),
+  getClass: (id) => wrap(() => axios.get(Config.endpoints.school.schoolClass(id), { headers: authHeaders() })),
+  updateClass: (id, payload) => wrap(() => axios.patch(Config.endpoints.school.schoolClass(id), payload, { headers: authHeaders() })),
+  deleteClass: (id) => wrap(() => axios.delete(Config.endpoints.school.schoolClass(id), { headers: authHeaders() })),
+  setClassStudents: (id, student_ids) => wrap(() => axios.post(
+    Config.endpoints.school.classStudents(id),
+    { student_ids },
+    { headers: authHeaders() },
+  )),
+  classTimetable: (id) => wrap(() => axios.get(Config.endpoints.school.classTimetable(id), { headers: authHeaders() })),
+  saveClassTimetable: (id, slots) => wrap(() => axios.put(
+    Config.endpoints.school.classTimetable(id),
+    { slots },
+    { headers: authHeaders() },
+  )),
+  periods: () => wrap(() => axios.get(Config.endpoints.school.periods(), { headers: authHeaders() })),
+  createPeriod: (payload) => wrap(() => axios.post(Config.endpoints.school.periods(), payload, { headers: authHeaders() })),
+  updatePeriod: (id, payload) => wrap(() => axios.patch(Config.endpoints.school.period(id), payload, { headers: authHeaders() })),
+  deletePeriod: (id) => wrap(() => axios.delete(Config.endpoints.school.period(id), { headers: authHeaders() })),
+  savePeriods: (periods) => wrap(() => axios.put(
+    Config.endpoints.school.periods(),
+    { periods },
+    { headers: authHeaders() },
+  )),
+  myTimetable: (params = {}) => wrap(() => axios.get(Config.endpoints.school.myTimetable(params), { headers: authHeaders() })),
+
+  listCounselors: (params) => wrap(() => axios.get(Config.endpoints.school.counselors(params), { headers: authHeaders() })),
+  createCounselor: (payload) => wrap(() => axios.post(Config.endpoints.school.counselors(), payload, { headers: authHeaders() })),
+  getCounselor: (id) => wrap(() => axios.get(Config.endpoints.school.counselor(id), { headers: authHeaders() })),
+  updateCounselor: (id, payload) => {
+    const isFd = typeof FormData !== 'undefined' && payload instanceof FormData
+    return wrap(() => axios.patch(Config.endpoints.school.counselor(id), payload, { headers: authHeaders(isFd) }))
+  },
+  getMyCounselorProfile: (params = {}) => wrap(() => axios.get(Config.endpoints.school.counselorMe(params), { headers: authHeaders() })),
+  updateMyCounselorProfile: (payload, params = {}) => {
+    const isFd = typeof FormData !== 'undefined' && payload instanceof FormData
+    return wrap(() => axios.patch(Config.endpoints.school.counselorMe(params), payload, { headers: authHeaders(isFd) }))
+  },
+  getPublicCounselorProfile: (slug) => wrap(() => axios.get(Config.endpoints.school.counselorPublic(slug))),
+  counselorDashboard: (params = {}) => wrap(() => axios.get(Config.endpoints.school.counselorDashboard(params), { headers: authHeaders() })),
+  listCounselingTests: (params) => wrap(() => axios.get(Config.endpoints.school.counselingTests(params), { headers: authHeaders() })),
+  getCounselingTest: (id) => wrap(() => axios.get(Config.endpoints.school.counselingTest(id), { headers: authHeaders() })),
+  createCounselingTest: (payload) => wrap(() => axios.post(Config.endpoints.school.counselingTests(), payload, { headers: authHeaders() })),
+  updateCounselingTest: (id, payload) => wrap(() => axios.patch(Config.endpoints.school.counselingTest(id), payload, { headers: authHeaders() })),
+  deleteCounselingTest: (id) => wrap(() => axios.delete(Config.endpoints.school.counselingTest(id), { headers: authHeaders() })),
+  startCounselingTest: (payload) => wrap(() => axios.post(Config.endpoints.school.counselingTestStart(), payload, { headers: authHeaders() })),
+  submitCounselingTest: (payload) => wrap(() => axios.post(Config.endpoints.school.counselingTestSubmit(), payload, { headers: authHeaders() })),
+  listCounselingAttempts: (params) => wrap(() => axios.get(Config.endpoints.school.counselingAttempts(params), { headers: authHeaders() })),
+  counselingAvailableTests: () => wrap(() => axios.get(Config.endpoints.school.counselingAvailableTests(), { headers: authHeaders() })),
+  listCounselingFiles: (params) => wrap(() => axios.get(Config.endpoints.school.counselingFiles(params), { headers: authHeaders() })),
+  createCounselingFile: (payload) => wrap(() => axios.post(Config.endpoints.school.counselingFiles(), payload, { headers: authHeaders() })),
+  getCounselingFile: (id) => wrap(() => axios.get(Config.endpoints.school.counselingFile(id), { headers: authHeaders() })),
+  updateCounselingFile: (id, payload) => wrap(() => axios.patch(Config.endpoints.school.counselingFile(id), payload, { headers: authHeaders() })),
+  getCounselingFileByStudent: (studentId) => wrap(() => axios.get(Config.endpoints.school.counselingFileByStudent(studentId), { headers: authHeaders() })),
+  createCounselingNote: (payload) => wrap(() => axios.post(Config.endpoints.school.counselingNotes(), payload, { headers: authHeaders() })),
+  listTeacherCounselingFiles: (params) => wrap(() => axios.get(Config.endpoints.school.counselingTeacherFiles(params), { headers: authHeaders() })),
+  createTeacherCounselingFile: (payload) => wrap(() => axios.post(Config.endpoints.school.counselingTeacherFiles(), payload, { headers: authHeaders() })),
+  getTeacherCounselingFile: (id) => wrap(() => axios.get(Config.endpoints.school.counselingTeacherFile(id), { headers: authHeaders() })),
+  updateTeacherCounselingFile: (id, payload) => wrap(() => axios.patch(Config.endpoints.school.counselingTeacherFile(id), payload, { headers: authHeaders() })),
+  getCounselingFileByTeacher: (teacherId) => wrap(() => axios.get(Config.endpoints.school.counselingFileByTeacher(teacherId), { headers: authHeaders() })),
+  createTeacherCounselingNote: (payload) => wrap(() => axios.post(Config.endpoints.school.counselingTeacherNotes(), payload, { headers: authHeaders() })),
+
+  reportCardSheet: (params = {}) => wrap(() => axios.get(Config.endpoints.school.reportCardSheet(params), { headers: authHeaders() })),
+  reportCardBulk: (payload, params = {}) => wrap(() => axios.post(Config.endpoints.school.reportCardBulk(), payload, {
+    headers: authHeaders(),
+    params,
+  })),
+  reportCardMine: (params = {}) => wrap(() => axios.get(Config.endpoints.school.reportCardMine(params), { headers: authHeaders() })),
 }
 
 export default schoolService

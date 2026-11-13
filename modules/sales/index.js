@@ -1,5 +1,15 @@
-// app/sales/index.js
+// modules/sales/index.js
 
 export { default as MarketingModule } from './components/MarketingModule'
 export { default as MarketingItem } from './components/MarketingItem'
 export { default as StatusChangeModal } from './components/StatusChangeModal'
+export { default as SalesBottomNav } from './components/SalesBottomNav'
+export { default as SaleAccessBar } from './components/SaleAccessBar'
+export { default as InvoiceDesigner } from './components/InvoiceDesigner'
+export { default as SaleCatalogTab } from './components/SaleCatalogTab'
+export { default as SaleAnalytics } from './components/SaleAnalytics'
+export { default as SaleActivityReport } from './components/SaleActivityReport'
+export { default as SaleMonitor } from './components/SaleMonitor'
+export { default as SaleArchive } from './components/SaleArchive'
+export { default as MarketingLeadDetail } from './components/MarketingLeadDetail'
+export { default as SaleTour } from './components/SaleTour'

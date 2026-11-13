@@ -5,16 +5,39 @@
   z-index: 1100;
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   padding: 0.7rem 1rem;
   border-radius: 999px;
-  background: #ff00a6;
   color: #fff;
   text-decoration: none;
-  font-family: var(--font-iran, Shabnam, Tahoma, sans-serif);
+  font-family: 'Vazirmatn', var(--font-iran, Shabnam, Tahoma, sans-serif);
   font-weight: 800;
   font-size: 0.82rem;
-  box-shadow: 0 8px 24px rgba(255, 0, 166, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.fab:hover {
+  transform: translateY(-1px);
+}
+
+.fabShop {
+  background: linear-gradient(135deg, #C8B48A, #7F8C6A);
+  color: #1E3B2F;
+  box-shadow: 0 8px 24px color-mix(in srgb, #1E3B2F 28%, transparent);
+}
+
+.fabShop .badge {
+  color: #1E3B2F;
+}
+
+.fabRebo {
+  background: linear-gradient(135deg, #26a680 0%, #0f6b52 100%);
+  box-shadow: 0 10px 26px rgba(38, 166, 128, 0.35);
+  gap: 0.35rem;
+}
+
+.fabRebo .badge {
+  color: #0f6b52;
 }
 
 .badge {
@@ -23,7 +46,6 @@
   padding: 0 0.3rem;
   border-radius: 999px;
   background: #fff;
-  color: #ff00a6;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -31,12 +53,42 @@
   font-weight: 800;
 }
 
+.meta {
+  font-size: 0.75rem;
+  font-weight: 700;
+  opacity: 0.92;
+}
+
 .total {
   opacity: 0.95;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.2rem;
+}
+
+.total em {
+  font-style: normal;
+  font-size: 0.65rem;
+  font-weight: 700;
+  opacity: 0.85;
 }
 
 @media (max-width: 640px) {
   .fab {
     bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .fabRebo .total em {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fab {
+    transition: none;
+  }
+
+  .fab:hover {
+    transform: none;
   }
 }

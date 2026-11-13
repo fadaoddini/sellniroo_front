@@ -1,0 +1,719 @@
+/* ویجت انیمیشن مدرسه — overrides روی الگوی ربو */
+
+.section {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.inner {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sceneFull {
+  border-radius: 0;
+  width: 100%;
+}
+
+.ground {
+  /* ارتفاع پایه؛ موبایل با !important فشرده می‌شود */
+}
+
+/* فقط مدرسه رنگی و بزرگ‌تر */
+.buildingSchool {
+  width: 120px;
+  transform: scale(1.22);
+  transform-origin: bottom center;
+  z-index: 5;
+}
+
+.buildingMono {
+  width: 68px;
+  transform: scale(0.82);
+  transform-origin: bottom center;
+}
+
+.monoBody {
+  filter: grayscale(1) contrast(1.08) !important;
+}
+
+.schoolBody {
+  width: 110px;
+  filter: none !important;
+}
+
+.schoolFacade {
+  width: 104px !important;
+  grid-template-columns: 1fr 1fr 1fr 1fr !important;
+  background: #86efac !important;
+}
+
+.schoolBody .roof {
+  width: 110px;
+  background: #15803d !important;
+}
+
+.schoolFacade .win {
+  background: #fef08a !important;
+}
+
+.schoolSteps {
+  width: 94px !important;
+}
+
+.schoolLabel {
+  font-family: var(--font-iran-extra, 'iran_extra', Tahoma, sans-serif);
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  max-width: none;
+  margin-bottom: 0.25rem;
+  direction: rtl;
+  image-rendering: auto;
+}
+
+.labelSpacer {
+  display: block;
+  height: 1.4rem;
+  visibility: hidden;
+}
+
+.partyGirls {
+  /* فقط دو نفر کنار اصلی */
+}
+
+.partyGirl {
+  transform: translateX(-50%) scale(0.92);
+  transform-origin: bottom center;
+}
+
+/* ─── دختر مدرسه (چهره + بدن مستقل) ─── */
+.girl {
+  position: relative;
+  width: 56px;
+  height: 108px;
+}
+
+.girlSprite {
+  position: relative;
+  width: 56px;
+  height: 92px;
+  animation: girlBob 0.36s steps(2) infinite;
+}
+
+.girlHappy .girlSprite {
+  animation: girlJump 0.48s ease-in-out infinite;
+}
+
+.girlDance_bounce .girlSprite {
+  animation: girlJump 0.48s ease-in-out infinite;
+}
+
+.girlDance_sway .girlSprite {
+  animation: girlSway 0.55s ease-in-out infinite;
+}
+
+.girlDance_hop .girlSprite {
+  animation: girlHop 0.42s ease-in-out infinite;
+}
+
+.head {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  width: 28px;
+  height: 26px;
+  background: #f0c4a0;
+  border: 2px solid #111;
+  border-radius: 5px;
+  box-sizing: border-box;
+  z-index: 1;
+}
+
+.hairTop {
+  position: absolute;
+  top: 4px;
+  left: 15px;
+  width: 26px;
+  height: 9px;
+  background: #111;
+  border-radius: 5px 5px 2px 2px;
+  z-index: 2;
+}
+
+.hairBun {
+  position: absolute;
+  top: 2px;
+  width: 11px;
+  height: 13px;
+  background: #111;
+  border: 1.5px solid #000;
+  border-radius: 50%;
+  box-sizing: border-box;
+  z-index: 3;
+}
+
+.hairBun::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 5px;
+  background: #111;
+  border-radius: 0 0 2px 2px;
+}
+
+.hairBunL {
+  left: 5px;
+}
+
+.hairBunR {
+  right: 5px;
+}
+
+.brow {
+  position: absolute;
+  top: 14px;
+  width: 7px;
+  height: 2px;
+  background: #111;
+  z-index: 4;
+  transition: transform 0.2s ease;
+}
+
+.browL {
+  left: 18px;
+  transform: rotate(16deg);
+}
+
+.browR {
+  left: 31px;
+  transform: rotate(-16deg);
+}
+
+.girlLit .browL {
+  transform: rotate(-8deg);
+}
+
+.girlLit .browR {
+  transform: rotate(8deg);
+}
+
+.eye {
+  position: absolute;
+  top: 18px;
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border: 1.5px solid #111;
+  border-radius: 50%;
+  box-sizing: border-box;
+  z-index: 4;
+}
+
+.eye::after {
+  content: '';
+  position: absolute;
+  top: 1.5px;
+  left: 1.5px;
+  width: 2.5px;
+  height: 2.5px;
+  background: #1e293b;
+  border-radius: 50%;
+}
+
+.eyeL {
+  left: 18px;
+}
+
+.eyeR {
+  left: 31px;
+}
+
+.tear {
+  position: absolute;
+  top: 25px;
+  left: 17px;
+  width: 3px;
+  height: 4px;
+  background: #93c5fd;
+  border: 1px solid #1d4ed8;
+  border-radius: 50% 50% 40% 0;
+  z-index: 5;
+}
+
+.nose {
+  position: absolute;
+  top: 23px;
+  left: 26px;
+  width: 4px;
+  height: 3px;
+  background: #dfa07a;
+  border: 1px solid #111;
+  border-radius: 0 0 3px 3px;
+  box-sizing: border-box;
+  z-index: 4;
+}
+
+/* غمگین */
+.mouth {
+  position: absolute;
+  top: 29px;
+  left: 23px;
+  width: 10px;
+  height: 4px;
+  border-top: 2px solid #9f1239;
+  border-radius: 8px 8px 0 0;
+  z-index: 4;
+  box-sizing: border-box;
+}
+
+/* خندان */
+.girlLit .mouth {
+  top: 28px;
+  height: 5px;
+  border: 1.5px solid #111;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  background: #fecdd3;
+}
+
+.body {
+  position: absolute;
+  top: 34px;
+  left: 12px;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(180deg, #f472b6 0%, #db2777 100%);
+  border: 2px solid #111;
+  border-radius: 3px;
+  box-sizing: border-box;
+  z-index: 2;
+  box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.1);
+}
+
+.dress_pink .body {
+  background: linear-gradient(180deg, #f472b6 0%, #db2777 100%);
+}
+
+.dress_blue .body {
+  background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%);
+}
+
+.dress_purple .body {
+  background: linear-gradient(180deg, #c084fc 0%, #7c3aed 100%);
+}
+
+.arm {
+  position: absolute;
+  top: 36px;
+  width: 7px;
+  height: 20px;
+  background: #f0c4a0;
+  border: 2px solid #111;
+  border-radius: 2px;
+  box-sizing: border-box;
+  transform-origin: top center;
+  z-index: 3;
+}
+
+.armL {
+  left: 5px;
+  animation: girlArm 0.36s steps(2) infinite;
+}
+
+.armR {
+  right: 5px;
+  animation: girlArm 0.36s steps(2) infinite reverse;
+}
+
+.girlHappy .armL {
+  animation: girlArmUp 0.48s ease-in-out infinite;
+}
+
+.girlHappy .armR {
+  animation: girlArmUp 0.48s ease-in-out infinite;
+  animation-delay: 0.08s;
+}
+
+.leg {
+  position: absolute;
+  top: 64px;
+  width: 8px;
+  height: 16px;
+  background: #6d28d9;
+  border: 2px solid #111;
+  box-sizing: border-box;
+  transform-origin: top center;
+  z-index: 2;
+}
+
+.dress_blue .leg {
+  background: #1e40af;
+}
+
+.dress_purple .leg {
+  background: #5b21b6;
+}
+
+.legL {
+  left: 16px;
+  animation: girlLeg 0.36s steps(2) infinite;
+}
+
+.legR {
+  right: 16px;
+  animation: girlLeg 0.36s steps(2) infinite reverse;
+}
+
+.girlHappy .legL,
+.girlHappy .legR {
+  animation: girlLegHappy 0.48s steps(2) infinite;
+}
+
+.foot {
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  width: 11px;
+  height: 5px;
+  background: #ef4444;
+  border: 1.5px solid #111;
+  border-radius: 1px 3px 1px 1px;
+  box-sizing: border-box;
+  transform: translateX(-40%);
+}
+
+.shadow {
+  position: absolute;
+  left: 8px;
+  bottom: 0;
+  width: 40px;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.28);
+  border-radius: 50%;
+}
+
+/* لامپ — فاصله بیشتر از سر */
+.lampWrap {
+  position: absolute;
+  top: -58px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  z-index: 8;
+  pointer-events: none;
+  direction: ltr;
+}
+
+.mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  min-width: 22px;
+  font-family: 'Press Start 2P', 'Vazirmatn', monospace;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  color: #dc2626;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.85);
+  animation: markBob 1.1s ease-in-out infinite;
+}
+
+.markQ {
+  animation-name: markBobFlip;
+}
+
+.markBang {
+  animation-delay: -0.35s;
+}
+
+.lampWrapOn .mark {
+  display: none;
+}
+
+.lamp {
+  position: relative;
+  width: 24px;
+  height: 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  animation: markBob 1.1s ease-in-out infinite;
+  animation-delay: -0.2s;
+}
+
+.lampGlass {
+  display: block;
+  width: 22px;
+  height: 26px;
+  border: none;
+  border-radius: 50% 50% 42% 42% / 58% 58% 38% 38%;
+  box-sizing: border-box;
+}
+
+.lampScrew {
+  display: block;
+  width: 11px;
+  height: 9px;
+  margin-top: -2px;
+  background: repeating-linear-gradient(
+    180deg,
+    #c0c7d0 0 2px,
+    #8e97a3 2px 3px,
+    #e8ecef 3px 5px
+  );
+  border: none;
+  border-radius: 1px 1px 2px 2px;
+  position: relative;
+}
+
+.lampScrew::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 7px;
+  height: 3px;
+  background: #a8b0ba;
+}
+
+.lampOff .lampGlass {
+  background: radial-gradient(
+    ellipse 70% 55% at 40% 28%,
+    #ffffff 0%,
+    #f5f5f5 45%,
+    #e8e8e8 100%
+  );
+}
+
+.lampOn .lampGlass {
+  background: radial-gradient(
+    ellipse 70% 55% at 38% 26%,
+    #fffbeb 0%,
+    #fde68a 28%,
+    #fbbf24 62%,
+    #d97706 100%
+  );
+  box-shadow:
+    0 0 12px 5px rgba(251, 191, 36, 0.7),
+    0 0 24px 8px rgba(245, 158, 11, 0.35);
+  animation: lampPulse 0.9s ease-in-out infinite;
+}
+
+@keyframes girlBob {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(2px);
+  }
+}
+
+@keyframes girlJump {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  40% {
+    transform: translateY(-12px) rotate(2deg);
+  }
+  70% {
+    transform: translateY(-6px) rotate(-1deg);
+  }
+}
+
+@keyframes girlSway {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-8deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(8deg);
+  }
+}
+
+@keyframes girlHop {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  35% {
+    transform: translateY(-14px);
+  }
+  55% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes girlArm {
+  from {
+    transform: rotate(12deg);
+  }
+  to {
+    transform: rotate(-12deg);
+  }
+}
+
+@keyframes girlArmUp {
+  0%,
+  100% {
+    transform: rotate(-25deg);
+  }
+  50% {
+    transform: rotate(-55deg);
+  }
+}
+
+@keyframes girlLeg {
+  from {
+    transform: rotate(14deg);
+  }
+  to {
+    transform: rotate(-14deg);
+  }
+}
+
+@keyframes girlLegHappy {
+  from {
+    transform: rotate(10deg);
+  }
+  to {
+    transform: rotate(-18deg);
+  }
+}
+
+@keyframes markBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes markBobFlip {
+  0%,
+  100% {
+    transform: scaleX(-1) translateY(0);
+  }
+  50% {
+    transform: scaleX(-1) translateY(-3px);
+  }
+}
+
+@keyframes lampPulse {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.2);
+  }
+}
+
+/* موبایل — صحنه فشرده شبیه اپ */
+@media (max-width: 767px) {
+  .section {
+    margin: 0;
+  }
+
+  .sceneFull {
+    border-radius: 0;
+  }
+
+  .ground {
+    height: 230px !important;
+    margin-top: 6% !important;
+  }
+
+  .buildingSchool {
+    width: 96px;
+    transform: scale(1.05);
+  }
+
+  .buildingMono {
+    width: 52px;
+    transform: scale(0.7);
+  }
+
+  .schoolLabel {
+    font-size: 0.62rem;
+    padding: 0.12rem 0.35rem;
+  }
+
+  .schoolBody {
+    width: 88px;
+  }
+
+  .schoolFacade {
+    width: 84px !important;
+  }
+
+  .schoolBody .roof {
+    width: 88px;
+  }
+
+  .schoolSteps {
+    width: 76px !important;
+  }
+
+  .girl {
+    width: 48px;
+    height: 96px;
+    transform: scale(0.88);
+    transform-origin: bottom center;
+  }
+
+  .lampWrap {
+    top: -50px;
+    gap: 2px;
+  }
+
+  .mark {
+    font-size: 20px;
+    height: 32px;
+    min-width: 16px;
+  }
+
+  .lamp {
+    width: 20px;
+    height: 28px;
+  }
+
+  .lampGlass {
+    width: 18px;
+    height: 22px;
+  }
+
+  .partyGirl {
+    transform: translateX(-50%) scale(0.78);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .girlSprite,
+  .armL,
+  .armR,
+  .legL,
+  .legR,
+  .mark,
+  .lamp,
+  .lampOn .lampGlass {
+    animation: none !important;
+  }
+}

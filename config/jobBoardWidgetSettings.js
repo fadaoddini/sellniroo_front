@@ -1,8 +1,14 @@
 // config/jobBoardWidgetSettings.js — تنظیمات همهٔ ویجت‌های سیستم کاریابی
 
+import { SHOP_FONTS, shopFontCss } from '@/config/shopWidgetSettings'
+
+export const JOB_BOARD_FONTS = SHOP_FONTS
+export { shopFontCss as jobBoardFontCss }
+
 export const JOB_BOARD_VIEW_MODES = [
-  { id: 'grid-2', label: 'گرید ۲' },
+  { id: 'image-left', label: 'سه‌ستونه افقی' },
   { id: 'grid-3', label: 'گرید ۳' },
+  { id: 'grid-2', label: 'گرید ۲' },
   { id: 'list', label: 'لیستی' },
 ]
 
@@ -71,11 +77,16 @@ export const DEFAULT_JOB_BOARD_WIDGET_SETTINGS = {
   title_text: '',
   limit: 8,
   columns: 2,
-  default_view: 'grid-2',
+  default_view: 'image-left',
   default_tab: 'all',
   search_placeholder: 'عنوان شغل، مهارت یا شرکت...',
+  search_btn_label: 'جستجو',
   show_city_picker: true,
   show_post_cta: true,
+  font_family: 'iran',
+  btn_font_family: 'iran_bold',
+  font_size: 14,
+  btn_font_size: 13,
   max_width: 1200,
   padding_top: 8,
   padding_right: 0,
@@ -184,6 +195,20 @@ export function normalizeJobBoardWidgetSettings(raw = {}, type = 'job_board_syst
   s.search_placeholder =
     String(s.search_placeholder || d.search_placeholder).trim() ||
     d.search_placeholder
+  s.search_btn_label =
+    String(s.search_btn_label || d.search_btn_label).trim() || d.search_btn_label
+
+  if (!JOB_BOARD_FONTS.some((f) => f.id === s.font_family)) {
+    s.font_family = d.font_family
+  }
+  if (!JOB_BOARD_FONTS.some((f) => f.id === s.btn_font_family)) {
+    s.btn_font_family = d.btn_font_family
+  }
+  s.font_size = Math.max(11, Math.min(22, pxNum(s.font_size, d.font_size, 22)))
+  s.btn_font_size = Math.max(
+    11,
+    Math.min(20, pxNum(s.btn_font_size, d.btn_font_size, 20))
+  )
 
   ;[...JOB_BOARD_SPACE_FIELDS, ...JOB_BOARD_MARGIN_FIELDS].forEach(({ key }) => {
     s[key] = pxNum(s[key], d[key])
@@ -240,5 +265,9 @@ export function jobBoardWidgetCssVars(settings, type) {
     '--jb-mar-b': `${s.margin_bottom}px`,
     '--jb-mar-l': `${s.margin_left}px`,
     '--jb-cols': String(s.columns),
+    '--jb-ff': shopFontCss(s.font_family),
+    '--jb-btn-ff': shopFontCss(s.btn_font_family),
+    '--jb-fs': `${s.font_size}px`,
+    '--jb-btn-fs': `${s.btn_font_size}px`,
   }
 }

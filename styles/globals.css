@@ -66,7 +66,7 @@
   --font-edameh: 'edameh', Tahoma, Arial, sans-serif;
 
   /* ============================================
-     رنگ‌های اصلی پروژه (زرشکی و سبز پرکلاغی)
+     رنگ‌های اصلی پروژه
      ============================================ */
   --primary: #fbc300;
   --primary-dark: #fb9700;
@@ -109,12 +109,77 @@
   box-sizing: border-box;
 }
 
+html {
+  /* کلیپ افقی در ریشه — نه روی main — تا position:sticky ویجت‌ها کار کند */
+  overflow-x: clip;
+}
+
 body {
   background: var(--macos-bg);
   color: var(--macos-text);
   direction: rtl;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+
+/* موبایل اپ باشگاه — یک‌رنگ با ویجت هیرو/تایم‌لاین (جلوگیری از بک‌گراند کرم body) */
+html[data-gym-app-mobile='1'],
+html[data-gym-app-mobile='1'] body {
+  background: #023c2c;
+  --macos-bg: #023c2c;
+  --gym-menu-bg: #023c2c;
+  --gym-menu-text: #d1fae5;
+  --gym-menu-icon: #a7f3d0;
+  --gym-menu-active: #34d399;
+}
+
+html[data-gym-app-mobile='1'] .siteMain {
+  background: #023c2c;
+  min-height: 100dvh;
+}
+
+html[data-gym-app-mobile='1'] #__next,
+html[data-gym-app-mobile='1'] [data-site-footer],
+html[data-gym-app-mobile='1'] footer {
+  background-color: #023c2c;
+}
+
+/*
+  نوار پایین + منوی هیرو — !important تا inline شرکتی (نارنجی/آبی) نبرد
+*/
+html[data-gym-app-mobile='1'] [data-app-bottom-nav] {
+  --corp-mobile-bg: var(--gym-menu-bg, #023c2c) !important;
+  --corp-mobile-text: var(--gym-menu-text, #d1fae5) !important;
+  --corp-mobile-icon: var(--gym-menu-icon, #ffffff) !important;
+  --corp-mobile-active: var(--gym-menu-active, #34d399) !important;
+}
+
+html[data-gym-app-mobile='1'] [data-hero-with-menu-nav],
+html[data-gym-app-mobile='1'] [data-hero-with-menu-nav] * {
+  --stn-bg: var(--gym-menu-bg, #023c2c) !important;
+  --stn-text: var(--gym-menu-text, #ffffff) !important;
+  --stn-icon: var(--gym-menu-icon, #ffffff) !important;
+  --stn-hover: var(--gym-menu-active, #34d399) !important;
+  --stn-accent: var(--gym-menu-active, #10b981) !important;
+  --stn-cta-bg: var(--gym-menu-btn, #046c4e) !important;
+  --stn-cta-text: #ffffff !important;
+  --stn-drawer-bg: var(--gym-menu-drawer, #023c2c) !important;
+  --stn-hamburger: var(--gym-menu-icon, #ffffff) !important;
+  --bn-bg: transparent !important;
+  --bn-text: var(--gym-menu-text, #ffffff) !important;
+  --bn-date: var(--gym-menu-date, #a7f3d0) !important;
+  --bn-accent: var(--gym-menu-active, #10b981) !important;
+  --bn-link: var(--gym-menu-icon, #ffffff) !important;
+  --bn-btn-bg: var(--gym-menu-btn, #046c4e) !important;
+  --bn-btn-text: #ffffff !important;
+  --bn-avatar-border: var(--gym-menu-active, #10b981) !important;
+  --bn-profile-text: var(--gym-menu-text, #ffffff) !important;
+  --bn-menu-icon: var(--gym-menu-icon, #ffffff) !important;
+  --bn-menu-hover-bg: #046c4e !important;
+  --bn-menu-hover-text: #a7f3d0 !important;
+  --bn-drawer-bg: var(--gym-menu-drawer, #023c2c) !important;
+  --bn-border: transparent !important;
 }
 
 /* پوسته صفحات سایت / ادمین */
@@ -125,7 +190,8 @@ body {
 .siteMain--builder {
   width: 100%;
   max-width: 100%;
-  overflow-x: clip;
+  /* overflow-x اینجا sticky نوار خبر/منو را می‌کشد؛ کلیپ افقی روی html/body است */
+  overflow-x: visible;
 }
 
 .siteMain--news-single,
@@ -136,16 +202,16 @@ body {
   margin: 0;
 }
 
+.siteMain--job-single {
+  background: #fef3e2;
+}
+
 @media (max-width: 768px) {
   .siteMain--news-single,
   .siteMain--news-list,
   .siteMain--job-single {
     /* فضای نوار پایین منو / CTA اگر در چیدمان باشد */
     padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-
-  .siteMain--job-single {
-    background: #fff;
   }
 }
 
@@ -166,11 +232,17 @@ body {
 
   /* نوار پایین ویجت منو (AppBottomNav) */
   body.has-app-bottom-nav {
-    --mobile-bottom-nav: calc(72px + env(safe-area-inset-bottom, 0px));
+    /* داک شناور اپ: ارتفاع نوار + فاصله پایین */
+    --mobile-bottom-nav: calc(78px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: var(--mobile-bottom-nav);
   }
 
   body.has-app-bottom-nav[data-app-nav-style='center_circle'] {
-    --mobile-bottom-nav: calc(96px + env(safe-area-inset-bottom, 0px));
+    --mobile-bottom-nav: calc(112px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.has-app-bottom-nav[data-app-nav-style='glow_dock'] {
+    --mobile-bottom-nav: calc(86px + env(safe-area-inset-bottom, 0px));
   }
 
   /* فاصله محتوا تا فوتر؛ خود فوتر بالای منوی پایین فاصله می‌گیرد */
@@ -178,22 +250,96 @@ body {
     padding-bottom: 0.75rem;
   }
 
+  .siteMain--builder {
+    padding-bottom: 0;
+  }
+
   body {
     overscroll-behavior-y: contain;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* قالب صدرا — حس اپلیکیشن موبایل */
+  body.sadra-app-shell {
+    background: var(--sadra-app-bg, #faf7ef);
+  }
+
+  body.sadra-app-shell .siteMain--builder {
+    min-height: 100dvh;
+    background: transparent;
+  }
+
+  body.sadra-app-shell .siteMain--shop-list,
+  body.sadra-app-shell .siteMain--product-single,
+  body.sadra-app-shell .siteMain--cart {
+    padding-inline: 0;
+    padding-bottom: 0;
+  }
+
+  .siteMain--cart {
+    min-height: 50vh;
+  }
+
+  /* شِل اپ فروشگاه — پس‌زمینه اپ؛ فاصله منو روی body.has-app-bottom-nav است */
+  .shopListAppShell {
+    min-height: 100dvh;
+    box-sizing: border-box;
+    padding-bottom: 12px;
+    background:
+      radial-gradient(
+        ellipse 90% 40% at 50% -10%,
+        rgba(219, 190, 0, 0.12),
+        transparent 55%
+      ),
+      linear-gradient(180deg, #fff9e8 0%, #faf7ef 42%, #f3efe4 100%);
+  }
+
+  body:not(.sadra-app-shell) .shopListAppShell {
+    background: transparent;
+    min-height: 0;
+  }
+
+  /* اگر منوی پایین هنوز mount نشده، کمی فضا نگه دار */
+  body:not(.has-app-bottom-nav):not(.has-corporate-mobile-nav) .shopListAppShell {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.sadra-app-shell .siteMain--shop-list [class*='searchBar'],
+  body.sadra-app-shell .siteMain--shop-list [class*='searchBarV2'] {
+    border-radius: 16px;
+    border-color: color-mix(in srgb, #dbbe00 45%, #e8e0c8);
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(179, 140, 0, 0.08);
+  }
+
+  body.sadra-app-shell .siteMain--shop-list [class*='grid4'],
+  body.sadra-app-shell .siteMain--shop-list [class*='grid2'] {
+    gap: 10px;
+    padding-inline: 10px;
+  }
+
+  body.sadra-app-shell .siteMain--shop-list [class*='grid4'] [class*='gridItem'],
+  body.sadra-app-shell .siteMain--shop-list [class*='grid2'] [class*='gridItem'] {
+    width: calc(50% - 6px);
+  }
+
+  /* فیلتر/جستجو فروشگاه روی موبایل کمی فاصله از لبه */
+  body.sadra-app-shell .siteMain--shop-list [class*='searchShell'],
+  body.sadra-app-shell .siteMain--shop-list [class*='toolbar'] {
+    padding-inline: 12px;
   }
 
   body.has-corporate-mobile-nav {
-    --mobile-bottom-nav: calc(72px + env(safe-area-inset-bottom, 0px));
+    --mobile-bottom-nav: calc(78px + env(safe-area-inset-bottom, 0px));
     padding-bottom: var(--mobile-bottom-nav);
   }
 
-  /* دایره وسط بیرون‌زده است — فاصله بیشتر */
   body.has-corporate-mobile-nav[data-corp-nav-style='center_circle'] {
-    --mobile-bottom-nav: calc(96px + env(safe-area-inset-bottom, 0px));
+    --mobile-bottom-nav: calc(112px + env(safe-area-inset-bottom, 0px));
   }
 
   body.has-corporate-mobile-nav[data-corp-nav-style='glow_dock'] {
-    --mobile-bottom-nav: calc(84px + env(safe-area-inset-bottom, 0px));
+    --mobile-bottom-nav: calc(86px + env(safe-area-inset-bottom, 0px));
   }
 }
 

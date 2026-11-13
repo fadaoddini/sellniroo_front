@@ -1,29 +1,60 @@
-// app/sales/components/MarketingItem.jsx
 'use client'
 
 import React from 'react'
-import { 
-  Phone, Calendar, Clock as ClockIcon, 
-  Trash2, CircleDot, 
-  CircleX, CheckCircle2, CalendarClock,
-  Eye, User, MessageSquare
+import {
+  Phone,
+  Calendar,
+  Clock as ClockIcon,
+  CircleDot,
+  CircleX,
+  CheckCircle2,
+  CalendarClock,
+  Eye,
+  User,
+  Sparkles,
+  Archive,
+  Hash,
 } from 'lucide-react'
 import styles from '../styles/MarketingItem.module.css'
 
-const MarketingItem = ({ item, onViewDetail, onDelete, onStatusChange }) => {
-  const isToday = item.nextFollowUp === new Date().toISOString().split('T')[0]
-  
-  const getStatusInfo = (status) => {
-    const map = {
-      new: { label: 'جدید', color: '#6366f1', icon: <CircleDot size={12} /> },
-      in_progress: { label: 'در حال پیگیری', color: '#d97706', icon: <CircleDot size={12} /> },
-      cancelled: { label: 'بسته شده', color: '#dc2626', icon: <CircleX size={12} /> },
-      confirmed: { label: 'قرارداد', color: '#16a34a', icon: <CheckCircle2 size={12} /> },
-    }
-    return map[status] || map.new
-  }
+const STATUS_MAP = {
+  new: {
+    label: 'جدید',
+    color: '#2563eb',
+    icon: Sparkles,
+    className: 'statusNew',
+  },
+  in_progress: {
+    label: 'پیگیری',
+    color: '#c2410c',
+    icon: CircleDot,
+    className: 'statusProgress',
+  },
+  cancelled: {
+    label: 'بسته',
+    color: '#b91c1c',
+    icon: CircleX,
+    className: 'statusCancelled',
+  },
+  confirmed: {
+    label: 'قرارداد',
+    color: '#15803d',
+    icon: CheckCircle2,
+    className: 'statusConfirmed',
+  },
+}
 
-  const status = getStatusInfo(item.status)
+const MarketingItem = ({
+  item,
+  onViewDetail,
+  onStatusChange,
+  onArchive,
+}) => {
+  const isToday = item.nextFollowUp === new Date().toISOString().split('T')[0]
+  const status = STATUS_MAP[item.status] || STATUS_MAP.new
+  const StatusIcon = status.icon
+  const isResultItem = item.status === 'confirmed' || item.status === 'cancelled'
+  const code = item.tracking_code || item.trackingCode || `SL-${String(item.id).padStart(6, '0')}`
 
   const getNextFollowUpLabel = () => {
     if (!item.nextFollowUp) return null
@@ -32,144 +63,131 @@ const MarketingItem = ({ item, onViewDetail, onDelete, onStatusChange }) => {
     return new Date(item.nextFollowUp).toLocaleDateString('fa-IR')
   }
 
-  const handleActionClick = (e, action) => {
+  const stop = (e, fn) => {
     e.stopPropagation()
-    onStatusChange(item, action)
+    fn?.()
   }
 
-  const isResultItem = item.status === 'confirmed' || item.status === 'cancelled'
-
-  // ✅ لاگ برای دیباگ
-  console.log('🔍 MarketingItem:', {
-    id: item.id,
-    title: item.title,
-    hasDescription: !!item.description,
-    description: item.description
-  })
-
   return (
-    <div 
-      className={`${styles.item} ${isToday ? styles.todayItem : ''}`}
+    <article
+      className={`${styles.item} ${styles[status.className]} ${
+        isToday ? styles.todayItem : ''
+      }`}
+      style={{ '--card-accent': status.color }}
+      data-tour="sale-card"
       onClick={() => onViewDetail(item)}
     >
-      <div className={styles.itemContent}>
-        <div className={styles.itemHeader}>
-          <div className={styles.itemTitle}>
-            <span className={styles.titleText}>{item.title}</span>
-            {item.customer_name && (
-              <span className={styles.customerName}> - {item.customer_name}</span>
-            )}
-            <span 
-              className={styles.statusBadge}
-              style={{ backgroundColor: status.color + '15', color: status.color }}
-            >
-              {status.icon} {status.label}
-            </span>
-          </div>
-          <div className={styles.itemActions}>
-            <button 
-              className={styles.deleteBtn}
-              onClick={(e) => {
-                e.stopPropagation()
-                onDelete(item.id)
-              }}
-            >
-              <Trash2 size={14} />
-            </button>
-            <button 
-              className={styles.viewBtn}
-              onClick={(e) => {
-                e.stopPropagation()
-                onViewDetail(item)
-              }}
-            >
-              <Eye size={14} />
-            </button>
-          </div>
+      <div className={styles.stageBar} aria-hidden />
+
+      <div className={styles.itemBody}>
+        <div className={styles.topRow}>
+          <span className={styles.trackingCode}>
+            <Hash size={11} />
+            {code}
+          </span>
+          <span className={styles.statusBadge}>
+            <StatusIcon size={12} />
+            {status.label}
+          </span>
         </div>
-        
-        {/* ✅ نمایش توضیحات در کارت */}
-        {item.description && item.description.trim() !== '' && (
-          <div className={styles.itemDescription}>
-            <MessageSquare size={14} className={styles.descIcon} />
-            <span className={styles.descText}>
-              {item.description.length > 80 
-                ? item.description.slice(0, 80) + '...' 
-                : item.description}
-            </span>
-          </div>
-        )}
-        
-        <div className={styles.itemMeta}>
-          <span className={styles.phone}>
+
+        <h3 className={styles.titleText} title={item.title}>
+          {item.title || '—'}
+        </h3>
+
+        <div className={styles.metaGrid}>
+          <span className={styles.metaItem} title={item.customer_name || ''}>
+            <User size={12} />
+            <span className={styles.metaText}>{item.customer_name || '—'}</span>
+          </span>
+          <span className={styles.metaItem} title={item.phone || ''}>
             <Phone size={12} />
-            {item.phone}
+            <span className={styles.metaText}>{item.phone || '—'}</span>
           </span>
-          <span className={styles.date}>
+          <span className={styles.metaItem}>
             <Calendar size={12} />
-            {new Date(item.createdAt).toLocaleDateString('fa-IR')}
+            <span className={styles.metaText}>
+              {item.createdAt
+                ? new Date(item.createdAt).toLocaleDateString('fa-IR')
+                : '—'}
+            </span>
           </span>
-          {item.nextFollowUp && (
-            <span className={styles.nextFollow}>
-              <ClockIcon size={12} />
-              {getNextFollowUpLabel()}
-              {item.nextFollowUpTime && ` ${item.nextFollowUpTime}`}
+          <span
+            className={`${styles.metaItem} ${isToday ? styles.nextToday : ''}`}
+          >
+            <ClockIcon size={12} />
+            <span className={styles.metaText}>
+              {item.nextFollowUp
+                ? `${getNextFollowUpLabel()}${item.nextFollowUpTime ? ` ${item.nextFollowUpTime}` : ''}`
+                : 'بدون پیگیری'}
             </span>
-          )}
-          {item.assigned_to_name && (
-            <span className={styles.assignedTo}>
-              <User size={12} />
-              {item.assigned_to_name}
-            </span>
-          )}
+          </span>
         </div>
 
-        {!isResultItem && (
-          <div className={styles.actionButtons}>
-            <button 
-              className={`${styles.actionBtn} ${styles.followUpBtn}`}
-              onClick={(e) => handleActionClick(e, 'followup')}
-              title="تنظیم پیگیری بعدی"
-            >
-              <CalendarClock size={14} />
-              <span>پیگیری بعدی</span>
-            </button>
-            <button 
-              className={`${styles.actionBtn} ${styles.closeBtn}`}
-              onClick={(e) => handleActionClick(e, 'close')}
-              title="بسته شدن (کنسل)"
-            >
-              <CircleX size={14} />
-              <span>بسته شود</span>
-            </button>
-            <button 
-              className={`${styles.actionBtn} ${styles.contractBtn}`}
-              onClick={(e) => handleActionClick(e, 'contract')}
-              title="تبدیل به قرارداد"
-            >
-              <CheckCircle2 size={14} />
-              <span>قرارداد</span>
-            </button>
+        {item.assigned_to_name ? (
+          <div className={styles.assignee}>
+            <User size={11} />
+            {item.assigned_to_name}
           </div>
-        )}
-
-        {isResultItem && (
-          <div className={styles.resultBadge}>
-            {item.status === 'confirmed' ? (
-              <span className={styles.confirmedBadge}>
-                <CheckCircle2 size={12} />
-                این مورد به قرارداد تبدیل شده است
-              </span>
-            ) : (
-              <span className={styles.cancelledBadge}>
-                <CircleX size={12} />
-                این مورد بسته شده است
-              </span>
-            )}
-          </div>
+        ) : (
+          <div className={`${styles.assignee} ${styles.assigneeEmpty}`}>بدون مسئول</div>
         )}
       </div>
-    </div>
+
+      <div
+        className={styles.actionBar}
+        data-tour="sale-card-actions"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className={styles.actionGroup}>
+          <button
+            type="button"
+            className={`${styles.iconBtn} ${styles.iconView}`}
+            title="جزئیات"
+            onClick={(e) => stop(e, () => onViewDetail(item))}
+          >
+            <Eye size={14} />
+          </button>
+          {!isResultItem ? (
+            <>
+              <button
+                type="button"
+                className={`${styles.iconBtn} ${styles.iconFollow}`}
+                title="پیگیری"
+                onClick={(e) => stop(e, () => onStatusChange?.(item, 'followup'))}
+              >
+                <CalendarClock size={14} />
+              </button>
+              <button
+                type="button"
+                className={`${styles.iconBtn} ${styles.iconContract}`}
+                title="قرارداد"
+                onClick={(e) => stop(e, () => onStatusChange?.(item, 'contract'))}
+              >
+                <CheckCircle2 size={14} />
+              </button>
+              <button
+                type="button"
+                className={`${styles.iconBtn} ${styles.iconClose}`}
+                title="بستن"
+                onClick={(e) => stop(e, () => onStatusChange?.(item, 'close'))}
+              >
+                <CircleX size={14} />
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              className={`${styles.iconBtn} ${styles.iconArchive}`}
+              title="آرشیو"
+              onClick={(e) => stop(e, () => onArchive?.(item))}
+            >
+              <Archive size={14} />
+            </button>
+          )}
+        </div>
+      </div>
+    </article>
   )
 }
 

@@ -1,18 +1,18 @@
 /* VerificationSection — تم طلایی */
 
 .card {
-  --ink: #2a241c;
-  --muted: #6f675c;
-  --line: rgba(90, 60, 20, 0.12);
-  --gold-dark: #c27800;
+  --ink: #2A1A0E;
+  --muted: #6B5344;
+  --line: rgba(42, 26, 14, 0.12);
+  --gold-dark: #D4621A;
 
   display: flex;
-  gap: 1.1rem;
-  padding: 1.25rem 1.3rem;
-  border-radius: 18px;
+  gap: 0.65rem;
+  padding: 0.8rem 0.85rem;
+  border-radius: 12px;
   border: 1px solid;
   font-family: var(--font-iran);
-  box-shadow: 0 6px 18px rgba(80, 50, 0, 0.05);
+  box-shadow: 0 6px 18px rgba(42, 26, 14, 0.05);
 }
 
 .verified {
@@ -23,7 +23,7 @@
 
 .pending {
   background: #fffbeb;
-  border-color: #fbc300;
+  border-color: #F4AE52;
   color: #8a5a00;
 }
 
@@ -41,12 +41,12 @@
 
 .iconBox {
   flex-shrink: 0;
-  width: 56px;
-  height: 56px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 14px;
+  border-radius: 9px;
   background: rgba(255, 255, 255, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.9);
 }
@@ -58,19 +58,19 @@
 
 .content h3 {
   margin: 0 0 0.45rem;
-  font-size: 0.95rem;
-  font-family: var(--font-edameh, var(--font-iran-bold));
+  font-size: 0.7rem;
+  font-family: var(--font-iran-extra, var(--font-iran-bold, var(--font-iran)));
 }
 
 .content p {
   margin: 0 0 0.7rem;
   line-height: 1.7;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   opacity: 0.9;
 }
 
 .dateInfo {
-  font-size: 0.72rem;
+  font-size: 0.64rem;
   opacity: 0.75;
   font-weight: 600;
 }
@@ -79,10 +79,10 @@
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.55rem 0.8rem;
+  padding: 0.4rem 0.55rem;
   background: rgba(255, 255, 255, 0.75);
   border-radius: 10px;
-  font-size: 0.74rem;
+  font-size: 0.65rem;
   margin-bottom: 0.7rem;
   border: 1px solid rgba(0, 0, 0, 0.06);
   font-weight: 600;
@@ -96,11 +96,11 @@
 }
 
 .formBox textarea {
-  padding: 0.65rem 0.85rem;
-  border: 1.5px solid rgba(90, 60, 20, 0.14);
-  border-radius: 11px;
+  padding: 0.48rem 0.65rem;
+  border: 1.5px solid rgba(42, 26, 14, 0.14);
+  border-radius: 8px;
   font-family: inherit;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   background: rgba(255, 255, 255, 0.92);
   resize: vertical;
   color: var(--ink);
@@ -108,8 +108,8 @@
 
 .formBox textarea:focus {
   outline: none;
-  border-color: #fbc300;
-  box-shadow: 0 0 0 3px rgba(251, 195, 0, 0.18);
+  border-color: #F4AE52;
+  box-shadow: 0 0 0 3px rgba(244, 174, 82, 0.18);
 }
 
 .submitBtn {
@@ -117,11 +117,11 @@
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  padding: 0.6rem 1.15rem;
-  background: #3a2a00;
-  color: #fff8e7;
+  padding: 0.4rem 0.85rem;
+  background: #2A1A0E;
+  color: #FEF3E2;
   border: none;
-  border-radius: 11px;
+  border-radius: 8px;
   font-family: inherit;
   font-size: 0.82rem;
   font-weight: 700;
@@ -147,8 +147,8 @@
   padding: 0.7rem 0.9rem;
   background: #e8f5e9;
   color: #2e7d32;
-  border-radius: 11px;
-  font-size: 0.8rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
   font-weight: 700;
   margin-top: 0.45rem;
   border: 1px solid #a5d6a7;
@@ -162,7 +162,7 @@
   background: #fde8ea;
   color: #c62828;
   border-radius: 9px;
-  font-size: 0.74rem;
+  font-size: 0.65rem;
   font-weight: 600;
   border: 1px solid #f5b7b1;
 }
@@ -187,7 +187,7 @@
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 700;
   margin-bottom: 0.6rem;
   color: var(--ink);
@@ -205,10 +205,10 @@
   align-items: center;
   gap: 0.45rem;
   padding: 0.4rem 0.65rem;
-  background: #fff7ec;
-  border: 1px solid rgba(90, 60, 20, 0.1);
+  background: #FEF3E2;
+  border: 1px solid rgba(42, 26, 14, 0.1);
   border-radius: 8px;
-  font-size: 0.74rem;
+  font-size: 0.65rem;
 }
 
 .newDocName {
@@ -244,7 +244,7 @@
   padding: 0.5rem 0.85rem;
   border-radius: 10px;
   font-family: inherit;
-  font-size: 0.74rem;
+  font-size: 0.65rem;
   font-weight: 700;
   cursor: pointer;
   border: none;
@@ -264,13 +264,13 @@
 }
 
 .uploadBtn {
-  background: linear-gradient(135deg, #ffd54a, #fbc300);
-  color: #3a2a00;
-  box-shadow: 0 4px 12px rgba(201, 120, 0, 0.22);
+  background: linear-gradient(135deg, #F4AE52, #F4AE52);
+  color: #2A1A0E;
+  box-shadow: 0 4px 12px rgba(212, 98, 26, 0.22);
 }
 
 .uploadBtn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #ffe082, #fbc300);
+  background: linear-gradient(135deg, #F4AE52, #F4AE52);
 }
 
 .uploadBtn:disabled {
@@ -286,7 +286,7 @@
   background: #e8f5e9;
   color: #2e7d32;
   border-radius: 8px;
-  font-size: 0.72rem;
+  font-size: 0.64rem;
   font-weight: 700;
   margin-top: 0.45rem;
 }

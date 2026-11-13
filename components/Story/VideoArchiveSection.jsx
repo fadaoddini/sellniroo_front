@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import {
   X,
   Plus,
@@ -28,14 +28,23 @@ import Config from '@/config/config'
 import {
   DEFAULT_VIDEO_INSTA_SETTINGS,
   fetchVideoInstaSettings,
-  buildVideoInstaCssVars,
 } from '@/services/videoInstaSettings'
+import {
+  mergeVideoArchiveWidgetSettings,
+  videoArchiveWidgetCssVars,
+} from '@/config/videoArchiveWidgetSettings'
 
-const VideoArchiveSection = () => {
+const VideoArchiveSection = ({ settings: widgetSettings = {} }) => {
   const { language } = useLanguage()
   const { user } = useAuth()
 
-  const [settings, setSettings] = useState(DEFAULT_VIDEO_INSTA_SETTINGS)
+  const [apiSettings, setApiSettings] = useState(DEFAULT_VIDEO_INSTA_SETTINGS)
+  const settings = useMemo(
+    () => mergeVideoArchiveWidgetSettings(apiSettings, widgetSettings),
+    [apiSettings, widgetSettings]
+  )
+  const pageSize = settings.count || 8
+
   const [videos, setVideos] = useState([])
   const [loading, setLoading] = useState(true)
   const [isInitialLoad, setIsInitialLoad] = useState(true)
@@ -55,7 +64,6 @@ const VideoArchiveSection = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalItems, setTotalItems] = useState(0)
-  const pageSize = 8
 
   const [newVideo, setNewVideo] = useState({
     title: '',
@@ -155,10 +163,13 @@ const VideoArchiveSection = () => {
   )
 
   useEffect(() => {
-    fetchVideos(1, true)
-    fetchVideoInstaSettings().then(setSettings)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchVideoInstaSettings().then(setApiSettings)
   }, [])
+
+  useEffect(() => {
+    fetchVideos(1, true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageSize])
 
   const playVideo = useCallback(
     (video, index) => {
@@ -456,7 +467,13 @@ const VideoArchiveSection = () => {
     play: language === 'fa' ? 'پخش' : 'Play',
   }
 
-  const themeStyle = buildVideoInstaCssVars(settings)
+  const themeStyle = videoArchiveWidgetCssVars(settings)
+  const cardStyleClass =
+    settings.card_style === 'rounded'
+      ? styles.cardStyleRounded
+      : settings.card_style === 'cinema'
+        ? styles.cardStyleCinema
+        : styles.cardStyleClassic
 
   const formatTime = (seconds) => {
     if (!seconds || isNaN(seconds)) return '0:00'
@@ -497,12 +514,19 @@ const VideoArchiveSection = () => {
     return rangeWithDots
   }
 
-  if (settings.show_desktop_section === false) return null
+  if (
+    settings.show_desktop_section === false ||
+    settings.show_on_desktop === false
+  ) {
+    return null
+  }
 
   if (loading && videos.length === 0) {
     return (
       <section
-        className={`${styles.section} ${styles.desktopOnly}`}
+        className={`${styles.section} ${styles.desktopOnly} ${
+          settings.section_full_bleed === false ? styles.sectionInset : ''
+        }`}
         style={themeStyle}
       >
         <div className="container">
@@ -522,17 +546,24 @@ const VideoArchiveSection = () => {
 
   return (
     <section
-      className={`${styles.section} ${styles.desktopOnly}`}
+      className={`${styles.section} ${styles.desktopOnly} ${
+        settings.section_full_bleed === false ? styles.sectionInset : ''
+      }`}
       style={themeStyle}
     >
       <div className="container">
         {showHeader && (
           <div className={styles.header}>
-            <div className={styles.headerText}>
+            <div
+              className={styles.headerText}
+              style={{ textAlign: 'var(--va-title-align)' }}
+            >
               {settings.show_title !== false && (
                 <h2
                   className={`${styles.title} ${
-                    settings.title_color ? styles.titleSolid : ''
+                    settings.title_color || settings.follow_site_theme !== false
+                      ? styles.titleSolid
+                      : ''
                   }`}
                 >
                   {t.title}
@@ -848,7 +879,7 @@ const VideoArchiveSection = () => {
                 </span>
               </div>
 
-              <div className={styles.videoGrid}>
+              <div className={`${styles.videoGrid} ${cardStyleClass}`}>
                 {videos.map((video, index) => (
                   <div
                     key={video.id}
@@ -915,7 +946,7 @@ const VideoArchiveSection = () => {
                 ))}
               </div>
 
-              {totalPages > 1 && (
+              {settings.show_pagination !== false && totalPages > 1 && (
                 <div className={styles.pagination}>
                   <button
                     className={styles.pageNavBtn}

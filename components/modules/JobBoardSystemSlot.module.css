@@ -9,12 +9,15 @@
 
 .inner {
   width: 100%;
-  max-width: var(--jb-max, 1200px);
+  max-width: var(--jb-max, var(--home-max-width, 1200px));
   margin-inline: auto;
+  box-sizing: border-box;
 }
 
 .wrap[data-section-full='1'] .inner {
-  max-width: none;
+  max-width: var(--jb-max, var(--home-max-width, 1200px));
+  width: 100%;
+  margin-inline: auto;
 }
 
 @media (max-width: 767px) {

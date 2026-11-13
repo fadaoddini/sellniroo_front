@@ -1,0 +1,177 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.stat {
+  background: #fff;
+  border: 1px solid rgba(20, 24, 31, 0.08);
+  border-radius: 12px;
+  padding: 0.7rem 0.8rem;
+}
+
+.stat strong {
+  display: block;
+  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+}
+
+.stat span {
+  font-size: 0.72rem;
+  color: #7a828e;
+  font-weight: 700;
+}
+
+.panel {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid rgba(20, 24, 31, 0.08);
+  padding: 1rem;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.grid2 label,
+.full {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #7a828e;
+}
+
+.full {
+  margin-top: 0.65rem;
+}
+
+.grid2 input,
+.full textarea,
+.searchRow input,
+.specRow input,
+.adjust input {
+  padding: 0.45rem 0.6rem;
+  border-radius: 10px;
+  border: 1px solid rgba(20, 24, 31, 0.12);
+  font: inherit;
+  font-size: 0.88rem;
+  color: #14181f;
+}
+
+.toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0.75rem 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.specRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+}
+
+.saveRow {
+  margin-top: 0.85rem;
+}
+
+.searchRow {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.searchRow input {
+  flex: 1;
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.card {
+  border: 1px solid rgba(20, 24, 31, 0.08);
+  border-radius: 12px;
+  padding: 0.75rem 0.85rem;
+  background: #fafbfc;
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.card p {
+  margin: 0.2rem 0;
+  font-size: 0.82rem;
+  color: #5b6575;
+}
+
+.badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(232, 184, 0, 0.16);
+  color: #8a6a00;
+}
+
+.adjust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.55rem;
+}
+
+.ok,
+.err,
+.muted {
+  margin: 0 0 0.65rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.ok {
+  color: #1a9a52;
+}
+.err {
+  color: #c62828;
+}
+.muted {
+  color: #7a828e;
+}
+
+@media (max-width: 720px) {
+  .grid2,
+  .specRow {
+    grid-template-columns: 1fr;
+  }
+}

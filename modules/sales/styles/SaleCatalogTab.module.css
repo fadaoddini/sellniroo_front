@@ -1,0 +1,281 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.head h2 {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.head p {
+  margin: 0.2rem 0 0;
+  font-size: 0.74rem;
+  color: #64748b;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.search {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  border-radius: 10px;
+  padding: 0.4rem 0.6rem;
+  color: #64748b;
+}
+
+.search input {
+  border: 0;
+  outline: none;
+  width: 100%;
+  font-family: var(--font-iran);
+  font-size: 0.8rem;
+  background: transparent;
+}
+
+.select {
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  border-radius: 10px;
+  padding: 0.4rem 0.65rem;
+  font-family: var(--font-iran);
+  font-size: 0.78rem;
+  min-width: 160px;
+}
+
+.primaryBtn,
+.ghostBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #334155;
+  font-family: var(--font-iran);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.42rem 0.75rem;
+  cursor: pointer;
+}
+
+.primaryBtn {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #fff;
+}
+
+.primaryBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.formCard,
+.tableCard {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.formCard {
+  padding: 0.75rem;
+}
+
+.formHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.55rem;
+}
+
+.formHead strong {
+  font-size: 0.8rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+}
+
+.field label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.field input,
+.field select {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.42rem 0.55rem;
+  font-family: var(--font-iran);
+  font-size: 0.78rem;
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  color: #334155;
+  min-height: 34px;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  margin-top: 0.65rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.76rem;
+}
+
+.table th {
+  text-align: right;
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 800;
+  padding: 0.55rem 0.65rem;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 0.55rem 0.65rem;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+  color: #1e293b;
+}
+
+.inactive td {
+  opacity: 0.55;
+}
+
+.title {
+  font-weight: 700;
+  max-width: 280px;
+}
+
+.price {
+  direction: ltr;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.notes {
+  color: #64748b;
+  max-width: 180px;
+}
+
+.badgeOn,
+.badgeOff {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 800;
+}
+
+.badgeOn {
+  background: #ecfdf5;
+  color: #0f766e;
+}
+
+.badgeOff {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.rowActions {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.iconBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 2rem 1rem;
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.msg,
+.err {
+  border-radius: 8px;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.74rem;
+}
+
+.msg {
+  background: #ecfdf5;
+  color: #0f766e;
+  border: 1px solid #99f6e4;
+}
+
+.err {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+@media (max-width: 720px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .table {
+    font-size: 0.7rem;
+  }
+}

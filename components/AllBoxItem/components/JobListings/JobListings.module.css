@@ -136,7 +136,7 @@
   width: 40px;
   height: 40px;
   border: 3px solid #f0f0f0;
-  border-top-color: #e67e22;
+  border-top-color: #D4621A;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-bottom: 16px;
@@ -181,7 +181,7 @@
 }
 
 .loadMoreState {
-  color: #e67e22;
+  color: #D4621A;
 }
 
 /* اسکلتون کارت — جایگزین نرم هنگام load more */

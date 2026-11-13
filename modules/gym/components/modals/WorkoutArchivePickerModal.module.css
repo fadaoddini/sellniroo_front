@@ -1,0 +1,254 @@
+.picker {
+  --ink: #10241c;
+  --muted: #4d6a5c;
+  --faint: #7a9487;
+  --accent: #046c4e;
+  --border: #d5e5db;
+  --soft: #eef6f1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: min(70vh, 580px);
+  font-family: var(--font-iran, iran, Tahoma, sans-serif);
+  color: var(--ink);
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.8rem;
+  background: var(--soft);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+}
+
+.searchBox:focus-within {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(4, 108, 78, 0.12);
+}
+
+.searchBox svg {
+  color: var(--faint);
+  flex-shrink: 0;
+}
+
+.searchBox input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.84rem;
+}
+
+.clearSearch {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--faint);
+  cursor: pointer;
+}
+
+.clearSearch:hover {
+  background: #e8f5ef;
+  color: var(--accent);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  overflow-y: auto;
+  padding: 0.15rem 0.1rem 0.35rem;
+  min-height: 180px;
+}
+
+.state,
+.stateError {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 2.2rem 1rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.state svg {
+  opacity: 0.35;
+  color: var(--accent);
+}
+
+.state small {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--faint);
+}
+
+.stateError {
+  color: #b91c1c;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  flex-wrap: wrap;
+}
+
+.cardMain {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.cardIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(165deg, #e8f5ef, #d1fae5);
+  color: var(--accent);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.cardInfo {
+  min-width: 0;
+  flex: 1;
+}
+
+.cardTitle {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.cardMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.25rem;
+}
+
+.cardMeta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.cardMeta svg {
+  color: var(--accent);
+}
+
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.deleteBtn {
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.deleteBtn:hover:not(:disabled) {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.deleteBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.applyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border: none;
+  border-radius: 9px;
+  background: linear-gradient(165deg, #10b981, #046c4e);
+  color: #fff;
+  font-size: 0.76rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.applyBtn:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.applyBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .card {
+    align-items: stretch;
+  }
+
+  .cardActions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .applyBtn {
+    flex: 1;
+    justify-content: center;
+  }
+}

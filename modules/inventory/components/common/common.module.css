@@ -1,0 +1,497 @@
+/* modules/inventory/components/common/common.module.css */
+
+/* ============================================
+   MODAL OVERLAY
+   ============================================ */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+  animation: overlayFadeIn 0.2s ease;
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ============================================
+   MODAL CONTAINER
+   ============================================ */
+.modal {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: modalSlideIn 0.2s ease;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+  display: flex;
+  flex-direction: column;
+  color: #0f172a;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ============================================
+   MODAL SIZES
+   ============================================ */
+.modalXs { max-width: 320px; }
+.modalSm { max-width: 400px; }
+.modalMd { max-width: 560px; }
+.modalLg { max-width: 720px; }
+.modalXl { max-width: 960px; }
+.modalFull { max-width: 98vw; max-height: 98vh; }
+
+@media (max-width: 640px) {
+  .modalXs { max-width: 95%; }
+  .modalSm { max-width: 95%; }
+  .modalMd { max-width: 95%; }
+  .modalLg { max-width: 95%; }
+  .modalXl { max-width: 98%; }
+  .modalFull { max-width: 100%; max-height: 100vh; border-radius: 0; }
+}
+
+/* ============================================
+   MODAL HEADER
+   ============================================ */
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+  flex-shrink: 0;
+  min-height: 48px;
+}
+
+.modalTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  font-family: var(--font-iran-extra);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modalTitle .titleIcon {
+  width: 24px;
+  height: 24px;
+  color: var(--primary);
+}
+
+.modalClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.modalClose:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--text-primary);
+  transform: rotate(90deg);
+}
+
+.modalClose:active {
+  transform: rotate(90deg) scale(0.92);
+}
+
+/* ============================================
+   MODAL BODY
+   ============================================ */
+.modalBody {
+  padding: 14px 16px;
+  overflow-y: auto;
+  flex: 1;
+  background: #ffffff;
+}
+
+.modalBody::-webkit-scrollbar {
+  width: 4px;
+}
+
+.modalBody::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modalBody::-webkit-scrollbar-thumb {
+  background: var(--macos-gray);
+  border-radius: 4px;
+}
+
+/* ============================================
+   MODAL FOOTER
+   ============================================ */
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 16px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.modalFooter .btn {
+  min-width: 100px;
+}
+
+.modalFooter .btn-primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-family: var(--font-iran);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modalFooter .btn-primary:hover:not(:disabled) {
+  
+  box-shadow: 0 4px 16px rgba(128, 0, 32, 0.3);
+}
+
+.modalFooter .btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--macos-border);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-family: var(--font-iran);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modalFooter .btn-secondary:hover:not(:disabled) {
+  background: var(--macos-bg);
+  border-color: var(--text-secondary);
+}
+
+.modalFooter .btn-danger {
+  background: var(--macos-red);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-family: var(--font-iran);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modalFooter .btn-danger:hover:not(:disabled) {
+  
+  box-shadow: 0 4px 16px rgba(255, 59, 48, 0.3);
+}
+
+.modalFooter .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ============================================
+   CONFIRM DIALOG
+   ============================================ */
+.confirmDialog {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.confirmIcon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: var(--macos-orange);
+}
+
+.confirmIcon .iconWrapper {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(255, 149, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirmIcon.danger {
+  color: var(--macos-red);
+}
+
+.confirmIcon.danger .iconWrapper {
+  background: rgba(255, 59, 48, 0.12);
+}
+
+.confirmIcon.success {
+  color: var(--macos-green);
+}
+
+.confirmIcon.success .iconWrapper {
+  background: rgba(52, 199, 89, 0.12);
+}
+
+.confirmIcon.info {
+  color: var(--macos-blue);
+}
+
+.confirmIcon.info .iconWrapper {
+  background: rgba(0, 122, 255, 0.12);
+}
+
+.confirmMessage {
+  font-size: 15px;
+  color: var(--text-primary);
+  font-family: var(--font-iran);
+  margin-bottom: 8px;
+  line-height: 1.7;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.confirmSubMessage {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+  margin-bottom: 24px;
+  line-height: 1.6;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.confirmActions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.confirmCancel {
+  padding: 10px 28px;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  background: var(--macos-card);
+  color: var(--text-primary);
+  font-family: var(--font-iran);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.confirmCancel:hover:not(:disabled) {
+  background: var(--macos-bg);
+  border-color: var(--text-secondary);
+}
+
+.confirmCancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.confirmBtn {
+  padding: 10px 28px;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-family: var(--font-iran);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.confirmDanger {
+  background: var(--macos-red);
+}
+
+.confirmDanger:hover:not(:disabled) {
+  background: #e0352b;
+  
+  box-shadow: 0 4px 16px rgba(255, 59, 48, 0.3);
+}
+
+.confirmSuccess {
+  background: var(--macos-green);
+}
+
+.confirmSuccess:hover:not(:disabled) {
+  background: #2db84d;
+  
+  box-shadow: 0 4px 16px rgba(52, 199, 89, 0.3);
+}
+
+.confirmPrimary {
+  background: var(--primary);
+}
+
+.confirmPrimary:hover:not(:disabled) {
+  background: var(--primary-dark);
+  
+  box-shadow: 0 4px 16px rgba(128, 0, 32, 0.3);
+}
+
+.confirmBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ============================================
+   SPINNER
+   ============================================ */
+.spinnerSmall {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .modalOverlay {
+    padding: 12px;
+  }
+
+  .modal {
+    border-radius: 10px;
+  }
+
+  .modalHeader {
+    padding: 14px 16px;
+    min-height: 56px;
+  }
+
+  .modalBody {
+    padding: 16px;
+  }
+
+  .modalFooter {
+    padding: 12px 16px;
+    flex-direction: column;
+  }
+
+  .modalFooter .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .modalTitle {
+    font-size: 16px;
+  }
+
+  .confirmActions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .confirmCancel,
+  .confirmBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .confirmMessage {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modalOverlay {
+    padding: 8px;
+  }
+
+  .modal {
+    border-radius: 8px;
+  }
+
+  .modalHeader {
+    padding: 10px 12px;
+    min-height: 48px;
+  }
+
+  .modalBody {
+    padding: 12px;
+  }
+
+  .modalFooter {
+    padding: 10px 12px;
+  }
+
+  .modalTitle {
+    font-size: 14px;
+  }
+
+  .modalClose {
+    width: 30px;
+    height: 30px;
+  }
+
+  .modalClose svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .confirmIcon .iconWrapper {
+    width: 56px;
+    height: 56px;
+  }
+
+  .confirmIcon svg {
+    width: 28px;
+    height: 28px;
+  }
+}

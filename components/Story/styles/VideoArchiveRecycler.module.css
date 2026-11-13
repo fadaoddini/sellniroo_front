@@ -1,0 +1,517 @@
+/* آرشیو ویدیویی ریسایکلر — اسکرول افقی با تم کرم/طلایی */
+
+.section {
+  --va-accent: #d4621a;
+  --va-accent-2: #f4ae52;
+  --va-bg-from: #fef3e2;
+  --va-bg-to: #fff8ec;
+  --va-ink: #2a1a0e;
+  --va-muted: #6b5344;
+  --va-line: rgba(42, 26, 14, 0.1);
+  --va-surface: #ffffff;
+  --vr-visible: 4;
+  --vr-gap: 12px;
+  --vr-edge: 6px;
+  --vr-card-r: 14px;
+  --vr-card-w: calc(
+    (100% - (2 * var(--vr-edge)) - (var(--vr-gap) * (var(--vr-visible) - 1))) /
+      var(--vr-visible)
+  );
+
+  padding: var(--va-pt, 22px) var(--va-pr, 0) var(--va-pb, 24px) var(--va-pl, 0);
+  margin: var(--va-mt, 0) var(--va-mr, 0) var(--va-mb, 0) var(--va-ml, 0);
+  border-radius: var(--va-sec-r, 16px);
+  background:
+    radial-gradient(
+      ellipse 55% 45% at 92% 0%,
+      color-mix(in srgb, var(--va-accent-2) 22%, transparent),
+      transparent 58%
+    ),
+    linear-gradient(165deg, var(--va-bg-from), var(--va-bg-to));
+  color: var(--va-ink);
+  border: 1px solid var(--va-line);
+  box-shadow: 0 6px 18px rgba(80, 50, 0, 0.045);
+  direction: rtl;
+  position: relative;
+  overflow: hidden;
+}
+
+.bleed {
+  width: 100%;
+}
+
+.inner {
+  max-width: var(--home-max-width, 1200px);
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--home-gutter, 16px);
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.headerMain {
+  flex: 1;
+  min-width: 0;
+  text-align: var(--va-title-align, right);
+}
+
+.viewAll {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--va-accent) 28%, transparent);
+  background: color-mix(in srgb, var(--va-accent-2) 22%, #fff);
+  color: var(--va-accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: var(--font-iran), Tahoma, sans-serif;
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.viewAll:hover {
+  background: linear-gradient(135deg, var(--va-accent-2), var(--va-accent));
+  border-color: transparent;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.title {
+  margin: 0 0 0.2rem;
+  font-size: var(--va-title-fs, 22px);
+  font-weight: var(--va-title-fw, 800);
+  font-family: var(
+    --va-title-ff,
+    var(--font-edameh),
+    var(--font-iran),
+    Tahoma,
+    sans-serif
+  );
+  color: var(--va-title-solid, var(--va-ink));
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: var(--va-sub-fs, 13px);
+  color: var(--va-subtitle-c, var(--va-muted));
+  font-family: var(--font-iran), Tahoma, sans-serif;
+  line-height: 1.5;
+}
+
+.shell {
+  position: relative;
+}
+
+.nav {
+  position: absolute;
+  z-index: 8;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--va-accent-2) 40%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, #fef3e2 88%, transparent);
+  color: var(--va-ink);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 3px 12px rgba(42, 26, 14, 0.12);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.nav:hover {
+  background: var(--va-accent-2);
+  transform: translateY(-50%) scale(1.04);
+}
+
+.navPrev {
+  inset-inline-start: 2px;
+}
+
+.navNext {
+  inset-inline-end: 2px;
+}
+
+.track {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: var(--vr-gap);
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px var(--vr-edge) 6px;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--vr-edge);
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.trackDrag {
+  cursor: grab;
+}
+
+.trackDrag:active {
+  cursor: grabbing;
+}
+
+.card {
+  flex: 0 0 var(--vr-card-w);
+  width: var(--vr-card-w);
+  max-width: var(--vr-card-w);
+  scroll-snap-align: start;
+  border: 1px solid color-mix(in srgb, var(--va-ink) 8%, transparent);
+  border-radius: var(--vr-card-r);
+  background: transparent;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: right;
+  display: block;
+  box-shadow: 0 4px 14px rgba(80, 50, 0, 0.07);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+  font: inherit;
+  color: inherit;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--va-accent) 35%, transparent);
+  box-shadow: 0 10px 22px rgba(80, 50, 0, 0.12);
+}
+
+.cardTall .thumb {
+  aspect-ratio: 3 / 4;
+  max-height: 220px;
+}
+
+.cardWide .thumb {
+  aspect-ratio: 16 / 9;
+  max-height: 168px;
+}
+
+.thumb {
+  position: relative;
+  display: block;
+  width: 100%;
+  background: #1a120c;
+  overflow: hidden;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.45s ease;
+}
+
+.card:hover .thumb img {
+  transform: scale(1.04);
+}
+
+.thumbFallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(254, 243, 226, 0.4);
+  background: linear-gradient(145deg, #3a2818, #1a120c);
+}
+
+.playBadge {
+  position: absolute;
+  inset-inline-start: 10px;
+  top: 10px;
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, #2a1a0e 42%, transparent);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.card:hover .playBadge {
+  background: linear-gradient(135deg, var(--va-accent-2), var(--va-accent));
+  border-color: transparent;
+  transform: scale(1.05);
+}
+
+.meta {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 1.65rem 0.7rem 0.65rem;
+  background: linear-gradient(
+    to top,
+    rgba(20, 12, 6, 0.88) 0%,
+    rgba(20, 12, 6, 0.45) 55%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.cardTitle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: var(
+    --va-card-title-ff,
+    var(--font-iran),
+    Tahoma,
+    sans-serif
+  );
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+.views {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.78);
+  font-family: var(--font-iran), Tahoma, sans-serif;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  color: var(--va-muted);
+}
+
+.spinner {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.hideMobile {
+  /* overridden below */
+}
+
+.hideDesktop {
+  /* overridden below */
+}
+
+@media (max-width: 767px) {
+  .section {
+    --vr-visible: 1.45;
+    --vr-card-w: min(46vw, 168px);
+    padding-top: 16px;
+    padding-bottom: 18px;
+  }
+
+  .cardTall .thumb {
+    max-height: 188px;
+  }
+
+  .cardWide .thumb {
+    max-height: 132px;
+  }
+
+  .nav {
+    width: 28px;
+    height: 28px;
+  }
+
+  .hideMobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .hideDesktop {
+    display: none !important;
+  }
+}
+
+/* Viewer modal */
+.viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.viewerBackdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(20, 12, 6, 0.72);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+}
+
+.viewerPanel {
+  position: relative;
+  z-index: 1;
+  width: min(420px, 100%);
+  background: #120c08;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(244, 174, 82, 0.28);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  color: #fef3e2;
+}
+
+.viewerTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 0.85rem;
+}
+
+.viewerTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: var(--font-iran), Tahoma, sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.viewerActions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.viewerBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fef3e2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.viewerStage {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  background: #000;
+  cursor: pointer;
+}
+
+.viewerVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.viewerPlay {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--va-accent-2, #f4ae52), var(--va-accent, #d4621a));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 28px rgba(212, 98, 26, 0.45);
+}
+
+.viewerBar {
+  padding: 0.65rem 0.85rem 0.9rem;
+}
+
+.viewerProgress {
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  overflow: hidden;
+  margin-bottom: 0.65rem;
+}
+
+.viewerProgress i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #f4ae52, #d4621a);
+  border-radius: inherit;
+}
+
+.viewerNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  font-family: var(--font-iran), Tahoma, sans-serif;
+  color: rgba(254, 243, 226, 0.75);
+}
+
+.viewerNav button {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fef3e2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}

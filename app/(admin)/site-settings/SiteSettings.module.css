@@ -281,6 +281,75 @@
 .iconContact { background: #e3f2fd; color: #1565c0; }
 .iconSeo { background: #e8f5e9; color: #2e7d32; }
 .iconSocial { background: #f3e5f5; color: #7b1fa2; }
+.iconBackup { background: #e0f2f1; color: #00695c; }
+
+.backupRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.backupBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: start;
+  padding: 14px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, #fffef9 0%, #fff8e8 100%);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.backupBtn:hover:not(:disabled) {
+  border-color: rgba(194, 120, 0, 0.35);
+  box-shadow: 0 8px 20px rgba(194, 120, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.backupBtn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.backupBtnIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #e0f2f1;
+  color: #00695c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.backupBtnText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.backupBtnText strong {
+  font-size: 13px;
+  font-family: var(--font-edameh);
+}
+
+.backupBtnText small {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.backupBtnArrow {
+  color: var(--gold-dark);
+  flex-shrink: 0;
+}
 
 .sectionTitle {
   margin: 0 0 3px;
@@ -720,6 +789,7 @@
 
 @media (max-width: 640px) {
   .formRow { grid-template-columns: 1fr; }
+  .backupRow { grid-template-columns: 1fr; }
   .mediaBlock { grid-template-columns: 1fr; }
   .headerActions .headerGhost,
   .headerActions .headerPrimary {

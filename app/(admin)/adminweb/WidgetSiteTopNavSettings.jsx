@@ -1,8 +1,13 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { ChevronDown, Monitor, Smartphone } from 'lucide-react'
+import {
+  ChevronDown,
+  ChevronUp,
+  Monitor,
+  Smartphone,
+} from 'lucide-react'
 import {
   SITE_TOP_NAV_COLOR_FIELDS,
   SITE_TOP_NAV_DEVICES,
@@ -11,11 +16,19 @@ import {
   SITE_TOP_NAV_ALIGNS,
   SITE_TOP_NAV_SPACE_FIELDS,
   DEFAULT_SITE_TOP_NAV_WIDGET_SETTINGS,
+  SITE_TOP_NAV_MOBILE_STYLE_OPTIONS,
   buildSiteTopNavViewportPatch,
   getSiteTopNavVisibilityFlags,
+  normalizeMobileCenterItemId,
+  normalizeMobileNavItemIds,
+  normalizeMobileNavStyle,
   normalizeSiteTopNavSettings,
   snapshotSiteTopNavViewportSettings,
 } from '@/config/siteTopNavWidgetSettings'
+import {
+  fetchHeaderMenu,
+  sortHeaderMenuItems,
+} from '@/services/headerMenu'
 import styles from './AdminWeb.module.css'
 
 function Toggle({ checked, onChange, label, hint }) {
@@ -163,13 +176,91 @@ export default function WidgetSiteTopNavSettings({
   const rawSettings = raw || DEFAULT_SITE_TOP_NAV_WIDGET_SETTINGS
   const [device, setDevice] = useState('desktop')
   const [openId, setOpenId] = useState('mobileNav')
+  const [headerItems, setHeaderItems] = useState([])
   const visibility = getSiteTopNavVisibilityFlags(rawSettings)
   const settings = normalizeSiteTopNavSettings(rawSettings, {
     viewport: device,
   })
+  const selectedMobileIds = normalizeMobileNavItemIds(
+    rawSettings.mobile_nav_item_ids
+  )
+  const manualMobileItems = Array.isArray(selectedMobileIds)
+  const mobileNavStyle = normalizeMobileNavStyle(rawSettings.mobile_nav_style)
+  const mobileCenterItemId = normalizeMobileCenterItemId(
+    rawSettings.mobile_center_item_id
+  )
+  const mobileCatalog = useMemo(
+    () => sortHeaderMenuItems(headerItems || [], 'mobile'),
+    [headerItems]
+  )
+  const mobileActiveCatalog = useMemo(
+    () => mobileCatalog.filter((item) => item.is_active !== false),
+    [mobileCatalog]
+  )
+  const centerCandidateItems = useMemo(() => {
+    if (!selectedMobileIds?.length) return mobileActiveCatalog
+    const map = new Map(mobileActiveCatalog.map((item) => [Number(item.id), item]))
+    return selectedMobileIds
+      .map((id) => map.get(Number(id)))
+      .filter(Boolean)
+  }, [mobileActiveCatalog, selectedMobileIds])
+
+  useEffect(() => {
+    let cancelled = false
+    fetchHeaderMenu({ force: true, activeOnly: false })
+      .then((list) => {
+        if (!cancelled) setHeaderItems(Array.isArray(list) ? list : [])
+      })
+      .catch(() => {
+        if (!cancelled) setHeaderItems([])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const patch = (key, value) => {
     onChange(buildSiteTopNavViewportPatch(rawSettings, device, key, value))
+  }
+
+  const setMobileNavIds = (ids) => {
+    onChange({ mobile_nav_item_ids: normalizeMobileNavItemIds(ids) })
+  }
+
+  const toggleMobileNavId = (id, checked) => {
+    const n = Number(id)
+    if (!Number.isFinite(n)) return
+    const current = selectedMobileIds ? [...selectedMobileIds] : []
+    if (checked) {
+      if (!current.includes(n)) current.push(n)
+      setMobileNavIds(current)
+      return
+    }
+    setMobileNavIds(current.filter((x) => x !== n))
+  }
+
+  const moveMobileNavId = (id, dir) => {
+    if (!selectedMobileIds?.length) return
+    const idx = selectedMobileIds.indexOf(Number(id))
+    if (idx < 0) return
+    const next = [...selectedMobileIds]
+    const swap = idx + dir
+    if (swap < 0 || swap >= next.length) return
+    ;[next[idx], next[swap]] = [next[swap], next[idx]]
+    setMobileNavIds(next)
+  }
+
+  const enableManualMobileItems = (on) => {
+    if (!on) {
+      onChange({ mobile_nav_item_ids: null })
+      return
+    }
+    const defaults = mobileCatalog
+      .filter((item) => item.is_active !== false)
+      .slice(0, 5)
+      .map((item) => Number(item.id))
+      .filter((n) => Number.isFinite(n) && n > 0)
+    setMobileNavIds(defaults)
   }
 
   const copyDesktopToMobile = () => {
@@ -253,7 +344,7 @@ export default function WidgetSiteTopNavSettings({
             checked={!!settings.mobile_bottom_nav}
             onChange={(v) => patch('mobile_bottom_nav', v)}
             label="منوی پایین موبایل"
-            hint="ظاهر و لینک‌ها از داشبورد /header-menu"
+            hint="ظاهر از داشبورد /header-menu?tab=mobile"
           />
           <Toggle
             checked={!!settings.mobile_show_top}
@@ -268,9 +359,165 @@ export default function WidgetSiteTopNavSettings({
             hint="برای ویوپورت فعلی (دسکتاپ یا موبایل)"
           />
         </div>
-        <Link href="/header-menu?tab=mobile" className={styles.wsGhostLink}>
-          تنظیم ظاهر منوی پایین در داشبورد
-        </Link>
+
+        {settings.mobile_bottom_nav ? (
+          <>
+            <p className={`${styles.wsMiniLabel} ${styles.wsMiniLabelSpaced}`}>
+              ظاهر منوی پایین
+            </p>
+            <p className={styles.wsHint}>
+              بعد از انتخاب، چیدمان صفحه را ذخیره کنید. اگر «مثل داشبورد» است،
+              استایل را از /header-menu تب موبایل ذخیره کنید.
+            </p>
+            <div className={styles.wsMobileStyleGrid}>
+              {SITE_TOP_NAV_MOBILE_STYLE_OPTIONS.map((opt) => {
+                const active =
+                  (mobileNavStyle == null && opt.id == null) ||
+                  mobileNavStyle === opt.id
+                return (
+                  <button
+                    key={String(opt.id)}
+                    type="button"
+                    className={`${styles.wsMobileStyleCard} ${
+                      active ? styles.wsMobileStyleCardOn : ''
+                    }`}
+                    onClick={() =>
+                      onChange({
+                        mobile_bottom_nav: true,
+                        mobile_nav_style: opt.id,
+                        ...(opt.id !== 'center_circle'
+                          ? { mobile_center_item_id: null }
+                          : {}),
+                      })
+                    }
+                  >
+                    <strong>{opt.label}</strong>
+                    <span>{opt.hint}</span>
+                  </button>
+                )
+              })}
+            </div>
+
+            {mobileNavStyle === 'center_circle' ? (
+              <>
+                <p className={`${styles.wsMiniLabel} ${styles.wsMiniLabelSpaced}`}>
+                  آیتم دایره وسط
+                </p>
+                <select
+                  className={styles.wsSelect}
+                  value={mobileCenterItemId ?? ''}
+                  onChange={(e) => {
+                    const v = e.target.value
+                    onChange({
+                      mobile_center_item_id:
+                        v === '' ? null : Number(v),
+                    })
+                  }}
+                >
+                  <option value="">خودکار / مثل داشبورد</option>
+                  {centerCandidateItems.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.label_fa || item.label_en || item.href}
+                    </option>
+                  ))}
+                </select>
+              </>
+            ) : null}
+
+            <p className={`${styles.wsMiniLabel} ${styles.wsMiniLabelSpaced}`}>
+              آیتم‌های منوی پایین
+            </p>
+            <div className={styles.wsStack}>
+              <Toggle
+                checked={manualMobileItems}
+                onChange={enableManualMobileItems}
+                label="انتخاب دستی از داشبورد"
+                hint="خاموش = همهٔ آیتم‌های فعال به ترتیب تب موبایل"
+              />
+            </div>
+
+            {manualMobileItems ? (
+              <div className={styles.wsNavPickList}>
+                {mobileCatalog.length === 0 ? (
+                  <p className={styles.wsHint}>
+                    هنوز آیتمی در منوی هدر نیست. از داشبورد اضافه کنید.
+                  </p>
+                ) : (
+                  mobileCatalog.map((item) => {
+                    const id = Number(item.id)
+                    const checked = selectedMobileIds.includes(id)
+                    const orderIdx = checked
+                      ? selectedMobileIds.indexOf(id)
+                      : -1
+                    const inactive = item.is_active === false
+                    return (
+                      <div
+                        key={item.id}
+                        className={`${styles.wsNavPickRow} ${
+                          inactive ? styles.wsNavPickRowOff : ''
+                        }`}
+                      >
+                        <label className={styles.wsNavPickCheck}>
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            disabled={inactive}
+                            onChange={(e) =>
+                              toggleMobileNavId(id, e.target.checked)
+                            }
+                          />
+                          <span>
+                            {item.label_fa || item.label_en || item.href}
+                            {inactive ? ' (غیرفعال)' : ''}
+                          </span>
+                        </label>
+                        {checked ? (
+                          <div className={styles.wsNavPickOrder}>
+                            <span>{orderIdx + 1}</span>
+                            <button
+                              type="button"
+                              className={styles.wsTinyBtn}
+                              aria-label="بالا"
+                              disabled={orderIdx <= 0}
+                              onClick={() => moveMobileNavId(id, -1)}
+                            >
+                              <ChevronUp size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              className={styles.wsTinyBtn}
+                              aria-label="پایین"
+                              disabled={
+                                orderIdx < 0 ||
+                                orderIdx >= selectedMobileIds.length - 1
+                              }
+                              onClick={() => moveMobileNavId(id, 1)}
+                            >
+                              <ChevronDown size={12} />
+                            </button>
+                          </div>
+                        ) : null}
+                      </div>
+                    )
+                  })
+                )}
+                {selectedMobileIds?.length > 5 ? (
+                  <p className={styles.wsHint}>
+                    معمولاً تا ۵ آیتم در نوار پایین نمایش داده می‌شود
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+
+            <Link href="/header-menu?tab=mobile" className={styles.wsGhostLink}>
+              مدیریت آیتم‌ها و ظاهر در داشبورد
+            </Link>
+          </>
+        ) : (
+          <Link href="/header-menu?tab=mobile" className={styles.wsGhostLink}>
+            تنظیم ظاهر منوی پایین در داشبورد
+          </Link>
+        )}
       </Accordion>
 
       <Accordion id="content" title="محتوا و برند" openId={openId} setOpenId={setOpenId}>

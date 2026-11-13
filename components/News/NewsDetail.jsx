@@ -44,6 +44,7 @@ import {
 } from '@/config/homeLayout';
 import PageBuilderRenderer from '@/components/layout/PageBuilderRenderer';
 import { iranShareTargets } from '@/utils/iranShare';
+import { getNewsHref, getNewsSlug } from '@/utils/newsSlug';
 import styles from './NewsDetail.module.css';
 
 // ✅ لینک ثابت به صفحه ال‌اس‌اف
@@ -391,8 +392,9 @@ const NewsDetail = ({ slug }) => {
           // دریافت کامنت‌ها از API
           await fetchComments(result.data.id);
           
-          // افزایش بازدید
-          await newsService.incrementView(slug).catch(() => {});
+          // افزایش بازدید (slug یا id)
+          const key = getNewsSlug(result.data) || slug;
+          await newsService.incrementView(key).catch(() => {});
         } else {
           setError(result.error || 'خبر یافت نشد');
         }
@@ -425,7 +427,8 @@ const NewsDetail = ({ slug }) => {
 
   // لایک کردن خبر
   const handleLike = useCallback(async () => {
-    if (!slug) return;
+    const key = getNewsSlug(news) || slug;
+    if (!key) return;
     
     try {
       if (liked) {
@@ -434,7 +437,7 @@ const NewsDetail = ({ slug }) => {
       } else {
         setLikeCount(prev => prev + 1);
         setLiked(true);
-        await newsService.incrementLike(slug);
+        await newsService.incrementLike(key);
       }
     } catch (error) {
       console.error('Error toggling like:', error);
@@ -446,7 +449,7 @@ const NewsDetail = ({ slug }) => {
         setLiked(false);
       }
     }
-  }, [slug, liked]);
+  }, [news, slug, liked]);
 
   useEffect(() => {
     if (!shareOpen) return undefined;
@@ -461,18 +464,20 @@ const NewsDetail = ({ slug }) => {
 
   // باز/بسته منوی اشتراک + شمارش
   const handleShareToggle = useCallback(async () => {
-    if (!slug) return;
+    const key = getNewsSlug(news) || slug;
+    if (!key) return;
     setShareOpen((v) => !v);
     try {
-      await newsService.incrementShare(slug);
+      await newsService.incrementShare(key);
     } catch {
       /* ignore */
     }
-  }, [slug]);
+  }, [news, slug]);
 
   const handleCopyShare = useCallback(async () => {
-    if (!slug) return;
-    const url = `${window.location.origin}/news/${slug}`;
+    const href = news ? getNewsHref(news) : slug ? `/news/${slug}` : '';
+    if (!href) return;
+    const url = `${window.location.origin}${href}`;
     try {
       await navigator.clipboard.writeText(url);
       setShareCopied(true);
@@ -481,7 +486,7 @@ const NewsDetail = ({ slug }) => {
     } catch {
       setToast({ message: 'کپی لینک ناموفق بود', type: 'error' });
     }
-  }, [slug]);
+  }, [news, slug]);
 
   // ارسال کامنت
   const handleSubmitComment = useCallback(async () => {
@@ -729,9 +734,10 @@ const NewsDetail = ({ slug }) => {
     STATUS_BADGE_CLASS[status] || styles.badgeStatusNeutral;
 
   const ps = pageSettings;
+  const canonicalPath = news ? getNewsHref(news) : slug ? `/news/${slug}` : '';
   const shareUrl =
-    typeof window !== 'undefined' && slug
-      ? `${window.location.origin}/news/${slug}`
+    typeof window !== 'undefined' && canonicalPath
+      ? `${window.location.origin}${canonicalPath}`
       : '';
   const shareTargets = iranShareTargets(shareUrl, news?.title || 'خبر', {
     share_bale: ps.share_bale,
@@ -926,7 +932,7 @@ const NewsDetail = ({ slug }) => {
               },
               "mainEntityOfPage": {
                 "@type": "WebPage",
-                "@id": `${baseUrl}/news/${slug}`
+                "@id": `${baseUrl}${canonicalPath || `/news/${slug}`}`
               },
               "image": displayImage ? [displayImage] : undefined
             })

@@ -5,11 +5,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import {
-  Home, Info, Briefcase, Newspaper, PlusCircle, HelpCircle, GraduationCap,
-  Building2, Users, Phone, Search, LayoutDashboard,
-  Calculator, Target, Zap, Award, Shield, User as UserIcon,
-} from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import {
   fetchHeaderMenu,
@@ -25,32 +20,11 @@ import {
   DEFAULT_CORPORATE_APPEARANCE,
   corporateMobileStyle,
 } from '@/services/corporateAppearance'
+import { resolveHeaderMenuIcon } from '@/config/headerMenuIcons'
 import styles from './CorporateMobileNav.module.css'
 
-const ICON_MAP = {
-  Home,
-  Info,
-  Briefcase,
-  Newspaper,
-  PlusCircle,
-  HelpCircle,
-  GraduationCap,
-  Building2,
-  Users,
-  Phone,
-  Search,
-  LayoutDashboard,
-  Calculator,
-  Target,
-  Zap,
-  Award,
-  Shield,
-  User: UserIcon,
-  UserIcon,
-}
-
 function resolveIcon(name) {
-  return ICON_MAP[name] || Home
+  return resolveHeaderMenuIcon(name)
 }
 
 function matchPath(pathname, href) {
@@ -85,18 +59,26 @@ export default function CorporateMobileNav() {
     fetchSiteModules({ force: true }).then(({ map }) => {
       if (!cancelled) setModuleMap(map || {})
     }).catch(() => {})
-    fetchCorporateAppearance({ force: true }).then((data) => {
-      if (!cancelled) setAppearance(data)
-    })
+    const loadAppearance = () => {
+      fetchCorporateAppearance({ force: true }).then((data) => {
+        if (!cancelled) setAppearance(data)
+      })
+    }
+    loadAppearance()
     const onModules = () => {
       fetchSiteModules({ force: true })
         .then(({ map }) => setModuleMap(map || {}))
         .catch(() => {})
     }
+    const onAppear = () => {
+      if (!cancelled) loadAppearance()
+    }
     window.addEventListener('site-modules-changed', onModules)
+    window.addEventListener('corporate-appearance-changed', onAppear)
     return () => {
       cancelled = true
       window.removeEventListener('site-modules-changed', onModules)
+      window.removeEventListener('corporate-appearance-changed', onAppear)
     }
   }, [])
 

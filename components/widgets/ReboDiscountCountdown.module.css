@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@500;600;700;800&display=swap');
+
+.banner {
+  --disc-accent: #26a680;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.7rem 0.75rem 0.75rem;
+  border-radius: 0.95rem;
+  overflow: hidden;
+  font-family: 'Vazirmatn', var(--font-iran, sans-serif);
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      color-mix(in srgb, var(--disc-accent) 22%, transparent),
+      transparent 55%
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--disc-accent) 12%, #fff),
+      #fff 60%
+    );
+  border: 1px solid color-mix(in srgb, var(--disc-accent) 28%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 8px 18px color-mix(in srgb, var(--disc-accent) 12%, transparent);
+}
+
+.banner::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--disc-accent),
+    color-mix(in srgb, var(--disc-accent) 20%, transparent)
+  );
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 980px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(
+    145deg,
+    var(--disc-accent),
+    color-mix(in srgb, var(--disc-accent) 70%, #0f2922)
+  );
+  box-shadow: 0 6px 14px color-mix(in srgb, var(--disc-accent) 35%, transparent);
+}
+
+.badgeDot {
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
+  animation: discPulse 1.6s ease-in-out infinite;
+}
+
+.until {
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: rgba(15, 41, 34, 0.58);
+  line-height: 1.35;
+}
+
+.countdown {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 0.4rem 0.2rem;
+  border-radius: 0.7rem;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid color-mix(in srgb, var(--disc-accent) 16%, transparent);
+  box-shadow: 0 4px 10px rgba(15, 41, 34, 0.04);
+}
+
+.unit strong {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #0f2922;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.unit span {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: rgba(15, 41, 34, 0.55);
+}
+
+@keyframes discPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(0.85);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badgeDot {
+    animation: none;
+  }
+}

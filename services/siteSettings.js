@@ -16,6 +16,31 @@ import {
   normalizeShopListLayout,
 } from '@/config/homeLayout'
 import {
+  MODULE_PAGE_DEFS,
+  normalizeModulePageLayout,
+  normalizeModulePageLayoutsMap,
+  getModulePageDef,
+} from '@/config/modulePageLayouts'
+import {
+  DEFAULT_REBO_PRICING,
+  normalizeReboPricing,
+} from '@/config/reboPricing'
+import {
+  DEFAULT_PROFILE_LAYOUT,
+  normalizeProfileLayout,
+} from '@/config/profileLayout'
+import {
+  DEFAULT_CHECKOUT_PIPELINES,
+  normalizeCheckoutPipelines,
+} from '@/config/checkoutPipelines'
+import {
+  normalizeProductSingleLayoutsMap,
+  normalizeShopListLayoutsMap,
+  resolveActiveShopLayoutMode,
+  resolveProductSingleLayoutForMode,
+  resolveShopListLayoutForMode,
+} from '@/config/shopLayoutModes'
+import {
   DEFAULT_NEWS_SINGLE_PAGE_SETTINGS,
   normalizeNewsSinglePageSettings,
 } from '@/config/newsSinglePageSettings'
@@ -27,6 +52,11 @@ import {
   DEFAULT_PRODUCT_SINGLE_PAGE_SETTINGS,
   normalizeProductSinglePageSettings,
 } from '@/config/productSinglePageSettings'
+import {
+  buildSyncedLayoutsFromHome,
+  describeChromeFromHome,
+  deriveJobSinglePageColorsFromHome,
+} from '@/config/chromeThemeSync'
 
 export const DEFAULT_SITE_SETTINGS = {
   site_name: 'سلنیرو',
@@ -85,7 +115,13 @@ export const DEFAULT_SITE_SETTINGS = {
   job_single_layout: { ...DEFAULT_JOB_SINGLE_LAYOUT },
   product_single_page: { ...DEFAULT_PRODUCT_SINGLE_PAGE_SETTINGS },
   product_single_layout: { ...DEFAULT_PRODUCT_SINGLE_LAYOUT },
+  product_single_layouts: {},
   shop_list_layout: { ...DEFAULT_SHOP_LIST_LAYOUT },
+  shop_list_layouts: {},
+  module_page_layouts: {},
+  rebo_pricing: { ...DEFAULT_REBO_PRICING },
+  profile_layout: { ...DEFAULT_PROFILE_LAYOUT, sections: { ...DEFAULT_PROFILE_LAYOUT.sections } },
+  checkout_pipelines: normalizeCheckoutPipelines(DEFAULT_CHECKOUT_PIPELINES),
 }
 
 const resolveAsset = (src) => {
@@ -153,8 +189,26 @@ export const normalizeSiteSettings = (raw = {}) => {
   data.product_single_layout = normalizeProductSingleLayout(
     raw.product_single_layout || data.product_single_layout
   )
+  data.product_single_layouts = normalizeProductSingleLayoutsMap(
+    raw.product_single_layouts || data.product_single_layouts
+  )
   data.shop_list_layout = normalizeShopListLayout(
     raw.shop_list_layout || data.shop_list_layout
+  )
+  data.shop_list_layouts = normalizeShopListLayoutsMap(
+    raw.shop_list_layouts || data.shop_list_layouts
+  )
+  data.module_page_layouts = normalizeModulePageLayoutsMap(
+    raw.module_page_layouts || data.module_page_layouts
+  )
+  data.rebo_pricing = normalizeReboPricing(
+    raw.rebo_pricing || data.rebo_pricing
+  )
+  data.profile_layout = normalizeProfileLayout(
+    raw.profile_layout || data.profile_layout
+  )
+  data.checkout_pipelines = normalizeCheckoutPipelines(
+    raw.checkout_pipelines || data.checkout_pipelines
   )
   return data
 }
@@ -162,7 +216,9 @@ export const normalizeSiteSettings = (raw = {}) => {
 let cache = null
 let inflight = null
 let cacheAt = 0
-const TTL_MS = 60_000
+/** کش مرورگر کوتاه؛ روی سرور اصلاً کش نکن تا SSR کهنه نباشد */
+const TTL_MS = 8_000
+const SETTINGS_BUST_KEY = 'site-settings-bust'
 
 export const clearSiteSettingsCache = () => {
   cache = null
@@ -170,9 +226,23 @@ export const clearSiteSettingsCache = () => {
   inflight = null
 }
 
+function rememberSettingsCache(data, { broadcast = false } = {}) {
+  cache = data
+  cacheAt = Date.now()
+  if (!broadcast || typeof window === 'undefined') return data
+  try {
+    window.localStorage.setItem(SETTINGS_BUST_KEY, String(Date.now()))
+  } catch {
+    /* ignore */
+  }
+  return data
+}
+
 export async function fetchSiteSettings({ force = false } = {}) {
+  const onServer = typeof window === 'undefined'
   const now = Date.now()
-  if (!force && cache && now - cacheAt < TTL_MS) return cache
+  // روی سرور Node کش حافظه باعث دادهٔ کهنه بین رفرش‌ها می‌شود
+  if (!onServer && !force && cache && now - cacheAt < TTL_MS) return cache
   if (!force && inflight) return inflight
   if (force) {
     cache = null
@@ -190,8 +260,7 @@ export async function fetchSiteSettings({ force = false } = {}) {
       if (!res.ok) throw new Error(`site-settings ${res.status}`)
       const json = await res.json()
       const data = normalizeSiteSettings(json?.data || json)
-      cache = data
-      cacheAt = Date.now()
+      if (!onServer) rememberSettingsCache(data)
       return data
     } catch {
       if (cache) return cache
@@ -229,8 +298,7 @@ export async function saveHomeLayout(layout, authHeaders = {}) {
   }
   const json = await res.json()
   const data = normalizeSiteSettings(json?.data || json)
-  cache = data
-  cacheAt = Date.now()
+  rememberSettingsCache(data, { broadcast: true })
   if (typeof window !== 'undefined') {
     window.dispatchEvent(
       new CustomEvent('home-layout-changed', { detail: data.home_layout })
@@ -264,8 +332,7 @@ export async function saveNewsSingleLayout(layout, authHeaders = {}) {
   }
   const json = await res.json()
   const data = normalizeSiteSettings(json?.data || json)
-  cache = data
-  cacheAt = Date.now()
+  rememberSettingsCache(data, { broadcast: true })
   if (typeof window !== 'undefined') {
     window.dispatchEvent(
       new CustomEvent('news-single-layout-changed', {
@@ -303,8 +370,7 @@ export async function saveNewsSinglePageSettings(payload, authHeaders = {}) {
   }
   const json = await res.json()
   const data = normalizeSiteSettings(json?.data || json)
-  cache = data
-  cacheAt = Date.now()
+  rememberSettingsCache(data, { broadcast: true })
   if (typeof window !== 'undefined') {
     window.dispatchEvent(
       new CustomEvent('news-single-page-changed', {
@@ -340,8 +406,7 @@ export async function saveNewsListLayout(layout, authHeaders = {}) {
   }
   const json = await res.json()
   const data = normalizeSiteSettings(json?.data || json)
-  cache = data
-  cacheAt = Date.now()
+  rememberSettingsCache(data, { broadcast: true })
   if (typeof window !== 'undefined') {
     window.dispatchEvent(
       new CustomEvent('news-list-layout-changed', {
@@ -377,8 +442,7 @@ export async function saveJobSingleLayout(layout, authHeaders = {}) {
   }
   const json = await res.json()
   const data = normalizeSiteSettings(json?.data || json)
-  cache = data
-  cacheAt = Date.now()
+  rememberSettingsCache(data, { broadcast: true })
   if (typeof window !== 'undefined') {
     window.dispatchEvent(
       new CustomEvent('job-single-layout-changed', {
@@ -416,8 +480,7 @@ export async function saveJobSinglePageSettings(payload, authHeaders = {}) {
   }
   const json = await res.json()
   const data = normalizeSiteSettings(json?.data || json)
-  cache = data
-  cacheAt = Date.now()
+  rememberSettingsCache(data, { broadcast: true })
   if (typeof window !== 'undefined') {
     window.dispatchEvent(
       new CustomEvent('job-single-page-changed', {
@@ -428,9 +491,44 @@ export async function saveJobSinglePageSettings(payload, authHeaders = {}) {
   return data.job_single_page
 }
 
-/** ذخیره چیدمان صفحه‌ساز سینگل محصول */
+/** ذخیره چیدمان سینگل محصول (حالت پیش‌فرض) */
 export async function saveProductSingleLayout(layout, authHeaders = {}) {
-  const body = { product_single_layout: normalizeProductSingleLayout(layout) }
+  return saveProductSingleLayoutVariant('default', layout, authHeaders, {
+    alsoPublish: true,
+  })
+}
+
+/** ذخیره چیدمان سینگل برای یک حالت عمودی */
+export async function saveProductSingleLayoutVariant(
+  variantId,
+  layout,
+  authHeaders = {},
+  { alsoPublish = false, moduleMap = null } = {},
+) {
+  const mode = String(variantId || 'default')
+  const normalized = normalizeProductSingleLayout(layout)
+  const current = await fetchSiteSettings({ force: true })
+  const layouts = {
+    ...normalizeProductSingleLayoutsMap(current.product_single_layouts),
+    [mode]: normalized,
+  }
+  let active = 'default'
+  if (moduleMap && typeof moduleMap === 'object' && Object.keys(moduleMap).length) {
+    active = resolveActiveShopLayoutMode(moduleMap)
+  } else if (typeof window !== 'undefined') {
+    try {
+      const { fetchSiteModules } = await import('@/services/siteModules')
+      const mods = await fetchSiteModules({ force: true })
+      active = resolveActiveShopLayoutMode(mods?.map || {})
+    } catch {
+      active = 'default'
+    }
+  }
+  const publish = alsoPublish || mode === active
+  const body = {
+    product_single_layouts: layouts,
+    ...(publish ? { product_single_layout: normalized } : {}),
+  }
   const url = Config.endpoints.news.siteSettings.update()
   const res = await fetch(url, {
     method: 'PATCH',
@@ -453,16 +551,20 @@ export async function saveProductSingleLayout(layout, authHeaders = {}) {
   }
   const json = await res.json()
   const data = normalizeSiteSettings(json?.data || json)
-  cache = data
-  cacheAt = Date.now()
+  rememberSettingsCache(data, { broadcast: true })
   if (typeof window !== 'undefined') {
     window.dispatchEvent(
       new CustomEvent('product-single-layout-changed', {
         detail: data.product_single_layout,
       })
     )
+    window.dispatchEvent(
+      new CustomEvent('product-single-layouts-changed', {
+        detail: data.product_single_layouts,
+      })
+    )
   }
-  return data.product_single_layout
+  return data.product_single_layouts?.[mode] || normalized
 }
 
 /** ذخیره تنظیمات صفحه سینگل محصول */
@@ -492,8 +594,7 @@ export async function saveProductSinglePageSettings(payload, authHeaders = {}) {
   }
   const json = await res.json()
   const data = normalizeSiteSettings(json?.data || json)
-  cache = data
-  cacheAt = Date.now()
+  rememberSettingsCache(data, { broadcast: true })
   if (typeof window !== 'undefined') {
     window.dispatchEvent(
       new CustomEvent('product-single-page-changed', {
@@ -504,9 +605,47 @@ export async function saveProductSinglePageSettings(payload, authHeaders = {}) {
   return data.product_single_page
 }
 
-/** ذخیره چیدمان لیست فروشگاه */
+/** ذخیره چیدمان لیست فروشگاه (حالت پیش‌فرض / فعال) */
 export async function saveShopListLayout(layout, authHeaders = {}) {
-  const body = { shop_list_layout: normalizeShopListLayout(layout) }
+  return saveShopListLayoutVariant('default', layout, authHeaders, {
+    alsoPublish: true,
+  })
+}
+
+/**
+ * ذخیره چیدمان یک حالت عمودی فروشگاه (default | sadra | gym_bodybuilding).
+ * اگر alsoPublish یا حالت = حالت فعال سایت باشد، shop_list_layout هم به‌روز می‌شود.
+ */
+export async function saveShopListLayoutVariant(
+  variantId,
+  layout,
+  authHeaders = {},
+  { alsoPublish = false, moduleMap = null } = {},
+) {
+  const mode = String(variantId || 'default')
+  const normalized = normalizeShopListLayout(layout)
+  const current = await fetchSiteSettings({ force: true })
+  const layouts = {
+    ...normalizeShopListLayoutsMap(current.shop_list_layouts),
+    [mode]: normalized,
+  }
+  let active = 'default'
+  if (moduleMap && typeof moduleMap === 'object' && Object.keys(moduleMap).length) {
+    active = resolveActiveShopLayoutMode(moduleMap)
+  } else if (typeof window !== 'undefined') {
+    try {
+      const { fetchSiteModules } = await import('@/services/siteModules')
+      const mods = await fetchSiteModules({ force: true })
+      active = resolveActiveShopLayoutMode(mods?.map || {})
+    } catch {
+      active = 'default'
+    }
+  }
+  const publish = alsoPublish || mode === active
+  const body = {
+    shop_list_layouts: layouts,
+    ...(publish ? { shop_list_layout: normalized } : {}),
+  }
   const url = Config.endpoints.news.siteSettings.update()
   const res = await fetch(url, {
     method: 'PATCH',
@@ -529,16 +668,296 @@ export async function saveShopListLayout(layout, authHeaders = {}) {
   }
   const json = await res.json()
   const data = normalizeSiteSettings(json?.data || json)
-  cache = data
-  cacheAt = Date.now()
+  rememberSettingsCache(data, { broadcast: true })
   if (typeof window !== 'undefined') {
     window.dispatchEvent(
       new CustomEvent('shop-list-layout-changed', {
         detail: data.shop_list_layout,
       })
     )
+    window.dispatchEvent(
+      new CustomEvent('shop-list-layouts-changed', {
+        detail: data.shop_list_layouts,
+      })
+    )
   }
-  return data.shop_list_layout
+  return data.shop_list_layouts?.[mode] || normalized
+}
+
+export {
+  resolveActiveShopLayoutMode,
+  resolveShopListLayoutForMode,
+  resolveProductSingleLayoutForMode,
+  normalizeShopListLayoutsMap,
+  normalizeProductSingleLayoutsMap,
+}
+
+/**
+ * یک‌کلیک: هدر و ترکیب رنگی صفحه اصلی → صفحات داخلی، پروفایل، فروشگاه،
+ * سینگل محصول، سینگل آگهی، سینگل/لیست خبر.
+ */
+export async function syncHomeChromeTheme(authHeaders = {}) {
+  const current = await fetchSiteSettings({ force: true })
+  const chrome = describeChromeFromHome(current?.home_layout)
+  if (!chrome.count) {
+    throw new Error(
+      'در چیدمان صفحه اصلی ویجت هدر (نوار خبر / منو) پیدا نشد. اول هدر را در صفحه اصلی بچینید.',
+    )
+  }
+  const synced = buildSyncedLayoutsFromHome(current)
+  const pageColors = deriveJobSinglePageColorsFromHome(current?.home_layout)
+  const jobSinglePage = normalizeJobSinglePageSettings({
+    ...(current?.job_single_page || {}),
+    ink_color: pageColors.ink_color,
+    muted_color: pageColors.muted_color,
+    accent_color: pageColors.accent_color,
+    surface_bg: pageColors.surface_bg,
+  })
+  const body = {
+    module_page_layouts: synced.module_page_layouts,
+    shop_list_layout: synced.shop_list_layout,
+    product_single_layout: synced.product_single_layout,
+    job_single_layout: synced.job_single_layout,
+    news_single_layout: synced.news_single_layout,
+    news_list_layout: synced.news_list_layout,
+    job_single_page: jobSinglePage,
+  }
+  const url = Config.endpoints.news.siteSettings.update()
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `همگام‌سازی هدر ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeSiteSettings(json?.data || json)
+  rememberSettingsCache(data, { broadcast: true })
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('home-layout-changed', { detail: data.home_layout }),
+    )
+    window.dispatchEvent(
+      new CustomEvent('module-page-layouts-changed', {
+        detail: data.module_page_layouts,
+      }),
+    )
+    window.dispatchEvent(
+      new CustomEvent('shop-list-layout-changed', {
+        detail: data.shop_list_layout,
+      }),
+    )
+    window.dispatchEvent(
+      new CustomEvent('product-single-layout-changed', {
+        detail: data.product_single_layout,
+      }),
+    )
+    window.dispatchEvent(
+      new CustomEvent('job-single-layout-changed', {
+        detail: data.job_single_layout,
+      }),
+    )
+    window.dispatchEvent(
+      new CustomEvent('job-single-page-changed', {
+        detail: data.job_single_page,
+      }),
+    )
+    window.dispatchEvent(
+      new CustomEvent('news-single-layout-changed', {
+        detail: data.news_single_layout,
+      }),
+    )
+    window.dispatchEvent(
+      new CustomEvent('news-list-layout-changed', {
+        detail: data.news_list_layout,
+      }),
+    )
+    MODULE_PAGE_DEFS.forEach((def) => {
+      const layout = data.module_page_layouts?.[def.key]
+      if (!layout) return
+      window.dispatchEvent(
+        new CustomEvent(def.event || `module-page-layout-changed:${def.key}`, {
+          detail: layout,
+        }),
+      )
+    })
+  }
+  return {
+    settings: data,
+    summary: synced.summary,
+    chrome,
+  }
+}
+
+/** ذخیره چیدمان یک صفحه داخلی ماژول (مثلاً repairs) */
+export async function saveModulePageLayout(pageKey, layout, authHeaders = {}) {
+  const key = String(pageKey || '').trim()
+  if (!key) throw new Error('کلید صفحه نامعتبر است')
+  const normalized = normalizeModulePageLayout(layout, key)
+  const current = await fetchSiteSettings({ force: true })
+  const nextMap = {
+    ...(current.module_page_layouts || {}),
+    [key]: normalized,
+  }
+  const body = { module_page_layouts: nextMap }
+  const url = Config.endpoints.news.siteSettings.update()
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `ذخیره چیدمان صفحه ${key} ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeSiteSettings(json?.data || json)
+  rememberSettingsCache(data, { broadcast: true })
+  const saved = normalizeModulePageLayout(
+    data.module_page_layouts?.[key],
+    key,
+  )
+  const def = getModulePageDef(key)
+  const eventName = def?.event || `module-page-layout-changed:${key}`
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(eventName, { detail: saved }))
+    window.dispatchEvent(
+      new CustomEvent('module-page-layouts-changed', {
+        detail: data.module_page_layouts,
+      }),
+    )
+  }
+  return saved
+}
+
+/** ذخیره قیمت‌گذاری ویجت‌های ربو */
+export async function saveReboPricing(pricing, authHeaders = {}) {
+  const body = { rebo_pricing: normalizeReboPricing(pricing) }
+  const url = Config.endpoints.news.siteSettings.update()
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `ذخیره قیمت‌گذاری ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeSiteSettings(json?.data || json)
+  rememberSettingsCache(data, { broadcast: true })
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('rebo-pricing-changed', {
+        detail: data.rebo_pricing,
+      }),
+    )
+  }
+  return data.rebo_pricing
+}
+
+/** ذخیره چیدمان / دسترسی بخش‌های پروفایل */
+export async function saveProfileLayout(layout, authHeaders = {}) {
+  const body = { profile_layout: normalizeProfileLayout(layout) }
+  const url = Config.endpoints.news.siteSettings.update()
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `ذخیره چیدمان پروفایل ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeSiteSettings(json?.data || json)
+  rememberSettingsCache(data, { broadcast: true })
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('profile-layout-changed', {
+        detail: data.profile_layout,
+      }),
+    )
+  }
+  return data.profile_layout
+}
+
+/** ذخیره پایپ‌لاین سفارش / سبد سیستم‌ها */
+export async function saveCheckoutPipelines(pipelines, authHeaders = {}) {
+  const body = { checkout_pipelines: normalizeCheckoutPipelines(pipelines) }
+  const url = Config.endpoints.news.siteSettings.update()
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `ذخیره پایپ‌لاین سفارش ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeSiteSettings(json?.data || json)
+  rememberSettingsCache(data, { broadcast: true })
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('checkout-pipelines-changed', {
+        detail: data.checkout_pipelines,
+      }),
+    )
+  }
+  return data.checkout_pipelines
 }
 
 export function buildMetadataFromSettings(settings) {

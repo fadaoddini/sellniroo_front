@@ -1,0 +1,1517 @@
+/* modules/inventory/components/units/unit.module.css */
+
+/* ============================================
+   CONTAINER & LAYOUT
+   ============================================ */
+.inventoryContainer {
+  padding: 0.75rem 0 1.25rem;
+  min-height: auto;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* ============================================
+   NAVIGATION BAR
+   ============================================ */
+.navBar {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 0.85rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.actionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.5rem;
+}
+
+.actionCard {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  background: #f8fafc;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #64748b;
+  transition: all 0.3s ease;
+  font-family: var(--font-iran);
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.actionCard:hover {
+  background: #fff1f2;
+  border-color: #e2e8f0;
+  
+  color: #0f172a;
+}
+
+.actionCardActive {
+  background: #fff1f2;
+  border-color: var(--primary);
+  color: #800020;
+}
+
+.actionCardSuccess {
+  background: rgba(46, 125, 50, 0.2);
+  border-color: var(--macos-green);
+}
+
+.actionCardSuccess:hover {
+  background: rgba(46, 125, 50, 0.3);
+}
+
+.actionCardDanger {
+  background: rgba(198, 40, 40, 0.2);
+  border-color: var(--macos-red);
+}
+
+.actionCardDanger:hover {
+  background: rgba(198, 40, 40, 0.3);
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.inventoryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  font-size: 1.05rem;
+  font-weight: 800;
+  font-family: var(--font-iran-extra);
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pageTitle .titleIcon {
+  color: var(--primary);
+  width: 22px;
+  height: 22px;
+}
+
+.pageDesc {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  
+  box-shadow: 0 4px 16px rgba(128,0,32,0.3);
+}
+
+.primaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.secondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  background: var(--macos-card);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.secondaryBtn:hover:not(:disabled) {
+  background: var(--macos-bg);
+  border-color: var(--text-secondary);
+}
+
+.refreshBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  background: var(--macos-card);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.refreshBtn:hover:not(:disabled) {
+  background: var(--macos-bg);
+  transform: translateY(-1px);
+}
+
+.spinning {
+  animation: spin 0.8s linear infinite !important;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   STATS GRID
+   ============================================ */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem;
+  background: var(--macos-card);
+  border-radius: 10px;
+  border: 1px solid var(--macos-border);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  transition: all 0.3s ease;
+}
+
+.statCard:hover {
+  
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.statIconWrapper {
+  width: 28px;
+  height: 48px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.statIcon { width: 16px; height: 16px; }
+.statValue { font-size: 1.1rem; font-weight: 700; font-family: var(--font-iran-extra); color: var(--text-primary); }
+.statLabel { font-size: 0.65rem; color: var(--text-secondary); font-family: var(--font-iran); }
+
+/* ============================================
+   SEARCH & FILTER
+   ============================================ */
+.searchSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.searchBox {
+  position: relative;
+  flex: 1;
+  max-width: 450px;
+  min-width: 200px;
+}
+
+.searchBox .searchIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  pointer-events: none;
+  width: 16px;
+  height: 16px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.5rem 2.5rem 0.5rem 1rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  direction: rtl;
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128,0,32,0.1);
+}
+
+.clearSearch {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clearSearch:hover {
+  background: rgba(0,0,0,0.05);
+  color: var(--macos-red);
+}
+
+.totalCount {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  padding: 0.3rem 1rem;
+  background: var(--macos-bg);
+  border-radius: 10px;
+  font-family: var(--font-iran);
+  border: 1px solid var(--macos-border);
+}
+
+.filterToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  background: var(--macos-card);
+  color: var(--text-primary);
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filterActive {
+  border-color: var(--primary);
+  background: rgba(128,0,32,0.05);
+  color: var(--primary);
+}
+
+.filterBadge { color: var(--primary); font-size: 0.5rem; }
+.clearFiltersBtn { padding: 0.5rem 1rem; border: none; border-radius: 10px; background: transparent; color: var(--macos-red); font-size: 0.7rem; font-family: var(--font-iran); cursor: pointer; }
+.clearFiltersBtn:hover { background: #ffebee; }
+
+.filterPanel {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.65rem;
+  padding: 1rem 1.25rem;
+  background: var(--macos-card);
+  border: 1px solid var(--macos-border);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+  min-width: 150px;
+}
+
+.filterLabel { font-size: 0.65rem; font-weight: 600; color: var(--text-secondary); font-family: var(--font-iran); }
+.filterSelect { padding: 0.4rem 0.75rem; border: 1px solid var(--macos-border); border-radius: 8px; font-size: 0.7rem; font-family: var(--font-iran); background: var(--macos-card); color: var(--text-primary); outline: none; direction: rtl; }
+.filterSelect:focus { border-color: var(--primary); }
+
+.filterApplyBtn {
+  padding: 0.4rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filterApplyBtn:hover {
+  
+  box-shadow: 0 4px 16px rgba(128,0,32,0.3);
+}
+
+.searchHint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  margin-bottom: 1rem;
+  background: #fff3e0;
+  border: 1px solid #ffe0b2;
+  border-radius: 8px;
+  color: var(--macos-orange);
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+}
+
+.errorAlert {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 10px;
+  color: var(--macos-red);
+  margin-bottom: 1rem;
+  font-family: var(--font-iran);
+  font-size: 0.75rem;
+}
+
+.errorAlert button { background: none; border: none; color: var(--macos-red); cursor: pointer; font-size: 1rem; padding: 0 4px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+.errorAlert button:hover { background: rgba(198,40,40,0.1); }
+
+/* ============================================
+   TREE TABLE
+   ============================================ */
+.tableContainer {
+  background: var(--macos-card);
+  border-radius: 10px;
+  border: 1px solid var(--macos-border);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  overflow: hidden;
+}
+
+.tableWrapper { overflow-x: auto; }
+
+.treeTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-iran);
+  font-size: 0.85rem;
+}
+
+.treeTable thead {
+  background: linear-gradient(135deg, var(--macos-bg), #f5f5f7);
+  border-bottom: 2px solid var(--macos-border);
+}
+
+.treeTable th {
+  padding: 0.75rem 1.25rem;
+  text-align: right;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-family: var(--font-iran-extra);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--macos-border);
+  position: sticky;
+  top: 0;
+  background: inherit;
+  z-index: 5;
+}
+
+.treeTable td {
+  padding: 0.5rem 1.25rem;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  vertical-align: middle;
+  border-bottom: 1px solid var(--macos-border);
+}
+
+.treeTable tbody tr:hover { background: var(--macos-bg); }
+.treeTable tbody tr.clickable { cursor: pointer; }
+.treeTable tbody tr.clickable:hover { background: rgba(128,0,32,0.04); }
+
+/* Columns */
+.colName { min-width: 250px; }
+.colAbbr { min-width: 80px; }
+.colCount { min-width: 80px; text-align: center; }
+.colLevel { min-width: 70px; }
+.colProducts { min-width: 80px; text-align: center; }
+.colStatus { min-width: 80px; }
+.actionsHeader { text-align: center !important; min-width: 130px; background: linear-gradient(135deg, rgba(128,0,32,0.05), rgba(128,0,32,0.02)); border-right: 2px solid var(--macos-border); }
+.actionsCell { text-align: center !important; min-width: 130px; background: linear-gradient(135deg, rgba(128,0,32,0.03), rgba(128,0,32,0.01)); border-right: 2px solid var(--macos-border); position: relative; }
+
+/* Tree Cell */
+.treeCell {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 40px;
+}
+
+.toggleBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.toggleBtn:hover { background: var(--macos-bg); color: var(--text-primary); }
+.togglePlaceholder { width: 24px; height: 24px; flex-shrink: 0; }
+
+.unitNameCell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.unitIconWrapper {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--macos-bg);
+  border: 1px solid var(--macos-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.unitNameInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.unitName {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  font-family: var(--font-iran-extra);
+}
+
+.unitAbbr {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  background: var(--macos-bg);
+  border: 1px solid var(--macos-border);
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-iran-extra);
+}
+
+.unitDescription {
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.childrenCount {
+  font-size: 0.55rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+  background: var(--macos-bg);
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.unitMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 0.1rem;
+}
+
+/* Badges */
+.countBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.6rem;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-iran-extra);
+  border: 1px solid #bbdefb;
+}
+
+.countLabel {
+  font-size: 0.55rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+.countRoot {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+  opacity: 0.5;
+}
+
+.levelBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 8px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.6rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+}
+
+.activeBadge { background: #e8f5e9; color: #1a934c; }
+.inactiveBadge { background: #ffebee; color: var(--macos-red); }
+
+.productCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  font-weight: 600;
+}
+
+.hasProducts { color: var(--secondary); }
+.noProducts { color: var(--text-secondary); }
+
+.rootBadge { font-size: 0.8rem; margin-left: 2px; flex-shrink: 0; }
+.rootLabel {
+  font-size: 0.55rem;
+  padding: 0.05rem 0.4rem;
+  background: rgba(128,0,32,0.1);
+  color: var(--primary);
+  border-radius: 4px;
+  font-weight: 600;
+  font-family: var(--font-iran);
+}
+
+.parentMissingBadge {
+  font-size: 0.55rem;
+  padding: 0.05rem 0.4rem;
+  background: #fff3e0;
+  color: #e65100;
+  border-radius: 4px;
+  font-family: var(--font-iran);
+  border: 1px solid #ffe0b2;
+}
+
+/* Action Buttons */
+.actionsCell .actionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin: 0 2px;
+}
+
+.actionsCell .actionBtn:hover {
+  background: var(--macos-card);
+  
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.actionsCell .actionBtn:first-child { color: var(--secondary); }
+.actionsCell .actionBtn:first-child:hover { background: #e8f5e9; color: #1a5a2a; box-shadow: 0 4px 12px rgba(46,125,50,0.2); }
+.actionsCell .actionBtn:nth-child(2) { color: var(--macos-blue); }
+.actionsCell .actionBtn:nth-child(2):hover { background: #e3f2fd; color: #0d47a1; }
+.actionsCell .actionBtn:nth-child(3) { color: var(--macos-orange); }
+.actionsCell .actionBtn:nth-child(3):hover { background: #fff3e0; color: #e65100; }
+.actionsCell .actionBtn:nth-child(4) { color: var(--macos-red); }
+.actionsCell .actionBtn:nth-child(4):hover { background: #ffebee; color: #b71c1c; }
+
+/* Table Footer */
+.tableFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 1.25rem;
+  border-top: 1px solid var(--macos-border);
+  background: var(--macos-bg);
+  border-radius: 0 0 16px 16px;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tableCount { font-size: 0.7rem; color: var(--text-secondary); font-family: var(--font-iran); }
+.treeHint { font-size: 0.65rem; color: var(--text-secondary); font-family: var(--font-iran); opacity: 0.7; }
+
+/* ============================================
+   DETAIL MODAL
+   ============================================ */
+.unitDetail { padding: 0.25rem 0; }
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 1rem;
+  background: var(--macos-bg);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid var(--macos-border);
+}
+
+.detailIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: rgba(128,0,32,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.detailTitle { flex: 1; min-width: 0; }
+.detailTitle h3 { font-size: 1.1rem; font-weight: 700; font-family: var(--font-iran-extra); color: var(--text-primary); margin: 0; }
+.detailAbbr { font-size: 0.7rem; color: var(--text-secondary); font-family: var(--font-iran); }
+.detailAbbrValue { font-weight: 600; color: var(--primary); font-family: var(--font-iran-extra); }
+
+.detailGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--macos-border);
+}
+.detailRow:last-child { border-bottom: none; }
+
+.detailLabel { font-size: 0.7rem; font-weight: 600; color: var(--text-secondary); font-family: var(--font-iran); }
+.detailValue { font-size: 0.7rem; color: var(--text-primary); font-family: var(--font-iran); display: flex; align-items: center; gap: 0.25rem; }
+
+.detailActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--macos-border);
+}
+
+.relatedProducts {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--macos-border);
+}
+
+.relatedProducts h4 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-iran-extra);
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.productTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.productTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  background: var(--macos-bg);
+  border: 1px solid var(--macos-border);
+  border-radius: 8px;
+  font-size: 0.6rem;
+  color: var(--text-primary);
+  font-family: var(--font-iran);
+}
+
+.productMore {
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+  padding: 0.2rem 0.6rem;
+}
+
+/* ============================================
+   LOADING & EMPTY
+   ============================================ */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 0.65rem;
+}
+
+.loadingContainer .spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--macos-border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  gap: 0.5rem;
+}
+
+.emptyState p { color: var(--text-secondary); font-family: var(--font-iran); }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .inventoryHeader { flex-direction: column; align-items: stretch; }
+  .headerActions { flex-wrap: wrap; }
+  .headerActions button, .headerActions a { flex: 1; justify-content: center; min-width: 80px; }
+  .searchSection { flex-direction: column; align-items: stretch; }
+  .searchBox { max-width: 100%; }
+  .statsGrid { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0.75rem; }
+  .actionsGrid { grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 0.4rem; }
+  .actionCard { padding: 0.3rem 0.6rem; font-size: 0.6rem; flex-direction: column; text-align: center; }
+  .colLevel { display: none; }
+  .colCount { min-width: 60px; }
+  .countBadge { font-size: 0.6rem; padding: 0.1rem 0.4rem; }
+  .treeTable th, .treeTable td { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
+  .filterPanel { flex-direction: column; align-items: stretch; }
+  .filterGroup { min-width: auto; }
+  .filterApplyBtn { width: 100%; }
+  .filterActions { width: 100%; }
+  .actionsHeader, .actionsCell { min-width: 100px; }
+  .actionsCell .actionBtn { width: 28px; height: 28px; }
+  .actionsCell .actionBtn svg { width: 14px; height: 14px; }
+}
+
+@media (max-width: 480px) {
+  .headerActions { flex-direction: column; }
+  .headerActions button, .headerActions a { width: 100%; }
+  .statsGrid { grid-template-columns: repeat(2, 1fr); }
+  .colAbbr { display: none; }
+  .colCount { display: none; }
+  .colStatus { min-width: 60px; }
+  .treeTable th, .treeTable td { padding: 0.4rem 0.6rem; font-size: 0.75rem; }
+  .actionsHeader, .actionsCell { min-width: 80px; }
+  .actionsCell .actionBtn { width: 24px; height: 24px; margin: 0 1px; }
+  .actionsCell .actionBtn svg { width: 12px; height: 12px; }
+  .filterToggle span { display: none; }
+  .filterToggle { padding: 0.5rem; }
+}
+
+/* ============================================
+   SIMPLE FORM - استایل‌های فرم ساده
+   ============================================ */
+
+.simpleForm {
+  padding: 0.5rem 0;
+}
+
+/* ===== Form Header ===== */
+.formHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 1rem 0 1.5rem 0;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--macos-border);
+}
+
+.formHeaderIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(128, 0, 32, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.formTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 2px 0;
+  font-family: var(--font-iran-extra);
+}
+
+.formSubtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+  font-family: var(--font-iran);
+}
+
+/* ===== Form Grid ===== */
+.formGridSimple {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+/* ===== Form Group ===== */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.formGroup.fullWidth {
+  grid-column: 1 / -1;
+}
+
+/* ===== Form Label ===== */
+.formLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-iran);
+}
+
+.required {
+  color: var(--macos-red);
+  margin-right: 2px;
+}
+
+.helperText {
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+/* ===== Form Inputs ===== */
+.formInput {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid var(--macos-border);
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  outline: none;
+  direction: rtl;
+}
+
+.formInput::placeholder {
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+}
+
+.formInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.08);
+  background: white;
+}
+
+.formInput.error {
+  border-color: var(--macos-red);
+}
+
+.formInput:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--macos-bg);
+}
+
+.formTextarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid var(--macos-border);
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  outline: none;
+  resize: vertical;
+  min-height: 50px;
+  direction: rtl;
+}
+
+.formTextarea::placeholder {
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+}
+
+.formTextarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.08);
+  background: white;
+}
+
+.formTextarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--macos-bg);
+}
+
+.formSelect {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid var(--macos-border);
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  outline: none;
+  direction: rtl;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 12px center;
+  background-size: 12px;
+  cursor: pointer;
+}
+
+.formSelect:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.08);
+  background: white;
+}
+
+.formSelect:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--macos-bg);
+}
+
+.formSelect option {
+  padding: 0.3rem 0.5rem;
+  font-family: var(--font-iran);
+  font-size: 0.75rem;
+}
+
+/* ===== Form Checkbox ===== */
+.formCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0.3rem 0;
+}
+
+.formCheckbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.formCheckbox input[type="checkbox"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.formCheckbox span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* ===== Error Text ===== */
+.errorText {
+  font-size: 0.65rem;
+  color: var(--macos-red);
+  font-family: var(--font-iran);
+}
+
+/* ===== Info Box ===== */
+.infoBoxSimple {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  background: #e3f2fd;
+  border-radius: 8px;
+  border-right: 3px solid var(--macos-blue);
+  font-size: 0.75rem;
+  font-family: var(--font-iran);
+  color: var(--text-primary);
+}
+
+.infoBoxSimple strong {
+  color: var(--primary);
+}
+
+.parentInfoBox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  background: #f3e5f5;
+  border-radius: 8px;
+  border-right: 3px solid #6c5ce7;
+  font-size: 0.75rem;
+  font-family: var(--font-iran);
+  color: var(--text-primary);
+}
+
+/* ===== Calculation Box ===== */
+.calcBoxSimple {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #fff3e0;
+  border-radius: 8px;
+  border-right: 3px solid var(--macos-orange);
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.calcBoxSimple .calcArrow {
+  color: #999;
+}
+
+.calcBoxSimple .calcUnit {
+  font-weight: 600;
+  color: var(--macos-blue);
+}
+
+.calcBoxSimple .calcEquals {
+  color: #999;
+  font-weight: bold;
+}
+
+.calcBoxSimple .calcNumber {
+  font-weight: 700;
+  color: var(--macos-orange);
+  font-size: 1rem;
+}
+
+/* ===== Form Actions ===== */
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--macos-border);
+}
+
+.formActions .primaryBtn,
+.formActions .secondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.formActions .primaryBtn {
+  background: var(--primary);
+  color: white;
+}
+
+.formActions .primaryBtn:hover:not(:disabled) {
+  
+  box-shadow: 0 4px 16px rgba(128, 0, 32, 0.3);
+}
+
+.formActions .primaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.formActions .secondaryBtn {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--macos-border);
+}
+
+.formActions .secondaryBtn:hover:not(:disabled) {
+  background: var(--macos-bg);
+  border-color: var(--text-secondary);
+}
+
+.formActions .secondaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== Spinner ===== */
+.spinnerSmall {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   RESPONSIVE - فرم‌ها
+   ============================================ */
+
+@media (max-width: 768px) {
+  .formGridSimple {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .formHeader {
+    flex-direction: column;
+    text-align: center;
+    padding: 0.75rem 0 1rem 0;
+  }
+
+  .formTitle {
+    font-size: 1rem;
+  }
+
+  .formActions {
+    flex-direction: column;
+  }
+
+  .formActions .primaryBtn,
+  .formActions .secondaryBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .calcBoxSimple {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+  }
+
+  .calcBoxSimple .calcNumber {
+    font-size: 0.85rem;
+  }
+
+  .infoBoxSimple,
+  .parentInfoBox {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .formGridSimple {
+    gap: 0.5rem;
+  }
+
+  .formInput,
+  .formTextarea,
+  .formSelect {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .formLabel {
+    font-size: 0.65rem;
+  }
+
+  .formHeaderIcon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .formHeaderIcon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .formTitle {
+    font-size: 0.9rem;
+  }
+
+  .formSubtitle {
+    font-size: 0.7rem;
+  }
+
+  .calcBoxSimple {
+    font-size: 0.6rem;
+    padding: 3px 6px;
+    flex-wrap: wrap;
+  }
+
+  .calcBoxSimple .calcNumber {
+    font-size: 0.75rem;
+  }
+}
+/* ============================================
+   WARNING BOX - برای هشدار تغییر والد
+   ============================================ */
+
+.warningBox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  background: #fff3e0;
+  border-radius: 8px;
+  border-right: 3px solid #f57c00;
+  font-size: 0.75rem;
+  font-family: var(--font-iran);
+  color: #e65100;
+}
+
+.warningBox svg {
+  flex-shrink: 0;
+  color: #f57c00;
+}
+
+/* ============================================
+   PATH PREVIEW
+   ============================================ */
+
+.pathPreview {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: var(--macos-bg);
+  border-radius: 8px;
+  border: 1px solid var(--macos-border);
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  color: var(--text-primary);
+  flex-wrap: wrap;
+}
+
+.pathPreview .pathLabel {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.pathPreview .pathValue {
+  font-weight: 500;
+  color: var(--macos-blue);
+  direction: ltr;
+}
+
+.pathPreview .pathValue strong {
+  color: var(--primary);
+}
+/* ============================================
+   PARENT DISPLAY BOX - نمایش والد در حالت ویرایش
+   ============================================ */
+
+.parentDisplayBox {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--macos-bg);
+  border: 1.5px solid var(--macos-border);
+  border-radius: 10px;
+  min-height: 48px;
+}
+
+.parentDisplayContent {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.parentDisplayName {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-iran-extra);
+}
+
+.parentDisplayAbbr {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+.parentDisplayLock {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  margin-right: auto;
+}
+
+.parentDisplayPath {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--macos-border);
+  font-size: 0.65rem;
+  font-family: var(--font-iran);
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.parentDisplayPath .pathLabel {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.parentDisplayPath .pathValue {
+  color: var(--macos-blue);
+  direction: ltr;
+}
+
+.parentSelectWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .parentDisplayBox {
+    padding: 0.4rem 0.6rem;
+  }
+  
+  .parentDisplayName {
+    font-size: 0.75rem;
+  }
+  
+  .parentDisplayPath {
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .parentDisplayContent {
+    flex-wrap: wrap;
+  }
+  
+  .parentDisplayLock {
+    margin-right: 0;
+  }
+}
+
+.parentDisplayWarning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: #ffebee;
+  border-radius: 6px;
+  border-right: 3px solid var(--macos-red);
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  color: var(--macos-red);
+}
+
+.parentDisplayWarning svg {
+  flex-shrink: 0;
+  color: var(--macos-red);
+}

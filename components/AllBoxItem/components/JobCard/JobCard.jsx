@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import JobFeatures from './JobFeatures';
 import jobisellApi from '@/services/jobisellApi';
+import { getJobHref } from '@/utils/jobSlug';
 import styles from './JobCard.module.css';
 
 const formatSalary = (amount) => {
@@ -43,7 +44,7 @@ const CompanyLabel = ({ name, verified, size = 14, showText = true }) => (
   </span>
 );
 
-const JobCard = ({ job, viewMode = 'grid-2' }) => {
+const JobCard = ({ job, viewMode = 'image-left' }) => {
   const [isLiked, setIsLiked] = useState(job.is_liked || false);
   const [imageError, setImageError] = useState(false);
 
@@ -70,7 +71,7 @@ const JobCard = ({ job, viewMode = 'grid-2' }) => {
     job.company_is_verified || (isHiring && job.is_verified)
   );
   const isCompact = viewMode === 'grid-3';
-  const detailHref = `/jobs/${job.id}`;
+  const detailHref = getJobHref(job);
   const adTypeLabel = isHiring ? 'استخدام' : 'کارجو';
   const adTypeIcon = isHiring ? <Briefcase size={13} /> : <User size={13} />;
 
@@ -195,7 +196,7 @@ const JobCard = ({ job, viewMode = 'grid-2' }) => {
                 onClick={handleLike}
                 aria-label={isLiked ? 'حذف لایک' : 'لایک'}
               >
-                <Heart size={14} fill={isLiked ? '#e67e22' : 'none'} color={isLiked ? '#e67e22' : 'currentColor'} />
+                <Heart size={14} fill={isLiked ? '#D4621A' : 'none'} color={isLiked ? '#D4621A' : 'currentColor'} />
               </button>
               {job.contact_phone ? (
                 <button
@@ -263,8 +264,8 @@ const JobCard = ({ job, viewMode = 'grid-2' }) => {
         >
           <Heart
             size={isCompact ? 14 : 16}
-            fill={isLiked ? '#e67e22' : 'none'}
-            color={isLiked ? '#e67e22' : '#fff'}
+            fill={isLiked ? '#D4621A' : 'none'}
+            color={isLiked ? '#D4621A' : '#fff'}
           />
         </button>
       </div>

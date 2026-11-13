@@ -7,6 +7,7 @@ import Config from "@/config/config";
 import { useAuth } from "@/contexts/AuthContext";
 import styles from "../ResumeForm.module.css";
 import PersianDatePicker from "@/components/common/PersianDatePicker";
+import FieldSelect from "../FieldSelect";
 import {
   Plus, Trash2, Edit2, Check, X, Loader2, Briefcase,
 } from "lucide-react";
@@ -137,7 +138,7 @@ const WorkExperienceSection = ({ resume, onRefresh }) => {
   };
 
   return (
-    <div className={styles.sectionWrapper}>
+    <div className={`${styles.sectionWrapper} ${styles.miniPanel}`}>
       <div className={styles.sectionHeader}>
         <h3>سوابق شغلی</h3>
         {!showForm && (
@@ -146,31 +147,46 @@ const WorkExperienceSection = ({ resume, onRefresh }) => {
             className={styles.addBtn}
             onClick={() => setShowForm(true)}
           >
-            <Plus size={14} />
-            افزودن سابقه
+            <Plus size={13} strokeWidth={2.4} />
+            افزودن
           </button>
         )}
       </div>
 
-      {/* لیست */}
       {items.length > 0 && (
         <div className={styles.itemsList}>
           {items.map((item) => (
             <div key={item.id} className={styles.listItem}>
               <div className={styles.listItemContent}>
-                <h4>{item.job_title}</h4>
-                <p>{item.company_name}{item.city_name && ` • ${item.city_name}`}</p>
+                <div className={styles.miniItemMain}>
+                  <h4>{item.job_title}</h4>
+                  <span className={styles.miniDot} aria-hidden>
+                    ·
+                  </span>
+                  <p>
+                    {item.company_name}
+                    {item.city_name ? `، ${item.city_name}` : ""}
+                  </p>
+                </div>
                 <span className={styles.listItemDate}>
-                  {moment(item.start_date).format("jYYYY/jMM")} -{" "}
-                  {item.is_current ? "تاکنون" : moment(item.end_date).format("jYYYY/jMM")}
+                  {moment(item.start_date).format("jYYYY/jMM")}
+                  {" – "}
+                  {item.is_current
+                    ? "تاکنون"
+                    : moment(item.end_date).format("jYYYY/jMM")}
                 </span>
               </div>
               <div className={styles.listItemActions}>
-                <button type="button" onClick={() => handleEdit(item)}>
-                  <Edit2 size={14} />
+                <button type="button" onClick={() => handleEdit(item)} aria-label="ویرایش">
+                  <Edit2 size={12} strokeWidth={2.2} />
                 </button>
-                <button type="button" onClick={() => handleDelete(item.id)} className={styles.deleteBtn}>
-                  <Trash2 size={14} />
+                <button
+                  type="button"
+                  onClick={() => handleDelete(item.id)}
+                  className={styles.deleteBtn}
+                  aria-label="حذف"
+                >
+                  <Trash2 size={12} strokeWidth={2.2} />
                 </button>
               </div>
             </div>
@@ -178,16 +194,18 @@ const WorkExperienceSection = ({ resume, onRefresh }) => {
         </div>
       )}
 
-      {/* فرم */}
       {showForm && (
         <div className={styles.subForm}>
-          <div className={styles.row}>
+          <div className={styles.grid3}>
             <div className={styles.formGroup}>
               <label>عنوان شغلی *</label>
               <input
                 type="text"
                 value={formData.job_title}
-                onChange={(e) => setFormData({ ...formData, job_title: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, job_title: e.target.value })
+                }
+                placeholder="مثلاً کارشناس فروش"
               />
             </div>
             <div className={styles.formGroup}>
@@ -195,37 +213,21 @@ const WorkExperienceSection = ({ resume, onRefresh }) => {
               <input
                 type="text"
                 value={formData.company_name}
-                onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, company_name: e.target.value })
+                }
+                placeholder="نام شرکت"
               />
             </div>
-          </div>
-
-          <div className={styles.row}>
-            <div className={styles.formGroup}>
-              <label>شهر</label>
-              <select
-                value={formData.city}
-                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-              >
-                <option value="">انتخاب کنید</option>
-                {cities.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.formGroup}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={formData.is_current}
-                  onChange={(e) => setFormData({ ...formData, is_current: e.target.checked })}
-                />
-                {" "}در حال حاضر مشغول هستم
-              </label>
-            </div>
-          </div>
-
-          <div className={styles.row}>
+            <FieldSelect
+              label="شهر"
+              value={formData.city}
+              onChange={(v) => setFormData({ ...formData, city: v })}
+              options={cities.map((c) => ({ value: c.id, label: c.name }))}
+              placeholder="انتخاب شهر"
+              searchable
+              allowClear
+            />
             <div className={styles.formGroup}>
               <label>تاریخ شروع *</label>
               <PersianDatePicker
@@ -233,7 +235,7 @@ const WorkExperienceSection = ({ resume, onRefresh }) => {
                 onChange={(date) =>
                   setFormData({ ...formData, start_date: date || "" })
                 }
-                placeholder="تاریخ شروع"
+                placeholder="شروع"
               />
             </div>
             <div className={styles.formGroup}>
@@ -244,35 +246,50 @@ const WorkExperienceSection = ({ resume, onRefresh }) => {
                   setFormData({ ...formData, end_date: date || "" })
                 }
                 disabled={formData.is_current}
-                placeholder="تاریخ پایان"
+                placeholder="پایان"
               />
             </div>
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>شرح وظایف</label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              rows={3}
-            />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>دستاوردها (هر مورد در یک خط)</label>
-            <textarea
-              value={formData.achievements}
-              onChange={(e) => setFormData({ ...formData, achievements: e.target.value })}
-              rows={3}
-              placeholder="افزایش فروش ۳۰٪&#10;مدیریت تیم ۵ نفره"
-            />
+            <div className={`${styles.formGroup} ${styles.miniCheckGroup}`}>
+              <label className={styles.miniCheck}>
+                <input
+                  type="checkbox"
+                  checked={formData.is_current}
+                  onChange={(e) =>
+                    setFormData({ ...formData, is_current: e.target.checked })
+                  }
+                />
+                هنوز مشغولم
+              </label>
+            </div>
+            <div className={`${styles.formGroup} ${styles.spanFull}`}>
+              <label>شرح وظایف</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                rows={2}
+                placeholder="خلاصه مسئولیت‌ها"
+              />
+            </div>
+            <div className={`${styles.formGroup} ${styles.spanFull}`}>
+              <label>دستاوردها</label>
+              <textarea
+                value={formData.achievements}
+                onChange={(e) =>
+                  setFormData({ ...formData, achievements: e.target.value })
+                }
+                rows={2}
+                placeholder="هر مورد در یک خط"
+              />
+            </div>
           </div>
 
           {error && <div className={styles.errorBox}>{error}</div>}
 
           <div className={styles.subFormActions}>
             <button type="button" onClick={handleCancel} disabled={saving}>
-              <X size={14} /> لغو
+              <X size={13} /> لغو
             </button>
             <button
               type="button"
@@ -280,7 +297,11 @@ const WorkExperienceSection = ({ resume, onRefresh }) => {
               onClick={handleSave}
               disabled={saving}
             >
-              {saving ? <Loader2 size={14} className={styles.spin} /> : <Check size={14} />}
+              {saving ? (
+                <Loader2 size={13} className={styles.spin} />
+              ) : (
+                <Check size={13} />
+              )}
               {editingId ? "بروزرسانی" : "افزودن"}
             </button>
           </div>
@@ -289,8 +310,8 @@ const WorkExperienceSection = ({ resume, onRefresh }) => {
 
       {items.length === 0 && !showForm && (
         <div className={styles.emptyBox}>
-          <Briefcase size={32} />
-          <p>هنوز سابقه شغلی اضافه نکرده‌اید</p>
+          <Briefcase size={22} strokeWidth={1.6} />
+          <p>سابقه‌ای ثبت نشده</p>
         </div>
       )}
     </div>

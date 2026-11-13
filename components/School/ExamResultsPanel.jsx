@@ -1,15 +1,16 @@
 'use client'
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import {
   RefreshCw, Save, Check, X, CircleHelp, MessageSquare,
-  Search, ChevronRight, ChevronLeft, Loader2, ArrowRight,
+  Search, ChevronRight, ChevronLeft, Loader2, ArrowRight, Archive,
 } from 'lucide-react'
 import schoolService from '@/components/School/services/schoolService'
 import styles from './School.module.css'
 
 const DIFF_FA = { easy: 'آسان', medium: 'متوسط', hard: 'سخت' }
-const PAGE_SIZE = 8
+const PAGE_SIZE = 12
 
 const OPT_FA = {
   a: 'الف', b: 'ب', c: 'ج', d: 'د',
@@ -19,10 +20,10 @@ const OPT_FA = {
 
 const FEEDBACK_PRESETS = [
   '🌟 آفرین! عملکردت عالی بود',
-  '👍 خوب بود، همین‌طور ادامه بده',
-  '🧐 روی سوالات اشتباه بیشتر تمرین کن',
-  '📝 فصل مربوط به غلط‌ها را دوباره مرور کن',
-  '💪 نزدیک بودی؛ با دقت بیشتر بهتر می‌شی',
+  '👍 خوب بود، ادامه بده',
+  '🧐 روی غلط‌ها بیشتر تمرین کن',
+  '📝 فصل مربوط را دوباره مرور کن',
+  '💪 نزدیک بودی؛ دقیق‌تر شو',
 ]
 
 function faNum(n) {
@@ -34,16 +35,6 @@ function optLetter(id) {
   if (id == null || id === '') return '—'
   const key = String(id)
   return OPT_FA[key] || OPT_FA[key.toLowerCase()] || key
-}
-
-function optionText(opts, id) {
-  if (id == null || id === '') return 'پاسخ نداده'
-  const o = (opts || []).find((x) => String(x.id) === String(id))
-  if (!o) return optLetter(id)
-  const letter = optLetter(o.id)
-  if (o.text) return `${letter} — ${o.text}`
-  if (o.image) return `${letter} — تصویر`
-  return letter
 }
 
 export default function ExamResultsPanel({
@@ -71,7 +62,12 @@ export default function ExamResultsPanel({
   const [busy, setBusy] = useState(false)
   const [feedback, setFeedback] = useState('')
   const [filter, setFilter] = useState('all')
+  const [inboxTab, setInboxTab] = useState('pending') // pending | archived
+  const [confirmArchive, setConfirmArchive] = useState(false)
+  const [portalReady, setPortalReady] = useState(false)
   const editorRef = useRef(null)
+
+  const isArchiveTab = !studentMode && inboxTab === 'archived'
 
   const scopeParams = useMemo(() => {
     const p = {}
@@ -81,15 +77,35 @@ export default function ExamResultsPanel({
   }, [studentId, teacherId])
 
   useEffect(() => {
+    setPortalReady(true)
+  }, [])
+
+  useEffect(() => {
     const t = setTimeout(() => setDebouncedQuery(query.trim()), 350)
     return () => clearTimeout(t)
   }, [query])
 
   useEffect(() => {
     setPage(1)
-  }, [debouncedQuery, studentId, teacherId])
+  }, [debouncedQuery, studentId, teacherId, inboxTab])
 
   const loadList = useCallback(async () => {
+    const archiveNeedsQuery = !studentMode && inboxTab === 'archived'
+    // آرشیو فقط با جستجو واکشی می‌شود تا فشار به سرور نیاید
+    if (archiveNeedsQuery && !debouncedQuery) {
+      setList([])
+      setPagination({
+        page: 1,
+        page_size: PAGE_SIZE,
+        total: 0,
+        total_pages: 1,
+        has_next: false,
+        has_prev: false,
+      })
+      setListBusy(false)
+      return
+    }
+
     setListBusy(true)
     const params = {
       page,
@@ -98,7 +114,10 @@ export default function ExamResultsPanel({
       ...scopeParams,
     }
     if (debouncedQuery) params.q = debouncedQuery
-    if (!studentMode) params.as = 'teacher'
+    if (!studentMode) {
+      params.as = 'teacher'
+      params.archived = inboxTab === 'archived' ? '1' : '0'
+    }
     const res = await schoolService.listExamPapers(params)
     setListBusy(false)
     if (!res.success) {
@@ -109,15 +128,40 @@ export default function ExamResultsPanel({
     const payload = res.data || {}
     setList(payload.results || [])
     if (payload.pagination) setPagination(payload.pagination)
-  }, [page, debouncedQuery, studentMode, onNotify, scopeParams])
+  }, [page, debouncedQuery, studentMode, onNotify, scopeParams, inboxTab])
 
   useEffect(() => { loadList() }, [loadList])
+
+  useEffect(() => {
+    if (!confirmArchive) return undefined
+    const onKey = (e) => {
+      if (e.key === 'Escape' && !busy) setConfirmArchive(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [confirmArchive, busy])
 
   const closeDetail = () => {
     setSelectedId(null)
     setDetail(null)
     setFeedback('')
     setFilter('all')
+    setConfirmArchive(false)
+  }
+
+  useEffect(() => {
+    if (!studentMode && inboxTab === 'archived' && !debouncedQuery) {
+      closeDetail()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedQuery, inboxTab, studentMode])
+
+  const switchInboxTab = (tab) => {
+    if (tab === inboxTab) return
+    setInboxTab(tab)
+    closeDetail()
+    setQuery('')
+    setDebouncedQuery('')
   }
 
   const openPaper = async (item) => {
@@ -161,37 +205,165 @@ export default function ExamResultsPanel({
     loadList()
   }
 
+  const archivePaper = async () => {
+    if (!detail || studentMode) return
+    setBusy(true)
+    const res = await schoolService.archiveExamPaper(detail.id, {
+      archived: true,
+      teacher_feedback: feedback.trim(),
+      ...scopeParams,
+    })
+    setBusy(false)
+    setConfirmArchive(false)
+    if (!res.success) {
+      onNotify?.(res.error || 'آرشیو ناموفق', true)
+      return
+    }
+    onNotify?.('آزمون آرشیو شد و از لیست نتایج خارج شد')
+    closeDetail()
+    loadList()
+  }
+
+  const searchPlaceholder = studentMode
+    ? 'جستجو نام آزمون…'
+    : isArchiveTab
+      ? 'نام دانش‌آموز یا آزمون را جستجو کنید…'
+      : 'جستجو آزمون یا دانش‌آموز…'
+
+  const archiveAwaitingSearch = isArchiveTab && !debouncedQuery
+
+  const confirmModal = confirmArchive && detail && portalReady
+    ? createPortal(
+      <div
+        className={styles.hwModalBackdrop}
+        role="presentation"
+        onClick={() => !busy && setConfirmArchive(false)}
+      >
+        <div
+          className={`${styles.hwConfirmModal} ${styles.hwConfirm_archive}`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="تأیید آرشیو آزمون"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className={styles.hwConfirmIconWrap} aria-hidden>
+            <Archive size={26} strokeWidth={2.1} />
+          </div>
+          <h3>آرشیو آزمون</h3>
+          <p className={styles.hwConfirmDesc}>
+            این برگه از لیست بررسی‌نشده خارج می‌شود و فقط در تب آرشیو دیده می‌شود.
+          </p>
+          <div className={styles.hwConfirmMeta}>
+            <strong>{detail.student_name || 'دانش‌آموز'}</strong>
+            <span>{detail.exam_title || 'آزمون'}</span>
+          </div>
+          <div className={styles.hwConfirmActions}>
+            <button
+              type="button"
+              className={styles.hwConfirmOk}
+              disabled={busy}
+              onClick={archivePaper}
+            >
+              {busy ? 'در حال آرشیو…' : 'بله، آرشیو شود'}
+            </button>
+            <button
+              type="button"
+              className={styles.hwConfirmCancel}
+              disabled={busy}
+              onClick={() => setConfirmArchive(false)}
+            >
+              انصراف
+            </button>
+          </div>
+        </div>
+      </div>,
+      document.body,
+    )
+    : null
+
   const review = detail?.review || {}
   const items = review.items || []
+  const totalQ = review.total_questions ?? detail?.total_questions ?? items.length
+  const correctN = review.correct_count ?? detail?.correct_count ?? 0
+  const answeredN = review.answered_count ?? 0
+  const unansweredN = review.unanswered_count ?? Math.max(0, totalQ - answeredN)
+  const wrongN = useMemo(
+    () => items.filter((q) => q.answered && !q.is_correct).length,
+    [items],
+  )
+
   const visibleItems = useMemo(() => {
-    if (filter === 'wrong') return items.filter((q) => !q.is_correct)
+    if (filter === 'wrong') return items.filter((q) => q.answered && !q.is_correct)
     if (filter === 'unanswered') return items.filter((q) => !q.answered)
+    if (filter === 'correct') return items.filter((q) => q.is_correct)
     return items
   }, [items, filter])
 
-  const searchPlaceholder = studentMode
-    ? 'جستجو بر اساس نام آزمون…'
-    : 'جستجو نام آزمون یا دانش‌آموز…'
-
   return (
     <div
-      className={`${styles.resultsLayout} ${detail ? styles.resultsLayoutDetail : ''}`}
+      className={[
+        styles.resultsLayout,
+        detail ? styles.resultsLayoutOpen : '',
+        detail ? styles.resultsLayoutDetail : '',
+      ].filter(Boolean).join(' ')}
       dir="rtl"
       lang="fa"
     >
       <aside className={`${styles.resultsSidebar} ${detail ? styles.resultsSidebarHiddenMobile : ''}`}>
-        <div className={styles.currSideHead}>
-          <h2 className={styles.panelTitle}>
-            {studentMode ? 'نتایج من' : 'نتایج آزمون'}
-          </h2>
-          <p className={styles.metaMuted}>
-            {faNum(pagination.total)} نتیجه
-            {debouncedQuery ? ' · فیلترشده' : ''}
-          </p>
+        <div className={styles.resultsSideHead}>
+          <div>
+            <h2 className={styles.panelTitle}>
+              {studentMode ? 'نتایج من' : isArchiveTab ? 'آرشیو آزمون' : 'نتایج آزمون'}
+            </h2>
+            <p className={styles.metaMuted}>
+              {archiveAwaitingSearch
+                ? 'جستجو برای مشاهده'
+                : (
+                  <>
+                    {faNum(pagination.total)}
+                    {studentMode ? ' نتیجه' : isArchiveTab ? ' آرشیو' : ' بررسی‌نشده'}
+                    {debouncedQuery ? ' · فیلتر' : ''}
+                  </>
+                )}
+            </p>
+          </div>
+          <button
+            type="button"
+            className={styles.resultsIconBtn}
+            onClick={loadList}
+            disabled={listBusy || archiveAwaitingSearch}
+            title="بروزرسانی"
+          >
+            {listBusy ? <Loader2 size={13} className={styles.spin} /> : <RefreshCw size={13} />}
+          </button>
         </div>
 
-        <div className={styles.resultsSearch}>
-          <Search size={14} className={styles.resultsSearchIcon} />
+        {!studentMode ? (
+          <div className={styles.resultsInboxTabs} role="tablist" aria-label="صندوق نتایج">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={!isArchiveTab}
+              className={`${styles.resultsInboxTab} ${!isArchiveTab ? styles.resultsInboxTabOn : ''}`}
+              onClick={() => switchInboxTab('pending')}
+            >
+              بررسی‌نشده
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={isArchiveTab}
+              className={`${styles.resultsInboxTab} ${isArchiveTab ? styles.resultsInboxTabOn : ''}`}
+              onClick={() => switchInboxTab('archived')}
+            >
+              <Archive size={12} />
+              آرشیو آزمون
+            </button>
+          </div>
+        ) : null}
+
+        <label className={styles.resultsSearch}>
+          <Search size={13} className={styles.resultsSearchIcon} aria-hidden />
           <input
             type="search"
             value={query}
@@ -209,28 +381,14 @@ export default function ExamResultsPanel({
               <X size={12} />
             </button>
           ) : null}
-        </div>
+        </label>
 
-        <div className={styles.currAddBar}>
-          <button
-            type="button"
-            className={styles.btnGhost}
-            onClick={loadList}
-            disabled={listBusy}
-            title="بروزرسانی"
-          >
-            {listBusy ? <Loader2 size={12} className={styles.spin} /> : <RefreshCw size={12} />}
-            <span>بروزرسانی</span>
-          </button>
-        </div>
-
-        <div className={styles.resultsList}>
+        <div className={styles.resultsList} role="list">
           {listBusy && !list.length ? (
             <p className={styles.empty}>در حال بارگذاری…</p>
           ) : null}
           {list.map((item) => {
             const on = selectedId === item.id
-            const answered = item.answered_count
             const total = item.total_questions || 0
             const correct = item.correct_count ?? 0
             return (
@@ -238,180 +396,255 @@ export default function ExamResultsPanel({
                 key={item.id}
                 type="button"
                 className={`${styles.resultsItem} ${on ? styles.resultsItemOn : ''}`}
+                role="listitem"
                 onClick={() => openPaper(item)}
               >
-                <div className={styles.resultsItemMain}>
-                  <span className={styles.resultsItemTitle}>{item.exam_title || 'آزمون'}</span>
-                  <span className={styles.resultsItemMeta}>
-                    {!studentMode && item.student_name ? (
-                      <span className={styles.resultsItemStudent}>{item.student_name}</span>
-                    ) : null}
-                    <span>
-                      {faNum(correct)} از {faNum(total)} صحیح
-                      {answered != null ? ` · ${faNum(answered)} پاسخ` : ''}
-                    </span>
-                  </span>
-                </div>
-                <span className={`${styles.pill} ${
-                  (item.percentage || 0) >= 70 ? styles.pillOk
-                    : (item.percentage || 0) >= 50 ? '' : styles.pillWarn
-                }`}
-                >
-                  {faNum(item.percentage ?? 0)}٪
+                <span className={styles.resultsItemMain}>
+                  {!studentMode ? (
+                    <strong className={styles.resultsItemStudent}>
+                      {item.student_name || 'دانش‌آموز'}
+                    </strong>
+                  ) : (
+                    <strong className={styles.resultsItemStudent}>
+                      {item.exam_title || 'آزمون'}
+                    </strong>
+                  )}
+                  <em>
+                    {!studentMode ? (item.exam_title || 'آزمون') : null}
+                    {!studentMode ? ' · ' : null}
+                    {faNum(correct)}/{faNum(total)} صحیح
+                  </em>
                 </span>
+                <span className={styles.resultsPct}>{faNum(item.percentage ?? 0)}٪</span>
               </button>
             )
           })}
           {!listBusy && !list.length ? (
             <p className={styles.empty}>
-              {debouncedQuery ? 'نتیجه‌ای برای این جستجو نیست' : 'نتیجه‌ای ثبت نشده'}
+              {archiveAwaitingSearch
+                ? 'نام دانش‌آموز یا آزمون را بنویسید تا آرشیو جستجو شود'
+                : debouncedQuery
+                  ? 'نتیجه‌ای پیدا نشد'
+                  : 'نتیجه‌ای ثبت نشده'}
             </p>
           ) : null}
         </div>
 
-        <div className={styles.resultsPager}>
-          <button
-            type="button"
-            className={styles.resultsPagerBtn}
-            disabled={!pagination.has_prev || listBusy}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            title="صفحه قبل"
-          >
-            <ChevronRight size={16} />
-          </button>
-          <span className={styles.resultsPagerInfo}>
-            صفحه {faNum(pagination.page)} از {faNum(pagination.total_pages || 1)}
-          </span>
-          <button
-            type="button"
-            className={styles.resultsPagerBtn}
-            disabled={!pagination.has_next || listBusy}
-            onClick={() => setPage((p) => p + 1)}
-            title="صفحه بعد"
-          >
-            <ChevronLeft size={16} />
-          </button>
-        </div>
+        {!archiveAwaitingSearch ? (
+          <div className={styles.resultsPager}>
+            <button
+              type="button"
+              className={styles.resultsPagerBtn}
+              disabled={!pagination.has_prev || listBusy}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              title="صفحه قبل"
+            >
+              <ChevronRight size={15} />
+            </button>
+            <span className={styles.resultsPagerInfo}>
+              {faNum(pagination.page)} / {faNum(pagination.total_pages || 1)}
+            </span>
+            <button
+              type="button"
+              className={styles.resultsPagerBtn}
+              disabled={!pagination.has_next || listBusy}
+              onClick={() => setPage((p) => p + 1)}
+              title="صفحه بعد"
+            >
+              <ChevronLeft size={15} />
+            </button>
+          </div>
+        ) : null}
       </aside>
+
+      {detail ? (
+        <aside className={styles.resultsNoteCol} aria-label="توضیح معلم">
+          <div className={styles.resultsNoteHead}>
+            <MessageSquare size={15} />
+            <div>
+              <strong>توضیح معلم</strong>
+              <p>
+                {detail.student_name || 'دانش‌آموز'}
+                {detail.exam_title ? ` · ${detail.exam_title}` : ''}
+              </p>
+            </div>
+          </div>
+
+          <div className={styles.resultsNoteStats}>
+            <div className={styles.resultsNoteStat}>
+              <span>درصد</span>
+              <strong>{faNum(detail.percentage)}٪</strong>
+            </div>
+            <div className={styles.resultsNoteStat}>
+              <span>صحیح</span>
+              <strong>{faNum(correctN)}</strong>
+            </div>
+            <div className={styles.resultsNoteStat}>
+              <span>غلط</span>
+              <strong>{faNum(wrongN)}</strong>
+            </div>
+          </div>
+
+          {!studentMode && !isArchiveTab ? (
+            <div className={styles.resultsNoteBody}>
+              <div className={styles.examPresetRow}>
+                {FEEDBACK_PRESETS.map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    className={styles.examPreset}
+                    onClick={() => setFeedback(p)}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+              <textarea
+                rows={6}
+                dir="rtl"
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                placeholder="درباره عملکرد این دانش‌آموز در این آزمون بنویسید…"
+              />
+              <div className={styles.resultsNoteActions}>
+                <button
+                  type="button"
+                  className={styles.btnAccent}
+                  disabled={busy}
+                  onClick={saveFeedback}
+                >
+                  <Save size={13} />
+                  ذخیره توضیح
+                </button>
+                <button
+                  type="button"
+                  className={styles.resultsArchiveBtn}
+                  disabled={busy}
+                  onClick={() => setConfirmArchive(true)}
+                  title="آرشیو پس از تأیید"
+                >
+                  <Archive size={13} />
+                  آرشیو آزمون
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className={styles.resultsNoteBody}>
+              {detail.teacher_feedback || feedback ? (
+                <div className={styles.resultsNoteRead}>
+                  <p>{detail.teacher_feedback || feedback}</p>
+                </div>
+              ) : (
+                <p className={styles.resultsNoteEmpty}>
+                  {isArchiveTab ? 'توضیح معلم ثبت نشده' : 'هنوز پیامی از معلم ثبت نشده'}
+                </p>
+              )}
+            </div>
+          )}
+        </aside>
+      ) : null}
 
       <section
         ref={editorRef}
         className={`${styles.resultsEditor} ${!detail ? styles.resultsEditorEmpty : ''}`}
       >
         {!detail ? (
-          <div className={styles.currEditorEmpty}>
-            <strong>یک نتیجه را انتخاب کنید</strong>
+          <div className={styles.resultsEmptyDetail}>
+            <MessageSquare size={26} strokeWidth={1.5} />
+            <strong>
+              {archiveAwaitingSearch
+                ? 'برای دیدن آرشیو جستجو کنید'
+                : isArchiveTab
+                  ? 'یک آزمون آرشیو را انتخاب کنید'
+                  : 'یک نتیجه را انتخاب کنید'}
+            </strong>
             <p>
               {studentMode
-                ? 'برگه آزمونی که داده‌اید — سوالات، پاسخ شما و پاسخ صحیح — اینجا دیده می‌شود.'
-                : 'جزئیات سوالات، پاسخ دانش‌آموز و توضیح معلم اینجا دیده می‌شود.'}
+                ? 'جزئیات سوالات و پاسخ‌ها اینجا دیده می‌شود.'
+                : archiveAwaitingSearch
+                  ? 'نام دانش‌آموز یا عنوان آزمون را بنویسید؛ بدون جستجو چیزی واکشی نمی‌شود.'
+                  : isArchiveTab
+                    ? 'عملکرد دانش‌آموز و پاسخ‌ها را از آرشیو مرور کنید.'
+                    : 'برگه آزمون و توضیح معلم در دو بخش جدا باز می‌شود.'}
             </p>
           </div>
         ) : (
           <>
-            <div className={styles.currSideHead}>
+            <div className={styles.resultsDetailHead}>
               <button
                 type="button"
                 className={styles.resultsBackBtn}
                 onClick={closeDetail}
               >
                 <ArrowRight size={14} />
-                <span>بازگشت به لیست</span>
+                <span>لیست</span>
               </button>
-              <h2 className={styles.panelTitle}>{detail.exam_title || 'برگه آزمون'}</h2>
-              <p className={styles.metaMuted}>
-                {detail.student_name || (studentMode ? 'برگه شما' : '')}
-                {detail.submitted_at
-                  ? ` · ${new Date(detail.submitted_at).toLocaleDateString('fa-IR')}`
-                  : ''}
-                {detail.total_questions
-                  ? ` · ${faNum(detail.total_questions)} سوال`
-                  : ''}
-              </p>
+              <div className={styles.resultsDetailTitle}>
+                <h2>{detail.exam_title || 'برگه آزمون'}</h2>
+                <p>
+                  {detail.student_name || (studentMode ? 'برگه شما' : '')}
+                  {detail.submitted_at
+                    ? ` · ${new Date(detail.submitted_at).toLocaleDateString('fa-IR')}`
+                    : ''}
+                </p>
+              </div>
+              <span className={styles.resultsPctLg}>{faNum(detail.percentage)}٪</span>
             </div>
-            <div className={styles.currEditorScroll}>
+
+            <div className={styles.resultsDetailBody}>
               {busy ? (
-                <p className={styles.metaMuted} style={{ marginBottom: 8 }}>
-                  <Loader2 size={14} className={styles.spin} /> در حال بارگذاری برگه آزمون…
+                <p className={styles.resultsBusyLine}>
+                  <Loader2 size={13} className={styles.spin} /> بارگذاری…
                 </p>
               ) : null}
 
               <div className={styles.resultsStats}>
                 <div className={styles.resultsStat}>
-                  <span>درصد</span>
-                  <strong>{faNum(detail.percentage)}٪</strong>
-                </div>
-                <div className={styles.resultsStat}>
                   <span>صحیح</span>
-                  <strong>
-                    {faNum(review.correct_count ?? detail.correct_count)}
-                    {' از '}
-                    {faNum(review.total_questions ?? detail.total_questions)}
-                  </strong>
+                  <strong>{faNum(correctN)}</strong>
                 </div>
                 <div className={styles.resultsStat}>
-                  <span>پاسخ‌داده‌شده</span>
-                  <strong>
-                    {faNum(review.answered_count ?? 0)}
-                    {' از '}
-                    {faNum(review.total_questions ?? detail.total_questions)}
-                  </strong>
+                  <span>غلط</span>
+                  <strong>{faNum(wrongN)}</strong>
                 </div>
-                <div className={`${styles.resultsStat} ${styles.resultsStatWarn}`}>
-                  <span>غلط / نزده</span>
-                  <strong>{faNum(review.wrong_count ?? 0)}</strong>
+                <div className={styles.resultsStat}>
+                  <span>پاسخ‌داده</span>
+                  <strong>{faNum(answeredN)}</strong>
+                </div>
+                <div className={styles.resultsStat}>
+                  <span>نزده</span>
+                  <strong>{faNum(unansweredN)}</strong>
                 </div>
               </div>
 
-              {!studentMode ? (
-                <div className={styles.examFeedbackBox}>
-                  <strong className={styles.bankBlockTitle}>توضیح شخصی برای دانش‌آموز</strong>
-                  <p className={styles.fieldHint}>این متن در پنل دانش‌آموز نمایش داده می‌شود</p>
-                  <div className={styles.hwPresetGrid}>
-                    {FEEDBACK_PRESETS.map((p) => (
-                      <button
-                        key={p}
-                        type="button"
-                        className={styles.hwPreset}
-                        onClick={() => setFeedback((prev) => (prev.trim() ? `${prev.trim()} ${p}` : p))}
-                      >
-                        {p}
-                      </button>
-                    ))}
-                  </div>
-                  <textarea
-                    rows={3}
-                    dir="rtl"
-                    value={feedback}
-                    onChange={(e) => setFeedback(e.target.value)}
-                    placeholder="مثلاً روی سوالات سخت بیشتر تمرین کن…"
-                  />
-                  <div className={styles.formActions}>
-                    <button type="button" className={styles.btnAccent} disabled={busy} onClick={saveFeedback}>
-                      <Save size={14} />
-                      <span>ذخیره توضیح</span>
-                    </button>
-                  </div>
-                </div>
-              ) : detail.teacher_feedback ? (
-                <div className={`${styles.teacherFeedback} ${styles.examStudentFeedback}`}>
-                  <MessageSquare size={16} />
-                  <div>
-                    <strong>پیام معلم</strong>
-                    <p>{detail.teacher_feedback}</p>
-                  </div>
-                </div>
-              ) : null}
-
               <div className={styles.examFilterRow}>
-                <button type="button" className={`${styles.chip} ${filter === 'all' ? styles.chipOn : ''}`} onClick={() => setFilter('all')}>
-                  همه ({faNum(items.length)})
+                <button
+                  type="button"
+                  className={`${styles.examChip} ${filter === 'all' ? styles.examChipOn : ''}`}
+                  onClick={() => setFilter('all')}
+                >
+                  همه {faNum(items.length)}
                 </button>
-                <button type="button" className={`${styles.chip} ${filter === 'wrong' ? styles.chipOn : ''}`} onClick={() => setFilter('wrong')}>
-                  اشتباه / نزده ({faNum(review.wrong_count ?? 0)})
+                <button
+                  type="button"
+                  className={`${styles.examChip} ${filter === 'correct' ? styles.examChipOn : ''}`}
+                  onClick={() => setFilter('correct')}
+                >
+                  صحیح {faNum(correctN)}
                 </button>
-                <button type="button" className={`${styles.chip} ${filter === 'unanswered' ? styles.chipOn : ''}`} onClick={() => setFilter('unanswered')}>
-                  بی‌پاسخ ({faNum(review.unanswered_count ?? 0)})
+                <button
+                  type="button"
+                  className={`${styles.examChip} ${filter === 'wrong' ? styles.examChipOn : ''}`}
+                  onClick={() => setFilter('wrong')}
+                >
+                  غلط {faNum(wrongN)}
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.examChip} ${filter === 'unanswered' ? styles.examChipOn : ''}`}
+                  onClick={() => setFilter('unanswered')}
+                >
+                  نزده {faNum(unansweredN)}
                 </button>
               </div>
 
@@ -419,88 +652,81 @@ export default function ExamResultsPanel({
                 {!busy && !items.length ? (
                   <p className={styles.empty}>سوالات این برگه در دسترس نیست</p>
                 ) : null}
-                {visibleItems.map((q, idx) => (
-                  <article
-                    key={q.id || `q-${idx}`}
-                    className={`${styles.examQCard} ${
-                      q.is_correct ? styles.examQOk : styles.examQBad
-                    }`}
-                  >
-                    <div className={styles.examQHead}>
-                      <span className={styles.examQIndex}>سوال {faNum(q.index)}</span>
-                      <span className={styles.pill}>{DIFF_FA[q.difficulty] || '—'}</span>
-                      {q.is_correct ? (
-                        <span className={`${styles.pill} ${styles.pillOk}`}>
-                          <Check size={12} />
-                          <span>صحیح</span>
-                        </span>
-                      ) : q.answered ? (
-                        <span className={`${styles.pill} ${styles.pillWarn}`}>
-                          <X size={12} />
-                          <span>غلط</span>
-                        </span>
-                      ) : (
-                        <span className={`${styles.pill} ${styles.pillWarn}`}>
-                          <CircleHelp size={12} />
-                          <span>نزده</span>
-                        </span>
-                      )}
-                    </div>
-
-                    {q.question_image_url ? (
-                      <img src={q.question_image_url} alt="" className={styles.examQImg} />
-                    ) : null}
-                    {q.question_text ? (
-                      <p className={styles.examQText}>{q.question_text}</p>
-                    ) : null}
-
-                    <div className={styles.examQOpts}>
-                      {(q.options || []).map((opt) => {
-                        const isCorrect = String(opt.id) === String(q.correct_option_id)
-                        const isChosen = String(opt.id) === String(q.chosen)
-                        return (
-                          <div
-                            key={opt.id}
-                            className={`${styles.examQOpt} ${isCorrect ? styles.examQOptCorrect : ''} ${isChosen && !isCorrect ? styles.examQOptWrong : ''}`}
-                          >
-                            <span className={styles.examQOptMark}>{optLetter(opt.id)}</span>
-                            {opt.image ? <img src={opt.image} alt="" /> : null}
-                            <span className={styles.examQOptBody}>
-                              <span className={styles.examQOptText}>
-                                {opt.text || (opt.image ? 'گزینه تصویری' : '—')}
-                              </span>
-                              <span className={styles.examQOptTags}>
-                                {isChosen ? <em>انتخاب دانش‌آموز</em> : null}
-                                {isCorrect ? <em className={styles.examTagOk}>پاسخ درست</em> : null}
-                              </span>
+                {visibleItems.map((q, idx) => {
+                  const tone = q.is_correct
+                    ? styles.examQOk
+                    : q.answered
+                      ? styles.examQBad
+                      : styles.examQNeutral
+                  return (
+                    <article
+                      key={q.id || `q-${idx}`}
+                      className={`${styles.examQCard} ${tone}`}
+                    >
+                      <div className={styles.examQMain}>
+                        <div className={styles.examQHead}>
+                          <span className={styles.examQIndex}>س{faNum(q.index)}</span>
+                          <span className={styles.examQDiff}>{DIFF_FA[q.difficulty] || '—'}</span>
+                          {q.is_correct ? (
+                            <span className={`${styles.examQStatus} ${styles.examQStatusOk}`}>
+                              <Check size={11} /> صحیح
                             </span>
-                          </div>
-                        )
-                      })}
-                    </div>
+                          ) : q.answered ? (
+                            <span className={`${styles.examQStatus} ${styles.examQStatusBad}`}>
+                              <X size={11} /> غلط
+                            </span>
+                          ) : (
+                            <span className={`${styles.examQStatus} ${styles.examQStatusMiss}`}>
+                              <CircleHelp size={11} /> نزده
+                            </span>
+                          )}
+                        </div>
 
-                    <div className={styles.examQMeta}>
-                      <div>
-                        <span>پاسخ دانش‌آموز</span>
-                        <strong>{optionText(q.options, q.chosen)}</strong>
-                      </div>
-                      <div>
-                        <span>پاسخ صحیح</span>
-                        <strong>{optionText(q.options, q.correct_option_id)}</strong>
-                      </div>
-                    </div>
-
-                    {(q.explanation_text || q.explanation_image_url) ? (
-                      <div className={styles.examExplain}>
-                        <strong>پاسخ تشریحی</strong>
-                        {q.explanation_text ? <p>{q.explanation_text}</p> : null}
-                        {q.explanation_image_url ? (
-                          <img src={q.explanation_image_url} alt="" />
+                        {q.question_image_url ? (
+                          <img src={q.question_image_url} alt="" className={styles.examQImg} />
                         ) : null}
+                        {q.question_text ? (
+                          <p className={styles.examQText}>{q.question_text}</p>
+                        ) : null}
+
+                        <div className={styles.examQOpts}>
+                          {(q.options || []).map((opt) => {
+                            const isCorrect = String(opt.id) === String(q.correct_option_id)
+                            const isChosen = String(opt.id) === String(q.chosen)
+                            const optClass = [
+                              styles.examQOpt,
+                              isCorrect ? styles.examQOptCorrect : '',
+                              isChosen && !isCorrect ? styles.examQOptWrong : '',
+                            ].filter(Boolean).join(' ')
+                            return (
+                              <div key={opt.id} className={optClass}>
+                                <span className={styles.examQOptMark}>{optLetter(opt.id)}</span>
+                                {opt.image ? <img src={opt.image} alt="" /> : null}
+                                <span className={styles.examQOptText}>
+                                  {opt.text || (opt.image ? 'تصویر' : '—')}
+                                </span>
+                              </div>
+                            )
+                          })}
+                        </div>
                       </div>
-                    ) : null}
-                  </article>
-                ))}
+
+                      <aside className={styles.examQExplainCol}>
+                        <strong>پاسخ تشریحی</strong>
+                        {q.explanation_text || q.explanation_image_url ? (
+                          <>
+                            {q.explanation_text ? <p>{q.explanation_text}</p> : null}
+                            {q.explanation_image_url ? (
+                              <img src={q.explanation_image_url} alt="" />
+                            ) : null}
+                          </>
+                        ) : (
+                          <p className={styles.examQExplainEmpty}>تشریحی ثبت نشده</p>
+                        )}
+                      </aside>
+                    </article>
+                  )
+                })}
                 {!visibleItems.length ? (
                   <p className={styles.empty}>موردی در این فیلتر نیست</p>
                 ) : null}
@@ -509,6 +735,7 @@ export default function ExamResultsPanel({
           </>
         )}
       </section>
+      {confirmModal}
     </div>
   )
 }

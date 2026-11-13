@@ -125,7 +125,10 @@ const BookmarksList = () => {
             </div>
 
             <div className={styles.content}>
-              <Link href={`/jobs/${job.slug}`} className={styles.titleLink}>
+              <Link
+                href={job.slug ? `/jobs/${job.slug}` : `/jobs/${job.id}`}
+                className={styles.titleLink}
+              >
                 <h3>{job.title}</h3>
               </Link>
 
@@ -165,7 +168,7 @@ const BookmarksList = () => {
 
             <div className={styles.actions}>
               <Link
-                href={`/jobs/${job.slug}`}
+                href={job.slug ? `/jobs/${job.slug}` : `/jobs/${job.id}`}
                 className={styles.viewBtn}
                 target="_blank"
               >

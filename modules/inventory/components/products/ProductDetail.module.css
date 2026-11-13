@@ -1,0 +1,438 @@
+/* modules/inventory/components/products/ProductDetail.module.css */
+
+/* ============================================
+   DETAIL CONTAINER
+   ============================================ */
+.detail {
+  padding: 0.25rem 0;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.detailHeader {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem;
+  background: var(--macos-bg);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid var(--macos-border);
+  flex-wrap: wrap;
+}
+
+.detailImage {
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--macos-bg);
+  border: 1px solid var(--macos-border);
+}
+
+.detailImageMain {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detailImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.detailTitleSection {
+  flex: 1;
+  min-width: 150px;
+}
+
+.detailTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: var(--font-iran-extra);
+  color: var(--text-primary);
+  margin: 0 0 0.3rem 0;
+}
+
+.detailCode {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+  background: var(--macos-bg);
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+}
+
+.detailStatus {
+  margin-top: 0.3rem;
+}
+
+.detailQuickInfo {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.quickInfoItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  background: var(--macos-bg);
+  padding: 0.15rem 0.5rem;
+  border-radius: 8px;
+  font-family: var(--font-iran);
+}
+
+.bufferInfo {
+  background: #fff3e0;
+  color: #e65100;
+  border: 1px solid #ffe0b2;
+}
+
+.detailActions {
+  display: flex;
+  gap: 0.5rem;
+  margin-right: auto;
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primaryBtn:hover {
+  
+  box-shadow: 0 4px 16px rgba(128,0,32,0.3);
+}
+
+.secondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 8px;
+  background: var(--macos-card);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.secondaryBtn:hover {
+  background: var(--macos-bg);
+}
+
+/* ============================================
+   INFO GRID
+   ============================================ */
+.detailGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--macos-border);
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+}
+
+.detailRow.warningRow {
+  background: #fff3e0;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  border-bottom: none;
+}
+
+.detailLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+.detailValue {
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  font-family: var(--font-iran);
+  text-align: left;
+}
+
+.detailValue.lowStockValue {
+  color: var(--macos-red);
+  font-weight: 600;
+}
+
+.detailSubInfo {
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  margin-right: 0.3rem;
+  font-weight: 400;
+}
+
+.detailEmpty {
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+}
+
+/* ============================================
+   BUFFER
+   ============================================ */
+.bufferList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  justify-content: flex-end;
+}
+
+.bufferItem {
+  font-size: 0.65rem;
+  background: #fff3e0;
+  color: #e65100;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid #ffe0b2;
+  font-weight: 500;
+}
+
+/* ============================================
+   SECTIONS
+   ============================================ */
+.detailSection {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--macos-border);
+}
+
+.detailSectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-iran-extra);
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+/* ============================================
+   DESCRIPTION
+   ============================================ */
+.detailDescription {
+  padding: 0.5rem 0.75rem;
+  background: var(--macos-bg);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  font-family: var(--font-iran);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.detailSpecs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.3rem 0.5rem;
+  background: var(--macos-bg);
+  border-radius: 8px;
+  margin-top: 0.3rem;
+}
+
+.detailSpecItem {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.15rem 0;
+  border-bottom: 1px solid var(--macos-border);
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+}
+
+.detailSpecItem:last-child {
+  border-bottom: none;
+}
+
+.detailSpecKey {
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 80px;
+}
+
+.detailSpecValue {
+  color: var(--text-primary);
+  flex: 1;
+}
+
+/* ============================================
+   LINK
+   ============================================ */
+.detailLink {
+  color: var(--macos-blue);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-family: var(--font-iran);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.detailLink:hover {
+  text-decoration: underline;
+}
+
+/* ============================================
+   IMAGES
+   ============================================ */
+.detailImagesGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.detailImageItem {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--macos-border);
+  background: var(--macos-bg);
+}
+
+.detailImageThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ============================================
+   WARNING
+   ============================================ */
+.warningText {
+  color: #e65100;
+  font-weight: 600;
+  font-size: 0.75rem;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   STATUS BADGE (هماهنگ با ProductList)
+   ============================================ */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.6rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+}
+
+.activeBadge {
+  background: #e8f5e9;
+  color: #1a934c;
+}
+
+.inactiveBadge {
+  background: #ffebee;
+  color: var(--macos-red);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .detailHeader {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .detailActions {
+    margin-right: 0;
+  }
+  
+  .detailImage {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .detailRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .detailValue {
+    text-align: right;
+    width: 100%;
+  }
+  
+  .bufferList {
+    justify-content: flex-start;
+  }
+  
+  .detailQuickInfo {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .detailHeader {
+    padding: 0.5rem;
+  }
+  
+  .detailImage {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .detailTitle {
+    font-size: 1rem;
+  }
+  
+  .detailActions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .detailActions button {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -39,6 +39,7 @@ function isAparatUrl(url) {
 export default function CurriculumWorkspace({
   tree = [],
   teacherId,
+  canManageSubjects = false,
   selectedLesson,
   lessonForm,
   exercises = [],
@@ -223,20 +224,33 @@ export default function CurriculumWorkspace({
           <p className={styles.metaMuted}>دسته ← فصل ← درس · ترتیب با ▲▼</p>
         </div>
 
-        <div className={styles.currAddBar}>
-          <input
-            className={styles.input}
-            placeholder="دسته جدید (مثلاً ریاضی)"
-            value={subjectTitle}
-            onChange={(e) => setSubjectTitle(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && createSubject()}
-          />
-          <button type="button" className={styles.btnAccent} onClick={createSubject} title="افزودن دسته">
-            <Plus size={14} />
-          </button>
-        </div>
+        {canManageSubjects ? (
+          <div className={styles.currAddBar}>
+            <input
+              className={styles.input}
+              placeholder="دسته جدید (مثلاً ریاضی)"
+              value={subjectTitle}
+              onChange={(e) => setSubjectTitle(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && createSubject()}
+            />
+            <button type="button" className={styles.btnAccent} onClick={createSubject} title="افزودن دسته">
+              <Plus size={14} />
+            </button>
+          </div>
+        ) : (
+          <p className={styles.currAssignHint}>
+            دروس را مدیر مدرسه اختصاص می‌دهد؛ اینجا فقط محتوای درس‌های خودتان را مدیریت کنید.
+          </p>
+        )}
 
         <div className={styles.currTree}>
+          {!tree.length ? (
+            <p className={styles.metaMuted} style={{ padding: '0.5rem 0.25rem' }}>
+              {canManageSubjects
+                ? 'هنوز دسته‌ای نیست'
+                : 'هنوز درسی توسط مدیر به شما اختصاص داده نشده'}
+            </p>
+          ) : null}
           {tree.map((s, si) => {
             const sOpen = expanded[`s-${s.id}`] !== false
             return (
@@ -260,9 +274,11 @@ export default function CurriculumWorkspace({
                     <button type="button" className={styles.iconBtn} onClick={() => { setAddingChapterFor(s.id); ensureExpanded(s.id); setChapterTitle('') }} title="فصل جدید">
                       <Plus size={12} />
                     </button>
-                    <button type="button" className={styles.iconBtn} onClick={() => deleteSubject(s.id)} title="حذف">
-                      <Trash2 size={12} />
-                    </button>
+                    {canManageSubjects ? (
+                      <button type="button" className={styles.iconBtn} onClick={() => deleteSubject(s.id)} title="حذف">
+                        <Trash2 size={12} />
+                      </button>
+                    ) : null}
                   </div>
                 </div>
 

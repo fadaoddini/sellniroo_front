@@ -1,10 +1,26 @@
 .homeContainer {
-  /* overflow:hidden باعث از کار افتادن position:sticky فیلترها می‌شود */
-  overflow-x: clip;
-  overflow-y: visible;
+  /*
+   * overflow-x: clip/hidden روی این لایه sticky نوار خبر و منو را باطل می‌کند
+   * (containing block اسکرول می‌شود به‌جای ویوپورت). کلیپ افقی روی html است.
+   */
+  overflow: visible;
 }
 
-/* تجربه اپ‌مانند روی موبایل */
+.homeContent {
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.homeContentPending {
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+}
+
+.homeContentIn {
+  opacity: 1;
+  transform: none;
+}
+
 @media (max-width: 1023px) {
   .homeContainer {
     padding-bottom: 0.25rem;
@@ -13,9 +29,36 @@
 
 @media (max-width: 768px) {
   .homeContainer {
-    /* فاصله‌های عمودی فشرده‌تر مثل اپ */
     display: flex;
     flex-direction: column;
     gap: 0;
+  }
+
+  /* شِل اپ — فاصله برای نوار پایین ویجت منو (حالت موبایل) */
+  .homeAppShell {
+    min-height: 100dvh;
+    background:
+      radial-gradient(ellipse 90% 40% at 50% -10%, rgba(219, 190, 0, 0.14), transparent 55%),
+      linear-gradient(180deg, #fff9e8 0%, #faf7ef 42%, #f3efe4 100%);
+    padding-bottom: calc(var(--mobile-bottom-nav, 108px) + 12px);
+  }
+
+  .homeAppShell :global([data-pb-mobile='1']) {
+    --home-gutter: 16px;
+  }
+
+  .homeAppShell :global([data-pb-chrome-section='1']) {
+    margin: 0 !important;
+  }
+
+  .homeAppShell :global([data-pb-chrome='1']) {
+    margin-inline: 0 !important;
+    padding-inline: 0 !important;
+  }
+
+  .homeAppShell :global(input),
+  .homeAppShell :global(button),
+  .homeAppShell :global(a) {
+    -webkit-tap-highlight-color: transparent;
   }
 }

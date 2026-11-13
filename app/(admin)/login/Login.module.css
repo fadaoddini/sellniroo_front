@@ -398,6 +398,20 @@
   cursor: not-allowed;
 }
 
+.waitBanner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #fff8e8;
+  border: 1px solid rgba(194, 120, 0, 0.22);
+  color: #8a5a00;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+}
+
 /* ============================================
    DIVIDER
    ============================================ */

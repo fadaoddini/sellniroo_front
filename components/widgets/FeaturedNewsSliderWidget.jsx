@@ -6,6 +6,7 @@ import Config from '@/config/config'
 import HeroSlider from '@/components/slider/HeroSlider'
 import { fillNewsWithDemo } from './newsDemoData'
 import { DEFAULT_SLIDER_WIDGET_SETTINGS } from '@/config/sliderWidgetSettings'
+import { getNewsHref } from '@/utils/newsSlug'
 
 function getFullImageUrl(imagePath) {
   if (!imagePath) return null
@@ -44,7 +45,7 @@ function mapFeaturedToSlides(items) {
     id: item.id || item.slug,
     title: item.title || '',
     description: String(item.lid || item.excerpt || item.subtitle || '').trim(),
-    link: `/news/${item.slug || item.id}`,
+    link: getNewsHref(item),
     image: getBestImage(item),
   }))
 }

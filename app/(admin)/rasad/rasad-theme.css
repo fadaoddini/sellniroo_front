@@ -1,0 +1,53 @@
+/* تم روشن رصد — فقط فونت ایران / ایران بلد / ایران اکسترا */
+
+html:has(.rasadTheme),
+body:has(.rasadTheme) {
+  background: #f8fafc !important;
+  color: #0f172a;
+}
+
+.rasadTheme {
+  --font-iran: 'iran', sans-serif;
+  --font-iran-bold: 'iran_bold', 'iran', sans-serif;
+  --font-iran-extra: 'iran_extra', 'iran_bold', 'iran', sans-serif;
+
+  min-height: 100vh;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: var(--font-iran);
+}
+
+.rasadTheme *,
+.rasadTheme *::before,
+.rasadTheme *::after {
+  font-family: inherit;
+}
+
+.rasadTheme h1,
+.rasadTheme h2,
+.rasadTheme h3,
+.rasadTheme h4 {
+  font-family: var(--font-iran-extra);
+}
+
+.rasadTheme strong,
+.rasadTheme b,
+.rasadTheme button,
+.rasadTheme [class*='btn'],
+.rasadTheme [class*='Btn'],
+.rasadTheme [class*='chip'],
+.rasadTheme [class*='Chip'],
+.rasadTheme [class*='score'],
+.rasadTheme [class*='Score'],
+.rasadTheme [class*='name'],
+.rasadTheme [class*='Name'],
+.rasadTheme [class*='panelTitle'],
+.rasadTheme [class*='PanelTitle'] {
+  font-family: var(--font-iran-bold);
+}
+
+.rasadTheme input,
+.rasadTheme select,
+.rasadTheme textarea {
+  font-family: var(--font-iran);
+}

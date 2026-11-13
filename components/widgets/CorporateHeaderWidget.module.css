@@ -16,8 +16,13 @@
 }
 
 .shellInset {
-  width: auto;
-  max-width: 100%;
+  box-sizing: border-box;
+  width: calc(100% - var(--ch-ml, 0px) - var(--ch-mr, 0px));
+  max-width: var(--home-max-width, 1200px);
+  margin-top: var(--ch-mt, 0);
+  margin-bottom: var(--ch-mb, 0);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hideOnMobile {
@@ -223,7 +228,7 @@
   font-size: calc(var(--ch-fs, 13px) - 1px);
   font-weight: 700;
   font-family: var(--font-iran, inherit);
-  background: var(--ch-cta-bg, #fbc300);
+  background: var(--ch-cta-bg, #F4AE52);
   color: var(--ch-cta-text, #14181f);
   white-space: nowrap;
   transition: transform 0.25s ease, filter 0.25s ease;
@@ -390,7 +395,7 @@
 }
 
 .drawerLinkActive svg {
-  color: var(--ch-accent, #fbc300);
+  color: var(--ch-accent, #F4AE52);
 }
 
 .drawerCta {
@@ -403,7 +408,7 @@
   border-radius: 14px;
   text-decoration: none;
   font-weight: 800;
-  background: var(--ch-cta-bg, #fbc300);
+  background: var(--ch-cta-bg, #F4AE52);
   color: var(--ch-cta-text, #14181f);
 }
 

@@ -1,0 +1,850 @@
+/* modules/inventory/components/alerts/alert.module.css */
+
+/* ============================================
+   CONTAINER & LAYOUT (همانند سایر بخش‌ها)
+   ============================================ */
+.inventoryContainer {
+  padding: 0.75rem 0 1.25rem;
+  min-height: auto;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* ============================================
+   HEADER (همانند سایر بخش‌ها)
+   ============================================ */
+.inventoryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  font-size: 1.05rem;
+  font-weight: 800;
+  font-family: var(--font-iran-extra);
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pageTitle .titleIcon {
+  color: var(--primary);
+  width: 22px;
+  height: 22px;
+}
+
+.pageDesc {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   BUTTONS (همانند سایر بخش‌ها)
+   ============================================ */
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  
+  box-shadow: 0 4px 16px rgba(128,0,32,0.3);
+}
+
+.primaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.secondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  background: var(--macos-card);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.secondaryBtn:hover:not(:disabled) {
+  background: var(--macos-bg);
+  border-color: var(--text-secondary);
+}
+
+.refreshBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  background: var(--macos-card);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.refreshBtn:hover:not(:disabled) {
+  background: var(--macos-bg);
+  transform: translateY(-1px);
+}
+
+.spinning {
+  animation: spin 0.8s linear infinite !important;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.resolveBtn {
+  background: #2e7d32;
+}
+
+.resolveBtn:hover:not(:disabled) {
+  background: #1a5a2a;
+  box-shadow: 0 4px 16px rgba(46,125,50,0.3);
+}
+
+/* ============================================
+   STATS GRID (همانند سایر بخش‌ها)
+   ============================================ */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem;
+  background: var(--macos-card);
+  border-radius: 10px;
+  border: 1px solid var(--macos-border);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  transition: all 0.3s ease;
+}
+
+.statCard:hover {
+  
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.statIconWrapper {
+  width: 28px;
+  height: 48px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.statIcon { width: 16px; height: 16px; }
+.statValue { font-size: 1.1rem; font-weight: 700; font-family: var(--font-iran-extra); color: var(--text-primary); }
+.statLabel { font-size: 0.65rem; color: var(--text-secondary); font-family: var(--font-iran); }
+
+/* ============================================
+   SEARCH & FILTER (همانند سایر بخش‌ها)
+   ============================================ */
+.searchSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.searchBox {
+  position: relative;
+  flex: 1;
+  max-width: 450px;
+  min-width: 200px;
+}
+
+.searchBox .searchIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  pointer-events: none;
+  width: 16px;
+  height: 16px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.5rem 2.5rem 0.5rem 1rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-family: var(--font-iran);
+  background: var(--macos-card);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  direction: rtl;
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(128,0,32,0.1);
+}
+
+.clearSearch {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clearSearch:hover {
+  background: rgba(0,0,0,0.05);
+  color: var(--macos-red);
+}
+
+.totalCount {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  padding: 0.3rem 1rem;
+  background: var(--macos-bg);
+  border-radius: 10px;
+  font-family: var(--font-iran);
+  border: 1px solid var(--macos-border);
+}
+
+.filterToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  background: var(--macos-card);
+  color: var(--text-primary);
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filterActive {
+  border-color: var(--primary);
+  background: rgba(128,0,32,0.05);
+  color: var(--primary);
+}
+
+.filterBadge { color: var(--primary); font-size: 0.5rem; }
+.clearFiltersBtn { padding: 0.5rem 1rem; border: none; border-radius: 10px; background: transparent; color: var(--macos-red); font-size: 0.7rem; font-family: var(--font-iran); cursor: pointer; }
+.clearFiltersBtn:hover { background: #ffebee; }
+
+.filterPanel {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.65rem;
+  padding: 1rem 1.25rem;
+  background: var(--macos-card);
+  border: 1px solid var(--macos-border);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+  min-width: 150px;
+}
+
+.filterLabel { font-size: 0.65rem; font-weight: 600; color: var(--text-secondary); font-family: var(--font-iran); }
+.filterSelect { padding: 0.4rem 0.75rem; border: 1px solid var(--macos-border); border-radius: 8px; font-size: 0.7rem; font-family: var(--font-iran); background: var(--macos-card); color: var(--text-primary); outline: none; direction: rtl; }
+.filterSelect:focus { border-color: var(--primary); }
+
+.filterApplyBtn {
+  padding: 0.4rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filterApplyBtn:hover {
+  
+  box-shadow: 0 4px 16px rgba(128,0,32,0.3);
+}
+
+.searchHint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  margin-bottom: 1rem;
+  background: #fff3e0;
+  border: 1px solid #ffe0b2;
+  border-radius: 8px;
+  color: var(--macos-orange);
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+}
+
+.errorAlert {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 10px;
+  color: var(--macos-red);
+  margin-bottom: 1rem;
+  font-family: var(--font-iran);
+  font-size: 0.75rem;
+}
+
+.errorAlert button { background: none; border: none; color: var(--macos-red); cursor: pointer; font-size: 1rem; padding: 0 4px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+.errorAlert button:hover { background: rgba(198,40,40,0.1); }
+
+/* ============================================
+   LOADING & EMPTY
+   ============================================ */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 0.65rem;
+}
+
+.loadingContainer .spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--macos-border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  gap: 0.65rem;
+}
+
+.emptyIcon {
+  color: var(--text-secondary);
+  opacity: 0.3;
+}
+
+.emptyState p {
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+/* ============================================
+   ALERTS GRID
+   ============================================ */
+.alertsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+.alertCard {
+  background: var(--macos-card);
+  border: 1px solid var(--macos-border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.alertCard:hover {
+  
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.alertCard.resolvedCard {
+  opacity: 0.7;
+  border-color: #e8f5e9;
+}
+
+.alertCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--macos-bg);
+  border-bottom: 1px solid var(--macos-border);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.alertCardType {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.alertCardStatus {
+  flex-shrink: 0;
+}
+
+.alertCardBody {
+  padding: 0.75rem;
+}
+
+.alertProduct {
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: var(--font-iran-extra);
+  color: var(--text-primary);
+  margin: 0 0 0.3rem 0;
+}
+
+.alertMessage {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+  margin: 0 0 0.5rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.alertDetails {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.alertDetail {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+  background: var(--macos-bg);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.alertQuantities {
+  display: flex;
+  gap: 0.65rem;
+  padding: 0.3rem 0;
+  border-top: 1px solid var(--macos-border);
+}
+
+.quantityItem {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+}
+
+.quantityLabel {
+  color: var(--text-secondary);
+}
+
+.quantityValue {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-iran-extra);
+}
+
+.quantityValue.criticalValue {
+  color: var(--macos-red);
+}
+
+.alertCardActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.3rem;
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid var(--macos-border);
+  background: var(--macos-bg);
+}
+
+/* ============================================
+   ALERTS TABLE
+   ============================================ */
+.alertsTable {
+  background: var(--macos-card);
+  border-radius: 10px;
+  border: 1px solid var(--macos-border);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-iran);
+  font-size: 0.85rem;
+}
+
+.table thead {
+  background: var(--macos-bg);
+  border-bottom: 2px solid var(--macos-border);
+}
+
+.table th {
+  padding: 0.5rem 0.75rem;
+  text-align: right;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-family: var(--font-iran-extra);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  vertical-align: middle;
+  border-bottom: 1px solid var(--macos-border);
+}
+
+.table tbody tr.clickable { cursor: pointer; }
+.table tbody tr.clickable:hover { background: var(--macos-bg); }
+.table tbody tr.resolvedRow { opacity: 0.7; }
+
+.actionsHeader { text-align: center !important; min-width: 100px; }
+.actionsCell { text-align: center !important; min-width: 100px; }
+
+.colProduct { min-width: 150px; }
+.colWarehouse { width: 130px; }
+.colType { width: 120px; }
+.colLevel { width: 100px; }
+.colQuantity { width: 80px; text-align: center; }
+.colStatus { width: 90px; }
+
+.productName {
+  font-weight: 600;
+  font-family: var(--font-iran-extra);
+}
+
+.warehouseName {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.quantityBadge {
+  font-weight: 600;
+  font-family: var(--font-iran-extra);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  background: var(--macos-bg);
+}
+
+.quantityBadge.criticalBadge {
+  color: var(--macos-red);
+  background: #ffebee;
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+.typeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.6rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+}
+
+.typeLowStock { background: #fff3e0; color: #e65100; }
+.typeNoStock { background: #ffebee; color: var(--macos-red); }
+.typeOverStock { background: #e3f2fd; color: #0d47a1; }
+
+.levelBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.6rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+}
+
+.levelInfo { background: #e3f2fd; color: #0d47a1; }
+.levelWarning { background: #fff3e0; color: #e65100; }
+.levelCritical { background: #ffebee; color: var(--macos-red); }
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.6rem;
+  font-weight: 500;
+  font-family: var(--font-iran);
+}
+
+.activeBadge { background: #ffebee; color: var(--macos-red); }
+.resolvedBadge { background: #e8f5e9; color: #1a934c; }
+
+/* ============================================
+   ACTION BUTTONS
+   ============================================ */
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.actionBtn:hover {
+  background: var(--macos-card);
+  
+}
+
+.actionBtn:nth-child(1) { color: var(--macos-blue); }
+.actionBtn:nth-child(1):hover { background: #e3f2fd; color: #0d47a1; }
+.actionBtn.resolveBtn { color: #2e7d32; }
+.actionBtn.resolveBtn:hover { background: #e8f5e9; color: #1a5a2a; }
+
+/* ============================================
+   ALERT DETAIL
+   ============================================ */
+.alertDetail { padding: 0.25rem 0; }
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem;
+  background: var(--macos-bg);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid var(--macos-border);
+  flex-wrap: wrap;
+}
+
+.detailIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: rgba(128,0,32,0.05);
+}
+
+.iconLowStock { color: #e65100; }
+.iconNoStock { color: var(--macos-red); }
+.iconOverStock { color: #0d47a1; }
+
+.detailTitleSection {
+  flex: 1;
+  min-width: 150px;
+}
+
+.detailTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: var(--font-iran-extra);
+  color: var(--text-primary);
+  margin: 0 0 0.3rem 0;
+}
+
+.detailBadges {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.detailActions {
+  display: flex;
+  gap: 0.5rem;
+  margin-right: auto;
+}
+
+.detailGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--macos-border);
+  flex-wrap: wrap;
+}
+
+.detailRow:last-child { border-bottom: none; }
+
+.detailMessage {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.detailLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--font-iran);
+}
+
+.detailValue {
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  font-family: var(--font-iran);
+}
+
+.detailQuantities {
+  background: var(--macos-bg);
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  margin: 0.2rem 0;
+}
+
+.detailFooter {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--macos-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.detailWarning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #fff3e0;
+  border-radius: 8px;
+  border-right: 3px solid #e65100;
+  font-size: 0.75rem;
+  font-family: var(--font-iran);
+  color: #e65100;
+  width: 100%;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .inventoryHeader { flex-direction: column; align-items: stretch; }
+  .headerActions { flex-wrap: wrap; }
+  .headerActions button { flex: 1; justify-content: center; min-width: 80px; }
+  .searchSection { flex-direction: column; align-items: stretch; }
+  .searchBox { max-width: 100%; }
+  .statsGrid { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0.75rem; }
+  .filterPanel { flex-direction: column; align-items: stretch; }
+  .filterGroup { min-width: auto; }
+  .filterApplyBtn { width: 100%; }
+  .filterActions { width: 100%; }
+  
+  .detailHeader { flex-direction: column; align-items: center; text-align: center; }
+  .detailActions { margin-right: 0; }
+  .alertsGrid { grid-template-columns: 1fr; }
+  .colWarehouse, .colLevel, .colType { display: none; }
+  
+  .detailFooter { align-items: stretch; }
+  .detailFooter button { width: 100%; justify-content: center; }
+}
+
+@media (max-width: 480px) {
+  .headerActions { flex-direction: column; }
+  .headerActions button { width: 100%; }
+  .statsGrid { grid-template-columns: repeat(2, 1fr); }
+  .actionsHeader, .actionsCell { min-width: 80px; }
+  .actionBtn { width: 24px; height: 24px; }
+  .actionBtn svg { width: 12px; height: 12px; }
+  .alertCardHeader { flex-direction: column; align-items: flex-start; }
+}

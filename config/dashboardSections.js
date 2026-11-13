@@ -7,13 +7,17 @@
 export const DASHBOARD_SECTION_DEFS = [
   { id: 'news', labelFa: 'اخبار', labelEn: 'News' },
   { id: 'jobs', labelFa: 'کاریابی', labelEn: 'Jobs' },
+  { id: 'booking', labelFa: 'نوبت‌دهی', labelEn: 'Booking' },
+  { id: 'repairs', labelFa: 'تعمیرات و سرویس', labelEn: 'Repairs' },
+  { id: 'gym', labelFa: 'باشگاه ورزشی', labelEn: 'Gym & clubs' },
   { id: 'content', labelFa: 'محتوا و رسانه', labelEn: 'Content & media' },
   { id: 'site', labelFa: 'سایت و تنظیمات', labelEn: 'Site & settings' },
   { id: 'sales', labelFa: 'فروش و تماس', labelEn: 'Sales & contact' },
+  { id: 'inventory', labelFa: 'انبارداری', labelEn: 'Inventory' },
   {
     id: 'shop',
-    labelFa: 'فروشگاه',
-    labelEn: 'Shop',
+    labelFa: 'فروشگاه من',
+    labelEn: 'My shop',
   },
   {
     id: 'marketplace',
@@ -73,6 +77,15 @@ export function resolveDashboardGroup(action) {
     return 'jobs'
   }
   if (
+    href === '/booking' ||
+    href === '/booking-manage' ||
+    id === 'booking' ||
+    id === 'booking-manage' ||
+    id === 'nobat'
+  ) {
+    return 'booking'
+  }
+  if (
     href === '/ticker' ||
     href === '/hero-slider' ||
     href === '/videoinsta-manage' ||
@@ -81,9 +94,35 @@ export function resolveDashboardGroup(action) {
     href === '/quiz-manage' ||
     href === '/faq-manage' ||
     href === '/school-manage' ||
-    href.startsWith('/school')
+    href.startsWith('/school') ||
+    href === '/apps-manage' ||
+    href === '/apps' ||
+    href.startsWith('/apps/')
   ) {
     return 'content'
+  }
+  if (
+    href === '/repairs-manage' ||
+    href === '/repairs-tech' ||
+    href === '/repairs' ||
+    href.startsWith('/repairs/') ||
+    id === 'repairs' ||
+    id === 'repairs-manage' ||
+    id.startsWith('repairs-')
+  ) {
+    return 'repairs'
+  }
+  if (
+    href === '/gym' ||
+    href.startsWith('/gym/') ||
+    id === 'gym' ||
+    id === 'gym-bodybuilding' ||
+    id === 'gym-billiard' ||
+    id === 'gym_bodybuilding' ||
+    id === 'gym_billiard' ||
+    id.startsWith('gym-')
+  ) {
+    return 'gym'
   }
   if (
     href === '/site-settings' ||
@@ -113,6 +152,7 @@ export function resolveDashboardGroup(action) {
   if (
     href === '/shop-manage' ||
     href === '/shop-panel' ||
+    href === '/dashboard/my-shop' ||
     href === '/product-single' ||
     href === '/adminshop' ||
     href === '/adminshops' ||
@@ -123,6 +163,7 @@ export function resolveDashboardGroup(action) {
     id === 'shop' ||
     id === 'shop-manage' ||
     id === 'shop-panel' ||
+    id === 'my-shop' ||
     id === 'product-single' ||
     id === 'adminshop' ||
     id === 'adminshops' ||
@@ -137,11 +178,21 @@ export function resolveDashboardGroup(action) {
     href === '/request-types' ||
     href === '/sale' ||
     href === '/payment-manage' ||
+    href === '/rebo-manage' ||
     id === 'sale' ||
     id === 'payment' ||
-    id === 'payment-manage'
+    id === 'payment-manage' ||
+    id === 'rebo-manage'
   ) {
     return 'sales'
+  }
+  if (
+    href === '/inventory' ||
+    href.startsWith('/inventory/') ||
+    id === 'inventory' ||
+    id === 'warehouse'
+  ) {
+    return 'inventory'
   }
   if (href === '/employees' || id === 'employees') {
     return 'team'

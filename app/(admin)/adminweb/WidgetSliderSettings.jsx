@@ -304,10 +304,13 @@ export default function WidgetSliderSettings({
             hint={
               settings.full_bleed
                 ? 'لبه به لبه — مناسب دسکتاپ'
-                : 'با فاصله از کنار — مناسب موبایل'
+                : 'کارت وسط‌چین تا سقف عرض صفحه'
             }
           />
         </div>
+        <p className={styles.wsHint}>
+          تمام‌عرض خاموش = محدود به عرض محتوا. برای فاصله بیشتر مارجین چپ/راست بدهید
+        </p>
 
         <p className={styles.wsMiniLabel}>Padding</p>
         <div className={styles.wsPxGrid}>

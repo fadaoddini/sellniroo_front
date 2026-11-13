@@ -7,13 +7,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar, faImage } from '@fortawesome/free-solid-svg-icons';
 import styles from './News.module.css';
 import Config from '@/config/config';
+import { getNewsHref, getNewsSlug } from '@/utils/newsSlug';
 
 const NewsCard = ({ news, index }) => {
   if (!news) return null;
 
   const {
-    slug,        // ✅ استفاده از slug
-    id,          // ✅ fallback به id
     title,
     excerpt,
     featured_image_display,
@@ -23,8 +22,8 @@ const NewsCard = ({ news, index }) => {
     images = [],
   } = news;
 
-  // ✅ اولویت با slug، اگر نبود از id استفاده کن
-  const newsSlug = slug || id || `news-${index}`;
+  const newsSlug = getNewsSlug(news) || `news-${index}`;
+  const href = getNewsHref(news) || `/news/${newsSlug}`;
 
   // ساخت آدرس کامل تصویر
   const getFullImageUrl = (imagePath) => {
@@ -60,7 +59,7 @@ const NewsCard = ({ news, index }) => {
   };
 
   return (
-    <Link href={`/news/${newsSlug}`} className={styles.cardLink}>
+    <Link href={href} className={styles.cardLink}>
       <div className={`${styles.card} ${styles.cardHover}`}>
         <div className={styles.cardImage}>
           {hasImage ? (

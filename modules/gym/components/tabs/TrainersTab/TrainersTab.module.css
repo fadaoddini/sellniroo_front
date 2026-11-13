@@ -1,0 +1,425 @@
+/* modules/gym/components/tabs/TrainersTab/TrainersTab.module.css */
+
+.tabContent {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  font-family: var(--font-iran, iran, Tahoma, sans-serif);
+  color: #10241c;
+}
+
+.tabHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.tabHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.tabTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 800;
+  font-family: var(--font-edameh, var(--font-iran));
+  color: #10241c;
+}
+
+.tabTitle svg {
+  color: #046c4e;
+}
+
+.tabCount {
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: #4d6a5c;
+  padding: 0.12rem 0.45rem;
+  background: #e8f5ef;
+  border-radius: 999px;
+}
+
+.quickStats {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.quickStats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 999px;
+  background: #eef6f1;
+  color: #4d6a5c;
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.statOk {
+  background: #d1fae5 !important;
+  color: #065f46 !important;
+}
+
+.statMuted {
+  background: #f1f5f4 !important;
+  color: #64748b !important;
+}
+
+.tabHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.filterSelect {
+  padding: 0.32rem 0.55rem;
+  background: #eef6f1;
+  border: 1px solid #d5e5db;
+  border-radius: 9px;
+  color: #4d6a5c;
+  font-size: 0.7rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: #046c4e;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.32rem 0.55rem;
+  background: #eef6f1;
+  border: 1px solid #d5e5db;
+  border-radius: 9px;
+}
+
+.searchBox:focus-within {
+  border-color: #046c4e;
+  box-shadow: 0 0 0 3px rgba(4, 108, 78, 0.12);
+  background: #fff;
+}
+
+.searchBox svg {
+  color: #7a9487;
+  flex-shrink: 0;
+}
+
+.searchBox input {
+  border: none;
+  background: transparent;
+  color: #10241c;
+  font-size: 0.72rem;
+  font-family: inherit;
+  outline: none;
+  min-width: 9rem;
+}
+
+.searchBox input::placeholder {
+  color: #7a9487;
+}
+
+.addButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.35rem 0.75rem;
+  background: linear-gradient(165deg, #10b981, #046c4e);
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(4, 108, 78, 0.18);
+}
+
+.addButton:hover {
+  filter: brightness(1.05);
+}
+
+.widgetHint {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 9px;
+  border: 1px solid #d5e5db;
+  background: #f3faf6;
+  color: #4d6a5c;
+  font-size: 0.66rem;
+  line-height: 1.45;
+}
+
+.previewToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid rgba(4, 108, 78, 0.28);
+  background: #fff;
+  color: #046c4e;
+  border-radius: 999px;
+  padding: 0.22rem 0.55rem;
+  font-size: 0.64rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.previewToggle:hover {
+  background: #e8f5ef;
+}
+
+.widgetPreview {
+  border: 1px solid #d5e5db;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  max-height: 28rem;
+  overflow-y: auto;
+}
+
+.widgetPreview :global([data-gym-trainers='1']) {
+  padding: 1.1rem 0 1.4rem;
+}
+
+.emptyNote {
+  margin: 0;
+  padding: 1.4rem 1rem;
+  text-align: center;
+  color: #4d6a5c;
+  font-size: 0.78rem;
+  border: 1px dashed #d5e5db;
+  border-radius: 12px;
+  background: #f7fbf8;
+}
+
+.trainersGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.trainerCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.7rem 0.75rem;
+  background: #fff;
+  border: 1px solid #d5e5db;
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(2, 60, 44, 0.04);
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+  min-width: 0;
+}
+
+.trainerCard:hover {
+  border-color: rgba(4, 108, 78, 0.35);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(2, 60, 44, 0.08);
+}
+
+.trainerCardInactive {
+  opacity: 0.72;
+  background: #f8faf9;
+}
+
+.cardTop {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.55rem;
+  align-items: start;
+}
+
+.avatar {
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(165deg, #e8f5ef, #d1fae5);
+  border: 1.5px solid rgba(4, 108, 78, 0.22);
+  flex-shrink: 0;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar em {
+  font-style: normal;
+  font-family: var(--font-edameh, var(--font-iran));
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: #023c2c;
+}
+
+.cardIdentity {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.trainerName {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #10241c;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.specialty {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+  color: #046c4e;
+  font-size: 0.64rem;
+  font-weight: 700;
+}
+
+.statusChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.18rem 0.45rem;
+  font-size: 0.58rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.statusOn {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.statusOff {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.metaRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  padding: 0.4rem 0.45rem;
+  background: #eef6f1;
+  border-radius: 9px;
+}
+
+.metaRow span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.66rem;
+  color: #4d6a5c;
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metaRow svg {
+  color: #7a9487;
+  flex-shrink: 0;
+}
+
+.emailMeta {
+  opacity: 0.9;
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.clientsBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.22rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(4, 108, 78, 0.1);
+  color: #023c2c;
+  font-size: 0.66rem;
+  font-weight: 800;
+}
+
+.deleteBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+  border: 1px solid #d5e5db;
+  background: #fff;
+  color: #64748b;
+  border-radius: 8px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.64rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.deleteBtn:hover {
+  border-color: #dc2626;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+@media (max-width: 1100px) {
+  .trainersGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .tabContent {
+    padding: 0.55rem;
+  }
+
+  .trainersGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .searchBox input {
+    min-width: 6rem;
+  }
+}

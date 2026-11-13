@@ -14,6 +14,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { fetchMenuListBySlug } from '@/services/menuLists'
 import {
   normalizeNavWidgetSettings,
+  navWidgetCssVars,
 } from '@/config/navWidgetSettings'
 import { resolveLucideIcon } from '@/utils/lucideIcons'
 import styles from './NavBarWidget.module.css'
@@ -68,10 +69,13 @@ export default function NavBarWidget({ type = 'nav_bar', settings: rawSettings }
     user?.avatar_url || user?.profile_image || user?.image || null
 
   const GuestIcon = resolveIcon(settings.guest_icon)
+  const cssVars = useMemo(() => navWidgetCssVars(settings), [settings])
+  const menuOnly = type === 'header_menu'
 
   return (
     <div
-      className={`${styles.bar} ${settings.show_on_mobile === false ? styles.barHideMobile : ''}`}
+      className={`${styles.bar} ${menuOnly ? styles.barMenuStrip : ''} ${settings.show_on_mobile === false ? styles.barHideMobile : ''}`}
+      style={cssVars}
       dir="rtl"
     >
       {showMenu && settings.show_hamburger && !asInlineLinks ? (

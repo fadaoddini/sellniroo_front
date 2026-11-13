@@ -14,7 +14,7 @@ import {
   RefreshCw, Briefcase, TrendingUp, CheckCircle,
   Newspaper, Zap, Eye, Settings, Warehouse, Headphones, Calendar,
   BarChart3, Megaphone, Images, Settings2, Tags, Radio, Info, PanelTop, BookOpen, Brain, HelpCircle, GraduationCap, Star, FolderOpen, GalleryHorizontal, FileText, CreditCard, ShoppingBag, Package, Store, Wallet,
-  Database, MapPin, Handshake, Building2, ClipboardList, ScrollText, ChevronDown,
+  Database, MapPin, Handshake, Building2, ClipboardList, ScrollText, ChevronDown, CalendarCheck, AppWindow, Wrench, ExternalLink, UserCog, Boxes, Dumbbell, GitBranch, Radar,
 } from 'lucide-react'
 import GuidedTour, { useGuidedTour } from '@/components/Admin/GuidedTour'
 import {
@@ -92,7 +92,18 @@ const Dashboard = () => {
       catalogManage: 'کاتالوگ دیجیتال',
       quizManage: 'مدیریت آزمون',
       faqManage: 'سوالات متداول',
+      curvedTimelineManage: 'تایم لاین منحنی',
       schoolManage: 'مدرسه',
+      softappsManage: 'نرم‌افزارهای کاربردی',
+      repairsManage: 'داشبورد کامل تعمیرات',
+      repairsPayments: 'پرداخت‌ها و تاییدیه‌ها',
+      repairsTechnicians: 'مدیریت تعمیرکاران',
+      repairsTech: 'پنل سرویسکار',
+      repairsPricing: 'اجرت و قیمت‌ها',
+      repairsSettings: 'تنظیمات مالی تعمیرات',
+      repairsPage: 'صفحه عمومی تعمیرات',
+      bookingManage: 'مدیریت سیستم نوبت‌دهی',
+      bookingPage: 'صفحه رزرو نوبت',
       requestTypes: 'انواع درخواست تماس',
       jobsManage: 'مدیریت آگهی‌ها',
       jobSingle: 'صفحه سینگل آگهی',
@@ -109,8 +120,9 @@ const Dashboard = () => {
       platformConnections: 'اتصالات پیام‌رسان',
       adminPortal: 'ادمین وب',
       paymentManage: 'ماژول پرداخت',
+      reboManage: 'مدیریت ربو',
       shopManage: 'مدیریت محصولات',
-      shopPanel: 'پنل فروشگاه',
+      shopPanel: 'فروشگاه من',
       shopSettings: 'تنظیمات فروشگاه',
       shopProducts: 'محصولات',
       shopCategories: 'دسته‌بندی محصولات',
@@ -119,6 +131,8 @@ const Dashboard = () => {
       marketplaceHub: 'مرکز چندفروشندگی',
       marketplaceSettle: 'تسویه و حسابداری',
       marketplaceProducts: 'محصولات فروشگاه‌ها',
+      saleManage: 'فروش و بازاریابی',
+      inventoryManage: 'انبارداری پیشرفته',
       newsManage: 'مدیریت اخبار',
       newsSingle: 'صفحه سینگل خبر',
       latestNews: 'آخرین اخبار',
@@ -167,7 +181,18 @@ const Dashboard = () => {
       catalogManage: 'Digital catalog',
       quizManage: 'Quiz manage',
       faqManage: 'FAQ manage',
+      curvedTimelineManage: 'Curved timeline',
       schoolManage: 'School',
+      softappsManage: 'Utility software',
+      repairsManage: 'Full repairs dashboard',
+      repairsPayments: 'Payments & approvals',
+      repairsTechnicians: 'Technicians',
+      repairsTech: 'Technician portal',
+      repairsPricing: 'Labor rates & pricing',
+      repairsSettings: 'Repairs finance settings',
+      repairsPage: 'Public repairs page',
+      bookingManage: 'Booking system management',
+      bookingPage: 'Booking page',
       requestTypes: 'Contact request types',
       jobsManage: 'Job listings',
       jobSingle: 'Job single page',
@@ -184,8 +209,9 @@ const Dashboard = () => {
       platformConnections: 'Messenger bots',
       adminPortal: 'Admin Web',
       paymentManage: 'Payment module',
+      reboManage: 'Rebo management',
       shopManage: 'Product catalog',
-      shopPanel: 'Shop panel',
+      shopPanel: 'My shop',
       shopSettings: 'Shop settings',
       shopProducts: 'Products',
       shopCategories: 'Product categories',
@@ -194,6 +220,8 @@ const Dashboard = () => {
       marketplaceHub: 'Multi-vendor hub',
       marketplaceSettle: 'Settlements',
       marketplaceProducts: 'Vendor products',
+      saleManage: 'Sales & marketing',
+      inventoryManage: 'Advanced inventory',
       newsManage: 'News management',
       newsSingle: 'News single page',
       latestNews: 'Latest news',
@@ -421,6 +449,17 @@ const Dashboard = () => {
   const canManageTicker = user?.is_superuser || user?.is_staff || canManageEmployees
   const canManageNews =
     user?.is_superuser || user?.is_staff || hasPermission('news')
+  const canAccessSale =
+    !!user?.is_superuser ||
+    !!user?.is_staff ||
+    canManageEmployees ||
+    hasPermission('marketing') ||
+    hasPermission('sales')
+  const canAccessInventory =
+    !!user?.is_superuser ||
+    !!user?.is_staff ||
+    canManageEmployees ||
+    hasPermission('warehouse')
   const canManageShops = canManageMultiVendor(user, {
     hasPermission,
     canManageEmployees,
@@ -459,6 +498,55 @@ const Dashboard = () => {
         group: action.group || resolveDashboardGroup(action),
       })
     }
+
+    // /sale را اول ثبت کن تا برچسب یکدست «فروش و بازاریابی» بماند
+    // (بخش‌های marketing/sales هر دو به همین مسیر می‌رسند)
+    if (canAccessSale) {
+      pushAction({
+        id: 'sale',
+        icon: <TrendingUp />,
+        label: t.saleManage,
+        href: '/sale',
+        color: '#c27800',
+        bgColor: '#fff3c4',
+        group: 'sales',
+        sectionCode: 'sale',
+      })
+      pushAction({
+        id: 'rasad',
+        icon: <Radar />,
+        label: language === 'en' ? 'Province trends' : 'رصد استانی',
+        href: '/rasad',
+        color: '#800020',
+        bgColor: 'rgba(128, 0, 32, 0.12)',
+        group: 'sales',
+        sectionCode: 'rasad',
+      })
+    }
+
+    if (canAccessInventory) {
+      pushAction({
+        id: 'inventory',
+        icon: <Warehouse />,
+        label: t.inventoryManage,
+        href: '/inventory',
+        color: '#ef6c00',
+        bgColor: 'rgba(239, 108, 0, 0.14)',
+        group: 'inventory',
+        sectionCode: 'warehouse',
+      })
+    }
+
+    pushAction({
+      id: 'gym-bodybuilding',
+      icon: <Dumbbell />,
+      label: language === 'en' ? 'Gym profile' : 'پروفایل باشگاه',
+      href: '/gym/profile',
+      color: '#a3e635',
+      bgColor: 'rgba(163, 230, 53, 0.16)',
+      group: 'gym',
+      sectionCode: 'gym-bodybuilding',
+    })
 
     linked.forEach((d) => {
       pushAction({
@@ -663,6 +751,15 @@ const Dashboard = () => {
         group: 'content',
       })
       pushAction({
+        id: 'curved-timeline-manage',
+        icon: <GitBranch />,
+        label: t.curvedTimelineManage,
+        href: '/curved-timeline-manage',
+        color: '#023c2c',
+        bgColor: '#e8f5ef',
+        group: 'site',
+      })
+      pushAction({
         id: 'school-manage',
         icon: <GraduationCap />,
         label: t.schoolManage,
@@ -670,6 +767,105 @@ const Dashboard = () => {
         color: '#1e4d6b',
         bgColor: '#e8f1f6',
         group: 'content',
+      })
+      pushAction({
+        id: 'apps-manage',
+        icon: <AppWindow />,
+        label: t.softappsManage,
+        href: '/apps-manage',
+        color: '#0e7490',
+        bgColor: '#e0f2fe',
+        group: 'content',
+      })
+      pushAction({
+        id: 'repairs-manage',
+        icon: <Wrench />,
+        label: t.repairsManage,
+        href: '/repairs-manage',
+        color: '#b38c00',
+        bgColor: '#fff9e8',
+        group: 'repairs',
+        sectionCode: 'repairs',
+      })
+      pushAction({
+        id: 'repairs-payments',
+        icon: <CreditCard />,
+        label: t.repairsPayments,
+        href: '/repairs-manage?tab=payments',
+        color: '#8f7000',
+        bgColor: '#fef3c7',
+        group: 'repairs',
+        sectionCode: 'repairs',
+      })
+      pushAction({
+        id: 'repairs-technicians',
+        icon: <Users />,
+        label: t.repairsTechnicians,
+        href: '/repairs-manage?tab=technicians',
+        color: '#a16207',
+        bgColor: '#fef9c3',
+        group: 'repairs',
+        sectionCode: 'repairs',
+      })
+      pushAction({
+        id: 'repairs-tech',
+        icon: <UserCog />,
+        label: t.repairsTech,
+        href: '/repairs-tech',
+        color: '#854d0e',
+        bgColor: '#fefce8',
+        group: 'repairs',
+        sectionCode: 'repairs',
+      })
+      pushAction({
+        id: 'repairs-pricing',
+        icon: <Tags />,
+        label: t.repairsPricing,
+        href: '/repairs-manage?tab=rates',
+        color: '#92400e',
+        bgColor: '#ffedd5',
+        group: 'repairs',
+        sectionCode: 'repairs',
+      })
+      pushAction({
+        id: 'repairs-settings',
+        icon: <Settings2 />,
+        label: t.repairsSettings,
+        href: '/repairs-manage?tab=settings',
+        color: '#78350f',
+        bgColor: '#fde68a',
+        group: 'repairs',
+        sectionCode: 'repairs',
+      })
+      pushAction({
+        id: 'repairs-page',
+        icon: <ExternalLink />,
+        label: t.repairsPage,
+        href: '/repairs',
+        color: '#b45309',
+        bgColor: '#fff7ed',
+        group: 'repairs',
+        sectionCode: 'repairs',
+      })
+      pushAction({
+        id: 'booking-manage',
+        icon: <CalendarCheck />,
+        label: t.bookingManage,
+        href: '/booking-manage',
+        color: '#0f766e',
+        bgColor: '#ecfdf5',
+        group: 'booking',
+        sectionCode: 'booking',
+      })
+      pushAction({
+        id: 'booking-page',
+        icon: <CalendarCheck />,
+        label: t.bookingPage,
+        href: '/booking',
+        color: '#115e59',
+        bgColor: '#ccfbf1',
+        group: 'booking',
+        sectionCode: 'booking',
       })
       pushAction({
         id: 'request-types',
@@ -808,8 +1004,28 @@ const Dashboard = () => {
         group: 'sales',
         sectionCode: 'payment',
       })
+      pushAction({
+        id: 'rebo-manage',
+        icon: <Boxes />,
+        label: t.reboManage,
+        href: '/rebo-manage',
+        color: '#12241f',
+        bgColor: '#e8f7f1',
+        group: 'sales',
+        sectionCode: 'rebo-manage',
+      })
       // تنظیمات ویترین (نه پورتال مالک) — برای مدیر داشبورد
       if (shopOn && singleStoreOn) {
+        pushAction({
+          id: 'my-shop',
+          icon: <Store />,
+          label: t.shopPanel,
+          href: '/dashboard/my-shop',
+          color: '#b45309',
+          bgColor: '#fff7ed',
+          group: 'shop',
+          sectionCode: 'shop-panel',
+        })
         pushAction({
           id: 'shop-manage',
           icon: <Package />,
@@ -819,6 +1035,16 @@ const Dashboard = () => {
           bgColor: '#fff7ed',
           group: 'shop',
           sectionCode: 'shop-manage',
+        })
+        pushAction({
+          id: 'shop-categories',
+          icon: <Tags />,
+          label: t.shopCategories,
+          href: '/shop-categories',
+          color: '#9a3412',
+          bgColor: '#ffedd5',
+          group: 'shop',
+          sectionCode: 'shop-categories',
         })
         pushAction({
           id: 'product-single',
@@ -832,6 +1058,16 @@ const Dashboard = () => {
         })
       } else if (shopOn && multiVendorOn) {
         pushAction({
+          id: 'shop-categories',
+          icon: <Tags />,
+          label: t.shopCategories,
+          href: '/shop-categories',
+          color: '#9a3412',
+          bgColor: '#ffedd5',
+          group: 'shop',
+          sectionCode: 'shop-categories',
+        })
+        pushAction({
           id: 'product-single',
           icon: <ShoppingBag />,
           label: t.productSingle,
@@ -844,13 +1080,13 @@ const Dashboard = () => {
       }
     }
 
-    // پنل صاحب فروشگاه — برای کاربر نهایی (نه /admin*)
-    if (shopOn) {
+    // فروشگاه من — برای چندفروشندگی (در تک‌فروشگاهی بالاتر اضافه شده)
+    if (shopOn && !singleStoreOn) {
       pushAction({
-        id: 'shop-panel',
+        id: 'my-shop',
         icon: <Store />,
         label: t.shopPanel,
-        href: '/shop-panel',
+        href: '/dashboard/my-shop',
         color: '#b45309',
         bgColor: '#fff7ed',
         group: 'shop',
@@ -902,6 +1138,8 @@ const Dashboard = () => {
   }, [
     assignedSections,
     canManageEmployees,
+    canAccessSale,
+    canAccessInventory,
     canManageTicker,
     canManageNews,
     canManageShops,
@@ -912,6 +1150,8 @@ const Dashboard = () => {
     user,
     moduleMap,
     t.employees,
+    t.saleManage,
+    t.inventoryManage,
     t.ticker,
     t.heroSlider,
     t.siteSettings,
@@ -921,7 +1161,18 @@ const Dashboard = () => {
     t.catalogManage,
     t.quizManage,
     t.faqManage,
+    t.curvedTimelineManage,
     t.schoolManage,
+    t.softappsManage,
+    t.repairsManage,
+    t.repairsPayments,
+    t.repairsTechnicians,
+    t.repairsTech,
+    t.repairsPricing,
+    t.repairsSettings,
+    t.repairsPage,
+    t.bookingManage,
+    t.bookingPage,
     t.requestTypes,
     t.jobsManage,
     t.jobSingle,
@@ -937,6 +1188,7 @@ const Dashboard = () => {
     t.postJob,
     t.platformConnections,
     t.paymentManage,
+    t.reboManage,
     t.shopManage,
     t.shopPanel,
     t.productSingle,

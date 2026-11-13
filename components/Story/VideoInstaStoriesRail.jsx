@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import {
   X,
   Pause,
@@ -16,8 +16,11 @@ import Config from '@/config/config'
 import {
   DEFAULT_VIDEO_INSTA_SETTINGS,
   fetchVideoInstaSettings,
-  buildVideoInstaCssVars,
 } from '@/services/videoInstaSettings'
+import {
+  mergeVideoArchiveWidgetSettings,
+  videoArchiveWidgetCssVars,
+} from '@/config/videoArchiveWidgetSettings'
 
 const SEEN_KEY = 'videoinsta_seen_ids'
 
@@ -40,11 +43,15 @@ function writeSeenIds(set) {
   }
 }
 
-const VideoInstaStoriesRail = () => {
+const VideoInstaStoriesRail = ({ settings: widgetSettings = {} }) => {
   const { language } = useLanguage()
   const isRTL = language === 'fa'
 
-  const [settings, setSettings] = useState(DEFAULT_VIDEO_INSTA_SETTINGS)
+  const [apiSettings, setApiSettings] = useState(DEFAULT_VIDEO_INSTA_SETTINGS)
+  const settings = useMemo(
+    () => mergeVideoArchiveWidgetSettings(apiSettings, widgetSettings),
+    [apiSettings, widgetSettings]
+  )
   const [videos, setVideos] = useState([])
   const [loading, setLoading] = useState(true)
   const [seenIds, setSeenIds] = useState(() => new Set())
@@ -99,17 +106,22 @@ const VideoInstaStoriesRail = () => {
   )
 
   useEffect(() => {
+    fetchVideoInstaSettings().then(setApiSettings)
+  }, [])
+
+  const railEnabled =
+    settings.show_mobile_rail !== false && settings.show_on_mobile !== false
+
+  useEffect(() => {
     let cancelled = false
     const isNarrow =
-      typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches
+      typeof window !== 'undefined' &&
+      window.matchMedia('(max-width: 767px)').matches
+    if (!isNarrow || !railEnabled) {
+      setLoading(false)
+      return
+    }
     ;(async () => {
-      const s = await fetchVideoInstaSettings()
-      if (cancelled) return
-      setSettings(s)
-      if (!isNarrow || s.show_mobile_rail === false) {
-        setLoading(false)
-        return
-      }
       setLoading(true)
       const result = await videoArchiveService.getVideos(1, 24)
       if (cancelled) return
@@ -121,7 +133,7 @@ const VideoInstaStoriesRail = () => {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [railEnabled])
 
   const closeViewer = useCallback(() => {
     setViewerOpen(false)
@@ -279,9 +291,14 @@ const VideoInstaStoriesRail = () => {
     }
   }, [])
 
-  if (settings.show_mobile_rail === false) return null
+  if (
+    settings.show_mobile_rail === false ||
+    settings.show_on_mobile === false
+  ) {
+    return null
+  }
 
-  const themeStyle = buildVideoInstaCssVars(settings)
+  const themeStyle = videoArchiveWidgetCssVars(settings)
 
   if (loading) {
     return (

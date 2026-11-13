@@ -1,0 +1,236 @@
+/* modules/gym/components/tabs/AlertsTab/AlertsTab.module.css */
+
+.tabContent {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.tabHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.tabHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.tabTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+  font-family: var(--font-edameh, var(--font-iran));
+  color: var(--text-primary, #10241c);
+  margin: 0;
+}
+
+.tabTitle svg {
+  color: #046c4e;
+  width: 15px;
+  height: 15px;
+}
+
+.tabCount {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #4d6a5c;
+  padding: 0.15rem 0.5rem;
+  background: #e8f5ef;
+  border-radius: 999px;
+}
+
+.alertsContainer {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  align-items: start;
+}
+
+.alertSection {
+  background: #ffffff;
+  border: 1px solid #d5e5db;
+  border-radius: 12px;
+  padding: 0.65rem 0.7rem;
+  box-shadow: 0 1px 2px rgba(2, 60, 44, 0.04);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.alertSectionEmpty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 1rem 0.75rem;
+  color: #4d6a5c;
+  font-size: 0.78rem;
+}
+
+.alertSection:has(.warnIcon) {
+  background: #fffbeb;
+  border-color: #fcd34d;
+}
+
+.alertSection:has(.dangerIcon) {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.alertSectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  font-weight: 800;
+  font-family: var(--font-iran-bold, var(--font-iran));
+  color: #10241c;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.alertList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.alertItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.5rem;
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 9px;
+  border: 1px solid rgba(2, 60, 44, 0.08);
+  min-width: 0;
+}
+
+.alertItem:hover {
+  border-color: rgba(4, 108, 78, 0.28);
+}
+
+.alertItemInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.12rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.alertItemName {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #10241c;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.alertItemPhone {
+  font-size: 0.66rem;
+  color: #7a9487;
+  direction: ltr;
+}
+
+.alertMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.alertItemDays {
+  font-size: 0.62rem;
+  color: #9a3412;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.alertItemExpired {
+  font-size: 0.62rem;
+  color: #991b1b;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.warnIcon {
+  color: #c2410c;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+.dangerIcon {
+  color: #dc2626;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+.alertItemBtn {
+  padding: 0.28rem 0.55rem;
+  border: 1px solid rgba(4, 108, 78, 0.22);
+  border-radius: 8px;
+  background: #e8f5ef;
+  color: #023c2c;
+  font-size: 0.66rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.alertItemBtn:hover {
+  background: #046c4e;
+  border-color: #046c4e;
+  color: #ffffff;
+}
+
+.alertItemBtn svg {
+  width: 12px;
+  height: 12px;
+}
+
+@media (max-width: 860px) {
+  .alertsContainer {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .tabContent {
+    padding: 0.55rem;
+  }
+
+  .alertItem {
+    align-items: flex-start;
+  }
+
+  .alertItemBtn {
+    padding: 0.28rem 0.45rem;
+  }
+}

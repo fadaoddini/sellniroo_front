@@ -86,10 +86,10 @@ export const DEFAULT_POST_JOB_SETTINGS = {
   offset_y: 16,
   z_index: 1100,
 
-  color_bg: '#fbc300',
+  color_bg: '#F4AE52',
   color_text: '#14181f',
   color_border: 'transparent',
-  color_hover_bg: '#fb9700',
+  color_hover_bg: '#D4621A',
   color_shadow: 'rgba(251, 195, 0, 0.35)',
 }
 

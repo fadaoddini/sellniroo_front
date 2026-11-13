@@ -570,6 +570,53 @@
   border: 1px solid rgba(15, 122, 58, 0.2);
 }
 
+.treeActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-inline-start: auto;
+  flex-shrink: 0;
+}
+
+.treeIconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.treeIconBtn:hover:not(:disabled) {
+  background: rgba(15, 23, 42, 0.06);
+  color: #0f172a;
+}
+
+.treeIconBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.treeIconBtnWarn:hover:not(:disabled) {
+  background: rgba(180, 83, 9, 0.12);
+  color: #b45309;
+}
+
+.treeIconBtnOn:hover:not(:disabled) {
+  background: rgba(15, 118, 110, 0.12);
+  color: #0f766e;
+}
+
+.treeRowOn .treeIconBtn {
+  color: #475569;
+}
+
 .badgeOff {
   font-size: 0.62rem;
   font-weight: 750;

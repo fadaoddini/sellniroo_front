@@ -1,0 +1,104 @@
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 0 0 0.85rem;
+  padding: 0.85rem 1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(42, 26, 14, 0.1);
+  background: linear-gradient(105deg, #ffffff 0%, #fef3e2 55%, #fff8ec 100%);
+  box-shadow: 0 6px 20px rgba(42, 26, 14, 0.06);
+  box-sizing: border-box;
+}
+
+.copy {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  flex: 1 1 220px;
+}
+
+.iconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.55rem;
+  height: 2.55rem;
+  border-radius: 12px;
+  flex-shrink: 0;
+  background: linear-gradient(145deg, #f4ae52, #d4621a);
+  color: #fef3e2;
+  box-shadow: 0 6px 14px rgba(212, 98, 26, 0.3);
+}
+
+.textCol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 650;
+  color: rgba(42, 26, 14, 0.55);
+  font-family: var(--font-iran, Tahoma, sans-serif);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #2a1a0e;
+  font-family: var(--font-iran-extra, var(--font-iran-bold, Tahoma, sans-serif));
+  line-height: 1.35;
+}
+
+.guideBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+  min-height: 2.55rem;
+  padding: 0.55rem 1.1rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: var(--font-iran, Tahoma, sans-serif);
+  font-size: 0.82rem;
+  font-weight: 750;
+  color: #fef3e2;
+  background: linear-gradient(135deg, #f4ae52 0%, #d4621a 100%);
+  box-shadow: 0 8px 18px rgba(212, 98, 26, 0.3);
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.2s ease;
+}
+
+.guideBtn:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 10px 22px rgba(212, 98, 26, 0.38);
+}
+
+.guideBtn:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 640px) {
+  .bar {
+    padding: 0.75rem 0.85rem;
+  }
+
+  .title {
+    font-size: 0.95rem;
+  }
+
+  .guideBtn {
+    width: 100%;
+  }
+}

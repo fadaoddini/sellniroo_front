@@ -1,0 +1,79 @@
+.statusToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border: none;
+  border-radius: var(--radius-full, 999px);
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-iran);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.12s ease);
+}
+
+.statusToggle.active {
+  background: rgba(15, 118, 110, 0.12);
+  color: #0f766e;
+}
+.statusToggle.active:hover {
+  background: rgba(15, 118, 110, 0.2);
+}
+
+.statusToggle.inactive {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+}
+.statusToggle.inactive:hover {
+  background: rgba(220, 38, 38, 0.18);
+}
+
+.actionButtons {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.actionBtn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  background: var(--bg-input, #eef3f7);
+  color: var(--text-secondary, #5b6b7c);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast, 0.12s ease);
+}
+
+.actionBtn:hover {
+  background: var(--bg-card-hover, #f3f7fb);
+  color: var(--text-primary, #10241c);
+}
+
+.actionBtnDanger:hover {
+  background: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+}
+
+.membershipBadge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-full, 999px);
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.membershipBadge.طلایی {
+  background: rgba(234, 88, 12, 0.14);
+  color: #046c4e;
+}
+.membershipBadge.نقره‌ای {
+  background: rgba(11, 58, 92, 0.1);
+  color: #023c2c;
+}
+.membershipBadge.برنزی {
+  background: rgba(180, 83, 9, 0.12);
+  color: #92400e;
+}
