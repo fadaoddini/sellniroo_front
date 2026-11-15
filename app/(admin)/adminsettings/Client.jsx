@@ -1,4 +1,4 @@
-// app/(admin)/adminsettings — چیدمان صفحه اصلی + صفحات داخلی + ظاهر + local_settings
+// app/(admin)/adminsettings — همهٔ طراحی قالب در یک جا
 'use client'
 
 import React, { useEffect, useMemo, useState } from 'react'
@@ -8,15 +8,12 @@ import {
   LayoutTemplate,
   Palette,
   FileCode2,
-  Settings2,
-  PanelTop,
-  List,
-  Images,
-  CreditCard,
   Layers,
   UserRound,
   ShoppingCart,
-  Sparkles,
+  Store,
+  Briefcase,
+  Newspaper,
 } from 'lucide-react'
 import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
 import useOwnerGate from '@/components/Admin/useOwnerGate'
@@ -25,63 +22,68 @@ import CorporateCustomizePanel from '../adminweb/CorporateCustomizePanel'
 import LocalSettingsEditor from '../adminweb/LocalSettingsEditor'
 import ProfileLayoutPanel from '../adminweb/ProfileLayoutPanel'
 import CheckoutPipelinesPanel from '../adminweb/CheckoutPipelinesPanel'
+import axios from 'axios'
+import Config from '@/config/config'
+import { useAuth } from '@/contexts/AuthContext'
+import DesignWizard from '../adminweb/DesignWizard'
 import {
   fetchSiteModules,
   clearSiteModulesCache,
 } from '@/services/siteModules'
+import { SITE_MODULE_KEYS } from '@/config/siteModules'
 import { MODULE_PAGE_DEFS } from '@/config/modulePageLayouts'
+import ShopDesignEmbed from './ShopDesignEmbed'
+import JobDesignEmbed from './JobDesignEmbed'
+import NewsDesignEmbed from './NewsDesignEmbed'
 import styles from '../adminweb/AdminWeb.module.css'
 import portalStyles from '@/components/Admin/OwnerPortal.module.css'
 
-const TABS = [
-  { id: 'home', label: 'چیدمان صفحه اصلی', icon: LayoutTemplate },
+const BASE_TABS = [
+  { id: 'home', label: 'طراحی قالب', icon: LayoutTemplate },
   { id: 'pages', label: 'صفحات داخلی', icon: Layers },
+  {
+    id: 'shop',
+    label: 'طراحی فروشگاه',
+    icon: Store,
+    moduleKey: SITE_MODULE_KEYS.SHOP,
+  },
+  {
+    id: 'jobs',
+    label: 'طراحی کاریابی',
+    icon: Briefcase,
+    moduleKey: SITE_MODULE_KEYS.JOB_BOARD,
+  },
+  {
+    id: 'news',
+    label: 'طراحی اخبار',
+    icon: Newspaper,
+    moduleKey: SITE_MODULE_KEYS.NEWS,
+  },
   { id: 'profile', label: 'چیدمان پروفایل', icon: UserRound },
   { id: 'checkout', label: 'سفارش و سبد', icon: ShoppingCart },
   { id: 'corporate', label: 'سفارشی‌سازی شرکتی', icon: Palette },
   { id: 'local', label: 'local_settings', icon: FileCode2 },
 ]
 
-const SETTING_LINKS = [
-  { href: '/payment-manage', label: 'ماژول پرداخت', desc: 'درگاه سراسری', icon: CreditCard },
-  { href: '/site-settings', label: 'تنظیمات سایت', desc: 'برند و SEO', icon: Settings2 },
-  { href: '/header-menu', label: 'منوی سایت', desc: 'لینک و ظاهر', icon: PanelTop },
-  { href: '/menu-lists', label: 'فهرست‌های منو', desc: 'منوها', icon: List },
-  { href: '/hero-slider', label: 'اسلایدر هیرو', desc: 'تصاویر', icon: Images },
-  {
-    href: '/adminmodule?tab=templates',
-    label: 'موتور و بسته‌ها',
-    desc: 'اعمال / اعمال مجدد قالب باشگاه',
-    icon: Sparkles,
-  },
-  {
-    href: '/adminsettings?tab=pages&page=gym_bodybuilding',
-    label: 'چیدمان صفحه باشگاه',
-    desc: 'پروفایل باشگاه /gym/profile',
-    icon: Layers,
-  },
-]
+function visibleTabs(moduleMap) {
+  return BASE_TABS.filter((t) => !t.moduleKey || !!moduleMap[t.moduleKey])
+}
 
-function resolveTab(raw) {
-  if (
-    raw === 'corporate' ||
-    raw === 'local' ||
-    raw === 'home' ||
-    raw === 'pages' ||
-    raw === 'profile' ||
-    raw === 'checkout'
-  ) {
-    return raw
-  }
+function resolveTab(raw, moduleMap) {
+  const allowed = visibleTabs(moduleMap).map((t) => t.id)
+  if (allowed.includes(raw)) return raw
   return 'home'
 }
 
 export default function AdminSettingsPage() {
   const gate = useOwnerGate('/adminsettings')
+  const { getAuthHeaders } = useAuth()
   const searchParams = useSearchParams()
   const [moduleMap, setModuleMap] = useState({})
+  const [activePack, setActivePack] = useState(null)
+  const tabs = useMemo(() => visibleTabs(moduleMap), [moduleMap])
   const [tab, setTab] = useState(() =>
-    resolveTab(searchParams?.get('tab'))
+    resolveTab(searchParams?.get('tab'), {}),
   )
   const pageFromQuery = searchParams?.get('page') || ''
   const [pageKey, setPageKey] = useState(() => {
@@ -92,13 +94,13 @@ export default function AdminSettingsPage() {
   })
 
   useEffect(() => {
-    const next = resolveTab(searchParams?.get('tab'))
+    const next = resolveTab(searchParams?.get('tab'), moduleMap)
     setTab(next)
     const p = searchParams?.get('page') || ''
     if (MODULE_PAGE_DEFS.some((d) => d.key === p)) {
       setPageKey(p)
     }
-  }, [searchParams])
+  }, [searchParams, moduleMap])
 
   useEffect(() => {
     if (!gate.allowed) return undefined
@@ -108,6 +110,26 @@ export default function AdminSettingsPage() {
         clearSiteModulesCache()
         const { map } = await fetchSiteModules({ force: true })
         if (!cancelled) setModuleMap(map || {})
+        try {
+          const packRes = await axios.get(
+            Config.endpoints.news.topicPacks.list(),
+            { headers: getAuthHeaders() },
+          )
+          const data = packRes.data?.data || {}
+          const key = data.current_pack || ''
+          const owner = (data.owner_systems || []).find((p) => p.key === key)
+          if (!cancelled) {
+            setActivePack(
+              owner
+                ? { key: owner.key, name: owner.name, custom: true }
+                : key
+                  ? { key, name: data.current_site_name || key, custom: false }
+                  : null,
+            )
+          }
+        } catch {
+          if (!cancelled) setActivePack(null)
+        }
       } catch {
         if (!cancelled) setModuleMap({})
       }
@@ -115,27 +137,40 @@ export default function AdminSettingsPage() {
     return () => {
       cancelled = true
     }
-  }, [gate.allowed])
+  }, [gate.allowed, getAuthHeaders])
 
   const activePage = useMemo(
     () => MODULE_PAGE_DEFS.find((d) => d.key === pageKey) || MODULE_PAGE_DEFS[0],
     [pageKey],
   )
 
-  const wide = tab === 'home' || tab === 'pages'
+  const wide =
+    tab === 'home' ||
+    tab === 'pages' ||
+    tab === 'shop' ||
+    tab === 'jobs' ||
+    tab === 'news'
 
   return (
     <OwnerPortalShell
       brand="settings"
       brandAccent="admin"
-      tagline="چیدمان صفحه اصلی، صفحات داخلی، پروفایل، سفارش و سبد، ظاهر شرکتی و تنظیمات محلی"
+      tagline="همهٔ طراحی قالب در یک صفحه"
       wide={wide}
       {...gate}
     >
       {gate.allowed ? (
         <>
+          {activePack?.custom ? (
+            <DesignWizard
+              packKey={activePack.key}
+              packName={activePack.name}
+              defaultOpen={searchParams?.get('wizard') === '1'}
+              moduleMap={moduleMap}
+            />
+          ) : null}
           <div className={portalStyles.tabsRow}>
-            {TABS.map((t) => {
+            {tabs.map((t) => {
               const Icon = t.icon
               return (
                 <button
@@ -160,10 +195,8 @@ export default function AdminSettingsPage() {
                   <div>
                     <strong>قالب باشگاه بدنسازی فعال است</strong>
                     <span>
-                      مثل ربو با یک کلیک نصب شده: خانه را اینجا ویرایش کنید؛
-                      صفحه باشگاه و پروفایل را از تب‌های «صفحات داخلی» و «چیدمان
-                      پروفایل» مدیریت کنید. اعمال مجدد از{' '}
-                      <Link href="/adminmodule?tab=templates">موتور و بسته‌ها</Link>.
+                      خانه را اینجا ویرایش کنید؛ صفحه باشگاه را از «صفحات داخلی»
+                      و پروفایل را از «چیدمان پروفایل».
                     </span>
                   </div>
                 </div>
@@ -212,10 +245,22 @@ export default function AdminSettingsPage() {
                     {activePage.key === 'profile' ? (
                       <>
                         {' '}
-                        برای بخش‌ها و سیستم اصلی به{' '}
-                        <Link href="/adminsettings?tab=profile">
+                        برای بخش‌ها به{' '}
+                        <button
+                          type="button"
+                          className={styles.modulePagesHint}
+                          style={{
+                            display: 'inline',
+                            padding: 0,
+                            border: 0,
+                            background: 'none',
+                            cursor: 'pointer',
+                            fontWeight: 800,
+                          }}
+                          onClick={() => setTab('profile')}
+                        >
                           چیدمان پروفایل
-                        </Link>{' '}
+                        </button>{' '}
                         بروید.
                       </>
                     ) : null}
@@ -235,39 +280,15 @@ export default function AdminSettingsPage() {
             </div>
           ) : null}
 
+          {tab === 'shop' ? <ShopDesignEmbed moduleMap={moduleMap} /> : null}
+          {tab === 'jobs' ? <JobDesignEmbed moduleMap={moduleMap} /> : null}
+          {tab === 'news' ? <NewsDesignEmbed moduleMap={moduleMap} /> : null}
           {tab === 'profile' ? <ProfileLayoutPanel /> : null}
           {tab === 'checkout' ? <CheckoutPipelinesPanel /> : null}
           {tab === 'corporate' ? <CorporateCustomizePanel /> : null}
           {tab === 'local' ? <LocalSettingsEditor /> : null}
         </>
       ) : null}
-
-      <section
-        className={portalStyles.sectionBlock}
-        style={{ marginTop: '1.25rem' }}
-      >
-        <h2 className={portalStyles.sectionTitle}>میانبر تنظیمات</h2>
-        <div className={styles.linkGrid}>
-          {SETTING_LINKS.map((item) => {
-            const Icon = item.icon
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={styles.linkCard}
-              >
-                <span className={styles.linkIcon}>
-                  <Icon size={20} />
-                </span>
-                <span className={styles.linkText}>
-                  <strong>{item.label}</strong>
-                  <small>{item.desc}</small>
-                </span>
-              </Link>
-            )
-          })}
-        </div>
-      </section>
     </OwnerPortalShell>
   )
 }

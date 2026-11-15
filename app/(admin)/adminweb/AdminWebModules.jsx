@@ -2,7 +2,10 @@
 'use client'
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Boxes, RefreshCw, Layers } from 'lucide-react'
+import Link from 'next/link'
+import { Boxes, RefreshCw, Plus } from 'lucide-react'
+import axios from 'axios'
+import Config from '@/config/config'
 import { useAuth } from '@/contexts/AuthContext'
 import {
   SITE_MODULES_CATALOG,
@@ -18,7 +21,6 @@ import {
   toggleSiteModule,
   clearSiteModulesCache,
 } from '@/services/siteModules'
-import TopicPackPanel from './TopicPackPanel'
 import JobBoardDataPanel from './JobBoardDataPanel'
 import JobThemeTwoPackPanel from './JobThemeTwoPackPanel'
 import styles from './AdminWeb.module.css'
@@ -70,12 +72,10 @@ function mergeCatalogWithApi(list) {
 }
 
 function computeStats(list) {
-  const total = list.length
-  const active = list.filter((m) => m.effective_active ?? m.is_active).length
-  const groups = list.filter(
-    (m) => m.is_group || (!m.parent_key && list.some((c) => c.parent_key === m.key))
-  ).length
-  return { total, active, groups }
+  const roots = (list || []).filter((m) => !m.parent_key)
+  const total = roots.length
+  const active = roots.filter((m) => m.effective_active ?? m.is_active).length
+  return { total, active, groups: 0 }
 }
 
 function MiniSwitch({ active, busy, onClick }) {
@@ -97,20 +97,9 @@ function MiniSwitch({ active, busy, onClick }) {
   )
 }
 
-function isDataPackModule(mod) {
-  return (
-    mod?.category === 'data_pack' ||
-    String(mod?.key || '').startsWith('data_pack_') ||
-    !!DATA_PACK_TOPIC_KEYS[mod?.key]
-  )
-}
-
 /** ردیف ماژول تکی (بدون فرزند) */
 function SoloModuleRow({ mod, busy, onToggle, selected, onSelect }) {
   const on = !!(mod.effective_active ?? mod.is_active)
-  const packKey = mod.topicPackKey || DATA_PACK_TOPIC_KEYS[mod.key]
-  const showPack = isDataPackModule(mod) && on && packKey
-  const exclusive = EXCLUSIVE_SHOP_MODE_KEYS.includes(mod.key)
 
   return (
     <div className={styles.soloBlock}>
@@ -131,30 +120,11 @@ function SoloModuleRow({ mod, busy, onToggle, selected, onSelect }) {
           <div className={styles.soloTextCol}>
             <div className={styles.soloText}>
               <strong>{mod.name}</strong>
-              <code dir="ltr">{mod.key}</code>
-              {exclusive ? (
-                <span className={styles.exclusivePill}>انحصاری</span>
-              ) : null}
             </div>
-            {mod.description ? (
-              <span className={styles.soloHint}>{mod.description}</span>
-            ) : null}
-            {exclusive ? (
-              <span className={styles.soloHint}>
-                زیرمجموعهٔ ماژول فروشگاه — با سیاست مقابل همزمان فعال نمی‌شود.
-              </span>
-            ) : null}
           </div>
         </div>
         <MiniSwitch active={on} busy={busy} onClick={() => onToggle(mod)} />
       </div>
-      {showPack ? (
-        <TopicPackPanel
-          embedded
-          packKey={packKey}
-          title={mod.name}
-        />
-      ) : null}
     </div>
   )
 }
@@ -289,6 +259,11 @@ export default function AdminWebModules({
   const [loading, setLoading] = useState(true)
   const [busyKey, setBusyKey] = useState(null)
   const [error, setError] = useState('')
+  const [newName, setNewName] = useState('')
+  const [picked, setPicked] = useState(() => new Set())
+  const [creating, setCreating] = useState(false)
+  const [createMsg, setCreateMsg] = useState('')
+  const [createErr, setCreateErr] = useState('')
 
   const applyList = useCallback(
     (list, mapOverride = null) => {
@@ -389,6 +364,48 @@ export default function AdminWebModules({
     }
   }
 
+  const togglePick = (key) => {
+    setPicked((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
+
+  const createSystem = async () => {
+    const headers = getAuthHeaders()
+    if (!headers?.Authorization) {
+      setCreateErr('برای ساخت سیستم دوباره وارد شوید')
+      return
+    }
+    setCreating(true)
+    setCreateErr('')
+    setCreateMsg('')
+    try {
+      const res = await axios.post(
+        Config.endpoints.news.topicPacks.ownerSystems(),
+        {
+          name: newName.trim(),
+          module_keys: [...picked],
+        },
+        { headers },
+      )
+      setCreateMsg(
+        res.data?.message ||
+          'سیستم ساخته شد. از تب موتور و بسته‌ها می‌توانید اعمالش کنید.',
+      )
+      setNewName('')
+      setPicked(new Set())
+    } catch (e) {
+      setCreateErr(
+        e.response?.data?.message || e.message || 'ساخت سیستم ناموفق بود',
+      )
+    } finally {
+      setCreating(false)
+    }
+  }
+
   return (
     <section className={`${styles.section} ${compact ? styles.sectionCompact : ''}`} id="modules">
       <div className={styles.sectionHeadRow}>
@@ -407,29 +424,20 @@ export default function AdminWebModules({
         </button>
       </div>
       <p className={styles.moduleIntro}>
-        ماژول را انتخاب کنید تا ویجت‌هایش در اسکلت دیده شود؛ سوییچ برای روشن/خاموش است.
-        بسته‌های داده فقط واریز محتوا دارند و در لیست ویجت نیستند.
+        فقط ماژول‌های اصلی. سوییچ همان روشن/خاموش قبلی است؛ زیرمجموعه‌ها اینجا
+        دیده نمی‌شوند.
       </p>
 
       {error && <p className={styles.moduleError}>{error}</p>}
 
-      {loading && modules.length === 0 ? (
-        <div className={styles.moduleLoading}>
-          <RefreshCw size={18} className={styles.spin} />
-        </div>
-      ) : (
-        <div className={styles.moduleList}>
-          {tree.map((root) =>
-            root.children?.length > 0 ? (
-              <ModuleGroupBlock
-                key={root.key}
-                root={root}
-                busyKey={busyKey}
-                onToggle={onToggle}
-                selectedKey={selectedKey}
-                onSelect={onSelect}
-              />
-            ) : (
+      <div className={styles.modulesWorkbench}>
+        {loading && modules.length === 0 ? (
+          <div className={styles.moduleLoading}>
+            <RefreshCw size={18} className={styles.spin} />
+          </div>
+        ) : (
+          <div className={styles.moduleList}>
+            {tree.map((root) => (
               <SoloModuleRow
                 key={root.key}
                 mod={root}
@@ -438,10 +446,67 @@ export default function AdminWebModules({
                 selected={selectedKey === root.key}
                 onSelect={onSelect}
               />
-            )
-          )}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+
+        <aside className={styles.newSystemCard}>
+          <div className={styles.newSystemHead}>
+            <Plus size={16} />
+            <h3>ایجاد سیستم جدید</h3>
+          </div>
+          <p className={styles.newSystemHint}>
+            نام بدهید و ماژول‌های لازم را تیک بزنید. سیستم در «موتور و بسته‌ها»
+            ظاهر می‌شود.
+          </p>
+          <label className={styles.newSystemLabel}>
+            نام سیستم
+            <input
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="مثلاً مرکز خدمات من"
+              disabled={creating}
+            />
+          </label>
+          <div className={styles.newSystemPickList} role="group" aria-label="ماژول‌های سیستم">
+            {tree.map((root) => {
+              const on = picked.has(root.key)
+              return (
+                <label
+                  key={`pick-${root.key}`}
+                  className={`${styles.newSystemPick} ${on ? styles.newSystemPickOn : ''}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={on}
+                    disabled={creating}
+                    onChange={() => togglePick(root.key)}
+                  />
+                  <span>{root.name}</span>
+                </label>
+              )
+            })}
+          </div>
+          {createErr ? (
+            <p className={styles.moduleError}>{createErr}</p>
+          ) : null}
+          {createMsg ? (
+            <p className={styles.newSystemOk}>
+              {createMsg}{' '}
+              <Link href="/adminmodule?tab=templates">موتور و بسته‌ها</Link>
+            </p>
+          ) : null}
+          <button
+            type="button"
+            className={styles.newSystemSubmit}
+            disabled={creating || !newName.trim() || picked.size === 0}
+            onClick={createSystem}
+          >
+            {creating ? 'در حال ساخت…' : 'ایجاد سیستم'}
+          </button>
+        </aside>
+      </div>
     </section>
   )
 }

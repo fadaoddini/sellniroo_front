@@ -661,6 +661,15 @@ export const PAGE_BUILDER_WIDGETS = [
     status: 'ready',
   }),
   w({
+    type: 'deep_slider',
+    label: 'اسلایدر عمیق',
+    desc: 'ماسک مایع تمام‌صفحه — با اسکرول حفره باز می‌شود و محتوا را آشکار می‌کند',
+    category: 'hero',
+    icon: 'Aperture',
+    settingsPanel: 'deep_slider',
+    status: 'ready',
+  }),
+  w({
     type: 'rebo_hero',
     label: 'ربو · هیرو',
     desc: 'اسلایدر تمام‌صفحه با مدار دایره‌ای تعاملی و تغییر نرم رنگ زمینه',
@@ -1718,6 +1727,16 @@ export const PAGE_BUILDER_WIDGETS = [
     status: 'ready',
     moduleKey: 'gym_bodybuilding',
     builderModes: ['module:gym_bodybuilding'],
+  }),
+  w({
+    type: 'cloud_server_page',
+    label: 'محتوای کامل صفحه سرور ابری',
+    desc: 'سفارش، اعتبار و شارژ صفحه /cloud-server',
+    category: 'platform',
+    icon: 'Cloud',
+    status: 'ready',
+    moduleKey: 'cloud_server',
+    builderModes: ['module:cloud_server'],
   }),
 ]
 

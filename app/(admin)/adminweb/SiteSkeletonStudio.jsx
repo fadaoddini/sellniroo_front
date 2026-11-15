@@ -103,6 +103,8 @@ import WidgetBookingServicesSettings from './WidgetBookingServicesSettings'
 import WidgetBookingStaffSettings from './WidgetBookingStaffSettings'
 import WidgetBookingLookupSettings from './WidgetBookingLookupSettings'
 import WidgetReboSettings from './WidgetReboSettings'
+import WidgetDeepSliderSettings from './WidgetDeepSliderSettings'
+import { isDeepSliderWidgetType } from '@/config/deepSliderSettings'
 import WidgetNobatSettings from './WidgetNobatSettings'
 import WidgetSadraPixelSettings from './WidgetSadraPixelSettings'
 import WidgetFeatureCardsSettings from './WidgetFeatureCardsSettings'
@@ -1018,6 +1020,21 @@ export default function SiteSkeletonStudio({
               ) : isHeroWithMenuWidgetType(selectedWidgetInfo.widget.type) ? (
                 <WidgetHeroWithMenuSettings
                   type={selectedWidgetInfo.widget.type}
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : isDeepSliderWidgetType(selectedWidgetInfo.widget.type) ? (
+                <WidgetDeepSliderSettings
                   settings={selectedWidgetInfo.widget.settings}
                   onChange={(patch) => {
                     if (!selectedWidgetRef) return

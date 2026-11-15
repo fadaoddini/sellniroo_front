@@ -22,20 +22,42 @@ export default function CorporateBrandBar() {
 
   useEffect(() => {
     let cancelled = false
-    fetchSiteSettings({ force: true }).then((data) => {
-      if (!cancelled && data) setSettings(data)
-    }).catch(() => {})
-    fetchCorporateAppearance({ force: true }).then((data) => {
-      if (!cancelled && data) setAppearance(data)
-    }).catch(() => {})
+    const load = () => {
+      fetchSiteSettings({ force: true })
+        .then((data) => {
+          if (!cancelled && data) setSettings(data)
+        })
+        .catch(() => {})
+      fetchCorporateAppearance({ force: true })
+        .then((data) => {
+          if (!cancelled && data) setAppearance(data)
+        })
+        .catch(() => {})
+    }
+    load()
+    const onSite = (ev) => {
+      if (ev?.detail) setSettings(ev.detail)
+      else load()
+    }
+    const onAppear = () => {
+      fetchCorporateAppearance({ force: true })
+        .then((data) => {
+          if (!cancelled && data) setAppearance(data)
+        })
+        .catch(() => {})
+    }
+    window.addEventListener('site-settings-changed', onSite)
+    window.addEventListener('corporate-appearance-changed', onAppear)
     return () => {
       cancelled = true
+      window.removeEventListener('site-settings-changed', onSite)
+      window.removeEventListener('corporate-appearance-changed', onAppear)
     }
   }, [])
 
   const logoSrc =
-    getFullImageUrl(appearance?.logo_display || appearance?.logo_url) ||
     getFullImageUrl(settings?.logo_display || settings?.logo_url) ||
+    getFullImageUrl(appearance?.logo_display || appearance?.logo_url) ||
     '/images/logo.png'
 
   const name = settings.site_name || 'شرکت'

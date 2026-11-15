@@ -426,7 +426,7 @@ function resolveAudioSrc(url) {
 
 function PixelMusicButton({
   url,
-  label = 'PLAY',
+  label = 'پخش موسیقی',
   loop = true,
   volume = 70,
   onPlayingChange,
@@ -482,8 +482,18 @@ function PixelMusicButton({
     }
   }
 
+  const playLabel =
+    label && label !== 'PLAY' && label !== 'گوش کنید'
+      ? label
+      : 'پخش موسیقی'
+  const stopLabel = 'متوقف'
+
   return (
-    <div className={styles.pixelPlayWrap}>
+    <div
+      className={`${styles.pixelPlayWrap} ${
+        playing ? styles.pixelPlayWrapOn : styles.pixelPlayWrapIdle
+      }`}
+    >
       <audio
         ref={audioRef}
         src={src}
@@ -501,15 +511,16 @@ function PixelMusicButton({
       />
       <button
         type="button"
-        className={`${styles.pixelPlay} ${playing ? styles.pixelPlayOn : ''} ${failed ? styles.pixelPlayFail : ''}`}
+        className={`${styles.pixelPlay} ${playing ? styles.pixelPlayOn : styles.pixelPlayCall} ${failed ? styles.pixelPlayFail : ''}`}
         onClick={toggle}
-        aria-label={playing ? 'توقف موزیک' : 'پخش موزیک'}
+        aria-label={playing ? stopLabel : playLabel}
+        title={playing ? stopLabel : playLabel}
       >
-        <span className={styles.pixelPlayIcon} aria-hidden>
-          {playing ? 'II' : '▶'}
-        </span>
-        <span className={styles.pixelPlayLabel}>
-          {failed ? 'ERR' : playing ? 'STOP' : label}
+        <span className={styles.sunRays} aria-hidden />
+        <span className={styles.sunCore}>
+          <span className={styles.pixelPlayLabel}>
+            {failed ? 'خطا' : playing ? stopLabel : playLabel}
+          </span>
         </span>
       </button>
     </div>
@@ -585,6 +596,8 @@ export default function ReboUsecases({ settings: raw = {} }) {
   const loopSeconds = s.building_loop_seconds || 14
   const treeSpeed = (s.tree_speed_factor || 55) / 100
   const citySpeed = (s.city_speed_factor || 32) / 100
+  const pinned = !!raw?.deep_reveal_pinned
+  const fullPage = pinned || s.scene_full_page !== false
   const sceneHeight = s.scene_height || 380
 
   useEffect(() => {
@@ -754,15 +767,47 @@ export default function ReboUsecases({ settings: raw = {} }) {
 
   if (!visible) return null
 
+  const sectionStyle = pinned
+    ? {
+        ...style,
+        margin: 0,
+        padding: 0,
+        maxWidth: 'none',
+        height: '100%',
+        minHeight: '100%',
+      }
+    : style
+
   return (
-    <section className={styles.section} style={style} dir="rtl" lang="fa">
-      <div className={styles.inner}>
+    <section
+      className={styles.section}
+      style={sectionStyle}
+      dir="rtl"
+      lang="fa"
+      data-rebo-usecases="1"
+      data-deep-reveal-under-root={pinned ? '1' : undefined}
+    >
+      <div
+        className={styles.inner}
+        data-deep-reveal-inner={pinned ? '1' : undefined}
+      >
         <div
-          className={`${styles.scene} ${reduceMotion ? styles.sceneStatic : ''} ${skyFlash ? styles.skyFlash : ''} ${musicPlaying ? styles.musicParty : ''}`}
+          className={`${styles.scene} ${
+            pinned
+              ? styles.scenePinned
+              : fullPage
+                ? styles.sceneFullPage
+                : ''
+          } ${reduceMotion ? styles.sceneStatic : ''} ${skyFlash ? styles.skyFlash : ''} ${musicPlaying ? styles.musicParty : ''}`}
           ref={sceneRef}
           aria-label="انیمیشن ربو"
+          data-deep-reveal-scene={pinned ? '1' : undefined}
           style={{
-            '--usecase-scene-h': `${sceneHeight}px`,
+            '--usecase-scene-h': pinned
+              ? '100%'
+              : fullPage
+                ? '100vh'
+                : `${sceneHeight}px`,
             '--road-speed': `${(s.road_speed_factor || 100) / 100}`,
             '--cloud-speed': `${(s.cloud_speed_factor || 100) / 100}`,
             '--bird-speed': `${(s.bird_speed_factor || 100) / 100}`,
@@ -793,7 +838,7 @@ export default function ReboUsecases({ settings: raw = {} }) {
             {s.show_music_btn !== false && s.music_url ? (
               <PixelMusicButton
                 url={s.music_url}
-                label={s.music_label || 'PLAY'}
+                label={s.music_label || 'پخش موسیقی'}
                 loop={s.music_loop !== false}
                 volume={s.music_volume ?? 70}
                 onPlayingChange={setMusicPlaying}
@@ -822,7 +867,11 @@ export default function ReboUsecases({ settings: raw = {} }) {
 
           <div
             className={styles.ground}
-            style={{ height: `clamp(280px, 42vw, ${sceneHeight}px)` }}
+            style={
+              pinned || fullPage
+                ? undefined
+                : { height: `clamp(280px, 42vw, ${sceneHeight}px)` }
+            }
           >
             {s.show_city !== false ? (
               <div ref={cityRef} className={styles.cityStrip} aria-hidden>

@@ -55,15 +55,47 @@ const SKIP_TYPES = new Set([
   'contact_page',
   'quiz_page',
   'sale_page',
+  'cloud_server_page',
+  'deep_slider',
 ])
+
+export const DEFAULT_SUPPORT_PLANS = [
+  {
+    id: 'starter',
+    name: 'مبتدی',
+    monthly_price: 3_000_000,
+    level: 1,
+  },
+  {
+    id: 'standard',
+    name: 'استاندارد',
+    monthly_price: 9_000_000,
+    level: 2,
+  },
+  {
+    id: 'advanced',
+    name: 'پیشرفته',
+    monthly_price: 17_000_000,
+    level: 3,
+  },
+  {
+    id: 'pro',
+    name: 'حرفه‌ای',
+    monthly_price: 35_000_000,
+    level: 4,
+    featured: true,
+  },
+]
 
 export const DEFAULT_SUPPORT = {
   free_months: 3,
-  monthly_price: 2_500_000,
+  monthly_price: 3_000_000,
   currency_label: 'تومان',
-  title: 'پشتیبانی پس از تحویل',
-  desc: 'پس از سفارش و تحویل نهایی، چند ماه پشتیبانی رایگان دارید؛ بعد از آن هزینه ماهانه اعمال می‌شود.',
-  notes: '',
+  title: 'پشتیبانی',
+  desc: 'سه ماه رایگان پس از تحویل؛ سپس پلن ماهانه را از مبتدی تا حرفه‌ای انتخاب کنید.',
+  notes:
+    'نگران به‌روزرسانی و تغییرات قالب و بک‌اند نباشید — این بخش فقط دسته‌بندی پشتیبانی است.',
+  plans: DEFAULT_SUPPORT_PLANS.map((p) => ({ ...p })),
 }
 
 export const DEFAULT_CLOUD_SERVER = {
@@ -325,10 +357,11 @@ export function normalizeReboPricing(raw = {}) {
     })
   })
 
-  const packages = (Array.isArray(root.packages) ? root.packages : [])
-    .filter((p) => p && typeof p === 'object')
-    .map((p, i) => normalizePackage(p, i))
-    .sort((a, b) => (a.sort || 0) - (b.sort || 0))
+  const packages = ensureCoreReboPackages(
+    (Array.isArray(root.packages) ? root.packages : [])
+      .filter((p) => p && typeof p === 'object')
+      .map((p, i) => normalizePackage(p, i)),
+  ).sort((a, b) => (a.sort || 0) - (b.sort || 0))
 
   return {
     currency_label: currency,
@@ -340,17 +373,48 @@ export function normalizeReboPricing(raw = {}) {
   }
 }
 
+function normalizeSupportPlan(raw, index = 0, fallback) {
+  const src = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {}
+  const base = fallback || DEFAULT_SUPPORT_PLANS[index] || DEFAULT_SUPPORT_PLANS[0]
+  const id =
+    String(src.id || base.id || `plan_${index + 1}`).trim() || `plan_${index + 1}`
+  return {
+    id,
+    name: String(src.name || base.name || `پلن ${index + 1}`).trim() || `پلن ${index + 1}`,
+    monthly_price: Math.max(
+      0,
+      Math.round(Number(src.monthly_price ?? base.monthly_price) || 0),
+    ),
+    level: Math.max(1, Math.round(Number(src.level ?? base.level ?? index + 1) || 1)),
+    featured: src.featured === true || base.featured === true,
+  }
+}
+
 export function normalizeSupport(raw = {}) {
   const src = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {}
+  const rawPlans = Array.isArray(src.plans) ? src.plans.filter(Boolean) : []
+  const plans = (
+    rawPlans.length > 0 ? rawPlans : DEFAULT_SUPPORT_PLANS
+  ).map((p, i) =>
+    normalizeSupportPlan(p, i, DEFAULT_SUPPORT_PLANS[i] || DEFAULT_SUPPORT_PLANS[0]),
+  )
+  const firstPrice = plans[0]?.monthly_price ?? DEFAULT_SUPPORT.monthly_price
   return {
-    free_months: Math.max(0, Math.round(Number(src.free_months) || 0)),
-    monthly_price: Math.max(0, Math.round(Number(src.monthly_price) || 0)),
+    free_months: Math.max(
+      0,
+      Math.round(Number(src.free_months ?? DEFAULT_SUPPORT.free_months) || 0),
+    ),
+    monthly_price: Math.max(
+      0,
+      Math.round(Number(src.monthly_price ?? firstPrice) || 0),
+    ),
     currency_label:
       String(src.currency_label || DEFAULT_SUPPORT.currency_label).trim() ||
       'تومان',
     title: String(src.title || DEFAULT_SUPPORT.title).trim() || DEFAULT_SUPPORT.title,
     desc: String(src.desc ?? DEFAULT_SUPPORT.desc).trim(),
-    notes: String(src.notes || '').trim(),
+    notes: String(src.notes ?? DEFAULT_SUPPORT.notes).trim(),
+    plans,
   }
 }
 
@@ -465,8 +529,47 @@ export function groupPricingItems(items = []) {
   }))
 }
 
+/** موضوعات اصلی ربو — همیشه در برآورد هزینه معرفی می‌شوند */
+export const CORE_REBO_PACKAGES = [
+  {
+    id: 'pkg_inventory_advanced',
+    key: 'inventory',
+    name: 'سیستم انبارداری پیشرفته',
+    desc: 'ورود و خروج کالا، حواله، انباردار، نمودار و ویترین انبار',
+    icon: 'Warehouse',
+    category: 'inventory',
+    price: 250_000_000,
+  },
+  {
+    id: 'pkg_gym_bodybuilding',
+    key: 'gym_bodybuilding',
+    name: 'باشگاه بدنسازی پیشرفته',
+    desc: 'اعضا، بسته، سانس، مربی، برنامه تمرینی و پروفایل باشگاه',
+    icon: 'Dumbbell',
+    category: 'gym',
+    price: 500_000_000,
+  },
+  {
+    id: 'pkg_billiard_club',
+    key: 'billiard',
+    name: 'مدیریت باشگاه بیلیارد',
+    desc: 'میز، سانس، مشتری، رزرو و مدیریت باشگاه بیلیارد',
+    icon: 'CircleDot',
+    category: 'gym',
+    price: 150_000_000,
+  },
+]
+
 /** پیشنهادهای آمادهٔ موضوع برای ساخت سریع بسته */
 export const PACKAGE_PRESETS = [
+  ...CORE_REBO_PACKAGES.map((p) => ({
+    key: p.key,
+    name: p.name,
+    desc: p.desc,
+    icon: p.icon,
+    category: p.category,
+    price: p.price,
+  })),
   {
     key: 'jobs',
     name: 'کل سیستم کاریابی',
@@ -553,8 +656,11 @@ export function packageFromPreset(preset) {
   const discount = preset.discount
     ? startDiscountForDays(preset.discount, preset.discount.duration_days || 30)
     : undefined
+  const core = CORE_REBO_PACKAGES.find(
+    (c) => c.key === preset.key || c.name === preset.name,
+  )
   return normalizePackage({
-    id: newPackageId(),
+    id: core?.id || newPackageId(),
     name: preset.name,
     desc: preset.desc,
     icon: preset.icon,
@@ -563,4 +669,58 @@ export function packageFromPreset(preset) {
     widget_types: types,
     ...(discount ? { discount } : {}),
   })
+}
+
+/**
+ * موضوعات اصلی ربو را تضمین می‌کند:
+ * - اگر نبود → اضافه
+ * - اگر با همان id/نام بود → قیمت و نام رسمی به‌روز می‌شود
+ */
+export function ensureCoreReboPackages(packages = []) {
+  const list = Array.isArray(packages) ? [...packages] : []
+  CORE_REBO_PACKAGES.forEach((core, index) => {
+    const types = widgetTypesByCategory(core.category)
+    const idx = list.findIndex(
+      (p) =>
+        p.id === core.id ||
+        String(p.name || '').trim() === core.name,
+    )
+    if (idx < 0) {
+      list.push(
+        normalizePackage(
+          {
+            id: core.id,
+            name: core.name,
+            desc: core.desc,
+            icon: core.icon,
+            price: core.price,
+            enabled: true,
+            widget_types: types,
+            sort: index,
+          },
+          index,
+        ),
+      )
+      return
+    }
+    const current = list[idx]
+    list[idx] = normalizePackage(
+      {
+        ...current,
+        id: core.id,
+        name: core.name,
+        desc: current.desc?.trim() ? current.desc : core.desc,
+        icon: current.icon || core.icon,
+        price: core.price,
+        enabled: current.enabled !== false,
+        widget_types:
+          Array.isArray(current.widget_types) && current.widget_types.length
+            ? current.widget_types
+            : types,
+        sort: current.sort ?? index,
+      },
+      idx,
+    )
+  })
+  return list
 }

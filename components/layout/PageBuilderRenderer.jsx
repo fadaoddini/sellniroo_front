@@ -51,6 +51,13 @@ import {
   BookingStaffWidget,
 } from '@/components/Booking/BookingWidgets'
 import FeatureCardsWidget from '@/components/widgets/FeatureCardsWidget'
+import DeepSlider from '@/components/widgets/DeepSlider/DeepSlider'
+import DeepRevealPin from '@/components/widgets/DeepSlider/DeepRevealPin'
+import {
+  isDeepSliderWidgetType,
+  normalizeDeepSliderSettings,
+  shouldDeepRevealPair,
+} from '@/config/deepSliderSettings'
 import SoftAppsGridWidget from '@/components/widgets/SoftAppsGridWidget'
 import ReboShowcaseWidget from '@/components/widgets/ReboShowcaseWidget'
 import {
@@ -228,6 +235,7 @@ function isChromeWidgetType(type) {
     type === 'breaking_news' ||
     type === 'shop_search_bar' ||
     type === 'hero_slider' ||
+    type === 'deep_slider' ||
     type === 'rebo_hero' ||
     type === 'rebo_usecases' ||
     type === 'rebo_showcase' ||
@@ -328,6 +336,9 @@ function widgetBleedClass(instance, sectionWidth, constrainBleed) {
   }
   if (isSiteTopNavWidgetType(type)) {
     return normalizeSiteTopNavSettings(raw).full_bleed !== false
+  }
+  if (isDeepSliderWidgetType(type)) {
+    return normalizeDeepSliderSettings(raw).full_bleed !== false
   }
   return false
 }
@@ -461,6 +472,8 @@ function renderWidget(instance, { articleSlot, settings, productContext } = {}) 
       return <BookingCtaWidget settings={s} />
     case 'feature_cards':
       return <FeatureCardsWidget settings={s} />
+    case 'deep_slider':
+      return <DeepSlider settings={s} />
     case 'rebo_hero':
       return <ReboHero settings={s} />
     case 'rebo_stack':
@@ -698,6 +711,90 @@ function useIsMobileLayout(breakpoint = 768) {
   return ready ? mobile : false
 }
 
+function getSoloWidget(row) {
+  const cols = row?.columns || []
+  if (cols.length !== 1) return null
+  const ws = cols[0]?.widgets || []
+  if (ws.length !== 1) return null
+  return ws[0]
+}
+
+/**
+ * نوار خبر فوری / منوی بالا وقتی sticky است باید روی خود سکشن sticky شود —
+ * والد کوتاه ویجت جلوی position:sticky داخلی را می‌گیرد.
+ * فقط دسکتاپ (CSS) و فقط وقتی ردیف فقط همین ویجت را دارد.
+ */
+function getDesktopStickyChromeMeta(row) {
+  const w = getSoloWidget(row)
+  if (!w) return null
+
+  /* site_top_nav و breaking_news خودشان با fixed پین می‌شوند (منو زیر نوار خبر) */
+  if (isSiteTopNavWidgetType(w.type)) return null
+  if (w.type === 'breaking_news') return null
+
+  if (isNavWidgetType(w.type)) {
+    const s = normalizeNavWidgetSettings(w.settings || {}, {
+      viewport: 'desktop',
+    })
+    if (!s.sticky) return null
+    return { offset: Number(s.sticky_offset) || 0 }
+  }
+
+  return null
+}
+
+/** اسلایدر عمیق + انیمیشن انتخاب‌شده را جفت می‌کند */
+function groupRowsForDeepReveal(rows) {
+  const list = Array.isArray(rows) ? rows : []
+  const out = []
+  for (let i = 0; i < list.length; i += 1) {
+    const row = list[i]
+    const next = list[i + 1]
+    const a = getSoloWidget(row)
+    const b = next ? getSoloWidget(next) : null
+    if (
+      a &&
+      b &&
+      isDeepSliderWidgetType(a.type) &&
+      shouldDeepRevealPair(a.settings, b.type)
+    ) {
+      out.push({
+        kind: 'deep_reveal',
+        id: `deep_reveal_${row.id}_${next.id}`,
+        deepRow: row,
+        underRow: next,
+        deepWidget: a,
+        underWidget: b,
+      })
+      i += 1
+    } else {
+      out.push({ kind: 'row', id: row.id, row })
+    }
+  }
+  return out
+}
+
+function groupWidgetsForDeepReveal(widgets) {
+  const list = Array.isArray(widgets) ? widgets : []
+  const out = []
+  for (let i = 0; i < list.length; i += 1) {
+    const w = list[i]
+    const next = list[i + 1]
+    if (
+      w &&
+      next &&
+      isDeepSliderWidgetType(w.type) &&
+      shouldDeepRevealPair(w.settings, next.type)
+    ) {
+      out.push({ kind: 'deep_reveal', deepWidget: w, underWidget: next })
+      i += 1
+    } else {
+      out.push({ kind: 'widget', widget: w })
+    }
+  }
+  return out
+}
+
 /**
  * @param {{ layout: any, fallback?: React.ReactNode, articleSlot?: React.ReactNode, productContext?: any }} props
  */
@@ -751,7 +848,54 @@ export default function PageBuilderRenderer({
       }}
       data-pb-mobile={isMobile ? '1' : '0'}
     >
-      {L.rows.map((row) => {
+      {groupRowsForDeepReveal(L.rows).map((entry) => {
+        if (entry.kind === 'deep_reveal') {
+          const width =
+            entry.deepRow.width === 'inherit'
+              ? L.page_width
+              : entry.deepRow.width || L.page_width
+          return (
+            <section
+              key={entry.id}
+              className={`${styles.section} ${styles.pad_none} ${
+                width === 'full' ? styles.sectionFull : styles.sectionBoxed
+              }`}
+              data-layout-section={entry.deepRow.id}
+              data-deep-reveal-section="1"
+              data-pb-chrome-section="1"
+            >
+              <div
+                className={styles.columns}
+                style={{ gridTemplateColumns: 'minmax(0, 1fr)' }}
+              >
+                <div className={`${styles.column} ${styles.widgetBleed}`}>
+                  <div
+                    className={`${styles.widget} ${styles.widgetBleed}`}
+                    data-pb-chrome="1"
+                  >
+                    <DeepRevealPin
+                      deepWidget={entry.deepWidget}
+                      underWidget={entry.underWidget}
+                      renderUnder={(uw) =>
+                        renderWidget(uw, {
+                          articleSlot,
+                          settings: {
+                            ...settingsForColumn(uw, false),
+                            deep_reveal_pinned: true,
+                            scene_full_page: true,
+                          },
+                          productContext,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            </section>
+          )
+        }
+
+        const row = entry.row
         const width =
           row.width === 'inherit' ? L.page_width : row.width || L.page_width
         const columns = row.columns || []
@@ -766,15 +910,22 @@ export default function PageBuilderRenderer({
               (col.widgets || []).every((w) => isSelfSpacedWidgetType(w.type))
           )
         const padY = onlySelfSpaced ? 'none' : row.padding_y
+        const stickyChrome = getDesktopStickyChromeMeta(row)
 
         return (
           <section
             key={row.id}
             className={`${styles.section} ${styles[`pad_${padY}`] || ''} ${
               width === 'full' ? styles.sectionFull : styles.sectionBoxed
-            }`}
+            }${stickyChrome ? ` ${styles.sectionStickyNav}` : ''}`}
+            style={
+              stickyChrome
+                ? { '--pb-sticky-nav-top': `${stickyChrome.offset}px` }
+                : undefined
+            }
             data-layout-section={row.id}
             data-pb-chrome-section={onlySelfSpaced ? '1' : undefined}
+            data-sticky-top-nav={stickyChrome ? '1' : undefined}
           >
             <div
               className={styles.columns}
@@ -791,6 +942,7 @@ export default function PageBuilderRenderer({
                 if (!widgets.length) return null
                 const stackedFromSide =
                   isMobile && columns.length > 1 && colIdx > 0
+                const grouped = groupWidgetsForDeepReveal(widgets)
                 return (
                   <div
                     key={col.id || `col_${colIdx}`}
@@ -804,8 +956,34 @@ export default function PageBuilderRenderer({
                     }
                     data-pb-col={columns.length > 1 ? colIdx + 1 : undefined}
                   >
-                    {widgets.map((w) => {
+                    {grouped.map((item) => {
                       const constrainBleed = multiCol
+                      if (item.kind === 'deep_reveal') {
+                        return (
+                          <div
+                            key={`${item.deepWidget.id}_${item.underWidget.id}`}
+                            className={`${styles.widget} ${styles.widgetBleed}`}
+                            data-pb-chrome="1"
+                          >
+                            <DeepRevealPin
+                              deepWidget={item.deepWidget}
+                              underWidget={item.underWidget}
+                              renderUnder={(uw) =>
+                                renderWidget(uw, {
+                                  articleSlot,
+                                  settings: {
+                                    ...settingsForColumn(uw, constrainBleed),
+                                    deep_reveal_pinned: true,
+                                    scene_full_page: true,
+                                  },
+                                  productContext,
+                                })
+                              }
+                            />
+                          </div>
+                        )
+                      }
+                      const w = item.widget
                       const settings = settingsForColumn(w, constrainBleed)
                       const bleed = widgetBleedClass(w, width, constrainBleed)
                       const chrome = isChromeWidgetType(w.type)

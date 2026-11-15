@@ -238,6 +238,21 @@ function rememberSettingsCache(data, { broadcast = false } = {}) {
   return data
 }
 
+/**
+ * بعد از ذخیرهٔ /site-settings — کش را به‌روز می‌کند و به ویجت‌ها خبر می‌دهد
+ * (لوگو در نوار خبر فوری، منوی سایت، …)
+ */
+export function publishSiteSettings(data) {
+  const normalized = normalizeSiteSettings(data || {})
+  rememberSettingsCache(normalized, { broadcast: true })
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('site-settings-changed', { detail: normalized }),
+    )
+  }
+  return normalized
+}
+
 export async function fetchSiteSettings({ force = false } = {}) {
   const onServer = typeof window === 'undefined'
   const now = Date.now()

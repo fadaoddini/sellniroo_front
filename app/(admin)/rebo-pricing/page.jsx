@@ -34,6 +34,7 @@ import {
   normalizePackage,
   normalizePackageDiscount,
   normalizeReboPricing,
+  CORE_REBO_PACKAGES,
   PACKAGE_PRESETS,
   packageFromPreset,
   startDiscountForDays,
@@ -79,13 +80,40 @@ export default function ReboPricingPage() {
     setErr(null)
     try {
       const data = await fetchSiteSettings({ force: true })
-      setPricing(normalizeReboPricing(data?.rebo_pricing))
+      const rawPkgs = Array.isArray(data?.rebo_pricing?.packages)
+        ? data.rebo_pricing.packages
+        : []
+      const needsCore = CORE_REBO_PACKAGES.some((core) => {
+        const found = rawPkgs.find(
+          (p) =>
+            p?.id === core.id ||
+            String(p?.name || '').trim() === core.name,
+        )
+        if (!found) return true
+        return (
+          Math.max(0, Math.round(Number(found.price) || 0)) !== core.price ||
+          String(found.name || '').trim() !== core.name
+        )
+      })
+      const next = normalizeReboPricing(data?.rebo_pricing)
+      setPricing(next)
+      if (needsCore) {
+        try {
+          const saved = await saveReboPricing(next, getAuthHeaders())
+          setPricing(normalizeReboPricing(saved))
+          setMsg(
+            'موضوعات اصلی ربو (انبارداری، بدنسازی، بیلیارد) به لیست اضافه و ذخیره شد.',
+          )
+        } catch {
+          /* نمایش محلی کافی است؛ ذخیره بعداً دستی */
+        }
+      }
     } catch (e) {
       setErr(e?.message || 'بارگذاری ناموفق')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [getAuthHeaders])
 
   useEffect(() => {
     if (gate.allowed) load()
@@ -340,8 +368,12 @@ export default function ReboPricingPage() {
         <div className={local.opsPanels}>
           <section className={local.opsPanel}>
             <h2>
-              <Headphones size={16} /> پشتیبانی پس از تحویل
+              <Headphones size={16} /> پشتیبانی
             </h2>
+            <p className={local.opsHint}>
+              فقط دسته‌بندی پشتیبانی — بدون جزئیات خدمات. سه ماه رایگان، سپس
+              پلن‌های ماهانه از مبتدی تا حرفه‌ای.
+            </p>
             <div className={local.opsFields}>
               <label>
                 عنوان
@@ -389,35 +421,6 @@ export default function ReboPricingPage() {
                 />
               </label>
               <label>
-                قیمت ماهانه بعد از رایگان (
-                {pricing.support?.currency_label || 'تومان'})
-                <input
-                  type="number"
-                  min={0}
-                  step={100000}
-                  dir="ltr"
-                  value={pricing.support?.monthly_price ?? 0}
-                  onChange={(e) =>
-                    setPricing((p) => ({
-                      ...p,
-                      support: {
-                        ...p.support,
-                        monthly_price: Math.max(
-                          0,
-                          Math.round(Number(e.target.value) || 0),
-                        ),
-                      },
-                    }))
-                  }
-                />
-                <em className={local.pricePreview}>
-                  {formatMoney(
-                    pricing.support?.monthly_price || 0,
-                    pricing.support?.currency_label || 'تومان',
-                  )}
-                </em>
-              </label>
-              <label>
                 واحد پول
                 <input
                   value={pricing.support?.currency_label || 'تومان'}
@@ -433,7 +436,7 @@ export default function ReboPricingPage() {
                 />
               </label>
               <label>
-                یادداشت
+                یادداشت اطمینان
                 <input
                   value={pricing.support?.notes || ''}
                   onChange={(e) =>
@@ -442,8 +445,80 @@ export default function ReboPricingPage() {
                       support: { ...p.support, notes: e.target.value },
                     }))
                   }
+                  placeholder="نگران به‌روزرسانی قالب و بک‌اند نباشید"
                 />
               </label>
+            </div>
+            <div className={local.opsFields} style={{ marginTop: '1rem' }}>
+              {(pricing.support?.plans || []).map((plan, idx) => (
+                <label key={plan.id || idx}>
+                  پلن {idx + 1} — نام / قیمت ماهانه (
+                  {pricing.support?.currency_label || 'تومان'})
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    <input
+                      value={plan.name || ''}
+                      onChange={(e) =>
+                        setPricing((p) => {
+                          const plans = [...(p.support?.plans || [])]
+                          plans[idx] = {
+                            ...plans[idx],
+                            name: e.target.value,
+                          }
+                          return {
+                            ...p,
+                            support: {
+                              ...p.support,
+                              plans,
+                              monthly_price:
+                                plans[0]?.monthly_price ??
+                                p.support?.monthly_price,
+                            },
+                          }
+                        })
+                      }
+                    />
+                    <input
+                      type="number"
+                      min={0}
+                      step={100000}
+                      dir="ltr"
+                      value={plan.monthly_price ?? 0}
+                      onChange={(e) =>
+                        setPricing((p) => {
+                          const plans = [...(p.support?.plans || [])]
+                          const monthly_price = Math.max(
+                            0,
+                            Math.round(Number(e.target.value) || 0),
+                          )
+                          plans[idx] = { ...plans[idx], monthly_price }
+                          return {
+                            ...p,
+                            support: {
+                              ...p.support,
+                              plans,
+                              monthly_price:
+                                plans[0]?.monthly_price ?? monthly_price,
+                            },
+                          }
+                        })
+                      }
+                    />
+                  </div>
+                  <em className={local.pricePreview}>
+                    {formatMoney(
+                      plan.monthly_price || 0,
+                      pricing.support?.currency_label || 'تومان',
+                    )}{' '}
+                    / ماه
+                  </em>
+                </label>
+              ))}
             </div>
           </section>
 

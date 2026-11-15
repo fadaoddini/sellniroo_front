@@ -23,6 +23,7 @@ export const OWNER_ONLY_PATHS = [
   '/adminproducts',
   '/admincategories',
   '/adminmodule',
+  '/rebolearn',
   '/adminnews',
   '/adminkaryabi',
   '/adminsettings',

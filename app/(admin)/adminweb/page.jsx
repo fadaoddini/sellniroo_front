@@ -8,7 +8,6 @@ import {
   Newspaper,
   Briefcase,
   Settings2,
-  Sparkles,
   LayoutDashboard,
   PanelTop,
   Images,
@@ -33,6 +32,7 @@ import {
   Cloud,
   ShoppingBag,
   Radar,
+  LayoutTemplate,
 } from 'lucide-react'
 import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
 import useOwnerGate from '@/components/Admin/useOwnerGate'
@@ -52,155 +52,85 @@ import axios from 'axios'
 import styles from './AdminWeb.module.css'
 import portalStyles from '@/components/Admin/OwnerPortal.module.css'
 
-const HUBS = [
+const GROUPS = [
   {
-    href: '/adminsettings',
-    title: 'چیدمان صفحه اصلی',
-    desc: 'ویجت‌ها و سکشن‌های صفحهٔ اول سایت',
-    icon: LayoutDashboard,
-    color: '#7c3aed',
+    id: 'design',
+    title: 'طراحی',
+    items: [
+      { href: '/adminsettings', title: 'طراحی قالب', desc: 'خانه و ویجت‌ها', icon: LayoutTemplate, color: '#7c3aed' },
+      { href: '/adminsettings?tab=shop', title: 'طراحی فروشگاه', desc: 'سینگل و لیست', icon: ShoppingBag, color: '#c2410c' },
+      { href: '/adminsettings?tab=jobs', title: 'طراحی کاریابی', desc: 'آگهی و برد', icon: Briefcase, color: '#0d9488' },
+      { href: '/adminsettings?tab=news', title: 'طراحی اخبار', desc: 'لیست و سینگل', icon: Newspaper, color: '#e67e22' },
+      { href: '/adminsettings?tab=profile', title: 'چیدمان پروفایل', desc: 'بخش‌ها', icon: Users, color: '#26a680' },
+      { href: '/adminsettings?tab=checkout', title: 'سفارش و سبد', desc: 'مراحل خرید', icon: ShoppingCart, color: '#c2410c' },
+      { href: '/adminsettings?tab=corporate', title: 'ظاهر شرکتی', desc: 'هدر و منو', icon: PanelTop, color: '#334155' },
+      { href: '/site-settings', title: 'برند و SEO', desc: 'تنظیمات سایت', icon: Settings2, color: '#475569' },
+    ],
   },
   {
-    href: '/adminsettings?tab=profile',
-    title: 'چیدمان پروفایل',
-    desc: 'سیستم اصلی /profile و دسترسی بخش‌ها وقتی چند ماژول روشن است',
-    icon: Users,
-    color: '#26a680',
+    id: 'shop',
+    title: 'فروشگاه',
+    items: [
+      { href: '/payment-manage', title: 'ماژول پرداخت', desc: 'درگاه و اهداف', icon: CreditCard, color: '#0f766e' },
+      { href: '/adminshops', title: 'فروشگاه‌ها و تسویه', desc: 'حسابداری', icon: ShoppingBag, color: '#b45309' },
+      { href: '/adminproducts', title: 'محصولات فروشگاه‌ها', desc: 'کاتالوگ', icon: ShoppingBag, color: '#9a3412' },
+      { href: '/admincategories', title: 'دسته‌بندی محصولات', desc: 'درخت دسته', icon: ShoppingBag, color: '#7c2d12' },
+      { href: '/shop-manage', title: 'مدیریت محصولات', desc: 'کاتالوگ', icon: ShoppingBag, color: '#c2410c' },
+      { href: '/product-single', title: 'سینگل محصول', desc: 'اجزای PDP', icon: ShoppingBag, color: '#9a3412' },
+    ],
   },
   {
-    href: '/adminsettings?tab=checkout',
-    title: 'سفارش و سبد',
-    desc: 'مراحل خرید فروشگاه، نوبت، سرور ابری و ربو — بدون تداخل',
-    icon: ShoppingCart,
-    color: '#c2410c',
+    id: 'systems',
+    title: 'سیستم‌ها',
+    items: [
+      { href: '/adminmodule', title: 'ماژول‌ها', desc: 'روشن و خاموش', icon: Boxes, color: '#2563eb' },
+      { href: '/rebolearn', title: 'آموزش‌های ربو', desc: 'استقرار و CLI', icon: BookOpen, color: '#a16207' },
+      { href: '/rebo-pricing', title: 'قیمت‌گذاری ربو', desc: 'موضوع و بسته', icon: Calculator, color: '#a16207' },
+      { href: '/rebo-manage', title: 'مدیریت ربو', desc: 'سفارش و فیش', icon: Boxes, color: '#0f6b52' },
+      { href: '/cloud-manage', title: 'سرور ابری', desc: 'شارژ و سفارش', icon: Cloud, color: '#0369a1' },
+    ],
   },
   {
-    href: '/payment-manage',
-    title: 'ماژول پرداخت',
-    desc: 'درگاه سراسری، اهداف و پرداخت‌های فروشگاه / اخبار / کاریابی',
-    icon: CreditCard,
-    color: '#0f766e',
-  },
-  {
-    href: '/adminshops',
-    title: 'فروشگاه‌ها و تسویه',
-    desc: 'مدیریت همه فروشگاه‌ها، کارمزد، و تسویه حساب با زیرمجموعه‌ها',
-    icon: ShoppingBag,
-    color: '#b45309',
-  },
-  {
-    href: '/adminproducts',
-    title: 'محصولات فروشگاه‌ها',
-    desc: 'ویرایش کاتالوگ همه فروشگاه‌ها؛ قیمت، موجودی و تصاویر',
-    icon: ShoppingBag,
-    color: '#9a3412',
-  },
-  {
-    href: '/admincategories',
-    title: 'دسته‌بندی محصولات',
-    desc: 'درخت دسته، تزریق قالب مشاغل (سوپرمارکت، پوشاک، لوازم خانگی و …)',
-    icon: ShoppingBag,
-    color: '#7c2d12',
-  },
-  {
-    href: '/adminshop',
-    title: 'طراحی فروشگاه',
-    desc: 'چیدمان سینگل محصول، لیست فروشگاه و ویجت‌های ویترین',
-    icon: ShoppingBag,
-    color: '#c2410c',
-  },
-  {
-    href: '/adminmodule',
-    title: 'ماژول‌ها',
-    desc: 'روشن و خاموش کردن قابلیت‌های سایت',
-    icon: Boxes,
-    color: '#2563eb',
-  },
-  {
-    href: '/rebo-pricing',
-    title: 'قیمت‌گذاری موضوعات ربو',
-    desc: 'موضوع بسازید، ویجت‌ها را به آن وصل کنید و یک قیمت کلی به ریال بگذارید',
-    icon: Calculator,
-    color: '#a16207',
-  },
-  {
-    href: '/rebo-manage',
-    title: 'مدیریت ربو',
-    desc: 'سفارش بسته‌ها، تأیید فیش، پرداخت‌ها و تنظیمات اختصاصی ربو',
-    icon: Boxes,
-    color: '#0f6b52',
-  },
-  {
-    href: '/cloud-manage',
-    title: 'سرور ابری اشتراکی',
-    desc: 'سفارش‌ها، شارژ، فیش واریزی، کسر روزانه، پیامک هشدار و حذف داده',
-    icon: Cloud,
-    color: '#0369a1',
-  },
-  {
-    href: '/adminnews',
-    title: 'اخبار',
-    desc: 'چیدمان /news، سینگل خبر و ابزارهای خبری',
-    icon: Newspaper,
-    color: '#e67e22',
-  },
-  {
-    href: '/adminkaryabi',
-    title: 'کاریابی',
-    desc: 'چیدمان سینگل آگهی و داده‌های سیستم کاریابی',
-    icon: Briefcase,
-    color: '#0d9488',
+    id: 'content',
+    title: 'محتوا و ابزار',
+    items: [
+      { href: '/news-management', title: 'مدیریت اخبار', desc: 'محتوا', icon: Newspaper, color: '#e67e22' },
+      { href: '/news-single', title: 'سینگل خبر', desc: 'اجزای خبر', icon: FileText, color: '#d97706' },
+      { href: '/jobs-manage', title: 'آگهی‌ها', desc: 'کاریابی', icon: Briefcase, color: '#0d9488' },
+      { href: '/job-single', title: 'سینگل آگهی', desc: 'اجزای آگهی', icon: Briefcase, color: '#0f766e' },
+      { href: '/menu-lists', title: 'فهرست‌های منو', desc: 'منوها', icon: List, color: '#475569' },
+      { href: '/header-menu', title: 'منوی سایت', desc: 'ظاهر', icon: PanelTop, color: '#334155' },
+      { href: '/hero-slider', title: 'هیرو', desc: 'اسلایدر', icon: Images, color: '#7c3aed' },
+      { href: '/ticker', title: 'نوار خبر', desc: 'تیتر', icon: Megaphone, color: '#b45309' },
+      { href: '/about-manage', title: 'درباره ما', desc: 'محتوا', icon: Info, color: '#2563eb' },
+      { href: '/catalog-manage', title: 'کاتالوگ', desc: 'فلیپ‌بوک', icon: BookOpen, color: '#0f766e' },
+      { href: '/videoinsta-manage', title: 'ویدیو', desc: 'استوری', icon: Images, color: '#db2777' },
+      { href: '/quiz-manage', title: 'آزمون', desc: 'سوالات', icon: Brain, color: '#7c3aed' },
+      { href: '/faq-manage', title: 'FAQ', desc: 'سوالات', icon: HelpCircle, color: '#0369a1' },
+      { href: '/school-manage', title: 'مدرسه', desc: 'آموزش', icon: GraduationCap, color: '#0f6b52' },
+      { href: '/apps-manage', title: 'نرم‌افزارها', desc: 'دانلود', icon: AppWindow, color: '#2563eb' },
+      { href: '/repairs-manage', title: 'تعمیرات', desc: 'سرویس', icon: Wrench, color: '#c2410c' },
+      { href: '/platform-connections', title: 'پیام‌رسان', desc: 'اتصالات', icon: Radio, color: '#0d9488' },
+      { href: '/request-types', title: 'درخواست‌ها', desc: 'انواع', icon: Tags, color: '#7c3aed' },
+      { href: '/employees', title: 'کارمندان', desc: 'دسترسی', icon: Users, color: '#334155' },
+      { href: '/sale', title: 'فروش', desc: 'لید', icon: ShoppingCart, color: '#b45309' },
+      { href: '/rasad', title: 'رصد', desc: 'روند استانی', icon: Radar, color: '#0369a1' },
+      { href: '/dashboard', title: 'داشبورد کارمندی', desc: 'خلاصه', icon: LayoutDashboard, color: '#475569' },
+    ],
   },
 ]
 
-const QUICK_LINKS = [
-  { href: '/dashboard', label: 'داشبورد کارمندی', desc: 'خلاصه', icon: LayoutDashboard },
-  { href: '/adminnews', label: 'چیدمان /news', desc: 'لیست اخبار', icon: Newspaper },
-  { href: '/adminnews?tab=single', label: 'چیدمان سینگل خبر', desc: 'صفحه خبر', icon: FileText },
-  { href: '/adminkaryabi', label: 'چیدمان سینگل آگهی', desc: 'کاریابی', icon: Briefcase },
-  { href: '/adminsettings', label: 'چیدمان صفحه اصلی', desc: 'ویجت‌ها', icon: LayoutDashboard },
-  { href: '/adminsettings?tab=profile', label: 'چیدمان پروفایل', desc: 'بخش‌ها و سیستم اصلی', icon: Users },
-  { href: '/adminsettings?tab=checkout', label: 'سفارش و سبد', desc: 'مراحل هر سیستم', icon: ShoppingCart },
-  { href: '/adminsettings?tab=corporate', label: 'ظاهر شرکتی', desc: 'هدر و منو', icon: PanelTop },
-  { href: '/payment-manage', label: 'ماژول پرداخت', desc: 'درگاه و اهداف', icon: CreditCard },
-  { href: '/adminshops', label: 'فروشگاه‌ها و تسویه', desc: 'حسابداری', icon: ShoppingBag },
-  { href: '/adminproducts', label: 'محصولات فروشگاه‌ها', desc: 'ویرایش کاتالوگ', icon: ShoppingBag },
-  { href: '/admincategories', label: 'دسته‌بندی محصولات', desc: 'درخت و قالب مشاغل', icon: ShoppingBag },
-  { href: '/adminshop', label: 'طراحی فروشگاه', desc: 'سینگل و لیست', icon: ShoppingBag },
-  { href: '/shop-manage', label: 'مدیریت محصولات', desc: 'کاتالوگ', icon: ShoppingBag },
-  { href: '/product-single', label: 'تنظیمات سینگل محصول', desc: 'اجزای PDP', icon: ShoppingBag },
-  { href: '/adminmodule', label: 'ماژول‌ها', desc: 'روشن/خاموش', icon: Boxes },
-  { href: '/rebo-pricing', label: 'قیمت ربو', desc: 'موضوع و بسته', icon: Calculator },
-  { href: '/rebo-manage', label: 'مدیریت ربو', desc: 'سفارش و فیش', icon: Boxes },
-  { href: '/cloud-manage', label: 'سرور ابری', desc: 'شارژ و سفارش', icon: Cloud },
-  { href: '/site-settings', label: 'تنظیمات سایت', desc: 'برند و SEO', icon: Settings2 },
-  { href: '/menu-lists', label: 'فهرست‌های منو', desc: 'منوها', icon: List },
-  { href: '/header-menu', label: 'منوی سایت', desc: 'ظاهر', icon: PanelTop },
-  { href: '/hero-slider', label: 'هیرو', desc: 'اسلایدر', icon: Images },
-  { href: '/ticker', label: 'نوار خبر', desc: 'تیتر', icon: Megaphone },
-  { href: '/news-management', label: 'مدیریت اخبار', desc: 'محتوا', icon: Newspaper },
-  { href: '/news-single', label: 'تنظیمات سینگل', desc: 'اجزای خبر', icon: FileText },
-  { href: '/jobs-manage', label: 'آگهی‌ها', desc: 'کاریابی', icon: Briefcase },
-  { href: '/job-single', label: 'سینگل آگهی', desc: 'اجزای آگهی', icon: Briefcase },
-  { href: '/about-manage', label: 'درباره ما', desc: 'محتوا', icon: Info },
-  { href: '/catalog-manage', label: 'کاتالوگ', desc: 'فلیپ‌بوک', icon: BookOpen },
-  { href: '/videoinsta-manage', label: 'ویدیو', desc: 'استوری', icon: Images },
-  { href: '/quiz-manage', label: 'آزمون', desc: 'سوالات', icon: Brain },
-  { href: '/faq-manage', label: 'FAQ', desc: 'سوالات', icon: HelpCircle },
-  { href: '/school-manage', label: 'مدرسه', desc: 'آموزش', icon: GraduationCap },
-  { href: '/apps-manage', label: 'نرم‌افزارها', desc: 'دانلود', icon: AppWindow },
-  { href: '/repairs-manage', label: 'تعمیرات', desc: 'سرویس', icon: Wrench },
-  { href: '/platform-connections', label: 'پیام‌رسان', desc: 'اتصالات', icon: Radio },
-  { href: '/request-types', label: 'درخواست‌ها', desc: 'انواع', icon: Tags },
-  { href: '/employees', label: 'کارمندان', desc: 'دسترسی', icon: Users },
-  { href: '/sale', label: 'فروش', desc: 'لید', icon: ShoppingCart },
-  { href: '/rasad', label: 'رصد', desc: 'روند استانی', icon: Radar },
-]
+function matchesQuery(item, q) {
+  if (!q) return true
+  const hay = `${item.title} ${item.desc} ${item.href}`.toLowerCase()
+  return hay.includes(q)
+}
 
 export default function AdminWebDashboardPage() {
   const gate = useOwnerGate('/adminweb')
   const { multiVendor } = useShopMode()
   const { getAuthHeaders } = useAuth()
+  const [query, setQuery] = useState('')
   const [moduleStats, setModuleStats] = useState({
     total: 0,
     active: 0,
@@ -208,49 +138,27 @@ export default function AdminWebDashboardPage() {
   })
   const [newsStats, setNewsStats] = useState(null)
 
-  const hubs = useMemo(
-    () =>
-      HUBS.map((h) => {
-        if (h.href === '/adminshops') {
-          return multiVendor
-            ? h
-            : {
-                ...h,
-                title: 'فروشگاه',
-                desc: 'تنظیمات فروشگاه، نقشه، وضعیت باز/بسته و اطلاعات بانکی',
-              }
-        }
-        if (h.href === '/adminproducts') {
-          return multiVendor
-            ? h
-            : {
-                ...h,
-                title: 'محصولات',
-                desc: 'ویرایش کاتالوگ فروشگاه؛ قیمت، موجودی و تصاویر',
-              }
-        }
-        return h
-      }),
-    [multiVendor],
-  )
-
-  const quickLinks = useMemo(
-    () =>
-      QUICK_LINKS.map((l) => {
-        if (l.href === '/adminshops') {
-          return multiVendor
-            ? l
-            : { ...l, label: 'فروشگاه', desc: 'تنظیمات' }
-        }
-        if (l.href === '/adminproducts') {
-          return multiVendor
-            ? l
-            : { ...l, label: 'محصولات', desc: 'کاتالوگ' }
-        }
-        return l
-      }),
-    [multiVendor],
-  )
+  const groups = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return GROUPS.map((group) => ({
+      ...group,
+      items: group.items
+        .map((item) => {
+          if (item.href === '/adminshops') {
+            return multiVendor
+              ? item
+              : { ...item, title: 'فروشگاه', desc: 'تنظیمات فروشگاه' }
+          }
+          if (item.href === '/adminproducts') {
+            return multiVendor
+              ? item
+              : { ...item, title: 'محصولات', desc: 'کاتالوگ فروشگاه' }
+          }
+          return item
+        })
+        .filter((item) => matchesQuery(item, q)),
+    })).filter((group) => group.items.length)
+  }, [multiVendor, query])
 
   useEffect(() => {
     if (!gate.allowed) return undefined
@@ -262,13 +170,13 @@ export default function AdminWebDashboardPage() {
         if (cancelled) return
         const total = list?.length || 0
         const active = Object.values(map || {}).filter(Boolean).length
-        const groups = (list || []).filter(
+        const groupsCount = (list || []).filter(
           (m) =>
             m.is_group ||
             (!m.parent_key &&
-              (list || []).some((c) => c.parent_key === m.key))
+              (list || []).some((c) => c.parent_key === m.key)),
         ).length
-        setModuleStats({ total, active, groups })
+        setModuleStats({ total, active, groups: groupsCount })
       } catch {
         if (!cancelled) setModuleStats({ total: 0, active: 0, groups: 0 })
       }
@@ -322,9 +230,10 @@ export default function AdminWebDashboardPage() {
 
   return (
     <OwnerPortalShell
-      brand="web"
-      brandAccent="admin"
-      tagline="داشبورد ادمین کل پلتفرم"
+      brand="وب"
+      brandAccent="ادمین "
+      tagline="داشبورد مالک پلتفرم"
+      wide
       {...gate}
     >
       <div className={styles.statsStrip}>
@@ -340,32 +249,13 @@ export default function AdminWebDashboardPage() {
           <span className={styles.statValue}>{moduleStats.groups}</span>
           <span className={styles.statLabel}>مجموعهٔ گروهی</span>
         </div>
+        <div className={styles.statCard}>
+          <span className={styles.statValue}>{activePct}٪</span>
+          <span className={styles.statLabel}>نسبت فعال</span>
+        </div>
       </div>
 
-      <div className={portalStyles.hubGrid}>
-        {hubs.map((hub) => {
-          const Icon = hub.icon
-          return (
-            <Link key={hub.href} href={hub.href} className={portalStyles.hubCard}>
-              <span
-                className={portalStyles.hubIcon}
-                style={{ background: hub.color }}
-              >
-                <Icon size={20} />
-              </span>
-              <h2 className={portalStyles.hubTitle}>{hub.title}</h2>
-              <p className={portalStyles.hubDesc}>{hub.desc}</p>
-              <span
-                className={portalStyles.hubGlow}
-                style={{ background: hub.color }}
-                aria-hidden
-              />
-            </Link>
-          )
-        })}
-      </div>
-
-      <div className={portalStyles.chartsRow}>
+      <div className={styles.dashOverview}>
         <section className={portalStyles.chartCard}>
           <div className={portalStyles.chartHead}>
             <div>
@@ -450,33 +340,49 @@ export default function AdminWebDashboardPage() {
         </section>
       </div>
 
-      <section className={portalStyles.sectionBlock} id="quick">
-        <h2 className={portalStyles.sectionTitle}>
-          <Sparkles size={16} />
-          دسترسی سریع
-        </h2>
-        <div className={styles.linkGrid}>
-          {quickLinks.map((item) => {
-            const Icon = item.icon
-            return (
-              <Link key={item.href} href={item.href} className={styles.linkCard}>
-                <span className={styles.linkIcon}>
-                  <Icon size={20} />
-                </span>
-                <span className={styles.linkText}>
-                  <strong>{item.label}</strong>
-                  <small>{item.desc}</small>
-                </span>
-              </Link>
-            )
-          })}
-        </div>
-      </section>
+      <div className={styles.dashToolbar}>
+        <input
+          className={styles.dashSearch}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="جستجوی صفحه، ابزار یا تنظیمات…"
+          aria-label="جستجوی داشبورد"
+        />
+      </div>
 
-      <div className={styles.split} id="access">
+      {groups.length ? (
+        groups.map((group) => (
+          <section key={group.id} className={styles.dashGroup}>
+            <div className={styles.dashGroupHead}>
+              <h2>{group.title}</h2>
+              <span>{group.items.length.toLocaleString('fa-IR')} مورد</span>
+            </div>
+            <div className={styles.dashTiles}>
+              {group.items.map((item) => {
+                const Icon = item.icon
+                return (
+                  <Link key={item.href} href={item.href} className={styles.dashTile}>
+                    <span
+                      className={styles.dashTileIcon}
+                      style={{ background: item.color }}
+                    >
+                      <Icon size={13} />
+                    </span>
+                    <strong>{item.title}</strong>
+                  </Link>
+                )
+              })}
+            </div>
+          </section>
+        ))
+      ) : (
+        <p className={styles.dashEmpty}>موردی با این جستجو پیدا نشد.</p>
+      )}
+
+      <div className={`${styles.split} ${styles.metaStrip}`} id="access">
         <section className={styles.section}>
           <div className={styles.sectionHead}>
-            <Phone size={18} />
+            <Phone size={16} />
             <h2>شماره‌های مجاز</h2>
           </div>
           <ul className={styles.phoneList}>
@@ -496,7 +402,7 @@ export default function AdminWebDashboardPage() {
 
         <section className={styles.section}>
           <div className={styles.sectionHead}>
-            <ExternalLink size={18} />
+            <ExternalLink size={16} />
             <h2>لینک‌های مفید</h2>
           </div>
           <div className={styles.extLinks}>

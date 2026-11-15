@@ -129,6 +129,7 @@ export function resolveDashboardGroup(action) {
     href === '/header-menu' ||
     href === '/adminweb' ||
     href === '/adminmodule' ||
+    href === '/rebolearn' ||
     href === '/adminnews' ||
     href === '/adminkaryabi' ||
     href === '/adminshop' ||

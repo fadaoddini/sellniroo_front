@@ -173,6 +173,7 @@ const CONTENT_LABELS = {
   headline: 'تیتر اصلی',
   title: 'عنوان بخش',
   subtitle: 'توضیح کوتاه',
+  eyebrow: 'برچسب بالای عنوان',
   kicker: 'برچسب کوچک (kicker)',
   cta_label: 'متن دکمه اصلی',
   cta_href: 'لینک دکمه اصلی',
@@ -565,13 +566,20 @@ export default function WidgetReboSettings({ type, settings: raw, onChange }) {
                 }}
               />
             ) : null}
-            <PxField
-              label="ارتفاع صحنه"
-              value={settings.scene_height || 380}
-              min={220}
-              max={640}
-              onChange={(v) => patchRoot('scene_height', v)}
+            <Toggle
+              checked={settings.scene_full_page !== false}
+              onChange={(v) => patchRoot('scene_full_page', v)}
+              label="ارتفاع تمام‌صفحه (۱ صفحه)"
             />
+            {settings.scene_full_page === false ? (
+              <PxField
+                label="ارتفاع صحنه"
+                value={settings.scene_height || 380}
+                min={220}
+                max={1400}
+                onChange={(v) => patchRoot('scene_height', v)}
+              />
+            ) : null}
           </Accordion>
 
           <Accordion
@@ -751,7 +759,7 @@ export default function WidgetReboSettings({ type, settings: raw, onChange }) {
               label="متن دکمه"
               value={settings.music_label}
               onChange={(v) => patchRoot('music_label', v)}
-              placeholder="PLAY"
+              placeholder="پخش موسیقی"
             />
             <PxField
               label="بلندی صدا ٪"
@@ -918,8 +926,38 @@ export default function WidgetReboSettings({ type, settings: raw, onChange }) {
                 label="نمایش دکمه اصلی"
               />
             </>
+          ) : widgetType === 'rebo_stack' ? (
+            <>
+              <Toggle
+                checked={!!settings.show_eyebrow}
+                onChange={(v) => patchRoot('show_eyebrow', v)}
+                label="نمایش برچسب بالای عنوان"
+              />
+              <Toggle
+                checked={!!settings.show_title}
+                onChange={(v) => patchRoot('show_title', v)}
+                label="نمایش عنوان"
+              />
+              <Toggle
+                checked={!!settings.show_subtitle}
+                onChange={(v) => patchRoot('show_subtitle', v)}
+                label="نمایش توضیح"
+              />
+            </>
           ) : (
             <>
+              {(widgetType === 'rebo_pillars' ||
+                widgetType === 'rebo_capabilities' ||
+                widgetType === 'rebo_dashboard' ||
+                widgetType === 'rebo_ops' ||
+                widgetType === 'rebo_cloud_order' ||
+                widgetType === 'rebo_closing') && (
+                <Toggle
+                  checked={!!settings.show_title}
+                  onChange={(v) => patchRoot('show_title', v)}
+                  label="نمایش عنوان"
+                />
+              )}
               <Toggle
                 checked={!!settings.show_subtitle}
                 onChange={(v) => patchRoot('show_subtitle', v)}

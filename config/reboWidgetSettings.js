@@ -58,6 +58,7 @@ export const REBO_SHARED_ROOT_KEYS = new Set([
   'headline',
   'title',
   'subtitle',
+  'eyebrow',
   'kicker',
   'cta_label',
   'cta_href',
@@ -69,6 +70,7 @@ export const REBO_SHARED_ROOT_KEYS = new Set([
   'show_headline',
   'show_title',
   'show_subtitle',
+  'show_eyebrow',
   'show_cta',
   'show_secondary_cta',
   'show_devices',
@@ -97,6 +99,7 @@ export const REBO_SHARED_ROOT_KEYS = new Set([
   'cloud_speed_factor',
   'bird_speed_factor',
   'plane_speed_factor',
+  'scene_full_page',
   'scene_height',
   'usecase_industries',
   'show_music_btn',
@@ -115,6 +118,7 @@ export const REBO_VIEWPORT_KEYS = [
   'show_laptop',
   'show_phone',
   'device_scale',
+  'scene_full_page',
   'scene_height',
   ...REBO_SPACE_FIELDS.map((f) => f.key),
   ...REBO_MARGIN_FIELDS.map((f) => f.key),
@@ -153,6 +157,8 @@ const BASE_DEFAULTS = {
   show_headline: true,
   show_title: true,
   show_subtitle: true,
+  show_eyebrow: true,
+  eyebrow: '',
   show_cta: true,
   show_secondary_cta: true,
   show_devices: true,
@@ -185,8 +191,12 @@ const TYPE_DEFAULTS = {
   },
   rebo_stack: {
     ...BASE_DEFAULTS,
+    eyebrow: 'استک فنی',
     title: 'استک فنی ربو',
     subtitle: 'هر لایه با ابزار مناسب خودش — از هسته پایتون تا داشبورد مدیریت.',
+    show_eyebrow: true,
+    show_title: true,
+    show_subtitle: true,
     padding_top: 40,
     padding_bottom: 40,
   },
@@ -255,6 +265,7 @@ const TYPE_DEFAULTS = {
     cloud_speed_factor: 100,
     bird_speed_factor: 100,
     plane_speed_factor: 100,
+    scene_full_page: true,
     scene_height: 380,
     usecase_industries: [
       { id: 'salon', label: 'آرایشگاه' },
@@ -266,7 +277,7 @@ const TYPE_DEFAULTS = {
     ],
     show_music_btn: true,
     music_url: '',
-    music_label: 'PLAY',
+    music_label: 'پخش موسیقی',
     music_loop: true,
     music_volume: 70,
   },
@@ -310,6 +321,7 @@ const TYPE_DEFAULTS = {
     cloud_speed_factor: 100,
     bird_speed_factor: 100,
     plane_speed_factor: 100,
+    scene_full_page: true,
     scene_height: 380,
     usecase_industries: [
       { id: 'salon', label: '' },
@@ -321,7 +333,7 @@ const TYPE_DEFAULTS = {
     ],
     show_music_btn: true,
     music_url: '',
-    music_label: 'PLAY',
+    music_label: 'پخش موسیقی',
     music_loop: true,
     music_volume: 70,
     show_checks: false,
@@ -343,10 +355,10 @@ const TYPE_DEFAULTS = {
   },
   rebo_ops: {
     ...BASE_DEFAULTS,
-    title: 'پشتیبانی، سرور و اشتراک',
+    title: 'پشتیبانی',
     subtitle:
-      'پس از تحویل دوره رایگان؛ سرور ابری روزانه؛ مدل اشتراکی حوزه‌ای برای درآمد تکرارشونده.',
-    kicker: 'زیرساخت',
+      'سه ماه رایگان پس از تحویل؛ سپس پلن ماهانه از مبتدی تا حرفه‌ای. نگران به‌روزرسانی قالب و بک‌اند نباشید.',
+    kicker: 'پشتیبانی',
     headline: '',
     padding_top: 64,
     padding_bottom: 64,
@@ -468,6 +480,7 @@ function coerce(merged, rawRoot, type) {
     headline: str(rawRoot, 'headline', d),
     title: str(rawRoot, 'title', d),
     subtitle: str(rawRoot, 'subtitle', d),
+    eyebrow: str(rawRoot, 'eyebrow', d),
     kicker: str(rawRoot, 'kicker', d),
     cta_label: str(rawRoot, 'cta_label', d) || d.cta_label,
     cta_href: str(rawRoot, 'cta_href', d) || d.cta_href,
@@ -478,6 +491,7 @@ function coerce(merged, rawRoot, type) {
     show_headline: bool(rawRoot, 'show_headline', d),
     show_title: bool(rawRoot, 'show_title', d),
     show_subtitle: bool(rawRoot, 'show_subtitle', d),
+    show_eyebrow: bool(rawRoot, 'show_eyebrow', d),
     show_cta: bool(rawRoot, 'show_cta', d),
     show_secondary_cta: bool(rawRoot, 'show_secondary_cta', d),
     show_devices: bool(rawRoot, 'show_devices', d),
@@ -531,9 +545,13 @@ function coerce(merged, rawRoot, type) {
       5,
       Math.min(200, pxNum(rawRoot.plane_speed_factor, d.plane_speed_factor || 100, 200)),
     ),
+    scene_full_page:
+      type === 'rebo_usecases' || type === 'school_animation'
+        ? rawRoot.scene_full_page !== false && merged.scene_full_page !== false
+        : bool(merged, 'scene_full_page', d),
     scene_height: Math.max(
       200,
-      Math.min(640, pxNum(merged.scene_height, d.scene_height || 380, 640)),
+      Math.min(1400, pxNum(merged.scene_height, d.scene_height || 380, 1400)),
     ),
     usecase_industries: normalizeUsecaseIndustries(
       rawRoot.usecase_industries,
@@ -541,7 +559,18 @@ function coerce(merged, rawRoot, type) {
     ),
     show_music_btn: bool(rawRoot, 'show_music_btn', d),
     music_url: str(rawRoot, 'music_url', d),
-    music_label: str(rawRoot, 'music_label', d) || d.music_label || 'PLAY',
+    music_label: (() => {
+      const raw =
+        str(rawRoot, 'music_label', d) || d.music_label || 'پخش موسیقی'
+      if (
+        raw === 'PLAY' ||
+        raw === 'play' ||
+        raw === 'گوش کنید'
+      ) {
+        return 'پخش موسیقی'
+      }
+      return raw
+    })(),
     music_loop: bool(rawRoot, 'music_loop', d),
     music_volume: Math.max(
       0,
@@ -702,6 +731,7 @@ export function reboContentFieldsForType(type) {
         'show_cloud_order',
       ]
     case 'rebo_stack':
+      return ['eyebrow', 'title', 'subtitle']
     default:
       return []
   }

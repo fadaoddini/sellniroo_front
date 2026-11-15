@@ -25,6 +25,7 @@ import {
   DEFAULT_CORPORATE_APPEARANCE,
   corporateHeaderStyle,
 } from '@/services/corporateAppearance'
+import { fetchSiteSettings } from '@/services/siteSettings'
 import styles from './HeaderByMenuTop.module.css'
 
 const ICON_MAP = {
@@ -68,6 +69,7 @@ export default function HeaderByMenuTop() {
   const [items, setItems] = useState(DEFAULT_HEADER_MENU)
   const [moduleMap, setModuleMap] = useState({})
   const [appearance, setAppearance] = useState(DEFAULT_CORPORATE_APPEARANCE)
+  const [siteSettings, setSiteSettings] = useState(null)
 
   useEffect(() => {
     let cancelled = false
@@ -77,18 +79,37 @@ export default function HeaderByMenuTop() {
     fetchSiteModules({ force: true }).then(({ map }) => {
       if (!cancelled) setModuleMap(map || {})
     }).catch(() => {})
-    fetchCorporateAppearance({ force: true }).then((data) => {
-      if (!cancelled) setAppearance(data)
-    })
+    const loadLogos = () => {
+      fetchSiteSettings({ force: true }).then((data) => {
+        if (!cancelled && data) setSiteSettings(data)
+      })
+      fetchCorporateAppearance({ force: true }).then((data) => {
+        if (!cancelled) setAppearance(data)
+      })
+    }
+    loadLogos()
     const onModules = () => {
       fetchSiteModules({ force: true })
         .then(({ map }) => setModuleMap(map || {}))
         .catch(() => {})
     }
+    const onSite = (ev) => {
+      if (ev?.detail) setSiteSettings(ev.detail)
+      else loadLogos()
+    }
+    const onAppear = () => {
+      fetchCorporateAppearance({ force: true }).then((data) => {
+        if (!cancelled) setAppearance(data)
+      })
+    }
     window.addEventListener('site-modules-changed', onModules)
+    window.addEventListener('site-settings-changed', onSite)
+    window.addEventListener('corporate-appearance-changed', onAppear)
     return () => {
       cancelled = true
       window.removeEventListener('site-modules-changed', onModules)
+      window.removeEventListener('site-settings-changed', onSite)
+      window.removeEventListener('corporate-appearance-changed', onAppear)
     }
   }, [])
 
@@ -105,7 +126,12 @@ export default function HeaderByMenuTop() {
     }))
   }, [items, language, moduleMap])
 
-  const logoSrc = appearance.logo_display || appearance.logo_url || '/images/logo.png'
+  const logoSrc =
+    siteSettings?.logo_display ||
+    siteSettings?.logo_url ||
+    appearance.logo_display ||
+    appearance.logo_url ||
+    '/images/logo.png'
   const siteName = language === 'en' ? 'Sellniroo' : 'سلنیرو'
   const styleVars = corporateHeaderStyle(appearance)
 

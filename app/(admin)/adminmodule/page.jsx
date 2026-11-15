@@ -83,11 +83,7 @@ export default function AdminModulePage() {
             </div>
             <div className={styles.statCard}>
               <span className={styles.statValue}>{moduleStats.total}</span>
-              <span className={styles.statLabel}>کل ماژول‌ها</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statValue}>{moduleStats.groups}</span>
-              <span className={styles.statLabel}>مجموعهٔ گروهی</span>
+              <span className={styles.statLabel}>ماژول اصلی</span>
             </div>
           </div>
 

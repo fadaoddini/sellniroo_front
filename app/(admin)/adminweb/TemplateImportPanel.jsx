@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 import axios from 'axios'
 import {
   AlertTriangle,
@@ -14,9 +15,11 @@ import {
   GraduationCap,
   HandCoins,
   Loader2,
+  Package,
   Palette,
   Power,
   RefreshCw,
+  Save,
   Sparkles,
   Sprout,
   Store,
@@ -30,12 +33,14 @@ import { useAuth } from '@/contexts/AuthContext'
 import {
   SYSTEM_TEMPLATES,
   getActiveExclusiveTemplate,
+  ownerSystemToTemplate,
 } from '@/config/systemTemplates'
 import {
   clearSiteModulesCache,
   fetchSiteModules,
   toggleSiteModule,
 } from '@/services/siteModules'
+import DesignWizard from './DesignWizard'
 import styles from './AdminWeb.module.css'
 
 const ICONS = {
@@ -52,6 +57,31 @@ const ICONS = {
   crm_theme_one: HandCoins,
   inventory_theme_one: Warehouse,
   gym_bodybuilding_theme_one: Dumbbell,
+}
+
+function groupPackModules(list = []) {
+  const roots = []
+  const kids = {}
+  const rootKeys = new Set()
+  list.forEach((m) => {
+    if (m.is_root || !m.parent_key) {
+      roots.push(m)
+      rootKeys.add(m.key)
+    } else {
+      if (!kids[m.parent_key]) kids[m.parent_key] = []
+      kids[m.parent_key].push(m)
+    }
+  })
+  list.forEach((m) => {
+    if (!m.parent_key || rootKeys.has(m.parent_key)) return
+    roots.push({
+      key: m.parent_key,
+      name: m.parent_name || m.parent_key,
+      is_root: true,
+    })
+    rootKeys.add(m.parent_key)
+  })
+  return roots.map((r) => ({ ...r, children: kids[r.key] || [] }))
 }
 
 /** خاموش کردن ماژول‌های اختصاصی یک قالب (بدون روشن کردن اشتباهی) */
@@ -80,11 +110,31 @@ export default function TemplateImportPanel() {
   const [confirmTpl, setConfirmTpl] = useState(null)
   const [detailTpl, setDetailTpl] = useState(null)
   const [ack, setAck] = useState(false)
+  const [wantDedicatedBackend, setWantDedicatedBackend] = useState(true)
+  const [dedicatedKeys, setDedicatedKeys] = useState([])
+  const [installTpl, setInstallTpl] = useState(null)
+  const [installPreview, setInstallPreview] = useState(null)
+  const [installLoading, setInstallLoading] = useState(false)
+  const [ownerTemplates, setOwnerTemplates] = useState([])
+  const [packModules, setPackModules] = useState({})
+
+  const allTemplates = useMemo(
+    () => [...SYSTEM_TEMPLATES, ...ownerTemplates],
+    [ownerTemplates],
+  )
 
   const activeTpl = useMemo(
-    () => getActiveExclusiveTemplate(moduleMap, currentPack),
-    [moduleMap, currentPack],
+    () => getActiveExclusiveTemplate(moduleMap, currentPack, ownerTemplates),
+    [moduleMap, currentPack, ownerTemplates],
   )
+
+  const detailModuleGroups = useMemo(
+    () => (detailTpl ? groupPackModules(packModules[detailTpl.key] || []) : []),
+    [detailTpl, packModules],
+  )
+  const detailModuleCount = detailTpl
+    ? (packModules[detailTpl.key] || []).length
+    : 0
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -99,6 +149,13 @@ export default function TemplateImportPanel() {
       const data = packRes.data?.data || {}
       setCurrentPack(data.current_pack || null)
       setCurrentName(data.current_site_name || '')
+      setDedicatedKeys(
+        (data.dedicated_backends || []).map((item) => item.key).filter(Boolean),
+      )
+      setOwnerTemplates(
+        (data.owner_systems || []).map((row) => ownerSystemToTemplate(row)),
+      )
+      setPackModules(data.pack_modules || {})
       setModuleMap(mods.map || {})
     } catch (e) {
       setErr(
@@ -118,18 +175,84 @@ export default function TemplateImportPanel() {
 
   useEffect(() => {
     if (!confirmTpl) setAck(false)
+    else setWantDedicatedBackend(true)
   }, [confirmTpl])
 
   useEffect(() => {
-    if (!confirmTpl && !detailTpl) return undefined
+    if (!confirmTpl && !detailTpl && !installTpl) return undefined
     const onKey = (e) => {
       if (e.key !== 'Escape' || busyKey) return
-      if (confirmTpl) setConfirmTpl(null)
+      if (installTpl) setInstallTpl(null)
+      else if (confirmTpl) setConfirmTpl(null)
       else setDetailTpl(null)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [confirmTpl, detailTpl, busyKey])
+  }, [confirmTpl, detailTpl, installTpl, busyKey])
+
+  const hasDedicatedBackend = (key) =>
+    dedicatedKeys.length ? dedicatedKeys.includes(key) : true
+
+  const downloadBuiltZip = async (packKey, headers) => {
+    const res = await axios.get(
+      Config.endpoints.news.topicPacks.buildBackendFile(packKey),
+      { headers, responseType: 'blob' },
+    )
+    const blob = new Blob([res.data], { type: 'application/zip' })
+    const href = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = href
+    a.download = `${packKey}.zip`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(href)
+  }
+
+  const openInstallModal = async (tpl) => {
+    setInstallTpl(tpl)
+    setInstallPreview(null)
+    setInstallLoading(true)
+    setErr('')
+    try {
+      const headers = getAuthHeaders()
+      const res = await axios.get(
+        Config.endpoints.news.topicPacks.buildBackendPreview(tpl.key),
+        { headers },
+      )
+      setInstallPreview(res.data?.data || null)
+    } catch (e) {
+      setErr(
+        e.response?.data?.message ||
+          e.message ||
+          'خواندن نیازمندی‌های بسته ناموفق بود',
+      )
+      setInstallTpl(null)
+    } finally {
+      setInstallLoading(false)
+    }
+  }
+
+  const buildDedicatedBackend = async (tpl, headers) => {
+    const res = await axios.post(
+      Config.endpoints.news.topicPacks.buildBackend(),
+      { pack: tpl.key, confirm: true, force: true, zip: true },
+      { headers },
+    )
+    const data = res.data?.data || {}
+    try {
+      await downloadBuiltZip(tpl.key, headers)
+    } catch {
+      /* زیپ روی دیسک هست حتی اگر دانلود مرورگر نگیرد */
+    }
+    const apps = (data.copied_apps || []).join('، ')
+    const bits = [
+      `بسته نصبی «${tpl.name}» از روی تعریف فعلی ساخته شد (موتور ربو دست نخورد).`,
+    ]
+    if (apps) bits.push(`اپ‌ها: ${apps}`)
+    bits.push('زیپ دانلود شد.')
+    return bits.join(' ')
+  }
 
   const applyTemplate = async (tpl) => {
     const headers = getAuthHeaders()
@@ -170,8 +293,29 @@ export default function TemplateImportPanel() {
           }),
         )
       }
+      let extra = ''
+      if (wantDedicatedBackend && hasDedicatedBackend(tpl.key)) {
+        extra = await buildDedicatedBackend(tpl, headers)
+      }
+      if (tpl.custom) {
+        try {
+          window.localStorage.removeItem(
+            `rebo_design_wizard_v1:${tpl.key}`,
+          )
+        } catch {
+          /* ignore */
+        }
+      }
       setMsg(
-        `فقط «${tpl.name}» فعال است — قالب قبلی و ماژول‌های اختصاصی‌اش خاموش شدند.`,
+        [
+          `فقط «${tpl.name}» فعال است — قالب قبلی و ماژول‌های اختصاصی‌اش خاموش شدند.`,
+          tpl.custom
+            ? 'چیدمان خانه، صفحات داخلی، پروفایل، سبد و منو خالی شد. از «طراحی قالب» مرحله‌به‌مرحله بسازید.'
+            : '',
+          extra,
+        ]
+          .filter(Boolean)
+          .join(' '),
       )
       setConfirmTpl(null)
     } catch (e) {
@@ -232,6 +376,53 @@ export default function TemplateImportPanel() {
     setConfirmTpl(tpl)
   }
 
+  const snapshotTemplate = async (tpl) => {
+    const headers = getAuthHeaders()
+    if (!headers?.Authorization) {
+      setErr('برای بروزرسانی قالب دوباره وارد شوید')
+      return
+    }
+    const otherLive = activeTpl && activeTpl.key !== tpl.key
+    const ok = window.confirm(
+      [
+        `چیدمان فعلی سایت روی قالب «${tpl.name}» ذخیره شود؟`,
+        otherLive
+          ? `الان قالب فعال «${activeTpl.name}» است؛ همان چیدمان زنده روی «${tpl.name}» نوشته می‌شود.`
+          : 'خانه، صفحات داخلی، پروفایل، فروشگاه، اخبار، منو و ظاهر فعلی داخل همین بسته می‌روند.',
+        'بعد از این، با دکمه اعمال، نسخهٔ به‌روز نصب می‌شود.',
+      ].join('\n\n'),
+    )
+    if (!ok) return
+
+    setBusyKey(`snap:${tpl.key}`)
+    setErr('')
+    setMsg('')
+    try {
+      const res = await axios.post(
+        Config.endpoints.news.topicPacks.snapshot(),
+        { pack: tpl.key },
+        { headers },
+      )
+      const counts = res.data?.data?.counts || {}
+      setMsg(
+        res.data?.message ||
+          `چیدمان «${tpl.name}» ذخیره شد` +
+            (counts.home_widgets != null
+              ? ` — خانه ${counts.home_widgets} ویجت.`
+              : ''),
+      )
+    } catch (e) {
+      setErr(
+        e.response?.data?.detail ||
+          e.response?.data?.message ||
+          e.message ||
+          'ذخیره چیدمان ناموفق بود',
+      )
+    } finally {
+      setBusyKey(null)
+    }
+  }
+
   const rivalName =
     activeTpl && confirmTpl && activeTpl.key !== confirmTpl.key
       ? activeTpl.name
@@ -284,6 +475,15 @@ export default function TemplateImportPanel() {
         </div>
       </div>
 
+      {activeTpl?.custom ? (
+        <DesignWizard
+          packKey={activeTpl.key}
+          packName={activeTpl.name}
+          defaultOpen
+          moduleMap={moduleMap}
+        />
+      ) : null}
+
       {err ? (
         <div className={styles.lsAlert} role="alert">
           <AlertTriangle size={14} />
@@ -297,10 +497,11 @@ export default function TemplateImportPanel() {
       ) : null}
 
       <div className={styles.tplGrid}>
-        {SYSTEM_TEMPLATES.map((tpl) => {
+        {allTemplates.map((tpl) => {
           const Icon = ICONS[tpl.key] || Sparkles
           const isActive = activeTpl?.key === tpl.key
-          const busy = busyKey === tpl.key
+          const busy = busyKey === tpl.key || busyKey === `snap:${tpl.key}`
+          const snapping = busyKey === `snap:${tpl.key}`
           const dimmed = !!(activeTpl && !isActive)
           return (
             <article
@@ -378,6 +579,46 @@ export default function TemplateImportPanel() {
                   )}
                   {busy ? '…' : isActive ? 'خاموش' : 'اعمال'}
                 </button>
+                {tpl.custom && isActive ? (
+                  <Link
+                    href="/adminsettings?wizard=1"
+                    className={styles.tplBtnInstall}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <Sparkles size={13} />
+                    طراحی قالب
+                  </Link>
+                ) : null}
+                <button
+                  type="button"
+                  className={styles.tplBtnSnapshot}
+                  disabled={busy || loading}
+                  title="چیدمان فعلی سایت (خانه، صفحات داخلی، پروفایل و بقیه) را داخل این قالب ذخیره می‌کند"
+                  onClick={() => snapshotTemplate(tpl)}
+                >
+                  {snapping ? (
+                    <Loader2 size={13} className={styles.spin} />
+                  ) : (
+                    <Save size={13} />
+                  )}
+                  {snapping ? 'در حال ذخیره…' : 'بروزرسانی قالب و چیدمان'}
+                </button>
+                {hasDedicatedBackend(tpl.key) ? (
+                  <button
+                    type="button"
+                    className={styles.tplBtnInstall}
+                    disabled={busy || loading || installLoading}
+                    title="از روی تعریف فعلی همین بسته، زیپ نصب جنگو را با آخرین کد ربو می‌سازد"
+                    onClick={() => openInstallModal(tpl)}
+                  >
+                    {busy ? (
+                      <Loader2 size={13} className={styles.spin} />
+                    ) : (
+                      <Package size={13} />
+                    )}
+                    بسته نصبی
+                  </button>
+                ) : null}
               </footer>
             </article>
           )
@@ -452,7 +693,44 @@ export default function TemplateImportPanel() {
               </section>
             </div>
 
+            {detailModuleGroups.length ? (
+              <section
+                className={styles.tplModuleMap}
+                aria-label="ماژول‌های فعال این سیستم"
+              >
+                <h4>
+                  ماژول‌های فعال این سیستم
+                  <span>{detailModuleCount} مورد</span>
+                </h4>
+                <ul>
+                  {detailModuleGroups.map((root) => (
+                    <li key={root.key}>
+                      <strong>{root.name}</strong>
+                      {root.children?.length ? (
+                        <ul>
+                          {root.children.map((child) => (
+                            <li key={child.key}>{child.name}</li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : (
+              <p className={styles.tplDetailHint}>
+                فهرست ماژول این بسته از سرور خوانده نشد.
+              </p>
+            )}
+
             <p className={styles.tplDetailHint}>{detailTpl.enablesHint}</p>
+            {hasDedicatedBackend(detailTpl.key) ? (
+              <p className={styles.tplDetailHint}>
+                دکمه «بسته نصبی» از روی ماژول‌های فعلی همین قالب و آخرین کد ربو
+                زیپ می‌سازد. اگر ماژولی به بسته اضافه یا کم کرده باشید، در بیلد
+                بعدی اعمال می‌شود.
+              </p>
+            ) : null}
 
             <div className={styles.tplModalActions}>
               <button
@@ -463,6 +741,34 @@ export default function TemplateImportPanel() {
               >
                 بستن
               </button>
+              <button
+                type="button"
+                className={styles.tplBtnSnapshot}
+                disabled={!!busyKey}
+                onClick={() => {
+                  const tpl = detailTpl
+                  setDetailTpl(null)
+                  snapshotTemplate(tpl)
+                }}
+              >
+                <Save size={15} />
+                بروزرسانی قالب و چیدمان
+              </button>
+              {hasDedicatedBackend(detailTpl.key) ? (
+                <button
+                  type="button"
+                  className={styles.tplBtnOn}
+                  disabled={!!busyKey}
+                  onClick={() => {
+                    const tpl = detailTpl
+                    setDetailTpl(null)
+                    openInstallModal(tpl)
+                  }}
+                >
+                  <Package size={15} />
+                  بسته نصبی
+                </button>
+              ) : null}
               {activeTpl?.key === detailTpl.key ? (
                 <>
                   <button
@@ -609,6 +915,22 @@ export default function TemplateImportPanel() {
               </span>
             </label>
 
+            {hasDedicatedBackend(confirmTpl.key) ? (
+              <label className={styles.tplAckBuild}>
+                <input
+                  type="checkbox"
+                  checked={wantDedicatedBackend}
+                  onChange={(e) => setWantDedicatedBackend(e.target.checked)}
+                  disabled={!!busyKey}
+                />
+                <span>
+                  آیا قصد دارید بک‌اند جنگوی اختصاصی «{confirmTpl.name}» را
+                  پیاده‌سازی کنم؟ فقط اپ‌های همین سیستم کپی می‌شود؛ موتور ربو
+                  بدون تغییر می‌ماند و زیپ تحویل ساخته می‌شود.
+                </span>
+              </label>
+            ) : null}
+
             <div className={styles.tplModalActions}>
               <button
                 type="button"
@@ -634,6 +956,124 @@ export default function TemplateImportPanel() {
                 {activeTpl?.key === confirmTpl.key
                   ? 'تأیید و اعمال مجدد'
                   : 'تأیید و اعمال انحصاری'}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {installTpl ? (
+        <div
+          className={styles.tplModalRoot}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="tpl-install-title"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !busyKey) setInstallTpl(null)
+          }}
+        >
+          <div
+            className={styles.tplModal}
+            style={{
+              '--tpl-accent': installTpl.accent,
+              '--tpl-accent-soft': installTpl.accentSoft,
+            }}
+          >
+            <button
+              type="button"
+              className={styles.tplModalClose}
+              disabled={!!busyKey}
+              onClick={() => setInstallTpl(null)}
+              aria-label="بستن"
+            >
+              <X size={16} />
+            </button>
+            <div className={styles.tplWarnIcon} aria-hidden>
+              <Package size={28} strokeWidth={1.6} />
+            </div>
+            <h3 id="tpl-install-title">بسته نصبی «{installTpl.name}»</h3>
+            <p className={styles.tplWarnLead}>
+              از روی <strong>تعریف فعلی همین بسته</strong> و آخرین کد ربو زیپ
+              ساخته می‌شود. اگر ماژولی اضافه یا کم کرده باشید، در همین بیلد
+              اعمال می‌شود. موتور ربو جابه‌جا نمی‌شود.
+            </p>
+            {installLoading ? (
+              <p className={styles.tplDetailHint}>
+                <Loader2 size={14} className={styles.spin} /> در حال خواندن
+                نیازمندی‌ها…
+              </p>
+            ) : null}
+            {installPreview ? (
+              <div className={styles.tplWarnBox}>
+                <p>داخل زیپ می‌آید:</p>
+                <ul>
+                  {(installPreview.copy_apps || []).map((app) => (
+                    <li key={app}>
+                      <code dir="ltr">{app}</code>
+                    </li>
+                  ))}
+                </ul>
+                {(installPreview.omit_from_customer || []).length ? (
+                  <>
+                    <p style={{ marginTop: '0.55rem' }}>عمداً نمی‌آید:</p>
+                    <ul>
+                      {installPreview.omit_from_customer.map((app) => (
+                        <li key={`omit-${app}`}>
+                          <code dir="ltr">{app}</code>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+                <p className={styles.tplWarnNote}>
+                  این همان نسخه‌ای است که الان در موتور و بسته‌ها برای «
+                  {installTpl.name}» تعریف شده.
+                </p>
+              </div>
+            ) : null}
+            <div className={styles.tplModalActions}>
+              <button
+                type="button"
+                className={styles.extBtnGhost}
+                disabled={!!busyKey}
+                onClick={() => setInstallTpl(null)}
+              >
+                انصراف
+              </button>
+              <button
+                type="button"
+                className={styles.tplConfirmBtn}
+                disabled={!!busyKey || installLoading || !installPreview}
+                onClick={async () => {
+                  const tpl = installTpl
+                  const headers = getAuthHeaders()
+                  if (!headers?.Authorization) {
+                    setErr('برای ساخت بسته دوباره وارد شوید')
+                    return
+                  }
+                  setBusyKey(tpl.key)
+                  setErr('')
+                  try {
+                    const extra = await buildDedicatedBackend(tpl, headers)
+                    setMsg(extra)
+                    setInstallTpl(null)
+                  } catch (e) {
+                    setErr(
+                      e.response?.data?.message ||
+                        e.message ||
+                        'ساخت بسته نصبی ناموفق بود',
+                    )
+                  } finally {
+                    setBusyKey(null)
+                  }
+                }}
+              >
+                {busyKey === installTpl.key ? (
+                  <Loader2 size={15} className={styles.spin} />
+                ) : (
+                  <Download size={15} />
+                )}
+                ساخت و دانلود زیپ
               </button>
             </div>
           </div>

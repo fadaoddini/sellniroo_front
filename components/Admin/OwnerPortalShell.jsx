@@ -16,11 +16,10 @@ import {
   Boxes,
   Calculator,
   Cloud,
-  Newspaper,
-  Briefcase,
   Store,
   Package,
   FolderTree,
+  BookOpen,
 } from 'lucide-react'
 import {
   normalizeIranMobile,
@@ -33,14 +32,12 @@ import portalStyles from './OwnerPortal.module.css'
 
 const NAV_BASE = [
   { href: '/adminweb', label: 'داشبورد', icon: LayoutDashboard },
-  { href: '/adminsettings', label: 'صفحه اصلی', icon: LayoutTemplate },
+  { href: '/adminsettings', label: 'طراحی قالب', icon: LayoutTemplate },
   { href: '/adminmodule', label: 'ماژول‌ها', icon: Boxes },
+  { href: '/rebolearn', label: 'آموزش‌های ربو', icon: BookOpen },
   { href: '/rebo-pricing', label: 'قیمت ربو', icon: Calculator },
   { href: '/rebo-manage', label: 'مدیریت ربو', icon: Boxes },
   { href: '/cloud-manage', label: 'سرور ابری', icon: Cloud },
-  { href: '/adminnews', label: 'اخبار', icon: Newspaper },
-  { href: '/adminkaryabi', label: 'کاریابی', icon: Briefcase },
-  { href: '/adminshop', label: 'طراحی فروشگاه', icon: Store },
   { href: '/adminshops', label: 'فروشگاه‌ها و تسویه', icon: Store },
   { href: '/adminproducts', label: 'محصولات فروشگاه‌ها', icon: Package },
   { href: '/admincategories', label: 'دسته‌بندی محصولات', icon: FolderTree },
@@ -129,8 +126,8 @@ export default function OwnerPortalShell({
           <div className={styles.heroGlow} aria-hidden />
           <div className={styles.heroBrand}>
             <span className={styles.badge}>
-              <Shield size={13} />
-              Owner control
+              <Shield size={12} />
+              مالک سیستم
             </span>
             <h1 className={styles.brand}>
               {brandAccent}
@@ -140,7 +137,7 @@ export default function OwnerPortalShell({
           </div>
           <div className={styles.heroIdentity}>
             <div className={styles.avatar}>
-              <Code2 size={26} />
+              <Code2 size={18} />
             </div>
             <div>
               <p className={styles.ownerName}>{OWNER_PROFILE.name}</p>
@@ -174,7 +171,7 @@ export default function OwnerPortalShell({
                   on ? portalStyles.portalNavOn : ''
                 }`}
               >
-                <Icon size={15} />
+                <Icon size={13} />
                 {item.label}
               </Link>
             )

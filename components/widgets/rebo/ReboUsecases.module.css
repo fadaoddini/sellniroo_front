@@ -26,44 +26,64 @@
 .scene {
   position: relative;
   width: 100%;
+  height: var(--usecase-scene-h, 100vh);
+  min-height: var(--usecase-scene-h, 100vh);
   margin: 0;
   padding: 0;
   border: none;
   border-radius: 0;
   box-shadow: none;
   overflow: hidden;
+  /* آسمان یکنواخت + انتقال نرم به زمین (بدون خط دو تکه) */
   background: linear-gradient(
     180deg,
-    #d8d8d8 0%,
-    #ececec 46%,
-    #c8c8c8 46%,
-    #b5b5b5 100%
+    #cfd8e3 0%,
+    #cfd8e3 62%,
+    #c5ccd4 72%,
+    #b8b8b8 82%,
+    #a8a8a8 100%
   );
   image-rendering: pixelated;
   transition: background 0.35s ease;
 }
 
+.sceneFullPage {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* داخل پین اسلایدر عمیق — پر کردن قاب چسبان، نه 100vh جدا */
+.scenePinned {
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: none;
+}
+
 .skyFlash {
   background: linear-gradient(
     180deg,
-    #c8e6d4 0%,
-    #dff3e8 46%,
-    #c8c8c8 46%,
-    #b5b5b5 100%
+    #c5e4d4 0%,
+    #c5e4d4 62%,
+    #c0d4c8 72%,
+    #b8b8b8 82%,
+    #a8a8a8 100%
   );
 }
 
 .sky {
   position: absolute;
-  inset: 0 0 38% 0;
+  inset: 0 0 30% 0;
   pointer-events: none;
   overflow: hidden;
+  background: #cfd8e3;
   transition: background-color 0.35s ease;
   z-index: 1;
 }
 
 .skyFlash .sky {
-  background: rgba(34, 197, 94, 0.16);
+  background: #c5e4d4;
 }
 
 .skyBulbSign {
@@ -90,7 +110,7 @@
   --bulb-halo: rgba(251, 113, 133, 0.3);
 }
 
-/* دکمه پلی پیکسلی موزیک */
+/* خورشید موزیک در آسمان — وسط، جای قبلی دکمه */
 .pixelPlayWrap {
   position: absolute;
   top: calc(10% + clamp(58px, 12vw, 92px));
@@ -98,6 +118,17 @@
   transform: translateX(-50%);
   z-index: 5;
   pointer-events: auto;
+  display: grid;
+  place-items: center;
+  width: clamp(88px, 14vw, 120px);
+}
+
+.pixelPlayWrapIdle {
+  animation: sunBob 3.2s ease-in-out infinite;
+}
+
+.pixelPlayWrapOn {
+  animation: sunBob 2.2s ease-in-out infinite;
 }
 
 .pixelPlayWrap audio {
@@ -105,66 +136,217 @@
 }
 
 .pixelPlay {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.4rem 0.7rem;
-  border: 2px solid #111;
-  border-radius: 0;
-  background: #111;
-  color: #fff;
-  font-family: 'Press Start 2P', 'Vazirmatn', monospace;
-  font-size: 0.55rem;
-  letter-spacing: 0.04em;
+  position: relative;
+  z-index: 1;
+  width: clamp(72px, 11vw, 96px);
+  height: clamp(72px, 11vw, 96px);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
   cursor: pointer;
-  image-rendering: pixelated;
-  box-shadow:
-    3px 3px 0 #333,
-    inset 0 0 0 1px #444;
-  transition: transform 0.08s steps(1);
+  display: grid;
+  place-items: center;
   pointer-events: auto;
 }
 
-.pixelPlay:hover {
-  background: #1a1a1a;
+.pixelPlay::before {
+  content: '';
+  position: absolute;
+  inset: -38%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(250, 204, 21, 0.55) 0%,
+    rgba(250, 204, 21, 0.22) 38%,
+    rgba(250, 204, 21, 0) 70%
+  );
+  animation: sunGlow 2.4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
 }
 
-.pixelPlay:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0 #333;
+.pixelPlayOn::before {
+  inset: -48%;
+  background: radial-gradient(
+    circle,
+    rgba(253, 224, 71, 0.75) 0%,
+    rgba(250, 204, 21, 0.35) 42%,
+    rgba(250, 204, 21, 0) 72%
+  );
+  animation: sunGlowPlay 1.5s ease-in-out infinite;
 }
 
-.pixelPlayOn {
-  background: #e11d48;
-  box-shadow:
-    3px 3px 0 #7f1d1d,
-    inset 0 0 0 1px #fb7185;
-}
-
+.pixelPlayCall,
+.pixelPlayOn,
 .pixelPlayFail {
-  background: #444;
-  box-shadow: 3px 3px 0 #222;
+  background: transparent;
+  box-shadow: none;
 }
 
-.pixelPlayIcon {
+.sunCore {
+  position: relative;
+  z-index: 2;
+  width: 72%;
+  height: 72%;
+  border-radius: 50%;
   display: grid;
   place-items: center;
-  width: 1.1rem;
-  height: 1.1rem;
-  background: #22c55e;
-  color: #052e16;
-  border: 1px solid #111;
-  font-size: 0.48rem;
-  line-height: 1;
+  background: radial-gradient(
+    circle at 35% 30%,
+    #fff7c2 0%,
+    #fde047 35%,
+    #facc15 70%,
+    #eab308 100%
+  );
+  box-shadow:
+    0 0 18px rgba(250, 204, 21, 0.85),
+    0 0 36px rgba(234, 179, 8, 0.45),
+    inset 0 -4px 8px rgba(161, 98, 7, 0.25);
+  border: 2px solid rgba(120, 53, 15, 0.35);
 }
 
-.pixelPlayOn .pixelPlayIcon {
-  background: #fff;
-  color: #e11d48;
+.pixelPlayOn .sunCore {
+  box-shadow:
+    0 0 24px rgba(253, 224, 71, 0.95),
+    0 0 48px rgba(250, 204, 21, 0.55),
+    inset 0 -4px 8px rgba(161, 98, 7, 0.2);
+}
+
+.sunRays {
+  position: absolute;
+  inset: -42%;
+  z-index: 1;
+  pointer-events: none;
+  background: conic-gradient(
+    from 0deg,
+    rgba(250, 204, 21, 0.9) 0deg 10deg,
+    transparent 10deg 30deg,
+    rgba(250, 204, 21, 0.75) 30deg 40deg,
+    transparent 40deg 60deg,
+    rgba(253, 224, 71, 0.85) 60deg 70deg,
+    transparent 70deg 90deg,
+    rgba(250, 204, 21, 0.8) 90deg 100deg,
+    transparent 100deg 120deg,
+    rgba(250, 204, 21, 0.75) 120deg 130deg,
+    transparent 130deg 150deg,
+    rgba(253, 224, 71, 0.85) 150deg 160deg,
+    transparent 160deg 180deg,
+    rgba(250, 204, 21, 0.8) 180deg 190deg,
+    transparent 190deg 210deg,
+    rgba(250, 204, 21, 0.75) 210deg 220deg,
+    transparent 220deg 240deg,
+    rgba(253, 224, 71, 0.85) 240deg 250deg,
+    transparent 250deg 270deg,
+    rgba(250, 204, 21, 0.8) 270deg 280deg,
+    transparent 280deg 300deg,
+    rgba(250, 204, 21, 0.75) 300deg 310deg,
+    transparent 310deg 330deg,
+    rgba(253, 224, 71, 0.85) 330deg 340deg,
+    transparent 340deg 360deg
+  );
+  border-radius: 50%;
+  mask-image: radial-gradient(circle, transparent 38%, #000 42%, #000 58%, transparent 68%);
+  -webkit-mask-image: radial-gradient(
+    circle,
+    transparent 38%,
+    #000 42%,
+    #000 58%,
+    transparent 68%
+  );
+  animation: sunSpin 18s linear infinite;
+  opacity: 0.9;
+}
+
+.pixelPlayOn .sunRays {
+  animation-duration: 10s;
+  opacity: 1;
+  filter: brightness(1.15);
+}
+
+.pixelPlay:hover .sunCore {
+  transform: scale(1.06);
+}
+
+.pixelPlay:active .sunCore {
+  transform: scale(0.96);
+}
+
+.pixelPlayFail .sunCore {
+  background: radial-gradient(circle, #d4d4d4 0%, #a3a3a3 100%);
+  box-shadow: none;
+}
+
+.pixelPlayFail .sunRays,
+.pixelPlayFail::before {
+  opacity: 0.25;
+  animation: none;
 }
 
 .pixelPlayLabel {
-  color: #f8fafc;
+  position: relative;
+  z-index: 3;
+  display: block;
+  width: 86%;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  white-space: normal;
+  color: #713f12;
+  font-family: 'Vazirmatn', var(--font-iran, sans-serif);
+  font-size: clamp(0.52rem, 1.15vw, 0.68rem);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+  pointer-events: none;
+}
+
+.pixelPlayOn .pixelPlayLabel {
+  color: #78350f;
+}
+
+@keyframes sunBob {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-5px);
+  }
+}
+
+@keyframes sunGlow {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes sunGlowPlay {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.14);
+  }
+}
+
+@keyframes sunSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .skyBrandSr {
@@ -486,6 +668,18 @@
   height: clamp(340px, 48vw, 420px);
   margin-top: 8%;
   overflow: visible;
+}
+
+/* تمام‌صفحه / پین: آسمان بیشتر، اسفالت چسبیده به پایین */
+.sceneFullPage .ground,
+.scenePinned .ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 30%;
+  margin-top: 0;
+  z-index: 2;
 }
 
 /* جاده پایین صحنه — سطح و خط وسط متحرک */
@@ -2965,6 +3159,12 @@
     margin-top: 14%;
   }
 
+  .sceneFullPage .ground,
+  .scenePinned .ground {
+    height: 32%;
+    margin-top: 0;
+  }
+
   .walkerSlot {
     left: 28%;
   }
@@ -3071,5 +3271,12 @@
 
   .scene {
     transition: none;
+  }
+
+  .pixelPlayWrapIdle,
+  .pixelPlayWrapOn,
+  .pixelPlay::before,
+  .sunRays {
+    animation: none !important;
   }
 }

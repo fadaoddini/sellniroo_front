@@ -1152,6 +1152,31 @@ news: {
       endpoint: 'topic-packs/apply/',
       noVersion: true,
     }),
+    snapshot: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'topic-packs/snapshot/',
+      noVersion: true,
+    }),
+    ownerSystems: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'topic-packs/owner-systems/',
+      noVersion: true,
+    }),
+    buildBackend: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'topic-packs/build-backend/',
+      noVersion: true,
+    }),
+    buildBackendPreview: (pack) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `topic-packs/build-backend/?pack=${encodeURIComponent(pack || '')}`,
+      noVersion: true,
+    }),
+    buildBackendFile: (pack) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `topic-packs/build-backend/?pack=${encodeURIComponent(pack || '')}&download=1`,
+      noVersion: true,
+    }),
   },
   siteModules: {
     list: () => Config.getApiUrl({
@@ -2120,6 +2145,33 @@ news: {
       manageStats: () => Config.getApiUrl({
         segment: 'api',
         endpoint: 'v1/rebo-orders/manage/stats/',
+        noVersion: true,
+      }),
+    },
+
+    // ============================================
+    // REBO LEARN — آموزش‌های اختصاصی ربو
+    // ============================================
+    reboLearn: {
+      bundle: (params = {}) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/rebolearn/',
+        params,
+        noVersion: true,
+      }),
+      lesson: (slug) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: `v1/rebolearn/lessons/${slug}/`,
+        noVersion: true,
+      }),
+      manageLessons: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/rebolearn/manage/lessons/',
+        noVersion: true,
+      }),
+      manageLesson: (id) => Config.getApiUrl({
+        segment: 'api',
+        endpoint: `v1/rebolearn/manage/lessons/${id}/`,
         noVersion: true,
       }),
     },

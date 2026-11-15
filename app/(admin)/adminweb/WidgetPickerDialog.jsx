@@ -42,6 +42,8 @@ import {
   BadgePercent,
   LayoutGrid,
   Sparkles,
+  Cloud,
+  Aperture,
 } from 'lucide-react'
 import {
   availableBuilderWidgets,
@@ -89,6 +91,8 @@ const ICONS = {
   BadgePercent,
   LayoutGrid,
   Sparkles,
+  Cloud,
+  Aperture,
 }
 
 /**

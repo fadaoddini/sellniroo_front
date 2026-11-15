@@ -45,6 +45,7 @@ const FALLBACK_ICONS = {
   header_menu: Menu,
   profile: User,
   hero_slider: Images,
+  deep_slider: Images,
   news_list: Newspaper,
   latest_news: Newspaper,
   news_by_category: FolderOpen,

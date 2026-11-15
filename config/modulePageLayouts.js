@@ -89,6 +89,16 @@ export const MODULE_PAGE_DEFS = [
     event: 'module-page-layout-changed:sale',
   },
   {
+    key: 'cloud_server',
+    path: '/cloud-server',
+    label: 'صفحه سرور ابری',
+    desc: 'سفارش و شارژ سرور ابری اشتراکی ربو',
+    moduleKey: SITE_MODULE_KEYS.CLOUD_SERVER,
+    contentWidget: 'cloud_server_page',
+    event: 'module-page-layout-changed:cloud_server',
+    keepOwnChrome: true,
+  },
+  {
     key: 'inventory',
     path: '/inventory',
     label: 'انبارداری پیشرفته',

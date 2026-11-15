@@ -1,19 +1,24 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { ChevronDown, Monitor, Smartphone } from 'lucide-react'
+import axios from 'axios'
+import { ChevronDown, Image as ImageIcon, Monitor, Smartphone } from 'lucide-react'
 import { fetchMenuLists } from '@/services/menuLists'
+import Config from '@/config/config'
+import { useAuth } from '@/contexts/AuthContext'
 import {
   DEFAULT_NAV_WIDGET_SETTINGS,
   NAV_BAR_COLORS,
   NAV_DEVICES,
+  NAV_LOGO_PLACES,
   NAV_MARGIN_FIELDS,
   NAV_MENU_COLORS,
   NAV_CART_COLORS,
   NAV_JOB_CTA_COLORS,
   NAV_PROFILE_COLORS,
   NAV_RADIUS_CORNERS,
+  NAV_SHARED_ROOT_KEYS,
   NAV_SPACE_FIELDS,
   CART_PLACES,
   JOB_CTA_PLACES,
@@ -28,6 +33,168 @@ import {
 } from '@/config/navWidgetSettings'
 import LucideIconPicker from '@/components/common/LucideIconPicker'
 import styles from './AdminWeb.module.css'
+
+function resolveLogoPreview(url) {
+  if (!url) return ''
+  if (
+    url.startsWith('http://') ||
+    url.startsWith('https://') ||
+    url.startsWith('data:') ||
+    url.startsWith('/images/')
+  ) {
+    return url
+  }
+  const base = Config.baseUrl || ''
+  if (url.startsWith('/media/')) return `${base}${url}`
+  if (url.startsWith('media/')) return `${base}/${url}`
+  return url
+}
+
+function LogoDropZone({ value, onChange, onClear }) {
+  const { getAuthHeaders } = useAuth()
+  const inputRef = useRef(null)
+  const [dragging, setDragging] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState('')
+  const preview = resolveLogoPreview(value)
+
+  const uploadFile = useCallback(
+    async (file) => {
+      if (!file) return
+      if (!file.type?.startsWith('image/')) {
+        setError('فقط تصویر (PNG / JPG / WEBP / GIF)')
+        return
+      }
+      setError('')
+      setUploading(true)
+      try {
+        const fd = new FormData()
+        fd.append('upload', file)
+        const headers = { ...getAuthHeaders() }
+        delete headers['Content-Type']
+        const res = await axios.post(
+          `${Config.baseUrl}/api/news/upload-image/`,
+          fd,
+          { headers },
+        )
+        let nextUrl = res.data?.url || res.data?.path || ''
+        if (nextUrl && /^https?:\/\//i.test(nextUrl)) {
+          try {
+            const u = new URL(nextUrl)
+            if (u.pathname.startsWith('/media/')) nextUrl = u.pathname
+          } catch {
+            /* keep */
+          }
+        }
+        if (!nextUrl) throw new Error('آدرس تصویر برنگشت')
+        onChange(nextUrl)
+      } catch (err) {
+        setError(
+          err?.response?.data?.error ||
+            err?.message ||
+            'آپلود ناموفق بود',
+        )
+      } finally {
+        setUploading(false)
+      }
+    },
+    [getAuthHeaders, onChange],
+  )
+
+  return (
+    <div className={styles.wsStack} style={{ gap: 6 }}>
+      <div
+        style={{
+          border: `2px dashed ${dragging ? '#16a34a' : 'rgba(0,0,0,0.18)'}`,
+          borderRadius: 12,
+          padding: '0.75rem',
+          background: dragging ? 'rgba(22,163,74,0.06)' : 'rgba(0,0,0,0.02)',
+          textAlign: 'center',
+          cursor: uploading ? 'wait' : 'pointer',
+        }}
+        onClick={() => !uploading && inputRef.current?.click()}
+        onDragEnter={(e) => {
+          e.preventDefault()
+          setDragging(true)
+        }}
+        onDragOver={(e) => {
+          e.preventDefault()
+          setDragging(true)
+        }}
+        onDragLeave={(e) => {
+          e.preventDefault()
+          setDragging(false)
+        }}
+        onDrop={(e) => {
+          e.preventDefault()
+          setDragging(false)
+          const file = e.dataTransfer?.files?.[0]
+          if (file) uploadFile(file)
+        }}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') inputRef.current?.click()
+        }}
+      >
+        <ImageIcon size={20} style={{ marginBottom: 4, opacity: 0.7 }} />
+        <div style={{ fontSize: 13, fontWeight: 700 }}>
+          {uploading ? 'در حال آپلود…' : 'لوگو را اینجا رها کنید'}
+        </div>
+        <div style={{ fontSize: 11, opacity: 0.65, marginTop: 2 }}>
+          یا کلیک کنید · jpg / png / webp / gif
+        </div>
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*,.jpg,.jpeg,.png,.webp,.gif"
+          hidden
+          onChange={(e) => {
+            const file = e.target.files?.[0]
+            if (file) uploadFile(file)
+            e.target.value = ''
+          }}
+        />
+      </div>
+      {error ? (
+        <p className={styles.wsHint} style={{ color: '#dc2626' }}>
+          {error}
+        </p>
+      ) : null}
+      {preview ? (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            padding: '0.35rem 0',
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={preview}
+            alt=""
+            style={{
+              height: 32,
+              width: 'auto',
+              maxWidth: 120,
+              objectFit: 'contain',
+              borderRadius: 6,
+              background: 'rgba(0,0,0,0.04)',
+            }}
+          />
+          <button
+            type="button"
+            className={styles.wsTinyBtn}
+            onClick={() => onClear?.() || onChange('')}
+          >
+            حذف
+          </button>
+        </div>
+      ) : null}
+    </div>
+  )
+}
 
 function Toggle({ checked, onChange, label, hint }) {
   return (
@@ -167,6 +334,10 @@ export default function WidgetNavSettings({ type, settings: raw, onChange }) {
 
   const patch = (key, value) => {
     if (isTickerBar) {
+      if (NAV_SHARED_ROOT_KEYS.has(key)) {
+        onChange({ [key]: value })
+        return
+      }
       onChange(buildNavViewportPatch(rawSettings, device, key, value))
       return
     }
@@ -295,6 +466,76 @@ export default function WidgetNavSettings({ type, settings: raw, onChange }) {
               onChange={(v) => patch('show_hamburger', v)}
               label="منوی همبرگری"
             />
+          ) : null}
+          {isTickerBar ? (
+            <>
+              <Toggle
+                checked={!!settings.show_logo}
+                onChange={(v) => patch('show_logo', v)}
+                label="لوگو کنار همبرگر"
+                hint="مثل منوی همبرگری، لوگو را کنار آن نشان بده"
+              />
+              {settings.show_logo ? (
+                <>
+                  <Toggle
+                    checked={!!settings.use_site_logo}
+                    onChange={(v) => patch('use_site_logo', v)}
+                    label="لوگوی سایت"
+                    hint="از ظاهر شرکتی / تنظیمات سایت"
+                  />
+                  {!settings.use_site_logo ? (
+                    <>
+                      <p className={styles.wsMiniLabel}>آپلود لوگو</p>
+                      <LogoDropZone
+                        value={settings.logo_url}
+                        onChange={(v) => patch('logo_url', v)}
+                        onClear={() => patch('logo_url', '')}
+                      />
+                    </>
+                  ) : null}
+                  <p className={styles.wsMiniLabel}>جایگاه لوگو</p>
+                  <div
+                    className={styles.wsSeg}
+                    style={{ gridTemplateColumns: '1fr 1fr' }}
+                  >
+                    {NAV_LOGO_PLACES.map((p) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        className={`${styles.wsSegBtn} ${
+                          settings.logo_place === p.id
+                            ? styles.wsSegBtnActive
+                            : ''
+                        }`}
+                        onClick={() => patch('logo_place', p.id)}
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className={styles.wsPxGrid}>
+                    <PxField
+                      label="ارتفاع لوگو"
+                      value={settings.logo_height}
+                      onChange={(v) => patch('logo_height', v)}
+                      min={16}
+                      max={64}
+                    />
+                  </div>
+                  <label className={styles.wsField}>
+                    <span>لینک لوگو</span>
+                    <input
+                      type="text"
+                      className={styles.wsInput}
+                      dir="ltr"
+                      value={settings.logo_href || '/'}
+                      onChange={(e) => patch('logo_href', e.target.value)}
+                      placeholder="/"
+                    />
+                  </label>
+                </>
+              ) : null}
+            </>
           ) : null}
           {type === 'nav_bar' || type === 'breaking_news' ? (
             <Toggle

@@ -55,13 +55,61 @@ import {
   buildGymProfileMenuLinks,
   gymRoleLabel,
 } from "@/components/Gym/gymRoleNav";
-import { fetchSiteSettings } from "@/services/siteSettings";
+import {
+  DEFAULT_SITE_SETTINGS,
+  fetchSiteSettings,
+} from "@/services/siteSettings";
+import {
+  DEFAULT_CORPORATE_APPEARANCE,
+  fetchCorporateAppearance,
+} from "@/services/corporateAppearance";
 import { resolveProfileSystemId } from "@/services/profileSystem";
 import NavCartIcon from "./NavCartIcon";
 import styles from "./BreakingNews.module.css";
 
 function resolveMenuIcon(name) {
   return resolveLucideIcon(name, Home);
+}
+
+/** مثل ویجت منو — مسیر لوگو را برای img/Image آماده می‌کند */
+function resolveBarLogoSrc(url) {
+  const raw = String(url || "").trim();
+  if (!raw) return "";
+  if (
+    raw.startsWith("http://") ||
+    raw.startsWith("https://") ||
+    raw.startsWith("data:") ||
+    raw.startsWith("/images/")
+  ) {
+    return raw;
+  }
+  const base = Config.baseUrl || "";
+  if (raw.startsWith("/media/")) return `${base}${raw}`;
+  if (raw.startsWith("media/")) return `${base}/${raw}`;
+  return raw;
+}
+
+/** همان منطق LogoMark ویجت منو */
+function BarLogoMark({ src, name, height }) {
+  if (!src) {
+    return <span className={styles.barLogoFallback}>{name}</span>;
+  }
+  if (typeof src === "string" && src.startsWith("/images/")) {
+    return (
+      <Image
+        src={src}
+        alt={name}
+        width={Math.round(height * 3.6)}
+        height={height}
+        priority
+        className={styles.barLogoImg}
+      />
+    );
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt={name} height={height} className={styles.barLogoImg} />
+  );
 }
 
 moment.loadPersian({ dialect: "persian-modern", usePersianDigits: false });
@@ -519,6 +567,8 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
   const [schoolMe, setSchoolMe] = useState(null);
   const [gymMe, setGymMe] = useState(null);
   const [profileSystemId, setProfileSystemId] = useState(null);
+  const [appearance, setAppearance] = useState(DEFAULT_CORPORATE_APPEARANCE);
+  const [siteSettingsLogo, setSiteSettingsLogo] = useState(DEFAULT_SITE_SETTINGS);
   const authCloseTimer = useRef(null);
 
   const profileDropdownRef = useRef(null);
@@ -572,6 +622,38 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
       cancelled = true;
     };
   }, [configured, settings?.menu_slug]);
+
+  useEffect(() => {
+    if (!configured || !settings?.show_logo) return undefined;
+    let cancelled = false;
+    const loadLogos = () => {
+      fetchSiteSettings({ force: true }).then((data) => {
+        if (!cancelled && data) setSiteSettingsLogo(data);
+      });
+      fetchCorporateAppearance({ force: true }).then((data) => {
+        if (!cancelled) setAppearance(data || DEFAULT_CORPORATE_APPEARANCE);
+      });
+    };
+    loadLogos();
+    const onAppear = () => {
+      fetchCorporateAppearance({ force: true }).then((data) => {
+        if (!cancelled) setAppearance(data || DEFAULT_CORPORATE_APPEARANCE);
+      });
+    };
+    const onSiteSettings = (ev) => {
+      if (ev?.detail) setSiteSettingsLogo(ev.detail);
+      else loadLogos();
+    };
+    window.addEventListener("corporate-appearance-changed", onAppear);
+    window.addEventListener("site-settings-changed", onSiteSettings);
+    window.addEventListener("site-data-bust", loadLogos);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("corporate-appearance-changed", onAppear);
+      window.removeEventListener("site-settings-changed", onSiteSettings);
+      window.removeEventListener("site-data-bust", loadLogos);
+    };
+  }, [configured, settings?.show_logo]);
 
   useEffect(() => {
     setImageError(false);
@@ -1057,15 +1139,133 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
   const barSticky = configured
     ? settings?.sticky !== false
     : true;
+  const stickyOffset = configured
+    ? Math.max(0, Number(settings?.sticky_offset) || 0)
+    : 0;
   const showMenuIcons = !configured || settings?.show_menu_icons !== false;
   const underlineLinks = configured && !!settings?.underline;
+  const showLogo = configured && !!settings?.show_logo;
+  const logoHref = (settings?.logo_href || "/").trim() || "/";
+  const logoHeight = Math.max(16, Number(settings?.logo_height) || 40);
+  /* اولویت لوگوی /site-settings — بعد ظاهر شرکتی — بعد آپلود ویجت */
+  const logoSrc = showLogo
+    ? resolveBarLogoSrc(
+        settings?.use_site_logo !== false
+          ? siteSettingsLogo.logo_display ||
+              siteSettingsLogo.logo_url ||
+              appearance.logo_display ||
+              appearance.logo_url ||
+              "/images/logo.png"
+          : settings?.logo_url || "/images/logo.png",
+      )
+    : "";
+  const logoBeforeHamburger = settings?.logo_place === "before_hamburger";
+  const logoName = "لوگو";
+
+  const logoEl = showLogo ? (
+    <Link
+      href={logoHref}
+      className={styles.barLogo}
+      title={logoName}
+      aria-label={logoName}
+    >
+      <BarLogoMark src={logoSrc} name={logoName} height={logoHeight} />
+    </Link>
+  ) : null;
+
+  const hamburgerEl =
+    configured && settings.show_hamburger ? (
+      <button
+        type="button"
+        className={styles.hamburgerBtn}
+        aria-label="منو"
+        aria-expanded={menuOpen}
+        onClick={() => {
+          if (menuOpen || menuClosing) closeMenu();
+          else openMenu();
+        }}
+      >
+        {menuOpen ? <X size={18} /> : <Menu size={18} />}
+      </button>
+    ) : null;
+
+  /* دسکتاپ: بعد از رسیدن به لبه با fixed پین می‌شود (sticky داخل ردیف کوتاه صفحه‌ساز کار نمی‌کند) */
+  const stickySentinelRef = useRef(null);
+  const barRef = useRef(null);
+  const reservedHeightRef = useRef(0);
+  const [pinned, setPinned] = useState(false);
+  const [pinHeight, setPinHeight] = useState(0);
+
+  useEffect(() => {
+    if (!barSticky || isMobile) {
+      setPinned(false);
+      document.documentElement.style.setProperty("--pb-bn-sticky-h", "0px");
+      return undefined;
+    }
+    const sentinel = stickySentinelRef.current;
+    const bar = barRef.current;
+    if (!sentinel || !bar) return undefined;
+
+    const measureReserve = () => {
+      const cs = window.getComputedStyle(bar);
+      const mt = parseFloat(cs.marginTop) || 0;
+      const mb = parseFloat(cs.marginBottom) || 0;
+      const h = (bar.offsetHeight || 0) + mt + mb;
+      reservedHeightRef.current = h;
+      setPinHeight(h);
+    };
+
+    const publishStackHeight = (pinnedNow, height) => {
+      /* ویجت منو از این ارتفاع برای چسبیدن زیر نوار خبر استفاده می‌کند */
+      document.documentElement.style.setProperty(
+        "--pb-bn-sticky-h",
+        pinnedNow && height > 0 ? `${height}px` : "0px",
+      );
+    };
+
+    const sync = () => {
+      const top = sentinel.getBoundingClientRect().top;
+      const shouldPin = top <= stickyOffset;
+      if (!shouldPin) measureReserve();
+      else if (!reservedHeightRef.current) measureReserve();
+      const h = reservedHeightRef.current || bar.offsetHeight || 0;
+      publishStackHeight(shouldPin, h);
+      setPinned(shouldPin);
+    };
+
+    sync();
+    window.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("resize", sync);
+    return () => {
+      window.removeEventListener("scroll", sync);
+      window.removeEventListener("resize", sync);
+      document.documentElement.style.setProperty("--pb-bn-sticky-h", "0px");
+    };
+  }, [barSticky, isMobile, stickyOffset]);
 
   return (
+    <>
+      {barSticky && !isMobile ? (
+        <div
+          ref={stickySentinelRef}
+          className={styles.stickySentinel}
+          aria-hidden
+        />
+      ) : null}
+      {pinned ? (
+        <div
+          className={styles.stickySpacer}
+          style={{ height: pinHeight }}
+          aria-hidden
+        />
+      ) : null}
     <div
+      ref={barRef}
       className={[
         styles.breakingNews,
         configured ? styles.breakingNewsConfigured : "",
         barSticky ? styles.breakingNewsSticky : "",
+        pinned ? styles.breakingNewsPinned : "",
         configured
           ? barFullBleed
             ? styles.barFullBleed
@@ -1077,22 +1277,26 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
       ]
         .filter(Boolean)
         .join(" ")}
-      style={themedStyle}
+      style={{
+        ...(themedStyle || {}),
+        ...(pinned
+          ? {
+              '--bn-pin-top': `${stickyOffset}px`,
+              marginTop: 0,
+              marginBottom: 0,
+              marginLeft: 0,
+              marginRight: 0,
+            }
+          : {}),
+      }}
     >
       <div className={styles.container}>
-        {configured && settings.show_hamburger ? (
-          <button
-            type="button"
-            className={styles.hamburgerBtn}
-            aria-label="منو"
-            aria-expanded={menuOpen}
-            onClick={() => {
-              if (menuOpen || menuClosing) closeMenu();
-              else openMenu();
-            }}
-          >
-            {menuOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
+        {hamburgerEl || logoEl ? (
+          <div className={styles.brandCluster}>
+            {logoBeforeHamburger ? logoEl : null}
+            {hamburgerEl}
+            {!logoBeforeHamburger ? logoEl : null}
+          </div>
         ) : null}
 
         {showTicker ? (
@@ -1243,6 +1447,7 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
           )
         : null}
     </div>
+    </>
   );
 };
 

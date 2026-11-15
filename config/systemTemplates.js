@@ -264,10 +264,10 @@ export const SYSTEM_TEMPLATES = [
       'ویجت‌های معرفی موتور ربو',
       'منوی پیشرفته و نوار خبر',
       'فرم تماس و سئو',
-      'ماژول‌های نمونه: فروشگاه، کاریابی، نوبت، تعمیرات و…',
+      'همه ماژول‌های محصول برای پیش‌نمایش زنده: فروشگاه، کاریابی، نوبت، تعمیرات، مدرسه، انبار، باشگاه و…',
     ],
     deactivateKeys: [SITE_MODULE_KEYS.DATA_PACK_REBO_THEME_ONE],
-    enablesHint: 'اعمال کامل موتور قدرتمند ربو با یک کلیک',
+    enablesHint: 'همه سامانه‌ها روشن — ویترین فروش ربو با یک کلیک',
   },
   {
     key: 'sadra_theme_one',
@@ -417,11 +417,47 @@ export function getSystemTemplateByModule(moduleKey) {
 }
 
 /** کدام قالب الان به‌صورت انحصاری فعال است (حداکثر یکی) */
-export function getActiveExclusiveTemplate(moduleMap = {}, currentPack = null) {
+export function ownerSystemToTemplate(row) {
+  const keys = row?.module_keys || []
+  const names = row?.module_names || keys
+  return {
+    key: row.key,
+    moduleKey: null,
+    name: row.name,
+    nameEn: row.name,
+    topic: row.topic || 'سفارشی',
+    accent: '#3d4f5f',
+    accentSoft: 'rgba(61, 79, 95, 0.14)',
+    tagline: `${keys.length} ماژول انتخابی`,
+    description:
+      row.description ||
+      'سیستم ساخته‌شده از ماژول‌های اصلی که خودتان انتخاب کردید.',
+    replaces: ['ماژول‌های اختصاصی سیستم قبلی'],
+    requires: names,
+    deactivateKeys: keys,
+    enablesHint: names.filter(Boolean).join(' + ') || 'ماژول‌های انتخابی',
+    custom: true,
+  }
+}
+
+export function getActiveExclusiveTemplate(
+  moduleMap = {},
+  currentPack = null,
+  extraTemplates = [],
+) {
+  const extras = Array.isArray(extraTemplates) ? extraTemplates : []
+  const all = [...SYSTEM_TEMPLATES, ...extras]
+  if (currentPack) {
+    const hit = all.find((t) => t.key === currentPack)
+    if (hit) {
+      if (hit.custom || String(hit.key).startsWith('custom_')) return hit
+      if (hit.moduleKey && moduleMap?.[hit.moduleKey]) return hit
+    }
+  }
   const on = SYSTEM_TEMPLATES.filter((t) => !!moduleMap?.[t.moduleKey])
   if (on.length === 1) return on[0]
   if (on.length > 1) {
     return on.find((t) => t.key === currentPack) || on[0]
   }
-  return null
+  return extras.find((t) => t.key === currentPack) || null
 }

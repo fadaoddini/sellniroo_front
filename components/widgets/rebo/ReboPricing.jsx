@@ -1,8 +1,19 @@
 'use client'
 
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Boxes, Calculator, Check, Zap } from 'lucide-react'
+import {
+  Boxes,
+  Calculator,
+  Check,
+  ExternalLink,
+  Info,
+  Play,
+  Sparkles,
+  X,
+  Zap,
+} from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { resolveLucideIcon } from '@/utils/lucideIcons'
 import {
@@ -10,6 +21,7 @@ import {
   getPackageFeatureLabels,
   getPackagePriceInfo,
 } from '@/config/reboPricing'
+import { resolvePackageLivePreview } from '@/config/reboLivePreview'
 import {
   buildReboOrderNextPath,
   writeReboPackageCart,
@@ -30,6 +42,90 @@ const ACCENTS = [
   '#c2410c',
 ]
 
+/** کارت‌هایی که دو ستون اشغال می‌کنند */
+const WIDE_PACKAGE_MATCHERS = [
+  /فروشگاه\s*تکی/i,
+  /کاریابی/i,
+  /مدرسه/i,
+  /بدنسازی/i,
+  /gym_bodybuilding|pkg_gym_bodybuilding|shop_single|jobs|school/i,
+]
+
+const PHONE_THEMES = [
+  {
+    test: /انبار|inventory/i,
+    short: 'انبار',
+    chips: ['ورود کالا', 'خروج', 'حواله', 'نمودار'],
+    bar: 'موجودی امروز',
+  },
+  {
+    test: /بدنسازی|gym_bodybuilding|pkg_gym/i,
+    short: 'باشگاه',
+    chips: ['اعضا', 'سانس', 'مربی', 'برنامه'],
+    bar: 'پروفایل عضو',
+  },
+  {
+    test: /بیلیارد|billiard/i,
+    short: 'بیلیارد',
+    chips: ['میزها', 'رزرو', 'سانس', 'مشتری'],
+    bar: 'میز آزاد',
+  },
+  {
+    test: /فروشگاه\s*تکی|shop_single/i,
+    short: 'فروشگاه',
+    chips: ['ویترین', 'سبد', 'پرداخت', 'سفارش'],
+    bar: 'تسویه سبد',
+  },
+  {
+    test: /مارکت|چندفروش|marketplace/i,
+    short: 'مارکت',
+    chips: ['فروشنده', 'ویترین', 'تسویه', 'کمیسیون'],
+    bar: 'پنل فروشنده',
+  },
+  {
+    test: /کاریابی|jobs/i,
+    short: 'کاریابی',
+    chips: ['آگهی', 'رزومه', 'کارفرما', 'کارجو'],
+    bar: 'ثبت آگهی',
+  },
+  {
+    test: /مدرسه|school/i,
+    short: 'مدرسه',
+    chips: ['کلاس', 'تکلیف', 'آزمون', 'نمره'],
+    bar: 'میز دانش‌آموز',
+  },
+  {
+    test: /نوبت|booking/i,
+    short: 'نوبت',
+    chips: ['خدمت', 'تقویم', 'رزرو', 'کد پیگیری'],
+    bar: 'رزرو نوبت',
+  },
+  {
+    test: /خبر|news/i,
+    short: 'خبر',
+    chips: ['تیتر', 'دسته', 'سینگل', 'آرشیو'],
+    bar: 'آخرین خبرها',
+  },
+  {
+    test: /تعمیر|repairs/i,
+    short: 'تعمیرات',
+    chips: ['اعزام', 'اجرت', 'قطعه', 'پرداخت'],
+    bar: 'درخواست سرویس',
+  },
+  {
+    test: /ویدیو|استوری|video/i,
+    short: 'ویدیو',
+    chips: ['استوری', 'آرشیو', 'برجسته', 'پخش'],
+    bar: 'پخش ویدیو',
+  },
+  {
+    test: /کاتالوگ|catalog/i,
+    short: 'کاتالوگ',
+    chips: ['جلد', 'صفحه‌ها', 'دانلود', 'فلیپ'],
+    bar: 'مشاهده کاتالوگ',
+  },
+]
+
 function isPaidPackage(pkg) {
   const info = getPackagePriceInfo(pkg)
   const price = Math.max(
@@ -44,34 +140,229 @@ function isPaidItem(it) {
   return Math.max(0, Number(it.price) || 0) > 0
 }
 
-function PhonePreview({ accent, title, icon: Icon }) {
+function packageHaystack(pkgOrItem) {
+  return [
+    pkgOrItem?.id,
+    pkgOrItem?.key,
+    pkgOrItem?.type,
+    pkgOrItem?.name,
+    pkgOrItem?.label,
+    pkgOrItem?.category,
+    pkgOrItem?.desc,
+  ]
+    .filter(Boolean)
+    .join(' ')
+}
+
+function isWidePackage(pkg) {
+  const hay = packageHaystack(pkg)
+  return WIDE_PACKAGE_MATCHERS.some((re) => re.test(hay))
+}
+
+function resolvePhoneTheme(pkgOrItem) {
+  const hay = packageHaystack(pkgOrItem)
+  const found = PHONE_THEMES.find((t) => t.test.test(hay))
+  const title =
+    String(pkgOrItem?.name || pkgOrItem?.label || '').trim() || 'موضوع'
+  if (found) {
+    return {
+      short: found.short,
+      chips: found.chips,
+      bar: found.bar,
+      title,
+    }
+  }
+  const bits = title.split(/\s+/).filter(Boolean)
+  return {
+    short: bits.slice(0, 2).join(' ') || title,
+    chips: bits.slice(0, 4).length
+      ? bits.slice(0, 4)
+      : ['بخش ۱', 'بخش ۲', 'بخش ۳', 'بخش ۴'],
+    bar: title,
+    title,
+  }
+}
+
+function PhonePreview({ accent, title, icon: Icon, theme }) {
+  const chips = theme?.chips || ['بخش ۱', 'بخش ۲', 'بخش ۳', 'بخش ۴']
+  const bar = theme?.bar || title
+  const head = theme?.short || title
   return (
     <div className={styles.phone} style={{ '--accent': accent }} aria-hidden>
       <div className={styles.phoneGlow} />
       <div className={styles.phoneBody}>
-        <div className={styles.phoneNotch} />
-        <div className={styles.phoneScreen}>
-          <div className={styles.phoneHero}>
-            <span className={styles.phoneHeroIcon}>
-              <Icon size={16} strokeWidth={1.7} />
-            </span>
-            <strong>{title}</strong>
+        <span className={styles.phoneBtnVol} />
+        <span className={styles.phoneBtnMute} />
+        <span className={styles.phoneBtnPower} />
+        <div className={styles.phoneGlass}>
+          <div className={styles.phoneScreen}>
+            <div className={styles.phoneStatus}>
+              <em>۹:۴۱</em>
+              <span className={styles.phoneIsland} />
+              <i className={styles.phoneStatusIcons} />
+            </div>
+            <div className={styles.phoneHero}>
+              <span className={styles.phoneHeroIcon}>
+                <Icon size={13} strokeWidth={1.75} />
+              </span>
+              <div className={styles.phoneHeroText}>
+                <strong title={title}>{head}</strong>
+                <small>Rebo</small>
+              </div>
+            </div>
+            <div className={styles.phoneCardStack}>
+              <div className={styles.phoneCardMain} />
+              <div className={styles.phoneBars}>
+                <i />
+                <i />
+                <i />
+              </div>
+            </div>
+            <div className={styles.phoneChips}>
+              {chips.slice(0, 4).map((label) => (
+                <span key={label}>{label}</span>
+              ))}
+            </div>
+            <div className={styles.phonePriceBar}>
+              <em>{bar}</em>
+            </div>
+            <div className={styles.phoneHome} />
           </div>
-          <div className={styles.phoneBars}>
-            <i />
-            <i />
-          </div>
-          <div className={styles.phoneCards}>
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
-          <div className={styles.phonePriceBar} />
         </div>
-        <div className={styles.phoneHome} />
       </div>
     </div>
+  )
+}
+
+function usePortalLock(open, onClose) {
+  const [portalReady, setPortalReady] = useState(false)
+
+  useEffect(() => {
+    setPortalReady(true)
+  }, [])
+
+  useEffect(() => {
+    if (!open) return undefined
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = prev
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [open, onClose])
+
+  return portalReady
+}
+
+function DetailsDialog({ open, onClose, accent, title, icon: Icon, children }) {
+  const portalReady = usePortalLock(open, onClose)
+  if (!open || !portalReady) return null
+
+  return createPortal(
+    <div className={styles.dialogRoot} role="presentation">
+      <button
+        type="button"
+        className={styles.dialogBackdrop}
+        aria-label="بستن"
+        onClick={onClose}
+      />
+      <div
+        className={styles.dialog}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        style={{ '--accent': accent }}
+        dir="rtl"
+      >
+        <header className={styles.dialogHead}>
+          <div className={styles.dialogBrand}>
+            <span className={styles.dialogIcon} aria-hidden>
+              <Icon size={18} strokeWidth={1.8} />
+            </span>
+            <div>
+              <p className={styles.dialogKicker}>جزئیات موضوع</p>
+              <h3 className={styles.dialogTitle}>{title}</h3>
+            </div>
+          </div>
+          <button
+            type="button"
+            className={styles.dialogClose}
+            aria-label="بستن"
+            onClick={onClose}
+          >
+            <X size={18} />
+          </button>
+        </header>
+        <div className={styles.dialogBody}>{children}</div>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
+/** پیش‌نمایش واقعی سامانه در iframe */
+function LivePreviewDialog({ open, onClose, preview, title, accent }) {
+  const portalReady = usePortalLock(open, onClose)
+  if (!open || !portalReady || !preview?.href) return null
+
+  return createPortal(
+    <div className={styles.liveRoot} role="presentation">
+      <button
+        type="button"
+        className={styles.dialogBackdrop}
+        aria-label="بستن"
+        onClick={onClose}
+      />
+      <div
+        className={styles.liveDialog}
+        role="dialog"
+        aria-modal="true"
+        aria-label={preview.label || title}
+        style={{ '--accent': accent }}
+        dir="rtl"
+      >
+        <header className={styles.liveHead}>
+          <div>
+            <p className={styles.dialogKicker}>پیش‌نمایش زنده</p>
+            <h3 className={styles.dialogTitle}>{title}</h3>
+            {preview.hint ? (
+              <p className={styles.liveHint}>{preview.hint}</p>
+            ) : null}
+          </div>
+          <div className={styles.liveHeadActions}>
+            <a
+              href={preview.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.liveOpenTab}
+            >
+              <ExternalLink size={14} strokeWidth={2.2} />
+              تب جدید
+            </a>
+            <button
+              type="button"
+              className={styles.dialogClose}
+              aria-label="بستن"
+              onClick={onClose}
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </header>
+        <div className={styles.liveFrameWrap}>
+          <iframe
+            title={preview.label || title}
+            src={preview.href}
+            className={styles.liveFrame}
+          />
+        </div>
+      </div>
+    </div>,
+    document.body,
   )
 }
 
@@ -81,9 +372,9 @@ export default function ReboPricing({ settings: raw = {} }) {
   const { settings: s, style, visible } = useReboNormalized(raw, 'rebo_pricing')
   const { packages, standalone, groups, currency, hasPricing } =
     useReboPricingState()
-  const [selectedPkgs, setSelectedPkgs] = useState(() => new Set())
-  const [selectedItems, setSelectedItems] = useState(() => new Set())
   const [ordering, setOrdering] = useState(false)
+  const [detail, setDetail] = useState(null)
+  const [livePreview, setLivePreview] = useState(null)
 
   const paidPackages = useMemo(
     () => packages.filter(isPaidPackage),
@@ -109,44 +400,11 @@ export default function ReboPricing({ settings: raw = {} }) {
   const showPricing =
     hasPricing && (paidPackages.length > 0 || paidGroups.length > 0)
 
-  const total = useMemo(() => {
-    let sum = 0
-    paidPackages.forEach((pkg) => {
-      if (!selectedPkgs.has(pkg.id)) return
-      sum += getPackagePriceInfo(pkg).finalPrice
-    })
-    paidStandalone.forEach((it) => {
-      if (!selectedItems.has(it.type)) return
-      sum += Math.max(0, Number(it.price) || 0)
-    })
-    return sum
-  }, [paidPackages, paidStandalone, selectedPkgs, selectedItems])
-
-  const selectedCount = selectedPkgs.size + selectedItems.size
-
   if (!visible || !showPricing) return null
 
   const subtitle =
     s.subtitle ||
-    `بسته‌ها را انتخاب کنید؛ با یک کلیک در پروفایل ثبت سفارش می‌شود — مبلغ به ${currency}.`
-
-  const togglePkg = (id) => {
-    setSelectedPkgs((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }
-
-  const toggleItem = (type) => {
-    setSelectedItems((prev) => {
-      const next = new Set(prev)
-      if (next.has(type)) next.delete(type)
-      else next.add(type)
-      return next
-    })
-  }
+    `موضوع را ببینید و مستقیم سفارش دهید — مبلغ به ${currency}.`
 
   const buildCartPayload = (pkgIds, itemTypes) => {
     const pkgs = paidPackages
@@ -158,7 +416,9 @@ export default function ReboPricing({ settings: raw = {} }) {
           name: pkg.name,
           desc: pkg.desc || '',
           icon: pkg.icon || '',
-          price: info.active ? info.finalPrice : Math.max(0, Number(pkg.price) || 0),
+          price: info.active
+            ? info.finalPrice
+            : Math.max(0, Number(pkg.price) || 0),
           original: info.original || Number(pkg.price) || 0,
           features: getPackageFeatureLabels(pkg).slice(0, 8),
         }
@@ -178,7 +438,7 @@ export default function ReboPricing({ settings: raw = {} }) {
     return { packages: pkgs, items: its, total, currency }
   }
 
-  const goOrder = (pkgIds = selectedPkgs, itemTypes = selectedItems) => {
+  const goOrder = (pkgIds, itemTypes) => {
     if (!pkgIds.size && !itemTypes.size) return
     setOrdering(true)
     writeReboPackageCart(buildCartPayload(pkgIds, itemTypes))
@@ -189,6 +449,8 @@ export default function ReboPricing({ settings: raw = {} }) {
     }
     router.push(`/login?next=${encodeURIComponent(next)}`)
   }
+
+  const closeDetail = () => setDetail(null)
 
   return (
     <section
@@ -222,239 +484,404 @@ export default function ReboPricing({ settings: raw = {} }) {
           </header>
         ) : null}
 
-        <div className={styles.layout}>
-          <div className={styles.groups}>
-            {paidPackages.length > 0 ? (
-              <div>
-                {s.show_topics_heading !== false ? (
-                  <h3 className={styles.groupTitle}>
-                    <i />
-                    موضوع‌ها
-                  </h3>
-                ) : null}
-                <div className={styles.pkgGrid}>
-                  {paidPackages.map((pkg, idx) => {
-                    const Icon = resolveLucideIcon(pkg.icon, Boxes)
-                    const on = selectedPkgs.has(pkg.id)
-                    const features = getPackageFeatureLabels(pkg)
-                    const priceInfo = getPackagePriceInfo(pkg)
-                    const accent = ACCENTS[idx % ACCENTS.length]
-                    return (
-                      <article
-                        key={pkg.id}
-                        className={`${styles.pkgCard} ${on ? styles.pkgOn : ''}`}
-                        style={{ '--accent': accent }}
-                      >
-                        <div className={styles.media}>
-                          <PhonePreview
-                            accent={accent}
-                            title={pkg.name}
-                            icon={Icon}
-                          />
+        <div className={styles.groups}>
+          {paidPackages.length > 0 ? (
+            <div>
+              {s.show_topics_heading !== false ? (
+                <h3 className={styles.groupTitle}>
+                  <i />
+                  موضوع‌ها
+                </h3>
+              ) : null}
+              <div className={styles.pkgGrid}>
+                {paidPackages.map((pkg, idx) => {
+                  const Icon = resolveLucideIcon(pkg.icon, Boxes)
+                  const features = getPackageFeatureLabels(pkg)
+                  const priceInfo = getPackagePriceInfo(pkg)
+                  const accent = ACCENTS[idx % ACCENTS.length]
+                  const price = priceInfo.active
+                    ? priceInfo.finalPrice
+                    : pkg.price
+                  const wide = isWidePackage(pkg)
+                  const phoneTheme = resolvePhoneTheme(pkg)
+                  const featurePreview = features.slice(0, wide ? 6 : 0)
+                  const widgetCount = Array.isArray(pkg.widget_types)
+                    ? pkg.widget_types.length
+                    : 0
+                  const live = resolvePackageLivePreview(pkg)
+                  return (
+                    <article
+                      key={pkg.id}
+                      className={`${styles.pkgCard}${
+                        wide ? ` ${styles.pkgCardWide}` : ''
+                      }`}
+                      style={{ '--accent': accent }}
+                    >
+                      <div className={styles.media}>
+                        <PhonePreview
+                          accent={accent}
+                          title={pkg.name}
+                          icon={Icon}
+                          theme={phoneTheme}
+                        />
+                        {priceInfo.active ? (
+                          <span className={styles.dealChip}>
+                            <Sparkles size={11} strokeWidth={2.2} />
+                            {priceInfo.percent.toLocaleString('fa-IR')}٪
+                          </span>
+                        ) : null}
+                      </div>
+
+                      <div className={styles.body}>
+                        <div className={styles.nameRow}>
+                          <span className={styles.iconWrap} aria-hidden>
+                            <Icon size={15} strokeWidth={1.75} />
+                          </span>
+                          <div className={styles.meta}>
+                            <strong>{pkg.name}</strong>
+                            {pkg.desc ? <small>{pkg.desc}</small> : null}
+                          </div>
                         </div>
 
-                        <div className={styles.body}>
-                          {priceInfo.active ? (
-                            <div className={styles.saleWrap}>
-                              <ReboDiscountCountdown
-                                endsAt={priceInfo.endsAt}
-                                percent={priceInfo.percent}
-                                label={priceInfo.label}
-                                accent={accent}
-                              />
-                            </div>
-                          ) : null}
-
-                          <button
-                            type="button"
-                            className={styles.pkgSelect}
-                            onClick={() => togglePkg(pkg.id)}
-                            aria-pressed={on}
-                          >
-                            <span className={styles.check} aria-hidden>
-                              {on ? (
-                                <Check size={13} strokeWidth={2.6} />
-                              ) : null}
-                            </span>
-                            <span className={styles.iconWrap}>
-                              <Icon size={16} strokeWidth={1.75} />
-                            </span>
-                            <span className={styles.meta}>
-                              <strong>{pkg.name}</strong>
-                              {pkg.desc ? <small>{pkg.desc}</small> : null}
-                            </span>
-                          </button>
-
-                          {features.length > 0 ? (
-                            <ul className={styles.features}>
-                              {features.slice(0, 5).map((f) => (
-                                <li key={f}>
-                                  <span className={styles.featCheck} aria-hidden>
-                                    <Check size={11} strokeWidth={2.5} />
-                                  </span>
-                                  {f}
-                                </li>
-                              ))}
-                            </ul>
-                          ) : null}
-
-                          <div className={styles.priceRow}>
-                            <div className={styles.priceRowMeta}>
-                              <span className={styles.priceRowLabel}>
-                                {priceInfo.active ? 'قیمت با تخفیف' : 'قیمت موضوع'}
-                              </span>
-                              {priceInfo.active ? (
-                                <span className={styles.priceBadge}>
-                                  {priceInfo.percent.toLocaleString('fa-IR')}٪ تخفیف
+                        {wide ? (
+                          <div className={styles.wideExtras}>
+                            {phoneTheme.chips?.length ? (
+                              <div className={styles.wideTags}>
+                                {phoneTheme.chips.map((chip) => (
+                                  <span key={chip}>{chip}</span>
+                                ))}
+                              </div>
+                            ) : null}
+                            {featurePreview.length > 0 ? (
+                              <ul className={styles.wideFeatures}>
+                                {featurePreview.map((f) => (
+                                  <li key={f}>
+                                    <span
+                                      className={styles.featCheck}
+                                      aria-hidden
+                                    >
+                                      <Check size={11} strokeWidth={2.5} />
+                                    </span>
+                                    {f}
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : null}
+                            <div className={styles.wideMetaRow}>
+                              {widgetCount > 0 ? (
+                                <span>
+                                  {widgetCount.toLocaleString('fa-IR')} ماژول
                                 </span>
                               ) : null}
-                            </div>
-                            <div className={styles.priceRowValue}>
-                              {priceInfo.active ? (
-                                <del className={styles.oldPrice}>
-                                  {formatRial(priceInfo.original)}
-                                </del>
+                              {phoneTheme.bar ? (
+                                <span>{phoneTheme.bar}</span>
                               ) : null}
-                              <strong>
-                                {formatRial(
-                                  priceInfo.active
-                                    ? priceInfo.finalPrice
-                                    : pkg.price,
-                                )}
-                              </strong>
-                              <em>{currency}</em>
                             </div>
+                            {priceInfo.active ? (
+                              <div className={styles.wideDeal}>
+                                <ReboDiscountCountdown
+                                  endsAt={priceInfo.endsAt}
+                                  percent={priceInfo.percent}
+                                  label={priceInfo.label}
+                                  accent={accent}
+                                />
+                              </div>
+                            ) : null}
                           </div>
+                        ) : priceInfo.active ? (
+                          <div className={styles.smallDeal}>
+                            <ReboDiscountCountdown
+                              endsAt={priceInfo.endsAt}
+                              percent={priceInfo.percent}
+                              label={priceInfo.label}
+                              accent={accent}
+                              compact
+                            />
+                          </div>
+                        ) : null}
 
+                        <div
+                          className={`${styles.priceCompact}${
+                            priceInfo.active
+                              ? ` ${styles.priceCompactDeal}`
+                              : ''
+                          }`}
+                        >
+                          {priceInfo.active ? (
+                            <del>{formatRial(priceInfo.original)}</del>
+                          ) : null}
+                          <strong>{formatRial(price)}</strong>
+                          <em>{currency}</em>
+                        </div>
+
+                        <div
+                          className={`${styles.cardActions}${
+                            live ? ` ${styles.cardActionsTriple}` : ''
+                          }`}
+                        >
                           <button
                             type="button"
-                            className={styles.quickOrder}
+                            className={styles.btnDetails}
+                            onClick={() =>
+                              setDetail({
+                                kind: 'pkg',
+                                pkg,
+                                Icon,
+                                accent,
+                                features,
+                                priceInfo,
+                                live,
+                              })
+                            }
+                          >
+                            <Info size={13} strokeWidth={2.2} />
+                            جزئیات
+                          </button>
+                          {live ? (
+                            <button
+                              type="button"
+                              className={styles.btnPreview}
+                              onClick={() =>
+                                setLivePreview({
+                                  preview: live,
+                                  title: pkg.name,
+                                  accent,
+                                })
+                              }
+                            >
+                              <Play size={13} strokeWidth={2.2} />
+                              تست زنده
+                            </button>
+                          ) : null}
+                          <button
+                            type="button"
+                            className={styles.btnOrder}
                             disabled={ordering}
-                            onClick={() => goOrder(new Set([pkg.id]), new Set())}
+                            onClick={() =>
+                              goOrder(new Set([pkg.id]), new Set())
+                            }
                           >
                             <Zap size={13} strokeWidth={2.2} />
-                            سفارش یک‌کلیکه
+                            سفارش
                           </button>
                         </div>
-                      </article>
-                    )
-                  })}
-                </div>
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+            </div>
+          ) : null}
+
+          {paidGroups.map((g) => (
+            <div key={g.id}>
+              <h3 className={styles.groupTitle}>
+                <i />
+                {g.label}
+              </h3>
+              <div className={styles.itemGrid}>
+                {g.items.map((it, idx) => {
+                  const Icon = resolveLucideIcon(it.icon, Boxes)
+                  const accent = ACCENTS[(idx + 2) % ACCENTS.length]
+                  const phoneTheme = resolvePhoneTheme(it)
+                  return (
+                    <article
+                      key={it.type}
+                      className={styles.pkgCard}
+                      style={{ '--accent': accent }}
+                    >
+                      <div className={styles.media}>
+                        <PhonePreview
+                          accent={accent}
+                          title={it.label}
+                          icon={Icon}
+                          theme={phoneTheme}
+                        />
+                      </div>
+                      <div className={styles.body}>
+                        <div className={styles.nameRow}>
+                          <span className={styles.iconWrap} aria-hidden>
+                            <Icon size={15} strokeWidth={1.75} />
+                          </span>
+                          <div className={styles.meta}>
+                            <strong>{it.label}</strong>
+                            {it.desc ? <small>{it.desc}</small> : null}
+                          </div>
+                        </div>
+                        <div className={styles.priceCompact}>
+                          <strong>{formatRial(it.price)}</strong>
+                          <em>{currency}</em>
+                        </div>
+                        <div className={styles.cardActions}>
+                          <button
+                            type="button"
+                            className={styles.btnDetails}
+                            onClick={() =>
+                              setDetail({
+                                kind: 'item',
+                                item: it,
+                                Icon,
+                                accent,
+                              })
+                            }
+                          >
+                            <Info size={13} strokeWidth={2.2} />
+                            جزئیات
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.btnOrder}
+                            disabled={ordering}
+                            onClick={() =>
+                              goOrder(new Set(), new Set([it.type]))
+                            }
+                          >
+                            <Zap size={13} strokeWidth={2.2} />
+                            سفارش
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <LivePreviewDialog
+        open={!!livePreview}
+        onClose={() => setLivePreview(null)}
+        preview={livePreview?.preview}
+        title={livePreview?.title || ''}
+        accent={livePreview?.accent || ACCENTS[0]}
+      />
+
+      <DetailsDialog
+        open={!!detail}
+        onClose={closeDetail}
+        accent={detail?.accent || ACCENTS[0]}
+        title={
+          detail?.kind === 'pkg'
+            ? detail.pkg.name
+            : detail?.kind === 'item'
+              ? detail.item.label
+              : ''
+        }
+        icon={detail?.Icon || Boxes}
+      >
+        {detail?.kind === 'pkg' ? (
+          <>
+            {detail.pkg.desc ? (
+              <p className={styles.dialogDesc}>{detail.pkg.desc}</p>
+            ) : null}
+
+            {detail.priceInfo.active ? (
+              <div className={styles.dialogDeal}>
+                <ReboDiscountCountdown
+                  endsAt={detail.priceInfo.endsAt}
+                  percent={detail.priceInfo.percent}
+                  label={detail.priceInfo.label}
+                  accent={detail.accent}
+                />
               </div>
             ) : null}
 
-            {paidGroups.map((g) => (
-              <div key={g.id}>
-                <h3 className={styles.groupTitle}>
-                  <i />
-                  {g.label}
-                </h3>
-                <div className={styles.itemGrid}>
-                  {g.items.map((it, idx) => {
-                    const Icon = resolveLucideIcon(it.icon, Boxes)
-                    const on = selectedItems.has(it.type)
-                    const accent = ACCENTS[(idx + 2) % ACCENTS.length]
-                    return (
-                      <article
-                        key={it.type}
-                        className={`${styles.pkgCard} ${on ? styles.pkgOn : ''}`}
-                        style={{ '--accent': accent }}
-                      >
-                        <div className={styles.media}>
-                          <PhonePreview
-                            accent={accent}
-                            title={it.label}
-                            icon={Icon}
-                          />
-                        </div>
-                        <div className={styles.body}>
-                          <button
-                            type="button"
-                            className={styles.pkgSelect}
-                            onClick={() => toggleItem(it.type)}
-                            aria-pressed={on}
-                          >
-                            <span className={styles.check} aria-hidden>
-                              {on ? (
-                                <Check size={13} strokeWidth={2.6} />
-                              ) : null}
-                            </span>
-                            <span className={styles.iconWrap}>
-                              <Icon size={16} strokeWidth={1.75} />
-                            </span>
-                            <span className={styles.meta}>
-                              <strong>{it.label}</strong>
-                              {it.desc ? <small>{it.desc}</small> : null}
-                            </span>
-                          </button>
+            {detail.features.length > 0 ? (
+              <ul className={styles.dialogFeatures}>
+                {detail.features.map((f) => (
+                  <li key={f}>
+                    <span className={styles.featCheck} aria-hidden>
+                      <Check size={11} strokeWidth={2.5} />
+                    </span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className={styles.dialogEmpty}>امکانات این موضوع به‌زودی.</p>
+            )}
 
-                          <div className={styles.priceRow}>
-                            <div className={styles.priceRowMeta}>
-                              <span className={styles.priceRowLabel}>قیمت</span>
-                            </div>
-                            <div className={styles.priceRowValue}>
-                              <strong>{formatRial(it.price)}</strong>
-                              <em>{currency}</em>
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-                    )
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <aside className={styles.summaryCol}>
-            <div className={styles.summary}>
-              <p className={styles.summaryLabel}>جمع برآوردی</p>
-              <p className={styles.summaryTotal}>
-                {formatRial(total)}
-                <span>{currency}</span>
-              </p>
-              <p className={styles.summaryCount}>
-                {selectedCount
-                  ? `${selectedCount.toLocaleString('fa-IR')} مورد`
-                  : 'انتخابی ندارید'}
-              </p>
-              <p className={styles.summaryNote}>
-                هزینه دامنه و سرور جداگانه محاسبه می‌شود.
-              </p>
-              <div className={styles.summaryActions}>
-                {s.show_cta !== false ? (
-                  <button
-                    type="button"
-                    className={styles.cta}
-                    disabled={ordering || selectedCount === 0}
-                    onClick={() => goOrder()}
-                  >
-                    {ordering
-                      ? 'در حال انتقال…'
-                      : s.cta_label || 'ثبت سفارش در پروفایل'}
-                    <ArrowLeft size={14} />
-                  </button>
+            <div className={styles.dialogPrice}>
+              <span>قیمت</span>
+              <div>
+                {detail.priceInfo.active ? (
+                  <del>{formatRial(detail.priceInfo.original)}</del>
                 ) : null}
-                {selectedCount > 0 ? (
-                  <button
-                    type="button"
-                    className={styles.clear}
-                    onClick={() => {
-                      setSelectedPkgs(new Set())
-                      setSelectedItems(new Set())
-                    }}
-                  >
-                    پاک کردن
-                  </button>
-                ) : null}
+                <strong>
+                  {formatRial(
+                    detail.priceInfo.active
+                      ? detail.priceInfo.finalPrice
+                      : detail.pkg.price,
+                  )}
+                </strong>
+                <em>{currency}</em>
               </div>
-              <p className={styles.hint}>
-                انتخاب‌ها در پروفایل ثبت می‌شوند و تیم ربو پیگیری می‌کند.
-              </p>
             </div>
-          </aside>
-        </div>
-      </div>
+
+            <div className={styles.dialogActions}>
+              {detail.live ? (
+                <button
+                  type="button"
+                  className={styles.dialogPreview}
+                  onClick={() => {
+                    const live = detail.live
+                    const title = detail.pkg.name
+                    const accent = detail.accent
+                    closeDetail()
+                    setLivePreview({ preview: live, title, accent })
+                  }}
+                >
+                  <Play size={14} strokeWidth={2.2} />
+                  {detail.live.label || 'تست زنده'}
+                </button>
+              ) : null}
+              <button
+                type="button"
+                className={styles.dialogOrder}
+                disabled={ordering}
+                onClick={() => {
+                  closeDetail()
+                  goOrder(new Set([detail.pkg.id]), new Set())
+                }}
+              >
+                <Zap size={14} strokeWidth={2.2} />
+                {ordering ? 'در حال انتقال…' : 'سفارش این موضوع'}
+              </button>
+            </div>
+          </>
+        ) : null}
+
+        {detail?.kind === 'item' ? (
+          <>
+            {detail.item.desc ? (
+              <p className={styles.dialogDesc}>{detail.item.desc}</p>
+            ) : (
+              <p className={styles.dialogEmpty}>توضیح بیشتری ثبت نشده.</p>
+            )}
+            <div className={styles.dialogPrice}>
+              <span>قیمت</span>
+              <div>
+                <strong>{formatRial(detail.item.price)}</strong>
+                <em>{currency}</em>
+              </div>
+            </div>
+            <button
+              type="button"
+              className={styles.dialogOrder}
+              disabled={ordering}
+              onClick={() => {
+                closeDetail()
+                goOrder(new Set(), new Set([detail.item.type]))
+              }}
+            >
+              <Zap size={14} strokeWidth={2.2} />
+              {ordering ? 'در حال انتقال…' : 'سفارش'}
+            </button>
+          </>
+        ) : null}
+      </DetailsDialog>
     </section>
   )
 }

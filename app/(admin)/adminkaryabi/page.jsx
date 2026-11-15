@@ -1,12 +1,7 @@
-import { Suspense } from 'react'
-import AdminKaryabiPage from './Client'
+import { redirect } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
 
 export default function Page() {
-  return (
-    <Suspense fallback={null}>
-      <AdminKaryabiPage />
-    </Suspense>
-  )
+  redirect('/adminsettings?tab=jobs')
 }

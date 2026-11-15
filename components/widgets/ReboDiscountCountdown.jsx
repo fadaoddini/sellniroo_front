@@ -18,6 +18,7 @@ export default function ReboDiscountCountdown({
   percent = 0,
   label = '',
   accent,
+  compact = false,
 }) {
   const endMs = endsAt instanceof Date ? endsAt.getTime() : Date.parse(endsAt)
   const [now, setNow] = useState(() => Date.now())
@@ -37,6 +38,38 @@ export default function ReboDiscountCountdown({
     (percent > 0
       ? `${percent.toLocaleString('fa-IR')}٪ تخفیف`
       : 'تخفیف ویژه')
+
+  if (compact) {
+    return (
+      <div
+        className={styles.compact}
+        dir="rtl"
+        style={accent ? { '--disc-accent': accent } : undefined}
+      >
+        <span className={styles.compactBadge}>
+          <i className={styles.badgeDot} aria-hidden />
+          {badge}
+        </span>
+        <div
+          className={styles.compactTimer}
+          aria-label="زمان باقی‌مانده تخفیف"
+        >
+          <span>
+            <strong>{padFa(days)}</strong>ر
+          </span>
+          <span>
+            <strong>{padFa(hours)}</strong>س
+          </span>
+          <span>
+            <strong>{padFa(minutes)}</strong>د
+          </span>
+          <span>
+            <strong>{padFa(seconds)}</strong>ث
+          </span>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div

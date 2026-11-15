@@ -14,6 +14,7 @@ import HeroSliderSlot from '@/components/modules/HeroSliderSlot'
 import LayoutSection from '@/components/layout/LayoutSection'
 import { fetchSiteSettings } from '@/services/siteSettings'
 import { isSadraAppShell, SADRA_APP_BG } from '@/config/sadraTheme'
+import { MODULE_PAGE_DEFS } from '@/config/modulePageLayouts'
 
 function isHomepagePath(pathname) {
   if (!pathname) return false
@@ -60,7 +61,7 @@ function isShopListPath(pathname) {
 function isBarePresentationPath(pathname) {
   if (!pathname) return false
   const p = pathname.replace(/\/+$/, '') || ''
-  return p === '/mosharekat'
+  return p === '/mosharekat' || p.startsWith('/preview/system/')
 }
 
 function isCartPath(pathname) {
@@ -69,23 +70,19 @@ function isCartPath(pathname) {
   return p === '/cart'
 }
 
-/** صفحات داخلی ماژول — هدر از چیدمان خودشان (همگام با صفحه اصلی) */
+/** صفحات داخلی ماژول — هدر از چیدمان خودشان، نه اسلات سراسری سایت */
 function isModuleBuilderPath(pathname) {
   if (!pathname) return false
   const p = pathname.replace(/\/+$/, '') || ''
-  return (
-    p === '/profile' ||
-    p === '/repairs' ||
-    p === '/apps' ||
-    p === '/booking' ||
-    p === '/about' ||
-    p === '/contact' ||
-    p === '/quiz' ||
-    p === '/sale' ||
-    p === '/school' ||
-    p === '/gym' ||
-    p.startsWith('/gym/')
-  )
+  if (
+    MODULE_PAGE_DEFS.some((d) => {
+      const path = String(d.path || '').replace(/\/+$/, '') || ''
+      return path && (p === path || p.startsWith(`${path}/`))
+    })
+  ) {
+    return true
+  }
+  return p === '/gym' || p.startsWith('/gym/')
 }
 
 /**
@@ -132,12 +129,13 @@ export default function SiteChrome({ siteName = '', children }) {
     }
   }, [appShell])
 
-  /* پروپوزال مشارکت: بدون هدر/منو — فوتر ربو می‌ماند */
+  /* پروپوزال / پیش‌نمایش سیستم: بدون هدر/منوی سایت */
   if (barePresentation) {
+    const systemPreview = String(pathname || '').startsWith('/preview/system/')
     return (
       <>
         <main className="siteMain siteMain--bare">{children}</main>
-        <SiteFooter />
+        {systemPreview ? null : <SiteFooter />}
       </>
     )
   }

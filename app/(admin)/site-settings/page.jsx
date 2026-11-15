@@ -16,8 +16,12 @@ import Config from '@/config/config'
 import {
   DEFAULT_SITE_SETTINGS,
   normalizeSiteSettings,
-  clearSiteSettingsCache,
+  publishSiteSettings,
 } from '@/services/siteSettings'
+import {
+  clearCorporateAppearanceCache,
+  saveCorporateAppearanceQuick,
+} from '@/services/corporateAppearance'
 import { getFullImageUrl } from '@/utils/imageUrl'
 import styles from './SiteSettings.module.css'
 
@@ -521,11 +525,26 @@ export default function SiteSettingsPage() {
         fd,
         { headers: getAuthHeaders() }
       )
-      const next = normalizeSiteSettings(res.data?.data || res.data)
+      const next = publishSiteSettings(res.data?.data || res.data)
       setForm(next)
       setLogoFile(null)
       setOgFile(null)
-      clearSiteSettingsCache()
+      /* هم‌سان‌سازی لوگوی ظاهر شرکتی تا منو/هدرهای قدیمی هم به‌روز شوند */
+      try {
+        const logoUrl = String(next.logo_url || next.logo_display || '').trim()
+        if (logoUrl) {
+          await saveCorporateAppearanceQuick(
+            { logo_url: logoUrl },
+            getAuthHeaders(),
+          )
+          clearCorporateAppearanceCache()
+          window.dispatchEvent(
+            new CustomEvent('corporate-appearance-changed'),
+          )
+        }
+      } catch {
+        /* لوگو در site-settings ذخیره شده؛ sync ظاهر اختیاری است */
+      }
       setSuccess(t.saved)
     } catch (err) {
       setError(fmtErrors(err.response?.data))

@@ -17,6 +17,10 @@ import {
   isReboWidgetType,
 } from './reboWidgetSettings'
 import {
+  createDefaultDeepSliderSettings,
+  isDeepSliderWidgetType,
+} from './deepSliderSettings'
+import {
   createDefaultInventoryWidgetSettings,
   isInventoryWidgetType,
 } from './inventoryWidgetSettings'
@@ -140,6 +144,12 @@ export function createWidgetInstance(type, settings = {}) {
       menu_slug: 'main',
       show_ticker: type === 'breaking_news',
       show_hamburger: true,
+      show_logo: false,
+      use_site_logo: true,
+      logo_url: '',
+      logo_href: '/',
+      logo_height: 40,
+      logo_place: 'after_hamburger',
       show_menu_items: type === 'header_menu' || type === 'breaking_news' || type === 'nav_bar',
       show_menu_icons: true,
       show_date: true,
@@ -298,6 +308,9 @@ export function createWidgetInstance(type, settings = {}) {
   }
   if (isReboWidgetType(type) && Object.keys(base).length === 0) {
     base = createDefaultReboWidgetSettings(type)
+  }
+  if (isDeepSliderWidgetType(type) && Object.keys(base).length === 0) {
+    base = createDefaultDeepSliderSettings()
   }
   if (isVideoArchiveWidgetType(type) && Object.keys(base).length === 0) {
     base = createDefaultVideoArchiveWidgetSettings(type)

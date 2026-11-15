@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   memo,
 } from 'react'
@@ -25,6 +26,10 @@ import {
   fetchCorporateAppearance,
   DEFAULT_CORPORATE_APPEARANCE,
 } from '@/services/corporateAppearance'
+import {
+  fetchSiteSettings,
+  DEFAULT_SITE_SETTINGS,
+} from '@/services/siteSettings'
 import {
   DEFAULT_SITE_TOP_NAV_WIDGET_SETTINGS,
   getSiteTopNavVisibilityFlags,
@@ -214,6 +219,7 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
   const [items, setItems] = useState(DEFAULT_HEADER_MENU)
   const [moduleMap, setModuleMap] = useState({})
   const [appearance, setAppearance] = useState(DEFAULT_CORPORATE_APPEARANCE)
+  const [siteSettings, setSiteSettings] = useState(DEFAULT_SITE_SETTINGS)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const showAdminDashboard =
     !!isAuthenticated && (!!user?.is_superuser || !!user?.is_staff)
@@ -241,9 +247,15 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
         if (!cancelled) setModuleMap(map || {})
       })
       .catch(() => {})
-    fetchCorporateAppearance({ force: true }).then((data) => {
-      if (!cancelled) setAppearance(data)
-    })
+    const loadLogos = () => {
+      fetchSiteSettings({ force: true }).then((data) => {
+        if (!cancelled && data) setSiteSettings(data)
+      })
+      fetchCorporateAppearance({ force: true }).then((data) => {
+        if (!cancelled) setAppearance(data)
+      })
+    }
+    loadLogos()
     const onModules = () => {
       fetchSiteModules({ force: true })
         .then(({ map }) => setModuleMap(map || {}))
@@ -254,12 +266,20 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
         if (!cancelled) setAppearance(data)
       })
     }
+    const onSiteSettings = (ev) => {
+      if (ev?.detail) setSiteSettings(ev.detail)
+      else loadLogos()
+    }
     window.addEventListener('site-modules-changed', onModules)
     window.addEventListener('corporate-appearance-changed', onAppear)
+    window.addEventListener('site-settings-changed', onSiteSettings)
+    window.addEventListener('site-data-bust', loadLogos)
     return () => {
       cancelled = true
       window.removeEventListener('site-modules-changed', onModules)
       window.removeEventListener('corporate-appearance-changed', onAppear)
+      window.removeEventListener('site-settings-changed', onSiteSettings)
+      window.removeEventListener('site-data-bust', loadLogos)
     }
   }, [])
 
@@ -301,8 +321,13 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
       ? settings.site_name_en || 'Sellniroo'
       : settings.site_name_fa || 'سلنیرو'
 
+  /* اولویت: لوگوی /site-settings — بعد ظاهر شرکتی */
   const logoSrc = settings.use_site_logo
-    ? appearance.logo_display || appearance.logo_url || '/images/logo.png'
+    ? siteSettings.logo_display ||
+      siteSettings.logo_url ||
+      appearance.logo_display ||
+      appearance.logo_url ||
+      '/images/logo.png'
     : '/images/logo.png'
 
   const closeDrawer = useCallback(() => setDrawerOpen(false), [])
@@ -372,14 +397,105 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
     })
   }
 
+  const stickyEnabled = !!settings.sticky
+  const stickyOffset = Math.max(0, Number(settings.sticky_offset) || 0)
+  const stickySentinelRef = useRef(null)
+  const shellRef = useRef(null)
+  const reservedHeightRef = useRef(0)
+  const [pinned, setPinned] = useState(false)
+  const [pinHeight, setPinHeight] = useState(0)
+
+  useEffect(() => {
+    if (!stickyEnabled || !showTopBar || isMobile) {
+      setPinned(false)
+      return undefined
+    }
+    const sentinel = stickySentinelRef.current
+    const shell = shellRef.current
+    if (!sentinel || !shell) return undefined
+
+    const readBnStack = () => {
+      const raw = getComputedStyle(document.documentElement)
+        .getPropertyValue('--pb-bn-sticky-h')
+        .trim()
+      const n = parseFloat(raw)
+      return Number.isFinite(n) ? n : 0
+    }
+
+    const measureReserve = () => {
+      const cs = window.getComputedStyle(shell)
+      const mt = parseFloat(cs.marginTop) || 0
+      const mb = parseFloat(cs.marginBottom) || 0
+      const h = (shell.offsetHeight || 0) + mt + mb
+      reservedHeightRef.current = h
+      setPinHeight(h)
+    }
+
+    const sync = () => {
+      const bnH = readBnStack()
+      const pinTop = stickyOffset + bnH
+      const top = sentinel.getBoundingClientRect().top
+      const shouldPin = top <= pinTop
+      if (!shouldPin) measureReserve()
+      else if (!reservedHeightRef.current) measureReserve()
+      setPinned(shouldPin)
+    }
+
+    sync()
+    window.addEventListener('scroll', sync, { passive: true })
+    window.addEventListener('resize', sync)
+    const mo = new MutationObserver(sync)
+    mo.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['style'],
+    })
+    return () => {
+      window.removeEventListener('scroll', sync)
+      window.removeEventListener('resize', sync)
+      mo.disconnect()
+    }
+  }, [stickyEnabled, showTopBar, isMobile, stickyOffset])
+
   return (
     <>
       {showTopBar ? (
-        <div className={shellClass} style={cssVars}>
+        <>
+          {stickyEnabled && !isMobile ? (
+            <div
+              ref={stickySentinelRef}
+              className={styles.stickySentinel}
+              aria-hidden
+            />
+          ) : null}
+          {pinned ? (
+            <div
+              className={styles.stickySpacer}
+              style={{ height: pinHeight }}
+              aria-hidden
+            />
+          ) : null}
+        <div
+          ref={shellRef}
+          className={[shellClass, pinned ? styles.shellPinned : '']
+            .filter(Boolean)
+            .join(' ')}
+          style={{
+            ...cssVars,
+            ...(pinned
+              ? {
+                  '--stn-pin-top': `${stickyOffset}px`,
+                  marginTop: 0,
+                  marginBottom: 0,
+                }
+              : {}),
+          }}
+          data-stn-sticky-bar={stickyEnabled ? '1' : undefined}
+        >
           <header
             className={[
               styles.header,
-              settings.sticky ? styles.headerSticky : '',
+              stickyEnabled ? styles.headerSticky : '',
+              pinned ? styles.headerPinned : '',
             ]
               .filter(Boolean)
               .join(' ')}
@@ -539,6 +655,7 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
             </>
           ) : null}
         </div>
+        </>
       ) : null}
 
       {showBottomNav ? <AppBottomNavWidget settings={raw} /> : null}

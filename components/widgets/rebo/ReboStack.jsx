@@ -9,10 +9,17 @@ export default function ReboStack({ settings: raw = {} }) {
   const { settings: s, style, visible } = useReboNormalized(raw, 'rebo_stack')
   if (!visible) return null
 
-  const title = s.title || 'استک فنی ربو'
-  const subtitle =
+  const eyebrow = (s.eyebrow || 'استک فنی').trim()
+  const title = (s.title || 'استک فنی ربو').trim()
+  const subtitle = (
     s.subtitle ||
     'هر لایه با ابزار مناسب خودش — از هسته پایتون تا داشبورد مدیریت.'
+  ).trim()
+
+  const showEyebrow = s.show_eyebrow !== false && !!eyebrow
+  const showTitle = s.show_title !== false && !!title
+  const showSubtitle = s.show_subtitle !== false && !!subtitle
+  const showHead = showEyebrow || showTitle || showSubtitle
 
   return (
     <section className={styles.stack} style={style} dir="rtl" lang="fa">
@@ -21,20 +28,20 @@ export default function ReboStack({ settings: raw = {} }) {
         className={styles.inner}
         style={{ maxWidth: s.max_width ? `${s.max_width}px` : undefined }}
       >
-        {(s.show_headline !== false || s.show_subtitle !== false) && (
+        {showHead ? (
           <header className={styles.head}>
-            <p className={styles.eyebrow}>
-              <i />
-              استک فنی
-            </p>
-            {s.show_headline !== false ? (
-              <h2 className={styles.title}>{title}</h2>
+            {showEyebrow ? (
+              <p className={styles.eyebrow}>
+                <i />
+                {eyebrow}
+              </p>
             ) : null}
-            {s.show_subtitle !== false ? (
+            {showTitle ? <h2 className={styles.title}>{title}</h2> : null}
+            {showSubtitle ? (
               <p className={styles.subtitle}>{subtitle}</p>
             ) : null}
           </header>
-        )}
+        ) : null}
 
         <ul className={styles.grid}>
           {REBO_STACK.map(({ id, icon: Icon, label, value, hint, accent }) => (

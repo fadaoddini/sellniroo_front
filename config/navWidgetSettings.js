@@ -101,9 +101,17 @@ export const NAV_MARGIN_FIELDS = [
 ]
 
 /** کلیدهایی که برای دسکتاپ و موبایل جدا ذخیره می‌شوند */
+export const NAV_LOGO_PLACES = [
+  { id: 'after_hamburger', label: 'بعد از همبرگر' },
+  { id: 'before_hamburger', label: 'قبل از همبرگر' },
+]
+
 export const NAV_VIEWPORT_KEYS = [
   'show_ticker',
   'show_hamburger',
+  'show_logo',
+  'logo_height',
+  'logo_place',
   'show_menu_items',
   'show_menu_icons',
   'show_date',
@@ -177,6 +185,9 @@ export const NAV_SHARED_ROOT_KEYS = new Set([
   'menu_slug',
   'show_on_mobile',
   'show_on_desktop',
+  'use_site_logo',
+  'logo_url',
+  'logo_href',
 ])
 
 export const NAV_DEVICES = [
@@ -188,6 +199,12 @@ export const DEFAULT_NAV_WIDGET_SETTINGS = {
   menu_slug: 'main',
   show_ticker: true,
   show_hamburger: true,
+  show_logo: false,
+  use_site_logo: true,
+  logo_url: '',
+  logo_href: '/',
+  logo_height: 40,
+  logo_place: 'after_hamburger',
   show_menu_items: true,
   show_menu_icons: true,
   show_date: true,
@@ -353,6 +370,7 @@ function coerceNavSettings(merged, rawRoot = {}) {
   s.show_ticker = s.show_ticker !== false
   s.show_hamburger =
     merged.show_hamburger === undefined ? true : !!merged.show_hamburger
+  s.show_logo = !!merged.show_logo
   s.show_menu_items =
     merged.show_menu_items === undefined ? true : !!merged.show_menu_items
   s.show_menu_icons =
@@ -363,6 +381,24 @@ function coerceNavSettings(merged, rawRoot = {}) {
   s.shadow = merged.shadow === undefined ? true : !!merged.shadow
   s.bar_full_bleed =
     merged.bar_full_bleed === undefined ? true : !!merged.bar_full_bleed
+
+  s.use_site_logo =
+    rawRoot.use_site_logo === undefined
+      ? true
+      : !!rawRoot.use_site_logo
+  s.logo_url = String((rawRoot.logo_url ?? s.logo_url) || '').trim()
+  s.logo_href =
+    String((rawRoot.logo_href ?? s.logo_href) || '/').trim() || '/'
+  s.logo_height = Math.min(
+    64,
+    Math.max(
+      16,
+      pxNum(s.logo_height, DEFAULT_NAV_WIDGET_SETTINGS.logo_height),
+    ),
+  )
+  if (!NAV_LOGO_PLACES.some((p) => p.id === s.logo_place)) {
+    s.logo_place = 'after_hamburger'
+  }
   s.bar_radius = Math.min(48, pxNum(s.bar_radius, 0))
   /* اگر گوشه جدا ست نشده، از bar_radius یکنواخت ارث ببرد */
   ;['bar_radius_tl', 'bar_radius_tr', 'bar_radius_br', 'bar_radius_bl'].forEach(
@@ -560,6 +596,7 @@ export function navWidgetCssVars(settings, opts = {}) {
     '--bn-gap': `${s.nav_gap}px`,
     '--bn-link-radius': `${s.link_radius}px`,
     '--bn-drawer-w': `${s.drawer_width}px`,
+    '--bn-logo-h': `${s.logo_height}px`,
     '--bn-shadow': s.shadow
       ? '0 2px 8px rgba(0, 0, 0, 0.15)'
       : 'none',
