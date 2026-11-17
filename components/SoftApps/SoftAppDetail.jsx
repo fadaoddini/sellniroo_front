@@ -163,7 +163,6 @@ export default function SoftAppDetail({ slug }) {
 
   return (
     <div className={styles.page} dir={dir}>
-      <div className={styles.atmosphere} aria-hidden />
       <div className={styles.inner}>
         <div className={styles.detailLayout}>
           <div className={styles.detailMain}>

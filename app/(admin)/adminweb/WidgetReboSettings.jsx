@@ -15,6 +15,10 @@ import {
   REBO_SPACE_FIELDS,
   buildReboViewportPatch,
   getReboVisibilityFlags,
+  DEFAULT_REBO_ORDER_STEPS,
+  DEFAULT_REBO_SETUP_COST_ITEMS,
+  normalizeOrderSteps,
+  normalizeSetupCostItems,
   normalizeReboWidgetSettings,
   normalizeUsecaseIndustries,
   reboContentFieldsForType,
@@ -772,6 +776,276 @@ export default function WidgetReboSettings({ type, settings: raw, onChange }) {
         </>
       ) : null}
 
+      {widgetType === 'rebo_setup_costs' ? (
+        <Accordion
+          id="setup_costs"
+          title="آیتم‌های هزینه"
+          openId={openId}
+          setOpenId={setOpenId}
+        >
+          <p className={styles.wsHint}>
+            ردیف‌های هزینه راه‌اندازی با ربو — عنوان، مبلغ نمایشی و توضیح.
+          </p>
+          {normalizeSetupCostItems(settings.setup_cost_items).map((item, idx) => (
+            <div
+              key={item.id || idx}
+              className={styles.wsStack}
+              style={{
+                marginBottom: '0.75rem',
+                paddingBottom: '0.75rem',
+                borderBottom: '1px solid rgba(0,0,0,0.06)',
+              }}
+            >
+              <TextField
+                label={`عنوان #${idx + 1}`}
+                value={item.title}
+                onChange={(v) => {
+                  const next = normalizeSetupCostItems(settings.setup_cost_items).map(
+                    (row, i) => (i === idx ? { ...row, title: v } : row),
+                  )
+                  patchRoot('setup_cost_items', next)
+                }}
+              />
+              <TextField
+                label="مبلغ / برچسب قیمت"
+                value={item.amount_label}
+                onChange={(v) => {
+                  const next = normalizeSetupCostItems(settings.setup_cost_items).map(
+                    (row, i) => (i === idx ? { ...row, amount_label: v } : row),
+                  )
+                  patchRoot('setup_cost_items', next)
+                }}
+              />
+              <TextField
+                label="توضیح"
+                value={item.text}
+                multiline
+                onChange={(v) => {
+                  const next = normalizeSetupCostItems(settings.setup_cost_items).map(
+                    (row, i) => (i === idx ? { ...row, text: v } : row),
+                  )
+                  patchRoot('setup_cost_items', next)
+                }}
+              />
+              <button
+                type="button"
+                className={styles.wsTinyBtn}
+                onClick={() => {
+                  const next = normalizeSetupCostItems(
+                    settings.setup_cost_items,
+                  ).filter((_, i) => i !== idx)
+                  patchRoot('setup_cost_items', next)
+                }}
+              >
+                حذف این ردیف
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            className={styles.wsGhostLink}
+            style={{
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              padding: 0,
+            }}
+            onClick={() => {
+              const cur = normalizeSetupCostItems(settings.setup_cost_items)
+              const base =
+                DEFAULT_REBO_SETUP_COST_ITEMS[
+                  cur.length % DEFAULT_REBO_SETUP_COST_ITEMS.length
+                ]
+              patchRoot('setup_cost_items', [
+                ...cur,
+                {
+                  ...base,
+                  id: `cost_${Date.now().toString(36)}`,
+                  title: 'هزینه جدید',
+                  amount_label: '',
+                  text: 'توضیح این هزینه…',
+                },
+              ])
+            }}
+          >
+            + افزودن ردیف هزینه
+          </button>
+          <TextField
+            label="متن پایانی"
+            value={settings.setup_cost_footer || ''}
+            multiline
+            onChange={(v) => patchRoot('setup_cost_footer', v)}
+          />
+        </Accordion>
+      ) : null}
+
+      {widgetType === 'rebo_order_steps' ? (
+        <Accordion
+          id="order_steps"
+          title="گام‌های سفارش"
+          openId={openId}
+          setOpenId={setOpenId}
+        >
+          <p className={styles.wsHint}>
+            ترتیب نمایش مسیر سفارش سایت از ربو. برای هر گام می‌توانید لینک هم بگذارید.
+          </p>
+          {normalizeOrderSteps(settings.order_steps).map((step, idx) => (
+            <div
+              key={step.id || idx}
+              className={styles.wsStack}
+              style={{
+                marginBottom: '0.75rem',
+                paddingBottom: '0.75rem',
+                borderBottom: '1px solid rgba(0,0,0,0.06)',
+              }}
+            >
+              <TextField
+                label={`عنوان گام ${idx + 1}`}
+                value={step.title}
+                onChange={(v) => {
+                  const next = normalizeOrderSteps(settings.order_steps).map(
+                    (row, i) => (i === idx ? { ...row, title: v } : row),
+                  )
+                  patchRoot('order_steps', next)
+                }}
+              />
+              <TextField
+                label="متن گام"
+                value={step.text}
+                multiline
+                onChange={(v) => {
+                  const next = normalizeOrderSteps(settings.order_steps).map(
+                    (row, i) => (i === idx ? { ...row, text: v } : row),
+                  )
+                  patchRoot('order_steps', next)
+                }}
+              />
+              <TextField
+                label="برچسب لینک ۱"
+                value={step.links?.[0]?.label || ''}
+                onChange={(v) => {
+                  const next = normalizeOrderSteps(settings.order_steps).map(
+                    (row, i) => {
+                      if (i !== idx) return row
+                      const links = [...(row.links || [])]
+                      const href = links[0]?.href || ''
+                      if (!v && !href) {
+                        return { ...row, links: links.slice(1) }
+                      }
+                      links[0] = { label: v, href }
+                      return { ...row, links }
+                    },
+                  )
+                  patchRoot('order_steps', next)
+                }}
+              />
+              <TextField
+                label="آدرس لینک ۱"
+                value={step.links?.[0]?.href || ''}
+                onChange={(v) => {
+                  const next = normalizeOrderSteps(settings.order_steps).map(
+                    (row, i) => {
+                      if (i !== idx) return row
+                      const links = [...(row.links || [])]
+                      const label = links[0]?.label || ''
+                      if (!v && !label) {
+                        return { ...row, links: links.slice(1) }
+                      }
+                      links[0] = { label, href: v }
+                      return { ...row, links }
+                    },
+                  )
+                  patchRoot('order_steps', next)
+                }}
+              />
+              <TextField
+                label="برچسب لینک ۲"
+                value={step.links?.[1]?.label || ''}
+                onChange={(v) => {
+                  const next = normalizeOrderSteps(settings.order_steps).map(
+                    (row, i) => {
+                      if (i !== idx) return row
+                      const links = [...(row.links || [])]
+                      while (links.length < 2) links.push({ label: '', href: '' })
+                      const href = links[1]?.href || ''
+                      if (!v && !href) {
+                        links.splice(1, 1)
+                        return { ...row, links }
+                      }
+                      links[1] = { label: v, href }
+                      return { ...row, links }
+                    },
+                  )
+                  patchRoot('order_steps', next)
+                }}
+              />
+              <TextField
+                label="آدرس لینک ۲"
+                value={step.links?.[1]?.href || ''}
+                onChange={(v) => {
+                  const next = normalizeOrderSteps(settings.order_steps).map(
+                    (row, i) => {
+                      if (i !== idx) return row
+                      const links = [...(row.links || [])]
+                      while (links.length < 2) links.push({ label: '', href: '' })
+                      const label = links[1]?.label || ''
+                      if (!v && !label) {
+                        links.splice(1, 1)
+                        return { ...row, links }
+                      }
+                      links[1] = { label, href: v }
+                      return { ...row, links }
+                    },
+                  )
+                  patchRoot('order_steps', next)
+                }}
+              />
+              <button
+                type="button"
+                className={styles.wsTinyBtn}
+                onClick={() => {
+                  const next = normalizeOrderSteps(settings.order_steps).filter(
+                    (_, i) => i !== idx,
+                  )
+                  patchRoot('order_steps', next)
+                }}
+              >
+                حذف این گام
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            className={styles.wsGhostLink}
+            style={{
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              padding: 0,
+            }}
+            onClick={() => {
+              const cur = normalizeOrderSteps(settings.order_steps)
+              const base =
+                DEFAULT_REBO_ORDER_STEPS[
+                  cur.length % DEFAULT_REBO_ORDER_STEPS.length
+                ]
+              patchRoot('order_steps', [
+                ...cur,
+                {
+                  ...base,
+                  id: `step_${Date.now().toString(36)}`,
+                  title: 'گام جدید',
+                  text: 'توضیح این مرحله…',
+                  links: [],
+                },
+              ])
+            }}
+          >
+            + افزودن گام
+          </button>
+        </Accordion>
+      ) : null}
+
       {widgetType === 'rebo_hero' ? (
         <Accordion
           id="dial"
@@ -949,6 +1223,8 @@ export default function WidgetReboSettings({ type, settings: raw, onChange }) {
               {(widgetType === 'rebo_pillars' ||
                 widgetType === 'rebo_capabilities' ||
                 widgetType === 'rebo_dashboard' ||
+                widgetType === 'rebo_order_steps' ||
+                widgetType === 'rebo_setup_costs' ||
                 widgetType === 'rebo_ops' ||
                 widgetType === 'rebo_cloud_order' ||
                 widgetType === 'rebo_closing') && (
@@ -964,6 +1240,8 @@ export default function WidgetReboSettings({ type, settings: raw, onChange }) {
                 label="نمایش توضیح"
               />
               {(widgetType === 'rebo_dashboard' ||
+                widgetType === 'rebo_order_steps' ||
+                widgetType === 'rebo_setup_costs' ||
                 widgetType === 'rebo_ops' ||
                 widgetType === 'rebo_cloud_order') && (
                 <Toggle

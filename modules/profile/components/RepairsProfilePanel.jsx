@@ -66,14 +66,14 @@ const PIPELINE = [
   {
     id: 'booked',
     label: 'رزرو',
-    hint: 'تایید / تخصیص',
-    statuses: ['booked', 'assigned'],
+    hint: 'تایید رزرو',
+    statuses: ['booked'],
   },
   {
     id: 'visit',
     label: 'بازدید',
     hint: 'گزارش فنی',
-    statuses: ['visited', 'awaiting_mid'],
+    statuses: ['assigned', 'visited', 'awaiting_mid'],
   },
   {
     id: 'repair',
@@ -352,64 +352,46 @@ export default function RepairsProfilePanel() {
   return (
     <div className={styles.wrap} dir="rtl">
       <header className={styles.hero}>
-        <div>
-          <p className={styles.eyebrow}>پروفایل مشتری</p>
-          <h2>تعمیرات و سرویس من</h2>
+        <div className={styles.heroText}>
+          <h2>
+            <Wrench size={15} strokeWidth={2.1} aria-hidden />
+            تعمیرات من
+          </h2>
           <p className={styles.lead}>
-            پرداخت‌ها، پیشنهاد خرید و وضعیت سفارش‌های سرویس اینجا جمع شده‌اند.
+            وضعیت سرویس، پرداخت‌ها و پیشنهادهای باز
           </p>
         </div>
         <div className={styles.topActions}>
           <button type="button" className={styles.btnGhost} onClick={load}>
-            <RefreshCw size={14} /> بروزرسانی
+            <RefreshCw size={13} /> بروزرسانی
           </button>
           <Link href="/repairs" className={styles.btn}>
-            <Wrench size={14} /> درخواست جدید
+            <Wrench size={13} /> درخواست جدید
           </Link>
+          <Link href="/repairs?tab=track" className={styles.btnGhost}>
+            <ClipboardList size={13} /> پیگیری
+          </Link>
+          {isTechnician ? (
+            <Link href="/todoservice" className={styles.btnGhost}>
+              <UserCog size={13} /> میزکار
+            </Link>
+          ) : null}
         </div>
       </header>
 
-      <div className={styles.stats}>
-        <button
-          type="button"
-          className={`${styles.stat} ${innerTab === 'all' ? styles.statOn : ''}`}
-          onClick={() => setInnerTab('all')}
-        >
+      <div className={styles.stats} aria-hidden={false}>
+        <div className={styles.stat}>
           <strong>{money(summary.total ?? jobs.length)}</strong>
-          <span>کل سفارش‌ها</span>
-        </button>
-        <button
-          type="button"
-          className={`${styles.stat} ${innerTab === 'open' ? styles.statOn : ''}`}
-          onClick={() => setInnerTab('open')}
-        >
+          <span>کل</span>
+        </div>
+        <div className={styles.stat}>
           <strong>{money(summary.open ?? openJobs.length)}</strong>
           <span>در جریان</span>
-        </button>
-        <button
-          type="button"
-          className={`${styles.stat} ${styles.statAlert} ${
-            innerTab === 'action' ? styles.statOn : ''
-          }`}
-          onClick={() => setInnerTab('action')}
-        >
+        </div>
+        <div className={`${styles.stat} ${styles.statAlert}`}>
           <strong>{money(summary.attention_count ?? attention.length)}</strong>
-          <span>نیاز به اقدام شما</span>
-        </button>
-      </div>
-
-      <div className={styles.quickLinks}>
-        <Link href="/repairs?tab=track" className={styles.quickLink}>
-          <ClipboardList size={15} /> پیگیری با کد
-        </Link>
-        {isTechnician ? (
-          <Link href="/repairs-tech" className={styles.quickLink}>
-            <UserCog size={15} /> پنل سرویسکار
-          </Link>
-        ) : null}
-        <Link href="/repairs" className={styles.quickLink}>
-          <Wrench size={15} /> صفحه سرویس
-        </Link>
+          <span>اقدام لازم</span>
+        </div>
       </div>
 
       <nav className={styles.tabs} aria-label="بخش‌های تعمیرات">
@@ -424,7 +406,7 @@ export default function RepairsProfilePanel() {
               }`}
               onClick={() => setInnerTab(t.id)}
             >
-              <Icon size={14} aria-hidden />
+              <Icon size={12} aria-hidden />
               {t.label}
               <span className={styles.tabCount}>{money(t.count)}</span>
             </button>
@@ -486,7 +468,7 @@ export default function RepairsProfilePanel() {
             </>
           ) : (
             <div className={styles.emptySoft}>
-              <CheckCircle2 size={22} color="#0f766e" />
+              <CheckCircle2 size={20} color="#1e3b2f" />
               <h3>اقدام فوری ندارید</h3>
               <p>پرداخت یا خرید معلقی برای شما ثبت نشده است.</p>
               <button
@@ -512,7 +494,7 @@ export default function RepairsProfilePanel() {
             ))
           ) : (
             <div className={styles.emptySoft}>
-              <ClipboardList size={22} color="#b38c00" />
+              <ClipboardList size={20} color="#7f8c6a" />
               <h3>سفارش بازی نیست</h3>
               <p>اگر نیاز به سرویس دارید، درخواست جدید ثبت کنید.</p>
               <Link href="/repairs" className={styles.btn}>
@@ -532,7 +514,7 @@ export default function RepairsProfilePanel() {
             doneJobs.map((job) => <JobCard key={job.id} job={job} />)
           ) : (
             <div className={styles.emptySoft}>
-              <CheckCircle2 size={22} color="#b38c00" />
+              <CheckCircle2 size={20} color="#7f8c6a" />
               <h3>هنوز سفارشی تکمیل نشده</h3>
               <p>بعد از تایید نهایی مدیر، اینجا نمایش داده می‌شود.</p>
             </div>
@@ -544,7 +526,7 @@ export default function RepairsProfilePanel() {
         <section className={styles.section}>
           {!jobs.length ? (
             <div className={styles.empty}>
-              <Wrench size={26} color="#b38c00" />
+              <Wrench size={22} color="#7f8c6a" />
               <h3>هنوز سفارش تعمیری ندارید</h3>
               <p>
                 درخواست سرویس ثبت کنید تا وضعیت، پرداخت و پیشنهادها اینجا بیاید.

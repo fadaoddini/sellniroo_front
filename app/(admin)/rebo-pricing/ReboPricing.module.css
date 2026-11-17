@@ -1,3 +1,5 @@
+/* قیمت‌گذاری ربو — پالت برند، بدون بردر */
+
 .toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -16,9 +18,9 @@
   max-width: 360px;
   padding: 0.45rem 0.7rem;
   border-radius: 12px;
-  background: #fff;
-  border: 1px solid rgba(20, 24, 31, 0.1);
-  color: #7a828e;
+  background: #ffffff;
+  border: none;
+  color: #7f8c6a;
 }
 
 .search {
@@ -28,7 +30,7 @@
   background: transparent;
   font: inherit;
   font-size: 0.9rem;
-  color: #14181f;
+  color: #1e3b2f;
 }
 
 .actions {
@@ -40,7 +42,7 @@
 
 .stat {
   font-size: 0.8rem;
-  color: #7a828e;
+  color: #7f8c6a;
   font-weight: 700;
 }
 
@@ -52,8 +54,9 @@
   margin-bottom: 1rem;
   padding: 0.9rem 1rem;
   border-radius: 14px;
-  background: #fff;
-  border: 1px solid rgba(20, 24, 31, 0.08);
+  background: #c8b48a;
+  border: none;
+  color: #1e3b2f;
 }
 
 .currencyRow label {
@@ -62,17 +65,18 @@
   gap: 0.3rem;
   font-size: 0.78rem;
   font-weight: 700;
-  color: #7a828e;
+  color: #1e3b2f;
 }
 
 .currencyRow input {
   min-width: 120px;
   padding: 0.45rem 0.6rem;
   border-radius: 10px;
-  border: 1px solid rgba(20, 24, 31, 0.12);
+  border: none;
   font: inherit;
   font-size: 0.9rem;
-  color: #14181f;
+  color: #1e3b2f;
+  background: #f5f0e6;
 }
 
 .hint {
@@ -84,15 +88,16 @@
   min-width: 220px;
   font-size: 0.82rem;
   line-height: 1.65;
-  color: #5b6575;
+  color: rgba(30, 59, 47, 0.78);
 }
 
 .ok {
   margin: 0 0 0.75rem;
   padding: 0.55rem 0.8rem;
   border-radius: 10px;
-  background: rgba(26, 154, 82, 0.12);
-  color: #1a9a52;
+  border: none;
+  background: #1e3b2f;
+  color: #f5f0e6;
   font-size: 0.85rem;
   font-weight: 700;
 }
@@ -101,15 +106,16 @@
   margin: 0 0 0.75rem;
   padding: 0.55rem 0.8rem;
   border-radius: 10px;
-  background: rgba(198, 40, 40, 0.1);
-  color: #c62828;
+  border: none;
+  background: #c8b48a;
+  color: #1e3b2f;
   font-size: 0.85rem;
   font-weight: 700;
 }
 
 .loading {
   margin: 1rem 0;
-  color: #7a828e;
+  color: #7f8c6a;
   font-size: 0.9rem;
 }
 
@@ -120,9 +126,9 @@
 }
 
 .group {
-  background: #fff;
+  background: #ffffff;
   border-radius: 16px;
-  border: 1px solid rgba(20, 24, 31, 0.08);
+  border: none;
   overflow: hidden;
 }
 
@@ -130,8 +136,9 @@
   margin: 0;
   padding: 0.75rem 1rem;
   font-size: 0.92rem;
-  background: #f4f5f7;
-  border-bottom: 1px solid rgba(20, 24, 31, 0.06);
+  background: #1e3b2f;
+  color: #f5f0e6;
+  border: none;
 }
 
 .table {
@@ -145,11 +152,16 @@
   gap: 0.75rem;
   align-items: center;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid rgba(20, 24, 31, 0.06);
+  border: none;
+  background: #f5f0e6;
+}
+
+.row:nth-child(even) {
+  background: #ffffff;
 }
 
 .row:last-child {
-  border-bottom: none;
+  border: none;
 }
 
 .toggle {
@@ -158,11 +170,11 @@
   background: transparent;
   padding: 0;
   cursor: pointer;
-  color: #9aa1ab;
+  color: #c8b48a;
 }
 
 .on {
-  color: #1a9a52;
+  color: #1e3b2f;
 }
 
 .meta {
@@ -170,22 +182,24 @@
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
+  color: #1e3b2f;
 }
 
 .meta strong {
   font-size: 0.9rem;
+  color: #1e3b2f;
 }
 
 .meta code {
   font-size: 0.72rem;
-  color: #7a828e;
+  color: #7f8c6a;
   direction: ltr;
   text-align: right;
 }
 
 .meta small {
   font-size: 0.75rem;
-  color: #7a828e;
+  color: #7f8c6a;
   line-height: 1.45;
 }
 
@@ -195,27 +209,28 @@
   gap: 0.25rem;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #7a828e;
+  color: #7f8c6a;
 }
 
 .priceField input {
   padding: 0.45rem 0.55rem;
   border-radius: 10px;
-  border: 1px solid rgba(20, 24, 31, 0.12);
+  border: none;
   font: inherit;
   font-size: 0.9rem;
-  color: #14181f;
+  color: #1e3b2f;
+  background: #ffffff;
 }
 
 .priceField input:disabled {
   opacity: 0.45;
-  background: #f4f5f7;
+  background: #f5f0e6;
 }
 
 .pricePreview {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #b89200;
+  color: #1e3b2f;
 }
 
 .pkgLayout {
@@ -227,9 +242,9 @@
 
 .pkgList,
 .pkgEditor {
-  background: #fff;
+  background: #ffffff;
   border-radius: 16px;
-  border: 1px solid rgba(20, 24, 31, 0.08);
+  border: none;
   padding: 0.9rem;
 }
 
@@ -239,11 +254,13 @@
   justify-content: space-between;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
+  color: #1e3b2f;
 }
 
 .pkgListHead h2 {
   margin: 0;
   font-size: 0.95rem;
+  color: #1e3b2f;
 }
 
 .presets,
@@ -258,14 +275,14 @@
 .presets > span {
   font-size: 0.72rem;
   font-weight: 700;
-  color: #7a828e;
+  color: #7f8c6a;
   width: 100%;
 }
 
 .presetChip {
   appearance: none;
-  border: 1px solid rgba(20, 24, 31, 0.1);
-  background: #f4f5f7;
+  border: none;
+  background: #f5f0e6;
   border-radius: 999px;
   padding: 0.28rem 0.55rem;
   font: inherit;
@@ -275,12 +292,12 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  color: #14181f;
+  color: #1e3b2f;
 }
 
 .presetChip:hover {
-  border-color: rgba(184, 146, 0, 0.45);
-  background: rgba(232, 184, 0, 0.12);
+  background: #c8b48a;
+  color: #1e3b2f;
 }
 
 .pkgCards {
@@ -297,13 +314,31 @@
   align-items: stretch;
   gap: 0.35rem;
   border-radius: 12px;
-  border: 1px solid rgba(20, 24, 31, 0.08);
+  border: none;
   overflow: hidden;
+  background: #f5f0e6;
 }
 
 .pkgCardOn {
-  border-color: rgba(184, 146, 0, 0.55);
-  box-shadow: 0 0 0 2px rgba(232, 184, 0, 0.18);
+  background: #1e3b2f;
+  box-shadow: none;
+}
+
+.pkgCardOn .pkgCardMain {
+  color: #f5f0e6;
+}
+
+.pkgCardOn .pkgCardMain span {
+  color: #c8b48a;
+}
+
+.pkgCardOn .pkgCardMain small {
+  color: rgba(245, 240, 230, 0.72);
+}
+
+.pkgCardOn .iconBtn {
+  background: rgba(245, 240, 230, 0.16);
+  color: #f5f0e6;
 }
 
 .pkgCardMain {
@@ -318,6 +353,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
+  color: #1e3b2f;
 }
 
 .pkgCardMain strong {
@@ -327,19 +363,19 @@
 .pkgCardMain span {
   font-size: 0.8rem;
   font-weight: 800;
-  color: #b89200;
+  color: #7f8c6a;
 }
 
 .pkgCardMain small {
   font-size: 0.72rem;
-  color: #7a828e;
+  color: #7f8c6a;
 }
 
 .iconBtn {
   appearance: none;
   border: none;
-  background: #f4f5f7;
-  color: #c62828;
+  background: #c8b48a;
+  color: #1e3b2f;
   padding: 0 0.65rem;
   cursor: pointer;
 }
@@ -357,7 +393,7 @@
   gap: 0.3rem;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #7a828e;
+  color: #7f8c6a;
 }
 
 .editorFields label:nth-child(2),
@@ -368,10 +404,11 @@
 .featuresField textarea {
   padding: 0.5rem 0.65rem;
   border-radius: 10px;
-  border: 1px solid rgba(20, 24, 31, 0.12);
+  border: none;
   font: inherit;
   font-size: 0.88rem;
-  color: #14181f;
+  color: #1e3b2f;
+  background: #f5f0e6;
   resize: vertical;
   min-height: 96px;
   line-height: 1.55;
@@ -380,16 +417,17 @@
 .editorFields input {
   padding: 0.45rem 0.6rem;
   border-radius: 10px;
-  border: 1px solid rgba(20, 24, 31, 0.12);
+  border: none;
   font: inherit;
   font-size: 0.9rem;
-  color: #14181f;
+  color: #1e3b2f;
+  background: #f5f0e6;
 }
 
 .toggleRow {
   appearance: none;
-  border: 1px solid rgba(20, 24, 31, 0.1);
-  background: #f4f5f7;
+  border: none;
+  background: #f5f0e6;
   border-radius: 12px;
   padding: 0.45rem 0.65rem;
   display: inline-flex;
@@ -401,6 +439,7 @@
   cursor: pointer;
   grid-column: 1 / -1;
   justify-self: start;
+  color: #1e3b2f;
 }
 
 .widgetPickHead {
@@ -410,17 +449,19 @@
   justify-content: space-between;
   gap: 0.5rem;
   margin-bottom: 0.55rem;
+  color: #1e3b2f;
 }
 
 .widgetPickHead h3 {
   margin: 0;
   font-size: 0.9rem;
+  color: #1e3b2f;
 }
 
 .pickedCount {
   margin: 0 0 0.65rem;
   font-size: 0.78rem;
-  color: #5b6575;
+  color: #7f8c6a;
   font-weight: 600;
 }
 
@@ -436,7 +477,7 @@
 .pickGroup h4 {
   margin: 0 0 0.4rem;
   font-size: 0.8rem;
-  color: #7a828e;
+  color: #7f8c6a;
 }
 
 .pickGrid {
@@ -451,15 +492,20 @@
   gap: 0.4rem;
   padding: 0.45rem 0.55rem;
   border-radius: 10px;
-  border: 1px solid rgba(20, 24, 31, 0.08);
-  background: #fafbfc;
+  border: none;
+  background: #f5f0e6;
   cursor: pointer;
   font-size: 0.78rem;
+  color: #1e3b2f;
 }
 
 .pickItemOn {
-  border-color: rgba(184, 146, 0, 0.5);
-  background: rgba(232, 184, 0, 0.1);
+  background: #1e3b2f;
+  color: #f5f0e6;
+}
+
+.pickItemOn code {
+  color: #c8b48a;
 }
 
 .pickItem strong {
@@ -469,7 +515,7 @@
 
 .pickItem code {
   font-size: 0.65rem;
-  color: #7a828e;
+  color: #7f8c6a;
   direction: ltr;
 }
 
@@ -480,8 +526,9 @@
   gap: 0.55rem;
   padding: 0.75rem;
   border-radius: 12px;
-  background: #fff8f0;
-  border: 1px solid rgba(212, 85, 32, 0.2);
+  background: #c8b48a;
+  border: none;
+  color: #1e3b2f;
 }
 
 .discountFields {
@@ -496,29 +543,30 @@
   gap: 0.3rem;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #7a828e;
+  color: #1e3b2f;
 }
 
 .discountFields input {
   padding: 0.45rem 0.6rem;
   border-radius: 10px;
-  border: 1px solid rgba(20, 24, 31, 0.12);
+  border: none;
   font: inherit;
   font-size: 0.9rem;
-  color: #14181f;
+  color: #1e3b2f;
+  background: #f5f0e6;
 }
 
 .discHint {
   font-size: 0.72rem;
   font-weight: 700;
-  color: #7a828e;
+  color: rgba(30, 59, 47, 0.72);
 }
 
 .discEnd {
   margin: 0;
   font-size: 0.78rem;
   font-weight: 700;
-  color: #b45309;
+  color: #1e3b2f;
 }
 
 .opsPanels {
@@ -528,9 +576,9 @@
 }
 
 .opsPanel {
-  background: #fff;
+  background: #ffffff;
   border-radius: 16px;
-  border: 1px solid rgba(20, 24, 31, 0.08);
+  border: none;
   padding: 1rem;
 }
 
@@ -540,17 +588,18 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  color: #1e3b2f;
 }
 
 .opsHint {
   margin: -0.35rem 0 0.85rem;
   font-size: 0.78rem;
-  color: #7a828e;
+  color: #7f8c6a;
   line-height: 1.55;
 }
 
 .opsHint a {
-  color: #0369a1;
+  color: #1e3b2f;
   font-weight: 800;
   text-decoration: none;
   display: inline-flex;
@@ -575,7 +624,7 @@
   gap: 0.3rem;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #7a828e;
+  color: #7f8c6a;
 }
 
 .opsFields label:nth-child(2) {
@@ -585,10 +634,11 @@
 .opsFields input {
   padding: 0.45rem 0.6rem;
   border-radius: 10px;
-  border: 1px solid rgba(20, 24, 31, 0.12);
+  border: none;
   font: inherit;
   font-size: 0.9rem;
-  color: #14181f;
+  color: #1e3b2f;
+  background: #f5f0e6;
 }
 
 .specHead {
@@ -597,12 +647,14 @@
   justify-content: space-between;
   gap: 0.5rem;
   margin: 0.5rem 0 0.55rem;
+  color: #1e3b2f;
 }
 
 .specHead h2,
 .specHead h3 {
   margin: 0;
   font-size: 0.9rem;
+  color: #1e3b2f;
 }
 
 .specList,
@@ -623,9 +675,11 @@
 .svcFields input {
   padding: 0.4rem 0.55rem;
   border-radius: 10px;
-  border: 1px solid rgba(20, 24, 31, 0.12);
+  border: none;
   font: inherit;
   font-size: 0.85rem;
+  color: #1e3b2f;
+  background: #f5f0e6;
 }
 
 .svcRow {
@@ -635,8 +689,8 @@
   align-items: start;
   padding: 0.55rem;
   border-radius: 12px;
-  border: 1px solid rgba(20, 24, 31, 0.08);
-  background: #fafbfc;
+  border: none;
+  background: #f5f0e6;
 }
 
 .svcFields {
@@ -651,7 +705,7 @@
   gap: 0.5rem;
   margin-top: 0.85rem;
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(20, 24, 31, 0.06);
+  border: none;
 }
 
 @media (max-width: 720px) {

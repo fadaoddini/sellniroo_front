@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Check, Search, X } from 'lucide-react'
 import styles from '@/components/AllBoxItem/components/FilterDialog/FilterDialog.module.css'
+import compactStyles from './MultiPickDialog.module.css'
 
 /**
  * دیالوگ چندانتخابی با همان تم طلایی FilterDialog
@@ -18,6 +19,10 @@ export default function MultiPickDialog({
   onClose,
   searchable = true,
   doneLabel = 'تأیید انتخاب',
+  /** برای باز شدن روی مودال‌های با z-index خیلی بالا (مثل todoservice) */
+  zIndex = null,
+  /** آیتم‌ها در یک خط، شیت باریک‌تر */
+  compact = false,
 }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [local, setLocal] = useState(() => values.map(String))
@@ -80,48 +85,72 @@ export default function MultiPickDialog({
   if (!mounted || !isOpen) return null
 
   const showSearch = searchable && (options.length > 6 || searchTerm.length > 0)
+  const c = compact
 
   const content = (
-    <div className={styles.overlay} role="presentation" onClick={onClose}>
+    <div
+      className={styles.overlay}
+      role="presentation"
+      onClick={onClose}
+      style={zIndex != null ? { zIndex } : undefined}
+    >
       <div
-        className={styles.sheet}
+        className={`${styles.sheet} ${c ? compactStyles.compactSheet : ''}`}
         role="dialog"
         aria-modal="true"
         onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.handle} aria-hidden />
-        <header className={styles.header}>
-          <h4 className={styles.title}>{title}</h4>
+        <header
+          className={`${styles.header} ${c ? compactStyles.compactHeader : ''}`}
+        >
+          <h4
+            className={`${styles.title} ${c ? compactStyles.compactTitle : ''}`}
+          >
+            {title}
+          </h4>
           <button
             type="button"
-            className={styles.closeBtn}
+            className={`${styles.closeBtn} ${c ? compactStyles.compactClose : ''}`}
             onClick={onClose}
             aria-label="بستن"
           >
-            <X size={18} />
+            <X size={c ? 15 : 18} />
           </button>
         </header>
 
         {showSearch ? (
-          <div className={styles.search}>
-            <Search size={16} className={styles.searchIcon} aria-hidden />
+          <div
+            className={`${styles.search} ${c ? compactStyles.compactSearch : ''}`}
+          >
+            <Search
+              size={c ? 14 : 16}
+              className={styles.searchIcon}
+              aria-hidden
+            />
             <input
               ref={searchRef}
               type="search"
               placeholder="جستجو…"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className={styles.searchInput}
+              className={`${styles.searchInput} ${
+                c ? compactStyles.compactSearchInput : ''
+              }`}
               autoComplete="off"
             />
           </div>
         ) : null}
 
-        <div className={styles.body}>
+        <div className={`${styles.body} ${c ? compactStyles.compactBody : ''}`}>
           {loading ? (
             <div className={styles.state}>در حال بارگذاری…</div>
           ) : (
-            <ul className={styles.list} role="listbox" aria-multiselectable="true">
+            <ul
+              className={`${styles.list} ${c ? compactStyles.compactList : ''}`}
+              role="listbox"
+              aria-multiselectable="true"
+            >
               {filtered.length === 0 ? (
                 <li className={styles.state}>گزینه‌ای یافت نشد</li>
               ) : (
@@ -138,21 +167,46 @@ export default function MultiPickDialog({
                         aria-selected={selected}
                         className={`${styles.option} ${
                           selected ? styles.optionSelected : ''
-                        }`}
+                        } ${c ? compactStyles.compactOption : ''}`}
                         onClick={() => toggle(id)}
                       >
-                        <span className={styles.optionText}>
-                          <span className={styles.optionLabel}>{label}</span>
+                        <span
+                          className={`${styles.optionText} ${
+                            c ? compactStyles.compactOptionText : ''
+                          }`}
+                        >
+                          <span
+                            className={`${styles.optionLabel} ${
+                              c ? compactStyles.compactOptionLabel : ''
+                            }`}
+                          >
+                            {label}
+                          </span>
                           {meta ? (
-                            <span className={styles.optionMeta}>{meta}</span>
+                            <span
+                              className={`${styles.optionMeta} ${
+                                c ? compactStyles.compactOptionMeta : ''
+                              }`}
+                            >
+                              {meta}
+                            </span>
                           ) : null}
                         </span>
                         {selected ? (
-                          <span className={styles.check}>
-                            <Check size={16} strokeWidth={2.5} />
+                          <span
+                            className={`${styles.check} ${
+                              c ? compactStyles.compactCheck : ''
+                            }`}
+                          >
+                            <Check size={c ? 12 : 16} strokeWidth={2.5} />
                           </span>
                         ) : (
-                          <span className={styles.radio} aria-hidden />
+                          <span
+                            className={`${styles.radio} ${
+                              c ? compactStyles.compactRadio : ''
+                            }`}
+                            aria-hidden
+                          />
                         )}
                       </button>
                     </li>
@@ -163,15 +217,21 @@ export default function MultiPickDialog({
           )}
         </div>
 
-        <footer className={styles.footer}>
+        <footer
+          className={`${styles.footer} ${c ? compactStyles.compactFooter : ''}`}
+        >
           <button
             type="button"
-            className={styles.clearBtn}
+            className={`${styles.clearBtn} ${c ? compactStyles.compactClear : ''}`}
             onClick={() => setLocal([])}
           >
             پاک کردن ({local.length})
           </button>
-          <button type="button" className={styles.doneBtn} onClick={confirm}>
+          <button
+            type="button"
+            className={`${styles.doneBtn} ${c ? compactStyles.compactDone : ''}`}
+            onClick={confirm}
+          >
             {doneLabel}
           </button>
         </footer>

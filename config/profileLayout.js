@@ -78,6 +78,13 @@ export const PROFILE_SECTION_DEFS = [
     moduleKey: SITE_MODULE_KEYS.QUIZ,
     defaultOn: true,
   },
+  {
+    id: 'softapps',
+    label: 'نرم‌افزارهای من',
+    desc: 'خریدها و دانلودهای نرم‌افزارهای کاربردی',
+    moduleKey: SITE_MODULE_KEYS.SOFTAPPS,
+    defaultOn: true,
+  },
 ]
 
 /** سیستم اصلی پروفایل */

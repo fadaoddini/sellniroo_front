@@ -1,0 +1,657 @@
+/* جزئیات حسابداری — روی تم adminweb / OwnerPortal */
+
+.accRoot {
+  --font-iran: 'iran';
+  --font-iran-bold: 'iran_bold';
+  font-family: var(--font-iran-bold), var(--font-iran), sans-serif;
+  color: #1e3b2f;
+}
+
+.accRoot :where(h1, h2, h3, h4, button, input, select, textarea, a, th, td, span, p, strong, small, label) {
+  font-family: var(--font-iran-bold), var(--font-iran), sans-serif;
+}
+
+.accRoot :where(*) {
+  box-shadow: none !important;
+}
+
+.embedded {
+  background: transparent;
+}
+
+.periodBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+  padding: 0.75rem 0.9rem;
+  background: #ffffff;
+  border-radius: 14px;
+}
+
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.presets button {
+  border: none;
+  background: #f5f0e6;
+  border-radius: 999px;
+  padding: 0.38rem 0.75rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: #7f8c6a;
+}
+
+.presetOn,
+.presets button:hover {
+  background: #1e3b2f;
+  color: #f5f0e6;
+}
+
+.dateFields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.dateFields label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  font-size: 0.7rem;
+  color: #7f8c6a;
+  font-weight: 700;
+}
+
+.refreshBtn {
+  border: none;
+  background: #1e3b2f;
+  color: #f5f0e6;
+  border-radius: 10px;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.panel {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 0.95rem 1rem;
+  color: #1e3b2f;
+}
+
+.panel h2,
+.panelHead h2 {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #1e3b2f;
+}
+
+.panelHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.panelHead h2 {
+  margin: 0;
+}
+
+.subHead {
+  margin: 1rem 0 0.45rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #1e3b2f;
+}
+
+.pnlList,
+.metaList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.pnlList li,
+.metaList li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.84rem;
+  padding: 0.42rem 0;
+  border-bottom: 1px dashed rgba(30, 59, 47, 0.12);
+}
+
+.pnlSub {
+  color: #7f8c6a;
+  font-size: 0.8rem !important;
+}
+
+.pnlTotal {
+  font-weight: 800;
+  border-bottom: 1px solid rgba(30, 59, 47, 0.14) !important;
+  padding-bottom: 0.55rem !important;
+}
+
+.pnlNet {
+  font-weight: 800;
+  border-bottom: none !important;
+  margin-top: 0.2rem;
+  padding: 0.55rem 0.65rem !important;
+  background: rgba(245, 240, 230, 0.14);
+  color: inherit;
+  border-radius: 10px;
+}
+
+/* داخل کارت تیرهٔ سود و زیان */
+.pnlDark .pnlList li {
+  border-bottom-color: rgba(245, 240, 230, 0.16);
+  color: #f5f0e6;
+}
+
+.pnlDark .pnlSub {
+  color: #c8b48a !important;
+}
+
+.pnlDark .pnlTotal {
+  border-bottom-color: rgba(245, 240, 230, 0.28) !important;
+}
+
+.pos {
+  color: #1e3b2f !important;
+}
+
+.neg {
+  color: #c62828 !important;
+}
+
+.hint {
+  margin: 0.75rem 0 0;
+  font-size: 0.74rem;
+  color: #7f8c6a;
+  line-height: 1.55;
+}
+
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.3rem;
+  min-height: 140px;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.barCol {
+  flex: 1 0 26px;
+  max-width: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.28rem;
+}
+
+.barStack {
+  width: 100%;
+  height: 110px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  background: #f5f0e6;
+  border-radius: 6px 6px 0 0;
+  padding: 0 3px;
+}
+
+.barSales,
+.barExp {
+  flex: 1;
+  min-height: 2px;
+  border-radius: 4px 4px 0 0;
+}
+
+.barSales {
+  background: #1e3b2f;
+}
+
+.barExp {
+  background: #c8b48a;
+}
+
+.barCol span {
+  font-size: 0.58rem;
+  color: #7f8c6a;
+  white-space: nowrap;
+}
+
+.legend {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.55rem;
+  font-size: 0.74rem;
+  color: #7f8c6a;
+  font-weight: 700;
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dotSales,
+.dotExp {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dotSales {
+  background: #1e3b2f;
+}
+
+.dotExp {
+  background: #c8b48a;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.table th,
+.table td {
+  text-align: right;
+  padding: 0.55rem 0.4rem;
+  border-bottom: 1px solid rgba(30, 59, 47, 0.1);
+  white-space: nowrap;
+}
+
+.table th {
+  color: #7f8c6a;
+  font-weight: 800;
+  font-size: 0.7rem;
+}
+
+.table td {
+  color: #1e3b2f;
+  font-weight: 700;
+}
+
+.primaryBtn,
+.ghostBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 10px;
+  padding: 0.48rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+}
+
+.primaryBtn {
+  background: #1e3b2f;
+  color: #f5f0e6;
+}
+
+.primaryBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ghostBtn {
+  background: #f5f0e6;
+  color: #7f8c6a;
+}
+
+.expenseForm {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 0.95rem;
+  margin-bottom: 0.75rem;
+}
+
+.expenseForm label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #7f8c6a;
+}
+
+.expenseForm input,
+.expenseForm select {
+  border: 1px solid rgba(30, 59, 47, 0.14);
+  border-radius: 9px;
+  padding: 0.52rem 0.65rem;
+  font-size: 0.84rem;
+  color: #1e3b2f;
+  background: #fff;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+.formActions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 0.45rem;
+}
+
+.catChips {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.catChips li {
+  background: #ffffff;
+  border-radius: 999px;
+  padding: 0.38rem 0.7rem;
+  font-size: 0.74rem;
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  color: #1e3b2f;
+  font-weight: 700;
+}
+
+.expenseList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.expenseList li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid rgba(30, 59, 47, 0.1);
+}
+
+.expenseList li:last-child {
+  border-bottom: none;
+}
+
+.expenseList p {
+  margin: 0.18rem 0 0;
+  font-size: 0.74rem;
+  color: #7f8c6a;
+  font-weight: 600;
+}
+
+.expenseSide {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.iconDanger {
+  border: none;
+  background: rgba(198, 40, 40, 0.1);
+  color: #c62828;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.badgeSale,
+.badgeExp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.badgeSale {
+  background: #1e3b2f;
+  color: #f5f0e6;
+}
+
+.badgeExp {
+  background: #c8b48a;
+  color: #1e3b2f;
+}
+
+.empty,
+.stateBox {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #7f8c6a;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.stateBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 36vh;
+  justify-content: center;
+}
+
+.emptyInline {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #7f8c6a;
+  font-weight: 700;
+}
+
+.toast {
+  background: #1e3b2f;
+  color: #f5f0e6;
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.err {
+  background: rgba(198, 40, 40, 0.1);
+  color: #c62828;
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sideGroupLabel {
+  margin: 0.55rem 0.5rem 0.25rem;
+  padding: 0;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #c8b48a;
+  letter-spacing: 0.04em;
+}
+
+.sideBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: #7f8c6a;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: right;
+}
+
+.sideBtn:hover {
+  background: #f5f0e6;
+  color: #1e3b2f;
+}
+
+.sideBtnOn {
+  background: #1e3b2f;
+  color: #f5f0e6;
+}
+
+.sideBtnOn:hover {
+  background: #1e3b2f;
+  color: #f5f0e6;
+}
+
+.frameCollapsed .sideBtn {
+  justify-content: center;
+  padding: 0.7rem 0.4rem;
+}
+
+.frameCollapsed .sideBtn span,
+.frameCollapsed .sideGroupLabel {
+  display: none;
+}
+
+.statHint {
+  font-size: 0.68rem;
+  opacity: 0.75;
+  font-weight: 700;
+}
+
+.catalogRoot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.catalogStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.catalogStat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  min-height: 84px;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  justify-content: center;
+}
+
+.catalogStat strong {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.catalogStat span {
+  font-size: 0.74rem;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+.catalogStatForest {
+  background: #1e3b2f;
+  color: #f5f0e6;
+}
+
+.catalogStatOlive {
+  background: #7f8c6a;
+  color: #f5f0e6;
+}
+
+.catalogStatSand {
+  background: #c8b48a;
+  color: #1e3b2f;
+}
+
+.catalogSearch {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #7f8c6a;
+}
+
+.catalogSearch input {
+  border: 1px solid rgba(30, 59, 47, 0.18);
+  border-radius: 9px;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.86rem;
+  color: #1e3b2f;
+  background: #fff;
+}
+
+@media (max-width: 900px) {
+  .twoCol {
+    grid-template-columns: 1fr;
+  }
+
+  .catalogStats {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .expenseForm {
+    grid-template-columns: 1fr;
+  }
+
+  .periodBar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

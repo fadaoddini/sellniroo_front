@@ -14,6 +14,7 @@ import styles from '../styles/ProfilePage.module.css'
 moment.loadPersian({ dialect: 'persian-modern', usePersianDigits: false })
 
 const QuizProfilePanel = lazy(() => import('./QuizProfilePanel'))
+const SoftAppsProfilePanel = lazy(() => import('./SoftAppsProfilePanel'))
 const SchoolProfilePanel = lazy(() => import('@/components/School/SchoolProfilePanel'))
 const ShopProfilePanel = lazy(() => import('./ShopProfilePanel'))
 const ReboPackageOrdersPanel = lazy(() => import('./ReboPackageOrdersPanel'))
@@ -25,6 +26,7 @@ const REBO_TAB = { key: 'rebo', label: 'سفارش ربو', icon: 'package' }
 const SHOP_TAB = { key: 'shop', label: 'فروشگاه', icon: 'shopping' }
 const QUIZ_TAB = { key: 'quiz', label: 'آزمون', icon: 'brain' }
 const SCHOOL_TAB = { key: 'school', label: 'مدرسه', icon: 'school' }
+const SOFTAPPS_TAB = { key: 'softapps', label: 'نرم‌افزارها', icon: 'appwindow' }
 
 function PanelFallback() {
   return (
@@ -43,6 +45,7 @@ function BasicProfileInner() {
   const [shopOn, setShopOn] = useState(false)
   const [reboOn, setReboOn] = useState(false)
   const [newsOn, setNewsOn] = useState(false)
+  const [softappsOn, setSoftappsOn] = useState(false)
 
   const tabs = useMemo(() => {
     const list = [...BASE_TABS]
@@ -51,8 +54,9 @@ function BasicProfileInner() {
     if (shopOn) list.push(SHOP_TAB)
     if (quizOn) list.push(QUIZ_TAB)
     if (schoolOn) list.push(SCHOOL_TAB)
+    if (softappsOn) list.push(SOFTAPPS_TAB)
     return list
-  }, [quizOn, schoolOn, shopOn, reboOn, newsOn])
+  }, [quizOn, schoolOn, shopOn, reboOn, newsOn, softappsOn])
   const tabKeys = useMemo(() => new Set(tabs.map((t) => t.key)), [tabs])
 
   const initialTab = useMemo(() => {
@@ -82,13 +86,15 @@ function BasicProfileInner() {
           force: true,
         }),
         isSiteModuleActive(SITE_MODULE_KEYS.NEWS, { force: true }),
-      ]).then(([quiz, school, shop, rebo, news]) => {
+        isSiteModuleActive(SITE_MODULE_KEYS.SOFTAPPS, { force: true }),
+      ]).then(([quiz, school, shop, rebo, news, softapps]) => {
         if (cancelled) return
         setQuizOn(!!quiz)
         setSchoolOn(!!school)
         setShopOn(!!shop)
         setReboOn(!!rebo)
         setNewsOn(!!news)
+        setSoftappsOn(!!softapps)
       })
     }
     refresh()
@@ -191,6 +197,12 @@ function BasicProfileInner() {
           {activeTab === 'news' && newsOn ? (
             <Suspense fallback={<PanelFallback />}>
               <NewsContributionsPanel />
+            </Suspense>
+          ) : null}
+
+          {activeTab === 'softapps' && softappsOn ? (
+            <Suspense fallback={<PanelFallback />}>
+              <SoftAppsProfilePanel variant="standalone" />
             </Suspense>
           ) : null}
         </div>

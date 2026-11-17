@@ -5,12 +5,16 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
+  ArrowUpLeft,
   Check,
   ImagePlus,
   LayoutDashboard,
   Loader2,
   MapPin,
+  Menu,
   Package,
+  PanelLeftClose,
+  PanelLeftOpen,
   Plus,
   RefreshCw,
   Settings2,
@@ -23,6 +27,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext'
 import GuidedTour, { useGuidedTour } from '@/components/Admin/GuidedTour'
 import shopOwnerApi from '@/services/shopOwnerApi'
+import portal from '@/components/Admin/OwnerPortal.module.css'
 import ProductFormExtras from './ProductFormExtras'
 import OwnerCategoriesPanel from './OwnerCategoriesPanel'
 import {
@@ -107,7 +112,7 @@ const TABS = [
   { id: 'orders', label: 'سفارش‌ها', icon: ShoppingBag },
   { id: 'products', label: 'محصولات', icon: Package },
   { id: 'categories', label: 'دسته‌ها', icon: Tags },
-  { id: 'settings', label: 'تنظیمات', icon: Settings2 },
+  { id: 'settings', label: 'تنظیمات فروشگاه', icon: Settings2 },
 ]
 
 const TRACK_STEPS = [
@@ -208,6 +213,7 @@ export default function ShopOwnerPanel({
     title: '',
     category: '',
     price_one: '',
+    cost_price: '',
     discount: '0',
     stock: '',
     number_min: '1',
@@ -242,6 +248,8 @@ export default function ShopOwnerPanel({
 
   const [imageEditorId, setImageEditorId] = useState(null)
   const [productImages, setProductImages] = useState([])
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   const productImagePreviews = useMemo(
     () =>
@@ -658,6 +666,7 @@ export default function ShopOwnerPanel({
         title: productForm.title,
         category: Number(productForm.category),
         price_one: Number(productForm.price_one) || 0,
+        cost_price: Number(productForm.cost_price) || 0,
         discount: Number(productForm.discount) || 0,
         stock: stockNum,
         stock_remaining: stockNum,
@@ -745,20 +754,26 @@ export default function ShopOwnerPanel({
   )
 
   if (authLoading || (loading && !dash)) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.stateBox}>
-          <Loader2 className={styles.spin} size={26} />
-          <p>در حال آماده‌سازی پنل فروشگاه…</p>
-        </div>
+    const loadingInner = (
+      <div className={styles.stateBox}>
+        <Loader2 className={styles.spin} size={26} />
+        <p>در حال آماده‌سازی پنل فروشگاه…</p>
       </div>
     )
+    if (embedded) {
+      return (
+        <div className={portal.app} dir="rtl">
+          {loadingInner}
+        </div>
+      )
+    }
+    return <div className={styles.page}>{loadingInner}</div>
   }
 
   if (!isAuthenticated) return null
 
   if (needsCreate) {
-    return (
+    const createInner = (
       <div className={styles.page} dir="rtl">
         <div className={styles.createHero}>
           <span className={styles.createIcon} aria-hidden>
@@ -914,10 +929,18 @@ export default function ShopOwnerPanel({
         </form>
       </div>
     )
+    if (embedded) {
+      return (
+        <div className={portal.app} dir="rtl">
+          <div className={portal.main}>{createInner}</div>
+        </div>
+      )
+    }
+    return createInner
   }
 
   if (error && !dash) {
-    return (
+    const deniedInner = (
       <div className={styles.page}>
         <div className={styles.denied}>
           <Store size={32} />
@@ -934,98 +957,109 @@ export default function ShopOwnerPanel({
         </div>
       </div>
     )
+    if (embedded) {
+      return (
+        <div className={portal.app} dir="rtl">
+          {deniedInner}
+        </div>
+      )
+    }
+    return deniedInner
   }
 
-  return (
-    <div
-      className={`${styles.page}${embedded ? ` ${styles.embedded || ''}` : ''}`}
-      dir="rtl"
-    >
-      <header className={styles.hero} data-tour="shop-hero">
-        <div className={styles.heroMain}>
-          <div className={styles.logoWrap}>
-            {shop?.logo_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={shop.logo_url} alt="" />
-            ) : (
-              <Store size={18} strokeWidth={1.75} />
-            )}
-          </div>
-          <div>
-            <p className={styles.eyebrow}>
-              {embedded ? 'فروشگاه من · داشبورد' : 'پنل فروشگاه'}
-            </p>
-            <h1>{shop?.title || 'فروشگاه'}</h1>
-            <p className={styles.sub}>
-              {stats?.is_open ? 'باز' : 'بسته'}
-              {user?.mobile || user?.username
-                ? ` · ${user?.mobile || user?.username}`
-                : ''}
-            </p>
-          </div>
-        </div>
-        <div className={styles.heroActions}>
-          <button
-            type="button"
-            className={`${styles.toggleOpen} ${
-              stats?.is_open ? styles.toggleOpenOn : ''
-            }`}
-            disabled={busy}
-            onClick={toggleOpen}
-            data-tour="shop-toggle-open"
-          >
-            {stats?.is_open ? 'بستن فروشگاه' : 'باز کردن'}
-          </button>
-          <button
-            type="button"
-            className={styles.ghostBtn}
-            onClick={() => tour.start()}
-            data-tour="shop-tour-btn"
-          >
-            راهنمای تور
-          </button>
-          <button
-            type="button"
-            className={styles.iconRound}
-            onClick={refreshAll}
-            aria-label="بازنشانی"
-          >
-            <RefreshCw size={15} />
-          </button>
-          {embedded ? (
-            <Link href="/dashboard" className={styles.ghostBtn}>
-              داشبورد
-            </Link>
-          ) : null}
-          <Link href="/shop" className={styles.ghostBtn}>
-            ویترین
-          </Link>
-        </div>
-      </header>
+  const shopTitle = shop?.title || 'فروشگاه'
+  const userLabel =
+    user?.full_name || user?.first_name || user?.mobile || user?.username || 'کاربر'
+  const pageTitle = TABS.find((t) => t.id === tab)?.label || 'فروشگاه من'
 
-      <nav className={styles.tabs} role="tablist" data-tour="shop-tabs">
-        {TABS.map((t) => {
-          const Icon = t.icon
-          return (
-            <button
-              key={t.id}
-              type="button"
-              role="tab"
-              aria-selected={tab === t.id}
-              className={tab === t.id ? styles.tabOn : ''}
-              onClick={() => selectTab(t.id)}
-              data-tour={`shop-tab-${t.id}`}
-            >
-              <Icon size={15} />
-              {t.label}
-              {t.id === 'orders' && unpaidReview > 0 ? (
-                <span className={styles.tabBadge}>{unpaidReview}</span>
-              ) : null}
-            </button>
-          )
-        })}
-      </nav>
+  const heroBar = (
+    <header className={styles.hero} data-tour="shop-hero">
+      <div className={styles.heroMain}>
+        <div className={styles.logoWrap}>
+          {shop?.logo_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={shop.logo_url} alt="" />
+          ) : (
+            <Store size={18} strokeWidth={1.75} />
+          )}
+        </div>
+        <div>
+          <p className={styles.eyebrow}>
+            {embedded ? 'فروشگاه من · داشبورد' : 'پنل فروشگاه'}
+          </p>
+          <h1>{shopTitle}</h1>
+          <p className={styles.sub}>
+            {stats?.is_open ? 'باز' : 'بسته'}
+            {user?.mobile || user?.username
+              ? ` · ${user?.mobile || user?.username}`
+              : ''}
+          </p>
+        </div>
+      </div>
+      <div className={styles.heroActions}>
+        <button
+          type="button"
+          className={`${styles.toggleOpen} ${
+            stats?.is_open ? styles.toggleOpenOn : ''
+          }`}
+          disabled={busy}
+          onClick={toggleOpen}
+          data-tour="shop-toggle-open"
+        >
+          {stats?.is_open ? 'بستن فروشگاه' : 'باز کردن'}
+        </button>
+        <button
+          type="button"
+          className={styles.ghostBtn}
+          onClick={() => tour.start()}
+          data-tour="shop-tour-btn"
+        >
+          راهنمای تور
+        </button>
+        <button
+          type="button"
+          className={styles.iconRound}
+          onClick={refreshAll}
+          aria-label="بازنشانی"
+        >
+          <RefreshCw size={15} />
+        </button>
+        <Link href="/shop" className={styles.ghostBtn}>
+          ویترین
+        </Link>
+      </div>
+    </header>
+  )
 
+  const tabsNav = (
+    <nav className={styles.tabs} role="tablist" data-tour="shop-tabs">
+      {TABS.map((t) => {
+        const Icon = t.icon
+        return (
+          <button
+            key={t.id}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.id}
+            className={tab === t.id ? styles.tabOn : ''}
+            onClick={() => selectTab(t.id)}
+            data-tour={`shop-tab-${t.id}`}
+          >
+            <Icon size={15} />
+            {t.label}
+            {t.id === 'orders' && unpaidReview > 0 ? (
+              <span className={styles.tabBadge}>{unpaidReview}</span>
+            ) : null}
+          </button>
+        )
+      })}
+    </nav>
+  )
+
+  const panelBody = (
+    <>
+      {heroBar}
+      {!embedded ? tabsNav : null}
       {msg ? <div className={styles.toast}>{msg}</div> : null}
       {error ? <div className={styles.err}>{error}</div> : null}
 
@@ -1086,8 +1120,11 @@ export default function ShopOwnerPanel({
                   افزودن محصول جدید
                 </button>
                 <button type="button" onClick={() => selectTab('settings')}>
-                  ویرایش حساب و ارسال
+                  تنظیمات فروشگاه
                 </button>
+                <Link href="/dashboard/shop-accounting" className={styles.quickLink}>
+                  حسابداری فروشگاه
+                </Link>
               </div>
             </div>
           </div>
@@ -1353,6 +1390,22 @@ export default function ShopOwnerPanel({
                           setProductForm((f) => ({
                             ...f,
                             price_one: e.target.value,
+                          }))
+                        }
+                      />
+                    </label>
+                    <label>
+                      قیمت خرید / تمام‌شده (تومان)
+                      <input
+                        type="number"
+                        min="0"
+                        inputMode="numeric"
+                        placeholder="برای محاسبه سود"
+                        value={productForm.cost_price}
+                        onChange={(e) =>
+                          setProductForm((f) => ({
+                            ...f,
+                            cost_price: e.target.value,
                           }))
                         }
                       />
@@ -2065,6 +2118,207 @@ export default function ShopOwnerPanel({
         onStepChange={tour.setStepIndex}
         onClose={tour.close}
       />
+    </>
+  )
+
+  if (!embedded) {
+    return (
+      <div className={styles.page} dir="rtl">
+        {panelBody}
+      </div>
+    )
+  }
+
+  return (
+    <div className={portal.app} dir="rtl">
+      <header className={portal.topBar}>
+        <div className={portal.topBarInner}>
+          <div className={portal.topBarStart}>
+            <button
+              type="button"
+              className={portal.iconBtn}
+              aria-label="منو"
+              onClick={() => setSidebarOpen((v) => !v)}
+            >
+              {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+            <button
+              type="button"
+              className={`${portal.iconBtn} ${portal.collapseBtn}`}
+              aria-label={
+                sidebarCollapsed ? 'باز کردن سایدبار' : 'جمع کردن سایدبار'
+              }
+              onClick={() => setSidebarCollapsed((v) => !v)}
+            >
+              {sidebarCollapsed ? (
+                <PanelLeftOpen size={18} />
+              ) : (
+                <PanelLeftClose size={18} />
+              )}
+            </button>
+            <Link href="/dashboard/my-shop" className={portal.brandLink}>
+              <span className={portal.brandMark}>
+                <Store size={14} />
+              </span>
+              <span className={portal.brandText}>
+                <strong>
+                  فروشگاه <em>من</em>
+                </strong>
+                <small>{shopTitle}</small>
+              </span>
+            </Link>
+          </div>
+
+          <div className={portal.topBarCenter}>
+            <h1 className={portal.pageHeading}>{pageTitle}</h1>
+          </div>
+
+          <div className={portal.topBarEnd}>
+            <div className={portal.userChip}>
+              <span className={portal.userAvatar} aria-hidden>
+                {String(userLabel).slice(0, 1)}
+              </span>
+              <span className={portal.userMeta}>
+                <strong>{userLabel}</strong>
+                <small dir="ltr">{user?.mobile || '—'}</small>
+              </span>
+            </div>
+            <Link href="/" className={portal.siteBtn}>
+              <ArrowUpLeft size={14} />
+              سایت
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <div
+        className={`${portal.frame} ${
+          sidebarCollapsed ? portal.frameCollapsed : ''
+        } ${sidebarCollapsed ? styles.frameCollapsed : ''}`}
+      >
+        <aside
+          className={`${portal.sidebar} ${
+            sidebarOpen ? portal.sidebarOpen : ''
+          }`}
+          aria-label="منوی فروشگاه"
+        >
+          <div className={portal.sideScroll} data-tour="shop-tabs">
+            <p className={styles.sideGroupLabel}>مدیریت</p>
+            {TABS.map((t) => {
+              const Icon = t.icon
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  className={`${styles.sideBtn} ${
+                    tab === t.id ? styles.sideBtnOn : ''
+                  }`}
+                  onClick={() => {
+                    selectTab(t.id)
+                    setSidebarOpen(false)
+                  }}
+                  data-tour={`shop-tab-${t.id}`}
+                  title={t.label}
+                >
+                  <Icon size={18} strokeWidth={1.9} />
+                  <span>{t.label}</span>
+                  {t.id === 'orders' && unpaidReview > 0 ? (
+                    <span className={styles.tabBadgeSide}>{unpaidReview}</span>
+                  ) : null}
+                </button>
+              )
+            })}
+
+            <p className={styles.sideGroupLabel}>مرتبط</p>
+            <Link
+              href="/dashboard"
+              className={portal.sideItem}
+              onClick={() => setSidebarOpen(false)}
+            >
+              <LayoutDashboard size={18} strokeWidth={1.9} />
+              {!sidebarCollapsed ? <span>داشبورد</span> : null}
+            </Link>
+            <Link
+              href="/dashboard/shop-accounting"
+              className={portal.sideItem}
+              onClick={() => setSidebarOpen(false)}
+            >
+              <Wallet size={18} strokeWidth={1.9} />
+              {!sidebarCollapsed ? <span>حسابداری</span> : null}
+            </Link>
+            <Link
+              href="/product-single"
+              className={portal.sideItem}
+              onClick={() => setSidebarOpen(false)}
+            >
+              <ShoppingBag size={18} strokeWidth={1.9} />
+              {!sidebarCollapsed ? <span>سینگل محصول</span> : null}
+            </Link>
+            <Link
+              href="/adminshop"
+              className={portal.sideItem}
+              onClick={() => setSidebarOpen(false)}
+            >
+              <Store size={18} strokeWidth={1.9} />
+              {!sidebarCollapsed ? <span>طراحی ویترین</span> : null}
+            </Link>
+            <Link
+              href="/shop"
+              className={portal.sideItem}
+              onClick={() => setSidebarOpen(false)}
+            >
+              <Store size={18} strokeWidth={1.9} />
+              {!sidebarCollapsed ? <span>ویترین عمومی</span> : null}
+            </Link>
+          </div>
+          <div className={portal.sideFoot}>
+            <span>پنل صاحب فروشگاه</span>
+            {!sidebarCollapsed ? <small>{shopTitle}</small> : null}
+          </div>
+        </aside>
+
+        {sidebarOpen ? (
+          <button
+            type="button"
+            className={portal.backdrop}
+            aria-label="بستن منو"
+            onClick={() => setSidebarOpen(false)}
+          />
+        ) : null}
+
+        <div className={portal.main}>
+          <nav className={portal.pageNav} aria-label="منوی این صفحه">
+            {TABS.map((t) => {
+              const Icon = t.icon
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  className={`${portal.pageNavItem} ${
+                    tab === t.id ? portal.pageNavItemOn : ''
+                  }`}
+                  onClick={() => selectTab(t.id)}
+                >
+                  <Icon size={15} strokeWidth={2} />
+                  {t.label}
+                  {t.id === 'orders' && unpaidReview > 0 ? (
+                    <span className={styles.tabBadge}>{unpaidReview}</span>
+                  ) : null}
+                </button>
+              )
+            })}
+          </nav>
+
+          <div className={portal.content} style={{ maxWidth: 'none' }}>
+            <div className={`${styles.page} ${styles.embedded}`}>{panelBody}</div>
+          </div>
+
+          <p className={portal.foot}>
+            مدیریت فروشگاه · {shopTitle}
+            {stats?.is_open ? ' · باز' : ' · بسته'}
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

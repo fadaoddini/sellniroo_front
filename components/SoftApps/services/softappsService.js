@@ -23,6 +23,28 @@ const softappsService = {
     }
   },
 
+  async myLibrary() {
+    try {
+      const res = await axios.get(Config.endpoints.softapps.my(), {
+        headers: authHeaders(),
+      })
+      return { success: true, data: res.data?.data || {} }
+    } catch (e) {
+      return {
+        success: false,
+        error:
+          e.response?.data?.message || 'خطا در بارگذاری نرم‌افزارهای شما',
+        data: {
+          apps: [],
+          purchases: [],
+          pending_purchases: [],
+          recent_downloads: [],
+          summary: {},
+        },
+      }
+    }
+  },
+
   async detail(slug) {
     try {
       const res = await axios.get(Config.endpoints.softapps.detail(slug), {

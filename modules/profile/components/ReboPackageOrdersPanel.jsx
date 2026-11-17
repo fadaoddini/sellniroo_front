@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import axios from 'axios'
+import { goHomeHash } from '@/utils/goHomeHash'
 import {
   ArrowLeft,
   Boxes,
@@ -409,10 +410,14 @@ export default function ReboPackageOrdersPanel() {
             هنوز بسته‌ای در سبد نیست. از صفحه اصلی، موضوع موردنظر را انتخاب کنید
             و با یک کلیک همین‌جا ثبت کنید.
           </p>
-          <Link href="/#rebo-cost" className={styles.ctaGhost}>
+          <button
+            type="button"
+            className={styles.ctaGhost}
+            onClick={() => goHomeHash('rebo-cost')}
+          >
             مشاهده بسته‌ها
             <ArrowLeft size={14} />
-          </Link>
+          </button>
         </div>
       </section>
     )
@@ -453,9 +458,13 @@ export default function ReboPackageOrdersPanel() {
                 <ArrowLeft size={14} />
               </Link>
             ) : null}
-            <Link href="/#rebo-cost" className={styles.ctaGhost}>
+            <button
+              type="button"
+              className={styles.ctaGhost}
+              onClick={() => goHomeHash('rebo-cost')}
+            >
               سفارش بسته دیگر
-            </Link>
+            </button>
           </div>
         </div>
       ) : null}

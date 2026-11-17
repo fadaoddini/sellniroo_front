@@ -1,0 +1,5 @@
+html:has(.todoTheme),
+body:has(.todoTheme) {
+  background: #ffffff !important;
+  color: #1a1a1a;
+}

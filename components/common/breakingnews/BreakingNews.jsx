@@ -34,6 +34,7 @@ import {
   FileText,
   Building2,
   ShieldAlert,
+  ClipboardList,
 } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "@/contexts/AuthContext";
@@ -146,6 +147,7 @@ const LABELS = {
   settings: "تنظیمات",
   dashboard: "داشبورد",
   marketing: "بازاریابی",
+  todo: "میزکار وظایف",
   challenge: "چالش مهندسین",
   game: "بازی",
   dearUser: "کاربر عزیز",
@@ -228,6 +230,7 @@ const PROFILE_LINKS = [
   { href: "/dashboard", icon: LayoutDashboard, label: LABELS.dashboard },
   { href: "/profile", icon: User, label: LABELS.profile },
   { href: "/sale", icon: HandCoins, label: LABELS.marketing },
+  { href: "/todo", icon: ClipboardList, label: LABELS.todo },
   { href: "/rasad", icon: Radar, label: "رصد" },
   { href: "/quiz", icon: Brain, label: LABELS.challenge },
   { href: "/game", icon: Gamepad2, label: LABELS.game },
@@ -405,6 +408,7 @@ const ProfileMenu = memo(function ProfileMenu({
   onLogout,
   menuItems = null,
   canAccessSale = false,
+  canAccessTodo = false,
   schoolLinks = null,
   schoolRoleLabel = "",
   gymLinks = null,
@@ -423,18 +427,25 @@ const ProfileMenu = memo(function ProfileMenu({
   };
 
   const iconSize = isMobile ? 20 : 16;
+  // منوی سفارشی ویجت (مثل منوی تعمیرات صدرا) اولویت دارد
   const useCustomMenu = Array.isArray(menuItems);
-  const useGymMenu = Array.isArray(gymLinks) && gymLinks.length > 0;
+  const useGymMenu =
+    !useCustomMenu && Array.isArray(gymLinks) && gymLinks.length > 0;
   const useSchoolMenu =
-    !useGymMenu && Array.isArray(schoolLinks) && schoolLinks.length > 0;
+    !useCustomMenu &&
+    !useGymMenu &&
+    Array.isArray(schoolLinks) &&
+    schoolLinks.length > 0;
   const roleLabelText = useGymMenu
     ? gymRoleLabelText
     : useSchoolMenu
       ? schoolRoleLabel
       : "";
-  const profileLinks = PROFILE_LINKS.filter(
-    (item) => item.href !== "/sale" || canAccessSale
-  );
+  const profileLinks = PROFILE_LINKS.filter((item) => {
+    if (item.href === "/sale") return canAccessSale;
+    if (item.href === "/todo") return canAccessTodo;
+    return true;
+  });
 
   const renderLink = (item) => {
     const Icon = item.icon;
@@ -538,13 +549,22 @@ const ProfileMenu = memo(function ProfileMenu({
  */
 const BreakingNews = ({ settings: rawSettings = null } = {}) => {
   const configured = rawSettings != null;
-  const { user, isAuthenticated, logout, loading, hasPermission, getAuthHeaders } =
-    useAuth();
+  const {
+    user,
+    isAuthenticated,
+    logout,
+    loading,
+    hasPermission,
+    getAuthHeaders,
+    isEmployee,
+  } = useAuth();
   const canAccessSale =
     !!user?.is_superuser ||
     !!user?.is_staff ||
     hasPermission('marketing') ||
     hasPermission('sales');
+  const canAccessTodo =
+    !!user?.is_superuser || !!user?.is_staff || !!isEmployee;
   const pathname = usePathname();
   const router = useRouter();
   const isMobile = useIsMobile(768);
@@ -695,7 +715,8 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
   }, [])
 
   useEffect(() => {
-    if (profileSystemId === 'gym_bodybuilding') {
+    // منوی مدرسه فقط وقتی سیستم پروفایل مدرسه است
+    if (profileSystemId !== 'school') {
       setSchoolMe(null)
       return undefined
     }
@@ -758,16 +779,22 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
   }, [profileSystemId, user, gymMe])
 
   const schoolMenuLinks = useMemo(() => {
-    if (profileSystemId === 'gym_bodybuilding') return null
+    if (profileSystemId !== 'school') return null
     if (!schoolMe) return null;
     const links = buildSchoolProfileMenuLinks(schoolMe, user);
     return links.length ? links : null;
   }, [schoolMe, user, profileSystemId]);
 
   const schoolRoleLabelText = useMemo(() => {
-    if (profileSystemId === 'gym_bodybuilding' || !schoolMe) return "";
+    if (profileSystemId !== 'school' || !schoolMe) return "";
     return schoolRoleLabel(resolveSchoolRole(schoolMe, user));
   }, [schoolMe, user, profileSystemId]);
+
+  // منوی دراپ‌داون پروفایل: از menu_slug ویجت (مثلاً repairs_menu)
+  const profileDropdownMenuItems = useMemo(() => {
+    if (!configured || !settings?.menu_slug) return null
+    return menuItems
+  }, [configured, settings?.menu_slug, menuItems])
 
   useEffect(() => {
     if (isMobile) return undefined;
@@ -1050,8 +1077,9 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
                   isMobile={false}
                   onClose={closeProfile}
                   onLogout={handleLogout}
-                  menuItems={null}
+                  menuItems={profileDropdownMenuItems}
                   canAccessSale={canAccessSale}
+                  canAccessTodo={canAccessTodo}
                   schoolLinks={schoolMenuLinks}
                   schoolRoleLabel={schoolRoleLabelText}
                   gymLinks={gymMenuLinks}
@@ -1092,8 +1120,9 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
                       isMobile
                       onClose={closeProfile}
                       onLogout={handleLogout}
-                      menuItems={null}
+                      menuItems={profileDropdownMenuItems}
                       canAccessSale={canAccessSale}
+                      canAccessTodo={canAccessTodo}
                       schoolLinks={schoolMenuLinks}
                       schoolRoleLabel={schoolRoleLabelText}
                       gymLinks={gymMenuLinks}
@@ -1281,6 +1310,7 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
         ...(themedStyle || {}),
         ...(pinned
           ? {
+              /* فاصلهٔ بالا از --bn-mt در CSS به top اضافه می‌شود */
               '--bn-pin-top': `${stickyOffset}px`,
               marginTop: 0,
               marginBottom: 0,

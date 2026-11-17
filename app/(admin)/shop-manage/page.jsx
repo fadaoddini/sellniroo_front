@@ -1,12 +1,19 @@
-import { Suspense } from 'react'
-import ShopManagePage from './Client'
+'use client'
 
-export const dynamic = 'force-dynamic'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
-export default function Page() {
+/** مسیر قدیمی — مدیریت محصولات در فروشگاه من است. */
+export default function ShopManageRedirectPage() {
+  const router = useRouter()
+
+  useEffect(() => {
+    router.replace('/dashboard/my-shop?tab=products')
+  }, [router])
+
   return (
-    <Suspense fallback={null}>
-      <ShopManagePage />
-    </Suspense>
+    <div dir="rtl" style={{ padding: '3rem 1.25rem', textAlign: 'center' }}>
+      در حال انتقال به فروشگاه من…
+    </div>
   )
 }

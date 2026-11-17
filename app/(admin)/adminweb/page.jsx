@@ -75,7 +75,7 @@ const GROUPS = [
       { href: '/adminshops', title: 'فروشگاه‌ها و تسویه', desc: 'حسابداری', icon: ShoppingBag, color: '#b45309' },
       { href: '/adminproducts', title: 'محصولات فروشگاه‌ها', desc: 'کاتالوگ', icon: ShoppingBag, color: '#9a3412' },
       { href: '/admincategories', title: 'دسته‌بندی محصولات', desc: 'درخت دسته', icon: ShoppingBag, color: '#7c2d12' },
-      { href: '/shop-manage', title: 'مدیریت محصولات', desc: 'کاتالوگ', icon: ShoppingBag, color: '#c2410c' },
+      { href: '/dashboard/my-shop?tab=products', title: 'محصولات', desc: 'کاتالوگ فروشگاه من', icon: ShoppingBag, color: '#1e3b2f' },
       { href: '/product-single', title: 'سینگل محصول', desc: 'اجزای PDP', icon: ShoppingBag, color: '#9a3412' },
     ],
   },
@@ -109,7 +109,7 @@ const GROUPS = [
       { href: '/faq-manage', title: 'FAQ', desc: 'سوالات', icon: HelpCircle, color: '#0369a1' },
       { href: '/school-manage', title: 'مدرسه', desc: 'آموزش', icon: GraduationCap, color: '#0f6b52' },
       { href: '/apps-manage', title: 'نرم‌افزارها', desc: 'دانلود', icon: AppWindow, color: '#2563eb' },
-      { href: '/repairs-manage', title: 'تعمیرات', desc: 'سرویس', icon: Wrench, color: '#c2410c' },
+      { href: '/todoservice', title: 'میزکار سرویس', desc: 'مدیر / سرویسکار / مشتری', icon: Wrench, color: '#1e3b2f' },
       { href: '/platform-connections', title: 'پیام‌رسان', desc: 'اتصالات', icon: Radio, color: '#0d9488' },
       { href: '/request-types', title: 'درخواست‌ها', desc: 'انواع', icon: Tags, color: '#7c3aed' },
       { href: '/employees', title: 'کارمندان', desc: 'دسترسی', icon: Users, color: '#334155' },
@@ -211,21 +211,19 @@ export default function AdminWebDashboardPage() {
 
   const newsBars = useMemo(() => {
     const s = newsStats || {}
+    const palette = ['#c8b48a', '#7f8c6a', '#f5f0e6', '#c8b48a']
     const rows = [
       { label: 'منتشرشده', value: Number(s.published || s.published_count || 0) },
       { label: 'پیش‌نویس', value: Number(s.draft || s.draft_count || 0) },
       { label: 'بازدید', value: Number(s.total_views || s.views || 0) },
       { label: 'کل اخبار', value: Number(s.total || s.count || 0) },
-    ].filter((r) => r.value > 0)
-    if (!rows.length) {
-      return [
-        { label: 'منتشرشده', value: 0 },
-        { label: 'پیش‌نویس', value: 0 },
-        { label: 'بازدید', value: 0 },
-      ]
-    }
+    ]
     const max = Math.max(...rows.map((r) => r.value), 1)
-    return rows.map((r) => ({ ...r, pct: Math.round((r.value / max) * 100) }))
+    return rows.map((r, i) => ({
+      ...r,
+      pct: Math.round((r.value / max) * 100),
+      color: palette[i % palette.length],
+    }))
   }, [newsStats])
 
   return (
@@ -233,111 +231,121 @@ export default function AdminWebDashboardPage() {
       brand="وب"
       brandAccent="ادمین "
       tagline="داشبورد مالک پلتفرم"
+      title="داشبورد"
       wide
       {...gate}
     >
-      <div className={styles.statsStrip}>
-        <div className={`${styles.statCard} ${styles.statOk}`}>
-          <span className={styles.statValue}>{moduleStats.active}</span>
-          <span className={styles.statLabel}>ماژول فعال</span>
+      <div className={styles.dashTopRow}>
+        <div className={styles.statsStrip}>
+          <div className={`${styles.statCard} ${styles.statForest}`}>
+            <span className={styles.statValue}>{moduleStats.active}</span>
+            <span className={styles.statLabel}>ماژول فعال</span>
+          </div>
+          <div className={`${styles.statCard} ${styles.statOlive}`}>
+            <span className={styles.statValue}>{moduleStats.total}</span>
+            <span className={styles.statLabel}>کل ماژول‌ها</span>
+          </div>
+          <div className={`${styles.statCard} ${styles.statSand}`}>
+            <span className={styles.statValue}>{moduleStats.groups}</span>
+            <span className={styles.statLabel}>مجموعهٔ گروهی</span>
+          </div>
+          <div className={`${styles.statCard} ${styles.statCream}`}>
+            <span className={styles.statValue}>{activePct}٪</span>
+            <span className={styles.statLabel}>نسبت فعال</span>
+          </div>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statValue}>{moduleStats.total}</span>
-          <span className={styles.statLabel}>کل ماژول‌ها</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statValue}>{moduleStats.groups}</span>
-          <span className={styles.statLabel}>مجموعهٔ گروهی</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statValue}>{activePct}٪</span>
-          <span className={styles.statLabel}>نسبت فعال</span>
-        </div>
-      </div>
 
-      <div className={styles.dashOverview}>
-        <section className={portalStyles.chartCard}>
-          <div className={portalStyles.chartHead}>
-            <div>
-              <h3 className={portalStyles.chartTitle}>وضعیت ماژول‌ها</h3>
-              <p className={portalStyles.chartSub}>فعال در برابر کل</p>
-            </div>
-          </div>
-          <div className={portalStyles.donutWrap}>
-            <div
-              className={portalStyles.donut}
-              style={{ '--donut-pct': activePct }}
-              role="img"
-              aria-label={`${activePct} درصد فعال`}
-            >
-              <div className={portalStyles.donutCenter}>
-                <span className={portalStyles.donutValue}>{activePct}٪</span>
-                <span className={portalStyles.donutLabel}>فعال</span>
+        <div className={styles.dashChartsCol}>
+          <section
+            className={`${portalStyles.chartCard} ${styles.dashChartForest}`}
+          >
+            <div className={portalStyles.chartHead}>
+              <div>
+                <h3 className={portalStyles.chartTitle}>وضعیت ماژول‌ها</h3>
+                <p className={portalStyles.chartSub}>فعال در برابر کل</p>
               </div>
             </div>
-            <div className={portalStyles.legend}>
-              <div className={portalStyles.legendRow}>
-                <span className={portalStyles.legendLeft}>
-                  <span
-                    className={portalStyles.legendDot}
-                    style={{ background: '#1a9a52' }}
-                  />
-                  فعال
-                </span>
-                <span className={portalStyles.legendVal}>
-                  {moduleStats.active}
-                </span>
-              </div>
-              <div className={portalStyles.legendRow}>
-                <span className={portalStyles.legendLeft}>
-                  <span
-                    className={portalStyles.legendDot}
-                    style={{ background: '#c5cad3' }}
-                  />
-                  خاموش
-                </span>
-                <span className={portalStyles.legendVal}>{inactive}</span>
-              </div>
-              <div className={portalStyles.legendRow}>
-                <span className={portalStyles.legendLeft}>
-                  <span
-                    className={portalStyles.legendDot}
-                    style={{ background: '#e8b800' }}
-                  />
-                  گروه
-                </span>
-                <span className={portalStyles.legendVal}>
-                  {moduleStats.groups}
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className={portalStyles.chartCard}>
-          <div className={portalStyles.chartHead}>
-            <div>
-              <h3 className={portalStyles.chartTitle}>نمای اخبار</h3>
-              <p className={portalStyles.chartSub}>آمار نسبی محتوا</p>
-            </div>
-          </div>
-          <div className={portalStyles.bars}>
-            {newsBars.map((row) => (
-              <div key={row.label} className={portalStyles.barRow}>
-                <span className={portalStyles.barLabel}>{row.label}</span>
-                <div className={portalStyles.barTrack}>
-                  <div
-                    className={portalStyles.barFill}
-                    style={{ width: `${row.pct || 0}%` }}
-                  />
+            <div className={portalStyles.donutWrap}>
+              <div
+                className={portalStyles.donut}
+                style={{ '--donut-pct': activePct }}
+                role="img"
+                aria-label={`${activePct} درصد فعال`}
+              >
+                <div className={portalStyles.donutCenter}>
+                  <span className={portalStyles.donutValue}>{activePct}٪</span>
+                  <span className={portalStyles.donutLabel}>فعال</span>
                 </div>
-                <span className={portalStyles.barVal}>
-                  {Number(row.value || 0).toLocaleString('fa-IR')}
-                </span>
               </div>
-            ))}
-          </div>
-        </section>
+              <div className={portalStyles.legend}>
+                <div className={portalStyles.legendRow}>
+                  <span className={portalStyles.legendLeft}>
+                    <span
+                      className={portalStyles.legendDot}
+                      style={{ background: '#c8b48a' }}
+                    />
+                    فعال
+                  </span>
+                  <span className={portalStyles.legendVal}>
+                    {moduleStats.active}
+                  </span>
+                </div>
+                <div className={portalStyles.legendRow}>
+                  <span className={portalStyles.legendLeft}>
+                    <span
+                      className={portalStyles.legendDot}
+                      style={{ background: '#7f8c6a' }}
+                    />
+                    خاموش
+                  </span>
+                  <span className={portalStyles.legendVal}>{inactive}</span>
+                </div>
+                <div className={portalStyles.legendRow}>
+                  <span className={portalStyles.legendLeft}>
+                    <span
+                      className={portalStyles.legendDot}
+                      style={{ background: '#f5f0e6' }}
+                    />
+                    گروه
+                  </span>
+                  <span className={portalStyles.legendVal}>
+                    {moduleStats.groups}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section
+            className={`${portalStyles.chartCard} ${styles.dashChartNews}`}
+          >
+            <div className={portalStyles.chartHead}>
+              <div>
+                <h3 className={portalStyles.chartTitle}>نمای اخبار</h3>
+                <p className={portalStyles.chartSub}>آمار نسبی محتوا</p>
+              </div>
+            </div>
+            <div className={portalStyles.bars}>
+              {newsBars.map((row) => (
+                <div key={row.label} className={portalStyles.barRow}>
+                  <span className={portalStyles.barLabel}>{row.label}</span>
+                  <div className={portalStyles.barTrack}>
+                    <div
+                      className={portalStyles.barFill}
+                      style={{
+                        width: `${row.pct || 0}%`,
+                        background: row.color,
+                      }}
+                    />
+                  </div>
+                  <span className={portalStyles.barVal}>
+                    {Number(row.value || 0).toLocaleString('fa-IR')}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
       </div>
 
       <div className={styles.dashToolbar}>
@@ -351,30 +359,110 @@ export default function AdminWebDashboardPage() {
       </div>
 
       {groups.length ? (
-        groups.map((group) => (
-          <section key={group.id} className={styles.dashGroup}>
-            <div className={styles.dashGroupHead}>
-              <h2>{group.title}</h2>
-              <span>{group.items.length.toLocaleString('fa-IR')} مورد</span>
-            </div>
-            <div className={styles.dashTiles}>
-              {group.items.map((item) => {
-                const Icon = item.icon
+        <>
+          {(groups.some((g) => g.id === 'design') ||
+            groups.some((g) => g.id === 'shop')) && (
+            <div className={styles.dashPair}>
+              {['design', 'shop'].map((id) => {
+                const group = groups.find((g) => g.id === id)
+                if (!group) return null
                 return (
-                  <Link key={item.href} href={item.href} className={styles.dashTile}>
-                    <span
-                      className={styles.dashTileIcon}
-                      style={{ background: item.color }}
+                  <section
+                    key={group.id}
+                    className={`${styles.dashGroup} ${
+                      group.id === 'design'
+                        ? styles.dashGroupDesign
+                        : styles.dashGroupShop
+                    }`}
+                  >
+                    <div className={styles.dashGroupHead}>
+                      <h2>{group.title}</h2>
+                      <span>
+                        {group.items.length.toLocaleString('fa-IR')} مورد
+                      </span>
+                    </div>
+                    <div
+                      className={`${styles.dashTiles} ${
+                        group.id === 'design'
+                          ? styles.dashTilesCols3
+                          : styles.dashTilesCols2
+                      }`}
                     >
-                      <Icon size={13} />
-                    </span>
-                    <strong>{item.title}</strong>
-                  </Link>
+                      {group.items.map((item) => {
+                        const Icon = item.icon
+                        return (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className={styles.dashTile}
+                          >
+                            <span className={styles.dashTileIcon}>
+                              <Icon size={18} strokeWidth={2} />
+                            </span>
+                            <span className={styles.dashTileBody}>
+                              <strong>{item.title}</strong>
+                              {item.desc ? <em>{item.desc}</em> : null}
+                            </span>
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  </section>
                 )
               })}
             </div>
-          </section>
-        ))
+          )}
+
+          {groups
+            .filter((g) => g.id !== 'design' && g.id !== 'shop')
+            .map((group) => {
+              const colsClass =
+                group.id === 'systems'
+                  ? styles.dashTilesCols5
+                  : group.id === 'content'
+                    ? styles.dashTilesCols6
+                    : ''
+              return (
+                <section
+                  key={group.id}
+                  className={`${styles.dashGroup} ${
+                    group.id === 'systems'
+                      ? styles.dashGroupSystems
+                      : group.id === 'content'
+                        ? styles.dashGroupContent
+                        : ''
+                  }`}
+                >
+                  <div className={styles.dashGroupHead}>
+                    <h2>{group.title}</h2>
+                    <span>
+                      {group.items.length.toLocaleString('fa-IR')} مورد
+                    </span>
+                  </div>
+                  <div className={`${styles.dashTiles} ${colsClass}`}>
+                    {group.items.map((item) => {
+                      const Icon = item.icon
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={styles.dashTile}
+                        >
+                          <span className={styles.dashTileIcon}>
+                            <Icon size={18} strokeWidth={2} />
+                          </span>
+                          <span className={styles.dashTileBody}>
+                            <strong>{item.title}</strong>
+                            {item.desc ? <em>{item.desc}</em> : null}
+                          </span>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                </section>
+              )
+            })}
+        </>
       ) : (
         <p className={styles.dashEmpty}>موردی با این جستجو پیدا نشد.</p>
       )}

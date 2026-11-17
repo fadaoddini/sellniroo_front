@@ -1,0 +1,249 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 14000;
+  pointer-events: none;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 26, 26, 0.48);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  pointer-events: auto;
+  animation: fadeIn 0.25s ease;
+}
+
+.spotlightHit {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.spotlight {
+  position: absolute;
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 9999px rgba(26, 26, 26, 0.48),
+    0 0 0 2px rgba(128, 0, 32, 0.85),
+    0 12px 36px rgba(128, 0, 32, 0.2);
+  pointer-events: none;
+  transition: top 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    left 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 1;
+}
+
+.card {
+  position: absolute;
+  z-index: 2;
+  width: min(390px, calc(100vw - 28px));
+  max-height: min(440px, calc(100vh - 24px));
+  padding: 1.1rem 1.1rem 0.95rem;
+  border-radius: 18px;
+  background: #fff;
+  border: 1px solid #e8e8ea;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+  color: #1a1a1a;
+  pointer-events: auto;
+  overflow: auto;
+  font-family: var(--font-iran);
+}
+
+.cardSheet {
+  left: 50%;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  top: auto;
+  transform: translateX(-50%);
+  width: min(420px, calc(100vw - 20px));
+  max-height: min(48vh, 440px);
+  border-radius: 20px;
+  animation: sheetIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cardFloat {
+  animation: floatIn 0.28s ease;
+}
+
+.cardCenter {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: cardIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.closeBtn {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e8e8ea;
+  border-radius: 10px;
+  background: #fafafa;
+  color: #6b6b6b;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.cardHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin-bottom: 0.6rem;
+  padding-left: 2rem;
+}
+
+.iconWrap {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(128, 0, 32, 0.08);
+  color: #800020;
+  border: 1px solid rgba(128, 0, 32, 0.16);
+}
+
+.stepLabel {
+  margin: 0 0 0.15rem;
+  font-size: 0.68rem;
+  color: #8a8a8a;
+}
+
+.title {
+  margin: 0;
+  font-size: 1rem;
+  font-family: var(--font-iran-extra);
+  line-height: 1.35;
+  color: #1a1a1a;
+}
+
+.body {
+  margin: 0 0 0.9rem;
+  font-size: 0.8rem;
+  line-height: 1.75;
+  color: #555;
+}
+
+.progress {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  border: 0;
+  padding: 0;
+  background: #e0e0e0;
+  cursor: pointer;
+  transition: width 0.25s ease, background 0.25s ease;
+}
+
+.dotActive {
+  width: 22px;
+  background: #800020;
+}
+
+.dotDone {
+  background: rgba(128, 0, 32, 0.4);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.navBtns {
+  display: flex;
+  gap: 0.4rem;
+  margin-inline-start: auto;
+}
+
+.btnGhost,
+.btnSecondary,
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 11px;
+  padding: 0.6rem 0.85rem;
+  font-family: var(--font-iran);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btnGhost {
+  background: #f3f3f3;
+  color: #666;
+}
+
+.btnSecondary {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  color: #444;
+}
+
+.btnPrimary {
+  background: #800020;
+  color: #fff;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes sheetIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes floatIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

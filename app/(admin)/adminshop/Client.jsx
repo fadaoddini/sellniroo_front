@@ -42,10 +42,12 @@ const MODE_ICONS = {
 }
 
 const SHOP_LINKS = [
-  { href: '/shop-manage', label: 'مدیریت محصولات', desc: 'کاتالوگ', icon: Package },
-  { href: '/product-single', label: 'تنظیمات سینگل', desc: 'اجزای محصول', icon: FileText },
-  { href: '/shop', label: 'صفحه فروشگاه', desc: 'نمایش عمومی', icon: ShoppingBag },
-  { href: '/payment-manage', label: 'ماژول پرداخت', desc: 'درگاه', icon: Store },
+  { href: '/dashboard/my-shop?tab=products', label: 'محصولات', desc: 'کاتالوگ فروشگاه من', icon: Package },
+  { href: '/product-single', label: 'سینگل محصول', desc: 'تنظیمات صفحه محصول', icon: FileText },
+  { href: '/shop-categories', label: 'دسته‌ها', desc: 'دسته‌بندی محصولات', icon: FileText },
+  { href: '/dashboard/shop-accounting', label: 'حسابداری', desc: 'سود و زیان و دفتر', icon: Store },
+  { href: '/shop', label: 'ویترین', desc: 'نمایش عمومی', icon: ShoppingBag },
+  { href: '/payment-manage', label: 'پرداخت', desc: 'درگاه', icon: Store },
 ]
 
 export default function AdminShopPage() {

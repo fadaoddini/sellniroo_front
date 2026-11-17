@@ -25,6 +25,7 @@ import domainStyles from '../styles/DomainProfilePage.module.css'
 const ReboPackageOrdersPanel = lazy(() => import('./ReboPackageOrdersPanel'))
 const ShopProfilePanel = lazy(() => import('./ShopProfilePanel'))
 const QuizProfilePanel = lazy(() => import('./QuizProfilePanel'))
+const SoftAppsProfilePanel = lazy(() => import('./SoftAppsProfilePanel'))
 const RepairsProfilePanel = lazy(() => import('./RepairsProfilePanel'))
 const BookingProfilePanel = lazy(() => import('./BookingProfilePanel'))
 const SchoolProfilePanel = lazy(() =>
@@ -41,6 +42,7 @@ const SECTION_TAB = {
   repairs: { key: 'repairs', label: 'تعمیرات', icon: 'wrench' },
   school: { key: 'school', label: 'مدرسه', icon: 'school' },
   quiz: { key: 'quiz', label: 'آزمون', icon: 'brain' },
+  softapps: { key: 'softapps', label: 'نرم‌افزارها', icon: 'appwindow' },
 }
 
 function PanelFallback() {
@@ -271,6 +273,12 @@ function CompositeInner() {
           {activeTab === 'quiz' ? (
             <Suspense fallback={<PanelFallback />}>
               <QuizProfilePanel variant="standalone" />
+            </Suspense>
+          ) : null}
+
+          {activeTab === 'softapps' ? (
+            <Suspense fallback={<PanelFallback />}>
+              <SoftAppsProfilePanel variant="standalone" />
             </Suspense>
           ) : null}
         </div>

@@ -25,7 +25,9 @@ export default function QuizSlot(props) {
       moduleKey={SITE_MODULE_KEYS.QUIZ}
       fallback={<QuizDisabled />}
     >
-      <Quiz {...props} />
+      <ModulePageShell pageKey="quiz">
+        <Quiz {...props} />
+      </ModulePageShell>
     </ModuleGate>
   )
 }

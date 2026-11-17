@@ -17,101 +17,151 @@ import {
   RepairsTechniciansWidget,
   RepairsTrackWidget,
 } from '@/components/Repairs/RepairsWidgets'
+import { SADRA_PALETTE } from '@/config/sadraTheme'
 import styles from './Repairs.module.css'
 
-/** تم طلایی هم‌تراز منوی صدرا و /booking */
-const GOLD = {
-  ink: '#1c1c1e',
-  muted: '#6b6560',
-  eyebrow_color: '#B38C00',
-  accent: '#B38C00',
-  accent_deep: '#8F7000',
-  panel_from: '#FFF9E8',
-  panel_to: '#ffffff',
-  panel_border: 'rgba(179, 140, 0, 0.22)',
-  input_border: 'rgba(179, 140, 0, 0.22)',
-  input_bg: '#ffffff',
-  button_from: '#dbbe00',
-  button_to: '#B38C00',
-  button_text: '#1c1c1e',
-  card_bg: '#ffffff',
-  card_border: 'rgba(179, 140, 0, 0.22)',
-  avatar_from: '#dbbe00',
-  avatar_to: '#B38C00',
-  avatar_text: '#1c1c1e',
-  cta_color: '#B38C00',
+/** پالت صدرا — جنگل / زیتون / شن / کرم */
+const THEME = {
+  ink: SADRA_PALETTE.forest,
+  muted: SADRA_PALETTE.sage,
+  eyebrow_color: SADRA_PALETTE.sage,
+  accent: SADRA_PALETTE.sand,
+  accent_deep: SADRA_PALETTE.forest,
+  panel_from: SADRA_PALETTE.cream,
+  panel_to: SADRA_PALETTE.white,
+  panel_border: 'color-mix(in srgb, #7F8C6A 28%, transparent)',
+  input_border: 'color-mix(in srgb, #7F8C6A 32%, transparent)',
+  input_bg: SADRA_PALETTE.white,
+  button_from: SADRA_PALETTE.forest,
+  button_to: '#163028',
+  button_text: SADRA_PALETTE.cream,
+  card_bg: SADRA_PALETTE.white,
+  card_border: 'color-mix(in srgb, #7F8C6A 26%, transparent)',
+  avatar_from: SADRA_PALETTE.sand,
+  avatar_to: SADRA_PALETTE.sage,
+  avatar_text: SADRA_PALETTE.forest,
+  cta_color: SADRA_PALETTE.forest,
   margin_top: 0,
   margin_bottom: 0,
 }
 
 const REQUEST_THEME = {
-  ...GOLD,
-  eyebrow_text: 'سرویس لیزر',
-  title: 'ثبت درخواست تعمیر',
-  subtitle: 'اطلاعات دستگاه لیزر و آدرس را وارد کنید',
+  ...THEME,
+  eyebrow_text: 'تعمیر در محل',
+  title: 'فرم درخواست تعمیر',
+  subtitle: 'مشخصات دستگاه و آدرس را پر کنید تا نوبت بازدید ثبت شود',
   show_panel: true,
   show_eyebrow: true,
   show_deposit_hint: true,
   show_brand_fields: true,
   show_serial: true,
-  submit_label: 'ثبت درخواست و ادامه پرداخت',
-  max_width: 640,
+  submit_label: 'ثبت درخواست و پرداخت رزرو',
+  max_width: 720,
 }
 
 const TEAM_THEME = {
-  ...GOLD,
-  eyebrow_text: 'تیم سرویس',
-  title: 'تعمیرکاران اعزامی',
-  subtitle: 'ببینید چه کسی برای تعمیر دستگاه شما اعزام می‌شود',
+  ...THEME,
+  eyebrow_text: 'تکنسین‌ها',
+  title: 'تکنسین‌های فعال',
+  subtitle: 'افرادی که برای تعمیر دستگاه به محل شما اعزام می‌شوند',
   show_eyebrow: true,
   show_specialty: true,
   show_city: true,
   show_avatar: true,
-  card_lift: true,
-  card_bg: '#FFF9E8',
-  columns: 4,
-  max_width: 960,
+  card_lift: false,
+  card_bg: 'transparent',
+  card_border: 'rgba(127, 140, 106, 0.26)',
+  card_padding: 8,
+  card_radius: 10,
+  card_min: 220,
+  avatar_size: 42,
+  name_size: 12,
+  title_size: 16,
+  subtitle_size: 12,
+  gap: 8,
+  columns: 3,
+  section_full: true,
+  max_width: 1200,
+  padding_top: 0,
+  padding_right: 0,
+  padding_bottom: 0,
+  padding_left: 0,
+  margin_top: 0,
+  margin_right: 0,
+  margin_bottom: 0,
+  margin_left: 0,
   limit: 16,
 }
 
 const SERVICES_THEME = {
-  ...GOLD,
-  eyebrow_text: 'اجرت و سرویس',
-  title: 'خدمات و مراحل تعمیر',
-  subtitle: 'شرایط و اجرت تعمیر انواع دستگاه لیزر',
+  ...THEME,
+  eyebrow_text: 'تعرفه',
+  title: 'هزینه خدمات',
+  subtitle: 'اجرت تقریبی است؛ مبلغ نهایی بعد از بازدید اعلام می‌شود',
   show_eyebrow: true,
   show_unit: true,
   show_desc: true,
   show_price: true,
   show_cta: true,
-  show_dot: true,
-  card_lift: true,
-  cta_label: 'ثبت درخواست',
+  show_dot: false,
+  card_lift: false,
+  card_bg: '#ffffff',
+  card_border: 'rgba(127, 140, 106, 0.22)',
+  card_padding: 12,
+  card_radius: 12,
+  card_min: 240,
+  title_size: 16,
+  subtitle_size: 12,
+  gap: 10,
+  cta_label: 'درخواست تعمیر',
   link_base: '/repairs?tab=request',
   columns: 3,
-  max_width: 960,
+  section_full: true,
+  max_width: 1200,
+  padding_top: 0,
+  padding_right: 0,
+  padding_bottom: 0,
+  padding_left: 0,
+  margin_top: 0,
+  margin_right: 0,
+  margin_bottom: 0,
+  margin_left: 0,
   limit: 24,
 }
 
 const TRACK_THEME = {
-  ...GOLD,
-  eyebrow_text: 'پیگیری',
-  title: 'پیگیری و گزارش تعمیر',
-  subtitle: 'وضعیت تکنسین، مراحل طی‌شده و گزارش دستگاه',
+  ...THEME,
+  eyebrow_text: 'پیگیری سفارش',
+  title: 'وضعیت تعمیر من',
+  subtitle:
+    'کد سفارش و موبایل ثبت‌شده را وارد کنید تا وضعیت فعلی نمایش داده شود',
   show_panel: true,
   show_eyebrow: true,
+  panel_shadow: false,
   code_label: 'کد سفارش',
-  mobile_label: 'موبایل',
-  submit_label: 'جستجو',
-  result_bg: '#FFF3CC',
-  max_width: 520,
+  mobile_label: 'شماره موبایل',
+  submit_label: 'نمایش وضعیت',
+  code_placeholder: 'مثلاً R-1403-001',
+  mobile_placeholder: '09xxxxxxxxx',
+  result_bg: '#ffffff',
+  panel_from: '#ffffff',
+  panel_to: '#ffffff',
+  panel_border: 'rgba(127, 140, 106, 0.22)',
+  title_size: 16,
+  subtitle_size: 12,
+  panel_radius: 14,
+  panel_padding: 16,
+  section_full: true,
+  max_width: 720,
+  margin_top: 0,
+  margin_bottom: 0,
 }
 
 const TABS = [
-  { id: 'request', label: 'ثبت درخواست', icon: Wrench },
-  { id: 'team', label: 'تیم سرویس', icon: Users },
-  { id: 'services', label: 'اجرت و سرویس', icon: ClipboardList },
-  { id: 'track', label: 'پیگیری', icon: Search },
+  { id: 'request', label: 'درخواست تعمیر', icon: Wrench },
+  { id: 'team', label: 'تکنسین‌ها', icon: Users },
+  { id: 'services', label: 'هزینه خدمات', icon: ClipboardList },
+  { id: 'track', label: 'پیگیری سفارش', icon: Search },
 ]
 
 function setTabInUrl(id) {
@@ -166,11 +216,11 @@ function RepairsPageInner() {
   return (
     <div className={styles.hub} dir="rtl" data-repairs-page="1">
       <header className={styles.hubHero}>
-        <p className={styles.hubEyebrow}>صدرا · تعمیرات و سرویس</p>
-        <h1>مدیریت تعمیرات و گزارش سرویس</h1>
+        <p className={styles.hubEyebrow}>تعمیر دستگاه لیزر</p>
+        <h1>درخواست تعمیر در محل</h1>
         <p>
-          ثبت درخواست، مشاهده تیم اعزامی، اجرت خدمات و پیگیری وضعیت تعمیر
-          دستگاه لیزر — همه در یک صفحه
+          دستگاه خراب شده؟ درخواست بدهید، تکنسین اعزام می‌شود و وضعیت را
+          همین‌جا پیگیری کنید.
         </p>
       </header>
 
@@ -202,19 +252,19 @@ function RepairsPageInner() {
             </div>
             <aside>
               <div className={styles.asideCard}>
-                <p className={styles.asideEyebrow}>راهنما</p>
-                <strong>چطور درخواست بدم؟</strong>
+                <p className={styles.asideEyebrow}>مراحل کار</p>
+                <strong>از درخواست تا تعمیر</strong>
                 <ol className={styles.asideSteps}>
-                  <li>اطلاعات دستگاه و آدرس را وارد کنید</li>
-                  <li>درخواست را ثبت و پیش‌پرداخت را انجام دهید</li>
-                  <li>تکنسین اعزامی و مراحل را از پیگیری ببینید</li>
+                  <li>فرم را پر کنید و مبلغ رزرو را بپردازید</li>
+                  <li>تکنسین برای بازدید به آدرس شما می‌آید</li>
+                  <li>تعمیر انجام می‌شود و نتیجه را آنلاین می‌بینید</li>
                 </ol>
               </div>
               <div className={styles.asideCard}>
-                <p className={styles.asideEyebrow}>تیم سرویس</p>
-                <strong>تعمیرکاران اعزامی</strong>
+                <p className={styles.asideEyebrow}>تکنسین</p>
+                <strong>چه کسی می‌آید؟</strong>
                 <p className={styles.asideText}>
-                  تخصص و شهر تکنسین‌های فعال صدرا را ببینید.
+                  لیست تکنسین‌های فعال و تخصص‌شان را ببینید.
                 </p>
                 <button
                   type="button"
@@ -222,14 +272,14 @@ function RepairsPageInner() {
                   onClick={() => selectTab('team')}
                 >
                   <Users size={14} />
-                  مشاهده تیم
+                  مشاهده تکنسین‌ها
                 </button>
               </div>
               <div className={styles.asideCard}>
                 <p className={styles.asideEyebrow}>پیگیری</p>
-                <strong>سفارش قبلی دارید؟</strong>
+                <strong>قبلاً درخواست داده‌اید؟</strong>
                 <p className={styles.asideText}>
-                  با کد سفارش و موبایل، گزارش تعمیر و وضعیت را ببینید.
+                  با کد سفارش و موبایل، وضعیت فعلی را ببینید.
                 </p>
                 <button
                   type="button"
@@ -237,7 +287,7 @@ function RepairsPageInner() {
                   onClick={() => selectTab('track')}
                 >
                   <Search size={14} />
-                  رفتن به پیگیری
+                  پیگیری سفارش
                 </button>
               </div>
             </aside>

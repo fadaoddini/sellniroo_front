@@ -33,7 +33,9 @@ export default function AboutSlot() {
       moduleKey={SITE_MODULE_KEYS.ABOUT_US}
       fallback={<AboutDisabled />}
     >
-      <AboutUs />
+      <ModulePageShell pageKey="about">
+        <AboutUs />
+      </ModulePageShell>
     </ModuleGate>
   )
 }

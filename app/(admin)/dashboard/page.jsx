@@ -95,6 +95,7 @@ const Dashboard = () => {
       curvedTimelineManage: 'تایم لاین منحنی',
       schoolManage: 'مدرسه',
       softappsManage: 'نرم‌افزارهای کاربردی',
+      todoService: 'میزکار سرویس (Todo)',
       repairsManage: 'داشبورد کامل تعمیرات',
       repairsPayments: 'پرداخت‌ها و تاییدیه‌ها',
       repairsTechnicians: 'مدیریت تعمیرکاران',
@@ -121,13 +122,14 @@ const Dashboard = () => {
       adminPortal: 'ادمین وب',
       paymentManage: 'ماژول پرداخت',
       reboManage: 'مدیریت ربو',
-      shopManage: 'مدیریت محصولات',
+      shopManage: 'محصولات',
       shopPanel: 'فروشگاه من',
+      shopAccounting: 'حسابداری فروشگاه',
       shopSettings: 'تنظیمات فروشگاه',
       shopProducts: 'محصولات',
       shopCategories: 'دسته‌بندی محصولات',
       productSingle: 'سینگل محصول',
-      adminShop: 'طراحی فروشگاه',
+      adminShop: 'طراحی ویترین',
       marketplaceHub: 'مرکز چندفروشندگی',
       marketplaceSettle: 'تسویه و حسابداری',
       marketplaceProducts: 'محصولات فروشگاه‌ها',
@@ -184,6 +186,7 @@ const Dashboard = () => {
       curvedTimelineManage: 'Curved timeline',
       schoolManage: 'School',
       softappsManage: 'Utility software',
+      todoService: 'Service desk (Todo)',
       repairsManage: 'Full repairs dashboard',
       repairsPayments: 'Payments & approvals',
       repairsTechnicians: 'Technicians',
@@ -210,13 +213,14 @@ const Dashboard = () => {
       adminPortal: 'Admin Web',
       paymentManage: 'Payment module',
       reboManage: 'Rebo management',
-      shopManage: 'Product catalog',
+      shopManage: 'Products',
       shopPanel: 'My shop',
+      shopAccounting: 'Shop accounting',
       shopSettings: 'Shop settings',
       shopProducts: 'Products',
       shopCategories: 'Product categories',
-      productSingle: 'Product single',
-      adminShop: 'Shop design',
+      productSingle: 'Product single page',
+      adminShop: 'Storefront design',
       marketplaceHub: 'Multi-vendor hub',
       marketplaceSettle: 'Settlements',
       marketplaceProducts: 'Vendor products',
@@ -778,62 +782,12 @@ const Dashboard = () => {
         group: 'content',
       })
       pushAction({
-        id: 'repairs-manage',
-        icon: <Wrench />,
-        label: t.repairsManage,
-        href: '/repairs-manage',
-        color: '#b38c00',
-        bgColor: '#fff9e8',
-        group: 'repairs',
-        sectionCode: 'repairs',
-      })
-      pushAction({
-        id: 'repairs-payments',
-        icon: <CreditCard />,
-        label: t.repairsPayments,
-        href: '/repairs-manage?tab=payments',
-        color: '#8f7000',
-        bgColor: '#fef3c7',
-        group: 'repairs',
-        sectionCode: 'repairs',
-      })
-      pushAction({
-        id: 'repairs-technicians',
-        icon: <Users />,
-        label: t.repairsTechnicians,
-        href: '/repairs-manage?tab=technicians',
-        color: '#a16207',
-        bgColor: '#fef9c3',
-        group: 'repairs',
-        sectionCode: 'repairs',
-      })
-      pushAction({
-        id: 'repairs-tech',
-        icon: <UserCog />,
-        label: t.repairsTech,
-        href: '/repairs-tech',
-        color: '#854d0e',
-        bgColor: '#fefce8',
-        group: 'repairs',
-        sectionCode: 'repairs',
-      })
-      pushAction({
-        id: 'repairs-pricing',
-        icon: <Tags />,
-        label: t.repairsPricing,
-        href: '/repairs-manage?tab=rates',
-        color: '#92400e',
-        bgColor: '#ffedd5',
-        group: 'repairs',
-        sectionCode: 'repairs',
-      })
-      pushAction({
-        id: 'repairs-settings',
-        icon: <Settings2 />,
-        label: t.repairsSettings,
-        href: '/repairs-manage?tab=settings',
-        color: '#78350f',
-        bgColor: '#fde68a',
+        id: 'todoservice',
+        icon: <ClipboardList />,
+        label: t.todoService,
+        href: '/todoservice',
+        color: '#1e3b2f',
+        bgColor: '#f5f0e6',
         group: 'repairs',
         sectionCode: 'repairs',
       })
@@ -1014,8 +968,8 @@ const Dashboard = () => {
         group: 'sales',
         sectionCode: 'rebo-manage',
       })
-      // تنظیمات ویترین (نه پورتال مالک) — برای مدیر داشبورد
-      if (shopOn && singleStoreOn) {
+      // فروشگاه — تفکیک استاندارد: عملیات / حسابداری / دسته / سینگل / طراحی / تنظیمات
+      if (shopOn) {
         pushAction({
           id: 'my-shop',
           icon: <Store />,
@@ -1027,71 +981,56 @@ const Dashboard = () => {
           sectionCode: 'shop-panel',
         })
         pushAction({
-          id: 'shop-manage',
+          id: 'shop-accounting',
+          icon: <Wallet />,
+          label: t.shopAccounting,
+          href: '/dashboard/shop-accounting',
+          color: '#0f7a3a',
+          bgColor: '#ecfdf5',
+          group: 'shop',
+          sectionCode: 'shop-accounting',
+        })
+        pushAction({
+          id: 'shop-categories',
+          icon: <Tags />,
+          label: t.shopCategories,
+          href: '/shop-categories',
+          color: '#9a3412',
+          bgColor: '#ffedd5',
+          group: 'shop',
+          sectionCode: 'shop-categories',
+        })
+        pushAction({
+          id: 'product-single',
+          icon: <ShoppingBag />,
+          label: t.productSingle,
+          href: '/product-single',
+          color: '#c2410c',
+          bgColor: '#fff7ed',
+          group: 'shop',
+          sectionCode: 'product-single',
+        })
+        pushAction({
+          id: 'adminshop',
           icon: <Package />,
-          label: t.shopManage,
-          href: '/shop-manage',
-          color: '#b45309',
-          bgColor: '#fff7ed',
+          label: t.adminShop,
+          href: '/adminshop',
+          color: '#0f766e',
+          bgColor: '#e6f7f4',
           group: 'shop',
-          sectionCode: 'shop-manage',
+          sectionCode: 'adminshop',
         })
         pushAction({
-          id: 'shop-categories',
-          icon: <Tags />,
-          label: t.shopCategories,
-          href: '/shop-categories',
-          color: '#9a3412',
-          bgColor: '#ffedd5',
+          id: 'shop-settings',
+          icon: <Settings2 />,
+          label: t.shopSettings,
+          href: '/dashboard/my-shop?tab=settings',
+          color: '#57534e',
+          bgColor: '#f5f5f4',
           group: 'shop',
-          sectionCode: 'shop-categories',
-        })
-        pushAction({
-          id: 'product-single',
-          icon: <ShoppingBag />,
-          label: t.productSingle,
-          href: '/product-single',
-          color: '#c2410c',
-          bgColor: '#fff7ed',
-          group: 'shop',
-          sectionCode: 'product-single',
-        })
-      } else if (shopOn && multiVendorOn) {
-        pushAction({
-          id: 'shop-categories',
-          icon: <Tags />,
-          label: t.shopCategories,
-          href: '/shop-categories',
-          color: '#9a3412',
-          bgColor: '#ffedd5',
-          group: 'shop',
-          sectionCode: 'shop-categories',
-        })
-        pushAction({
-          id: 'product-single',
-          icon: <ShoppingBag />,
-          label: t.productSingle,
-          href: '/product-single',
-          color: '#c2410c',
-          bgColor: '#fff7ed',
-          group: 'shop',
-          sectionCode: 'product-single',
+          sectionCode: 'shop-settings',
         })
       }
-    }
-
-    // فروشگاه من — برای چندفروشندگی (در تک‌فروشگاهی بالاتر اضافه شده)
-    if (shopOn && !singleStoreOn) {
-      pushAction({
-        id: 'my-shop',
-        icon: <Store />,
-        label: t.shopPanel,
-        href: '/dashboard/my-shop',
-        color: '#b45309',
-        bgColor: '#fff7ed',
-        group: 'shop',
-        sectionCode: 'shop-panel',
-      })
     }
 
     // فقط در حالت چندفروشندگی مؤثر — صفحات داشبوردی (نه /admin*)
@@ -1164,6 +1103,7 @@ const Dashboard = () => {
     t.curvedTimelineManage,
     t.schoolManage,
     t.softappsManage,
+    t.todoService,
     t.repairsManage,
     t.repairsPayments,
     t.repairsTechnicians,
@@ -1191,6 +1131,10 @@ const Dashboard = () => {
     t.reboManage,
     t.shopManage,
     t.shopPanel,
+    t.shopAccounting,
+    t.shopSettings,
+    t.shopCategories,
+    t.adminShop,
     t.productSingle,
     t.marketplaceHub,
     t.marketplaceSettle,

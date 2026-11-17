@@ -332,7 +332,7 @@ export const DASHBOARD_SECTION_TOURS = {
     },
     {
       id: 'shop-manage',
-      target: '[data-tour="dash-action-shop-manage"], [data-tour="dash-section-shop"]',
+      target: '[data-tour="dash-action-shop-accounting"], [data-tour="dash-section-shop"]',
       title: 'مدیریت محصولات (ادمین)',
       text: 'کاتالوگ سطح ادمین برای ویژه کردن و ویرایش سریع. برای کار روزمره فروشگاه از «فروشگاه من» استفاده کنید.',
       hint: 'دستهٔ محصول باید برگ نهایی باشد.',

@@ -187,8 +187,8 @@ export default function LoginPage() {
     if (result.success) {
       setSuccess(
         result.alreadySent
-          ? result.message || "کد قبلی هنوز معتبر است"
-          : result.message || "کد تایید ارسال شد"
+          ? "کد قبلی هنوز معتبر است"
+          : "کد تایید به شماره شما پیامک شد"
       );
       setStep(2);
       setCode(["", "", "", ""]);
@@ -197,7 +197,7 @@ export default function LoginPage() {
       }
       setTimeout(() => inputRefs.current[0]?.focus(), 100);
     } else {
-      setError(result.message);
+      setError(result.message || "ارسال پیامک ناموفق بود");
       if (result.waitTime > 0) {
         setSuccess(
           `لطفاً ${formatWait(result.waitTime)} صبر کنید و دوباره تلاش کنید.`
@@ -297,8 +297,8 @@ export default function LoginPage() {
     if (result.success) {
       setSuccess(
         result.alreadySent
-          ? result.message || "کد قبلی هنوز معتبر است"
-          : result.message || "کد جدید با موفقیت ارسال شد"
+          ? "کد قبلی هنوز معتبر است"
+          : "کد جدید به شماره شما پیامک شد"
       );
       if (!(result.waitTime > 0)) {
         applyWait(mobile, 120);

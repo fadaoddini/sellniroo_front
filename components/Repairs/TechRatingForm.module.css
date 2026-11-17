@@ -1,0 +1,130 @@
+.wrap {
+  font-family: var(--font-iran, iran, Tahoma, sans-serif);
+
+  border-radius: 14px;
+  border: 1px solid rgba(30, 59, 47, 0.12);
+  background: linear-gradient(180deg, #faf8f4 0%, #fff 100%);
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.head strong {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #1e3b2f;
+}
+
+.head p {
+  margin: 0.15rem 0 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #6b716c;
+}
+
+.avg {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #1e3b2f;
+  background: #eef5f1;
+  border: 1px solid rgba(30, 59, 47, 0.12);
+  border-radius: 999px;
+  padding: 0.22rem 0.55rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0.45rem;
+  border-radius: 9px;
+  background: #fff;
+  border: 1px solid rgba(30, 59, 47, 0.08);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #1a1f1c;
+}
+
+.stars {
+  display: inline-flex;
+  gap: 0.1rem;
+}
+
+.starBtn {
+  border: none;
+  background: transparent;
+  color: #d5cec0;
+  padding: 0.1rem;
+  cursor: pointer;
+  display: inline-flex;
+}
+
+.starBtn:disabled {
+  cursor: default;
+}
+
+.starOn {
+  color: #c8b48a;
+}
+
+.comment {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #6b716c;
+}
+
+.comment textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(30, 59, 47, 0.12);
+  border-radius: 9px;
+  padding: 0.45rem 0.55rem;
+  font-family: inherit;
+  font-size: 0.74rem;
+  resize: vertical;
+  min-height: 56px;
+}
+
+.submit {
+  border: none;
+  border-radius: 10px;
+  background: #1e3b2f;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.55rem 0.75rem;
+  cursor: pointer;
+}
+
+.submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.saved {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #15803d;
+}

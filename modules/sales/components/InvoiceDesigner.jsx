@@ -139,6 +139,8 @@ export default function InvoiceDesigner() {
 
   const accessLevel = Number(employeeData?.access_level ?? user?.access_level ?? 0)
   const isSaleManager = !!user?.is_superuser || accessLevel >= 3
+  const canEditPrice =
+    isSaleManager || !!employeeData?.can_edit_price || !!user?.can_edit_price
   const canSaleStaff =
     isSaleManager ||
     hasPermission('marketing') ||
@@ -1686,7 +1688,7 @@ export default function InvoiceDesigner() {
                                 )}
                               </td>
                               <td>
-                                {isSaleManager ? (
+                                {canEditPrice ? (
                                   <input
                                     className={styles.num}
                                     value={item.price_per_sqm}

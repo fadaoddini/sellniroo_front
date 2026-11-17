@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Download,
   Eye,
+  GitBranch,
   GraduationCap,
   HandCoins,
   Loader2,
@@ -20,6 +21,8 @@ import {
   Power,
   RefreshCw,
   Save,
+  Server,
+  Shield,
   Sparkles,
   Sprout,
   Store,
@@ -115,8 +118,45 @@ export default function TemplateImportPanel() {
   const [installTpl, setInstallTpl] = useState(null)
   const [installPreview, setInstallPreview] = useState(null)
   const [installLoading, setInstallLoading] = useState(false)
+  const [deployTpl, setDeployTpl] = useState(null)
+  const [deployForm, setDeployForm] = useState({
+    front_domain: '',
+    site_id: '',
+    admin_domain: '',
+    linux_user: 'rebo',
+    django_port: '',
+    next_port: '',
+    db_name: '',
+    db_user: '',
+    db_pass: '',
+    server_ip: '194.5.205.54',
+    api_max_sms: '',
+    max_sms_originator: '+983000505',
+    max_sms_pattern_code: '',
+    force: true,
+  })
+  const [deployBusy, setDeployBusy] = useState(false)
+  const [deployJob, setDeployJob] = useState(null)
+  const [sslTpl, setSslTpl] = useState(null)
+  const [sslForm, setSslForm] = useState({
+    site_id: '',
+    target: 'both',
+    admin_domain: '',
+    front_domain: '',
+    certificate_pem: '',
+    private_key_pem: '',
+    fullchain_pem: '',
+    bundle_pem: '',
+  })
+  const [sslBusy, setSslBusy] = useState(false)
+  const [sslJob, setSslJob] = useState(null)
   const [ownerTemplates, setOwnerTemplates] = useState([])
   const [packModules, setPackModules] = useState({})
+  const [gitPackTpl, setGitPackTpl] = useState(null)
+  const [gitPackName, setGitPackName] = useState('')
+  const [gitPackMessage, setGitPackMessage] = useState('')
+  const [gitPackBusy, setGitPackBusy] = useState(false)
+  const [gitPackResult, setGitPackResult] = useState(null)
 
   const allTemplates = useMemo(
     () => [...SYSTEM_TEMPLATES, ...ownerTemplates],
@@ -179,16 +219,201 @@ export default function TemplateImportPanel() {
   }, [confirmTpl])
 
   useEffect(() => {
-    if (!confirmTpl && !detailTpl && !installTpl) return undefined
+    if (!confirmTpl && !detailTpl && !installTpl && !deployTpl && !sslTpl) {
+      return undefined
+    }
     const onKey = (e) => {
-      if (e.key !== 'Escape' || busyKey) return
-      if (installTpl) setInstallTpl(null)
+      if (e.key !== 'Escape' || busyKey || deployBusy || sslBusy) return
+      if (deployTpl) setDeployTpl(null)
+      else if (sslTpl) setSslTpl(null)
+      else if (installTpl) setInstallTpl(null)
       else if (confirmTpl) setConfirmTpl(null)
       else setDetailTpl(null)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [confirmTpl, detailTpl, installTpl, busyKey])
+  }, [
+    confirmTpl,
+    detailTpl,
+    installTpl,
+    deployTpl,
+    sslTpl,
+    busyKey,
+    deployBusy,
+    sslBusy,
+  ])
+
+  const suggestFromDomain = async (domain) => {
+    if (!domain?.trim()) return
+    try {
+      const res = await axios.get(
+        Config.endpoints.news.siteFactory.suggest(domain.trim()),
+        { headers: getAuthHeaders() },
+      )
+      const d = res.data?.data || {}
+      setDeployForm((prev) => ({
+        ...prev,
+        front_domain: d.front_domain || prev.front_domain,
+        site_id: d.site_id || prev.site_id,
+        admin_domain: d.admin_domain || prev.admin_domain,
+        db_name: prev.db_name || (d.site_id ? `db_${d.site_id}` : ''),
+        db_user: prev.db_user || (d.site_id ? `u_${d.site_id}` : ''),
+      }))
+    } catch (_) {
+      /* ignore suggest errors */
+    }
+  }
+
+  const openDeployModal = (tpl) => {
+    setErr('')
+    setMsg('')
+    setDeployJob(null)
+    setDeployTpl(tpl)
+    setDeployForm({
+      front_domain: '',
+      site_id: '',
+      admin_domain: '',
+      linux_user: 'rebo',
+      django_port: '',
+      next_port: '',
+      db_name: '',
+      db_user: '',
+      db_pass: '',
+      server_ip: '194.5.205.54',
+      api_max_sms: '',
+      max_sms_originator: '+983000505',
+      max_sms_pattern_code: '',
+      force: true,
+    })
+  }
+
+  const openSslModal = (tpl) => {
+    setErr('')
+    setMsg('')
+    setSslJob(null)
+    setSslTpl(tpl)
+    setSslForm({
+      site_id: '',
+      target: 'both',
+      admin_domain: '',
+      front_domain: '',
+      certificate_pem: '',
+      private_key_pem: '',
+      fullchain_pem: '',
+      bundle_pem: '',
+    })
+  }
+
+  const pollProvision = async (jobId, headers) => {
+    for (let i = 0; i < 400; i += 1) {
+      await new Promise((r) => setTimeout(r, 1500))
+      const st = await axios.get(
+        Config.endpoints.news.siteFactory.provisionStatus(jobId),
+        { headers },
+      )
+      const data = st.data?.data
+      setDeployJob(data)
+      if (data?.status === 'success' || data?.status === 'failed') return data
+    }
+    return null
+  }
+
+  const startDeploy = async () => {
+    if (!deployTpl) return
+    setDeployBusy(true)
+    setErr('')
+    setMsg('')
+    try {
+      const headers = getAuthHeaders()
+      const body = {
+        pack: deployTpl.key,
+        front_domain: deployForm.front_domain.trim(),
+        site_id: deployForm.site_id.trim() || undefined,
+        admin_domain: deployForm.admin_domain.trim() || undefined,
+        linux_user: deployForm.linux_user.trim() || 'rebo',
+        django_port: deployForm.django_port.trim() || undefined,
+        next_port: deployForm.next_port.trim() || undefined,
+        db_name: deployForm.db_name.trim() || undefined,
+        db_user: deployForm.db_user.trim() || undefined,
+        db_pass: deployForm.db_pass.trim() || undefined,
+        server_ip: deployForm.server_ip.trim() || undefined,
+        api_max_sms: deployForm.api_max_sms.trim() || undefined,
+        max_sms_originator: deployForm.max_sms_originator.trim() || undefined,
+        max_sms_pattern_code: deployForm.max_sms_pattern_code.trim() || undefined,
+        force: !!deployForm.force,
+        confirm: true,
+      }
+      const res = await axios.post(
+        Config.endpoints.news.siteFactory.provision(),
+        body,
+        { headers },
+      )
+      const job = res.data?.data
+      setDeployJob(job)
+      setMsg(res.data?.message || 'نصب شروع شد')
+      const finalJob = await pollProvision(job.id, headers)
+      if (finalJob?.status === 'success') {
+        setMsg(finalJob.message || 'نصب با موفقیت تمام شد')
+      } else if (finalJob?.status === 'failed') {
+        setErr(finalJob.message || 'نصب ناموفق بود')
+      }
+    } catch (e) {
+      setErr(
+        e.response?.data?.message ||
+          e.response?.data?.detail ||
+          e.message ||
+          'شروع نصب ناموفق بود',
+      )
+    } finally {
+      setDeployBusy(false)
+    }
+  }
+
+  const pollSsl = async (jobId, headers) => {
+    for (let i = 0; i < 60; i += 1) {
+      await new Promise((r) => setTimeout(r, 2000))
+      const st = await axios.get(
+        Config.endpoints.news.siteFactory.sslStatus(jobId),
+        { headers },
+      )
+      const data = st.data?.data
+      setSslJob(data)
+      if (data?.status === 'success' || data?.status === 'failed') return data
+    }
+    return null
+  }
+
+  const startSsl = async () => {
+    if (!sslTpl) return
+    setSslBusy(true)
+    setErr('')
+    setMsg('')
+    try {
+      const headers = getAuthHeaders()
+      const res = await axios.post(
+        Config.endpoints.news.siteFactory.ssl(),
+        { ...sslForm, confirm: true },
+        { headers },
+      )
+      const job = res.data?.data
+      setSslJob(job)
+      const finalJob = await pollSsl(job.id, headers)
+      if (finalJob?.status === 'success') {
+        setMsg(finalJob.message || 'SSL نصب شد')
+      } else if (finalJob?.status === 'failed') {
+        setErr(finalJob.message || 'SSL ناموفق بود')
+      }
+    } catch (e) {
+      setErr(
+        e.response?.data?.message ||
+          e.response?.data?.detail ||
+          e.message ||
+          'نصب SSL ناموفق بود',
+      )
+    } finally {
+      setSslBusy(false)
+    }
+  }
 
   const hasDedicatedBackend = (key) =>
     dedicatedKeys.length ? dedicatedKeys.includes(key) : true
@@ -376,6 +601,43 @@ export default function TemplateImportPanel() {
     setConfirmTpl(tpl)
   }
 
+  const publishPackToGit = async () => {
+    if (!gitPackTpl) return
+    const headers = getAuthHeaders()
+    if (!headers?.Authorization) {
+      setErr('برای افزودن به گیت دوباره وارد شوید')
+      return
+    }
+    const name = gitPackName.trim()
+    if (!name) {
+      setErr('نام گیت را وارد کنید')
+      return
+    }
+    setGitPackBusy(true)
+    setGitPackResult(null)
+    setErr('')
+    setMsg('')
+    try {
+      const res = await axios.post(
+        Config.endpoints.news.git.packPublish(),
+        {
+          pack: gitPackTpl.key,
+          name,
+          message: gitPackMessage.trim() || `export ${gitPackTpl.key} as ${name}`,
+        },
+        { headers, timeout: 300000 },
+      )
+      setGitPackResult(res.data?.data || null)
+      setMsg(res.data?.message || 'بسته به گیت اضافه شد')
+    } catch (e) {
+      const data = e?.response?.data
+      setGitPackResult(data?.data || null)
+      setErr(data?.message || e?.message || 'افزودن بسته به گیت ناموفق بود')
+    } finally {
+      setGitPackBusy(false)
+    }
+  }
+
   const snapshotTemplate = async (tpl) => {
     const headers = getAuthHeaders()
     if (!headers?.Authorization) {
@@ -513,10 +775,6 @@ export default function TemplateImportPanel() {
               ]
                 .filter(Boolean)
                 .join(' ')}
-              style={{
-                '--tpl-accent': tpl.accent,
-                '--tpl-accent-soft': tpl.accentSoft,
-              }}
             >
               <div className={styles.tplCardGlow} aria-hidden />
               <div className={styles.tplCardTop}>
@@ -619,6 +877,62 @@ export default function TemplateImportPanel() {
                     بسته نصبی
                   </button>
                 ) : null}
+                {hasDedicatedBackend(tpl.key) ? (
+                  <button
+                    type="button"
+                    className={styles.tplBtnInstall}
+                    disabled={busy || loading || deployBusy}
+                    title="ساخت پوشه ایزوله زیر /var/www/websites/<نام>/ با بک‌اند و فرانت سبک"
+                    onClick={() => openDeployModal(tpl)}
+                  >
+                    {deployBusy ? (
+                      <Loader2 size={13} className={styles.spin} />
+                    ) : (
+                      <Server size={13} />
+                    )}
+                    نصب روی سرور
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  className={styles.tplBtnSnapshot}
+                  disabled={busy || loading || sslBusy}
+                  title="نصب گواهی SSL برای سایت ایزوله (PEM)"
+                  onClick={() => openSslModal(tpl)}
+                >
+                  {sslBusy ? (
+                    <Loader2 size={13} className={styles.spin} />
+                  ) : (
+                    <Shield size={13} />
+                  )}
+                  گواهی SSL
+                </button>
+                {hasDedicatedBackend(tpl.key) ? (
+                  <button
+                    type="button"
+                    className={styles.tplBtnInstall}
+                    disabled={busy || loading || gitPackBusy}
+                    title="برش بک‌اند و فرانت این بسته را با نام دلخواه به گیت‌هاب پوش می‌کند"
+                    onClick={() => {
+                      setGitPackResult(null)
+                      setGitPackMessage(`export ${tpl.key}`)
+                      setGitPackName(
+                        String(tpl.key || '')
+                          .replace(/_theme_one$/i, '')
+                          .replace(/_/g, '-')
+                          .slice(0, 40),
+                      )
+                      setGitPackTpl(tpl)
+                    }}
+                  >
+                    {gitPackBusy && gitPackTpl?.key === tpl.key ? (
+                      <Loader2 size={13} className={styles.spin} />
+                    ) : (
+                      <GitBranch size={13} />
+                    )}
+                    افزودن به گیت
+                  </button>
+                ) : null}
               </footer>
             </article>
           )
@@ -635,13 +949,7 @@ export default function TemplateImportPanel() {
             if (e.target === e.currentTarget && !busyKey) setDetailTpl(null)
           }}
         >
-          <div
-            className={`${styles.tplModal} ${styles.tplDetailModal}`}
-            style={{
-              '--tpl-accent': detailTpl.accent,
-              '--tpl-accent-soft': detailTpl.accentSoft,
-            }}
-          >
+          <div className={`${styles.tplModal} ${styles.tplDetailModal}`}>
             <button
               type="button"
               className={styles.tplModalClose}
@@ -828,13 +1136,7 @@ export default function TemplateImportPanel() {
             if (e.target === e.currentTarget && !busyKey) setConfirmTpl(null)
           }}
         >
-          <div
-            className={styles.tplModal}
-            style={{
-              '--tpl-accent': confirmTpl.accent,
-              '--tpl-accent-soft': confirmTpl.accentSoft,
-            }}
-          >
+          <div className={styles.tplModal}>
             <button
               type="button"
               className={styles.tplModalClose}
@@ -972,13 +1274,7 @@ export default function TemplateImportPanel() {
             if (e.target === e.currentTarget && !busyKey) setInstallTpl(null)
           }}
         >
-          <div
-            className={styles.tplModal}
-            style={{
-              '--tpl-accent': installTpl.accent,
-              '--tpl-accent-soft': installTpl.accentSoft,
-            }}
-          >
+          <div className={styles.tplModal}>
             <button
               type="button"
               className={styles.tplModalClose}
@@ -1074,6 +1370,527 @@ export default function TemplateImportPanel() {
                   <Download size={15} />
                 )}
                 ساخت و دانلود زیپ
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {deployTpl ? (
+        <div
+          className={styles.tplModalRoot}
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !deployBusy) setDeployTpl(null)
+          }}
+        >
+          <div className={styles.tplModal}>
+            <button
+              type="button"
+              className={styles.tplModalClose}
+              disabled={deployBusy}
+              onClick={() => setDeployTpl(null)}
+              aria-label="بستن"
+            >
+              <X size={16} />
+            </button>
+            <h3>نصب روی سرور — {deployTpl.name}</h3>
+            <p className={styles.tplModalLead}>
+              پوشه ایزوله زیر{' '}
+              <code>/var/www/websites/&lt;نام&gt;/</code> ساخته می‌شود؛ فقط
+              مدل‌ها و صفحات همین سیستم کپی می‌شوند. موتور ربو و
+              server-tools دست نمی‌خورند.
+            </p>
+            <label className={styles.tplField}>
+              دامنه فرانت (مثلاً asmaneelm.ir)
+              <input
+                value={deployForm.front_domain}
+                onChange={(e) =>
+                  setDeployForm((p) => ({ ...p, front_domain: e.target.value }))
+                }
+                onBlur={(e) => suggestFromDomain(e.target.value)}
+                placeholder="asmaneelm.ir"
+                dir="ltr"
+              />
+            </label>
+            <label className={styles.tplField}>
+              نام پوشه سایت (site_id)
+              <input
+                value={deployForm.site_id}
+                onChange={(e) =>
+                  setDeployForm((p) => ({ ...p, site_id: e.target.value }))
+                }
+                placeholder="asmaneelm"
+                dir="ltr"
+              />
+            </label>
+            <label className={styles.tplField}>
+              دامنه ادمین
+              <input
+                value={deployForm.admin_domain}
+                onChange={(e) =>
+                  setDeployForm((p) => ({ ...p, admin_domain: e.target.value }))
+                }
+                placeholder="admin.asmaneelm.ir"
+                dir="ltr"
+              />
+            </label>
+            <label className={styles.tplField}>
+              کاربر لینوکس سرور
+              <input
+                value={deployForm.linux_user}
+                onChange={(e) =>
+                  setDeployForm((p) => ({ ...p, linux_user: e.target.value }))
+                }
+                placeholder="rebo"
+                dir="ltr"
+              />
+            </label>
+            <div className={styles.tplFieldRow}>
+              <label className={styles.tplField}>
+                پورت Django (خالی = خودکار)
+                <input
+                  value={deployForm.django_port}
+                  onChange={(e) =>
+                    setDeployForm((p) => ({ ...p, django_port: e.target.value }))
+                  }
+                  placeholder="8001"
+                  dir="ltr"
+                />
+              </label>
+              <label className={styles.tplField}>
+                پورت Next (خالی = خودکار)
+                <input
+                  value={deployForm.next_port}
+                  onChange={(e) =>
+                    setDeployForm((p) => ({ ...p, next_port: e.target.value }))
+                  }
+                  placeholder="3001"
+                  dir="ltr"
+                />
+              </label>
+            </div>
+            <div className={styles.tplFieldRow}>
+              <label className={styles.tplField}>
+                نام دیتابیس (خالی = خودکار)
+                <input
+                  value={deployForm.db_name}
+                  onChange={(e) =>
+                    setDeployForm((p) => ({ ...p, db_name: e.target.value }))
+                  }
+                  placeholder="db_asmaneelm"
+                  dir="ltr"
+                />
+              </label>
+              <label className={styles.tplField}>
+                کاربر دیتابیس (خالی = خودکار)
+                <input
+                  value={deployForm.db_user}
+                  onChange={(e) =>
+                    setDeployForm((p) => ({ ...p, db_user: e.target.value }))
+                  }
+                  placeholder="u_asmaneelm"
+                  dir="ltr"
+                />
+              </label>
+            </div>
+            <label className={styles.tplField}>
+              رمز دیتابیس (خالی = ساخت خودکار)
+              <input
+                type="password"
+                value={deployForm.db_pass}
+                onChange={(e) =>
+                  setDeployForm((p) => ({ ...p, db_pass: e.target.value }))
+                }
+                dir="ltr"
+              />
+            </label>
+            <label className={styles.tplField}>
+              IP سرور (برای ALLOWED_HOSTS)
+              <input
+                value={deployForm.server_ip}
+                onChange={(e) =>
+                  setDeployForm((p) => ({ ...p, server_ip: e.target.value }))
+                }
+                placeholder="194.5.205.54"
+                dir="ltr"
+              />
+            </label>
+            <label className={styles.tplField}>
+              API_MAX_SMS (اختیاری)
+              <input
+                value={deployForm.api_max_sms}
+                onChange={(e) =>
+                  setDeployForm((p) => ({ ...p, api_max_sms: e.target.value }))
+                }
+                dir="ltr"
+              />
+            </label>
+            <div className={styles.tplFieldRow}>
+              <label className={styles.tplField}>
+                MAX_SMS_ORIGINATOR
+                <input
+                  value={deployForm.max_sms_originator}
+                  onChange={(e) =>
+                    setDeployForm((p) => ({
+                      ...p,
+                      max_sms_originator: e.target.value,
+                    }))
+                  }
+                  dir="ltr"
+                />
+              </label>
+              <label className={styles.tplField}>
+                MAX_SMS_PATTERN_CODE
+                <input
+                  value={deployForm.max_sms_pattern_code}
+                  onChange={(e) =>
+                    setDeployForm((p) => ({
+                      ...p,
+                      max_sms_pattern_code: e.target.value,
+                    }))
+                  }
+                  dir="ltr"
+                />
+              </label>
+            </div>
+            <label className={styles.tplCheck}>
+              <input
+                type="checkbox"
+                checked={!!deployForm.force}
+                onChange={(e) =>
+                  setDeployForm((p) => ({ ...p, force: e.target.checked }))
+                }
+              />
+              بازنویسی اجباری اگر پوشه از قبل وجود دارد (نصب ناقص)
+            </label>
+            {deployBusy || deployJob ? (
+              <div className={styles.tplProgressCard}>
+                <div className={styles.tplProgressHead}>
+                  <span>{deployJob?.phase || 'در حال آماده‌سازی…'}</span>
+                  <strong>{Math.min(100, Number(deployJob?.progress) || 0)}%</strong>
+                </div>
+                <div className={styles.tplProgressTrack}>
+                  <div
+                    className={styles.tplProgressFill}
+                    style={{
+                      width: `${Math.min(100, Number(deployJob?.progress) || 3)}%`,
+                    }}
+                  />
+                </div>
+                <p className={styles.tplProgressMsg}>
+                  {deployJob?.message || 'نصب در صف…'}
+                </p>
+                {deployJob?.log_tail ? (
+                  <pre className={styles.tplLogBox}>{deployJob.log_tail}</pre>
+                ) : null}
+              </div>
+            ) : null}
+            <div className={styles.tplModalActions}>
+              <button
+                type="button"
+                className={styles.extBtnGhost}
+                disabled={deployBusy}
+                onClick={() => setDeployTpl(null)}
+              >
+                انصراف
+              </button>
+              <button
+                type="button"
+                className={styles.tplBtnInstall}
+                disabled={
+                  deployBusy || !deployForm.front_domain.trim()
+                }
+                onClick={startDeploy}
+              >
+                {deployBusy ? (
+                  <Loader2 size={15} className={styles.spin} />
+                ) : (
+                  <Server size={15} />
+                )}
+                شروع نصب ایزوله
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {sslTpl ? (
+        <div
+          className={styles.tplModalRoot}
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !sslBusy) setSslTpl(null)
+          }}
+        >
+          <div className={styles.tplModal}>
+            <button
+              type="button"
+              className={styles.tplModalClose}
+              disabled={sslBusy}
+              onClick={() => setSslTpl(null)}
+              aria-label="بستن"
+            >
+              <X size={16} />
+            </button>
+            <h3>گواهی SSL — {sslTpl.name}</h3>
+            <p className={styles.tplModalLead}>
+              همان ۴ قطعه‌ای که از پنل گواهی می‌گیری را اینجا بگذار. nginx از
+              Full Chain (یا Certificate + Bundle) به‌همراه Private key استفاده
+              می‌کند؛ فقط روی همین سایت ایزوله نوشته می‌شود.
+            </p>
+            <label className={styles.tplField}>
+              site_id
+              <input
+                value={sslForm.site_id}
+                onChange={(e) =>
+                  setSslForm((p) => ({ ...p, site_id: e.target.value }))
+                }
+                placeholder="asmaneelm"
+                dir="ltr"
+              />
+            </label>
+            <label className={styles.tplField}>
+              هدف
+              <select
+                value={sslForm.target}
+                onChange={(e) =>
+                  setSslForm((p) => ({ ...p, target: e.target.value }))
+                }
+              >
+                <option value="both">ادمین + فرانت</option>
+                <option value="front">فقط فرانت</option>
+                <option value="admin">فقط ادمین</option>
+              </select>
+            </label>
+            <label className={styles.tplField}>
+              دامنه فرانت
+              <input
+                value={sslForm.front_domain}
+                onChange={(e) =>
+                  setSslForm((p) => ({ ...p, front_domain: e.target.value }))
+                }
+                dir="ltr"
+              />
+            </label>
+            <label className={styles.tplField}>
+              دامنه ادمین
+              <input
+                value={sslForm.admin_domain}
+                onChange={(e) =>
+                  setSslForm((p) => ({ ...p, admin_domain: e.target.value }))
+                }
+                dir="ltr"
+              />
+            </label>
+            <label className={styles.tplField}>
+              Certificate
+              <textarea
+                rows={4}
+                value={sslForm.certificate_pem}
+                onChange={(e) =>
+                  setSslForm((p) => ({
+                    ...p,
+                    certificate_pem: e.target.value,
+                  }))
+                }
+                placeholder="-----BEGIN CERTIFICATE-----"
+                dir="ltr"
+              />
+            </label>
+            <label className={styles.tplField}>
+              Private key
+              <textarea
+                rows={4}
+                value={sslForm.private_key_pem}
+                onChange={(e) =>
+                  setSslForm((p) => ({
+                    ...p,
+                    private_key_pem: e.target.value,
+                  }))
+                }
+                placeholder="-----BEGIN PRIVATE KEY-----"
+                dir="ltr"
+              />
+            </label>
+            <label className={styles.tplField}>
+              Full Chain
+              <textarea
+                rows={4}
+                value={sslForm.fullchain_pem}
+                onChange={(e) =>
+                  setSslForm((p) => ({ ...p, fullchain_pem: e.target.value }))
+                }
+                placeholder="-----BEGIN CERTIFICATE-----"
+                dir="ltr"
+              />
+            </label>
+            <label className={styles.tplField}>
+              Bundle
+              <textarea
+                rows={4}
+                value={sslForm.bundle_pem}
+                onChange={(e) =>
+                  setSslForm((p) => ({ ...p, bundle_pem: e.target.value }))
+                }
+                placeholder="-----BEGIN CERTIFICATE-----"
+                dir="ltr"
+              />
+            </label>
+            {sslJob ? (
+              <pre className={styles.tplLogBox}>
+                [{sslJob.status}] {sslJob.message}
+              </pre>
+            ) : null}
+            <div className={styles.tplModalActions}>
+              <button
+                type="button"
+                className={styles.extBtnGhost}
+                disabled={sslBusy}
+                onClick={() => setSslTpl(null)}
+              >
+                انصراف
+              </button>
+              <button
+                type="button"
+                className={styles.tplBtnInstall}
+                disabled={
+                  sslBusy ||
+                  !sslForm.site_id.trim() ||
+                  !sslForm.private_key_pem.trim() ||
+                  !(
+                    sslForm.fullchain_pem.trim() ||
+                    sslForm.certificate_pem.trim()
+                  )
+                }
+                onClick={startSsl}
+              >
+                {sslBusy ? (
+                  <Loader2 size={15} className={styles.spin} />
+                ) : (
+                  <Shield size={15} />
+                )}
+                نصب گواهی
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {gitPackTpl ? (
+        <div
+          className={styles.tplModalRoot}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="git-pack-title"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !gitPackBusy) {
+              setGitPackTpl(null)
+              setGitPackResult(null)
+            }
+          }}
+        >
+          <div className={styles.tplModal}>
+            <button
+              type="button"
+              className={styles.tplModalClose}
+              disabled={gitPackBusy}
+              onClick={() => {
+                setGitPackTpl(null)
+                setGitPackResult(null)
+              }}
+              aria-label="بستن"
+            >
+              <X size={16} />
+            </button>
+            <h3 id="git-pack-title">
+              <GitBranch size={18} style={{ verticalAlign: 'middle' }} /> افزودن
+              «{gitPackTpl.name}» به گیت
+            </h3>
+            <p className={styles.tplModalLead}>
+              بک‌اند و فرانت سبک این بسته ساخته می‌شود و به دو ریپوی خصوصی
+              GitHub پوش می‌شود تا بعداً روی سرور دیگر نصب شود:
+            </p>
+            <ul className={styles.gitPackRepos}>
+              <li>
+                <code>fadaoddini/{gitPackName.trim() || '…'}-admin</code>
+              </li>
+              <li>
+                <code>fadaoddini/{gitPackName.trim() || '…'}-front</code>
+              </li>
+            </ul>
+            <label className={styles.tplField}>
+              نام دلخواه گیت
+              <input
+                type="text"
+                value={gitPackName}
+                onChange={(e) => setGitPackName(e.target.value)}
+                placeholder="مثلاً asmaneelm یا school-pack"
+                dir="ltr"
+                disabled={gitPackBusy}
+              />
+            </label>
+            <label className={styles.tplField}>
+              پیام کامیت
+              <input
+                type="text"
+                value={gitPackMessage}
+                onChange={(e) => setGitPackMessage(e.target.value)}
+                placeholder={`export ${gitPackTpl.key}`}
+                disabled={gitPackBusy}
+              />
+            </label>
+            {gitPackResult ? (
+              <div className={styles.gitPackResult}>
+                {gitPackResult.admin?.html_url ? (
+                  <a
+                    href={gitPackResult.admin.html_url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    admin {gitPackResult.admin.ok ? '✓' : '✗'}
+                  </a>
+                ) : null}
+                {gitPackResult.front?.html_url ? (
+                  <a
+                    href={gitPackResult.front.html_url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    front {gitPackResult.front.ok ? '✓' : '✗'}
+                  </a>
+                ) : null}
+                {gitPackResult.error ? (
+                  <pre className={styles.tplLogBox}>{gitPackResult.error}</pre>
+                ) : null}
+              </div>
+            ) : null}
+            <div className={styles.tplModalActions}>
+              <button
+                type="button"
+                className={styles.extBtnGhost}
+                disabled={gitPackBusy}
+                onClick={() => {
+                  setGitPackTpl(null)
+                  setGitPackResult(null)
+                }}
+              >
+                انصراف
+              </button>
+              <button
+                type="button"
+                className={styles.tplBtnInstall}
+                disabled={gitPackBusy || !gitPackName.trim()}
+                onClick={publishPackToGit}
+              >
+                {gitPackBusy ? (
+                  <Loader2 size={15} className={styles.spin} />
+                ) : (
+                  <GitBranch size={15} />
+                )}
+                {gitPackBusy ? 'در حال ساخت و پوش…' : 'ساخت و پوش به گیت'}
               </button>
             </div>
           </div>

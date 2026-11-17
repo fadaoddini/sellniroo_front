@@ -11,18 +11,24 @@ import {
 } from '@/config/homeLayout'
 import {
   MODULE_PAGE_DEFS,
+  SHARED_INTERNAL_LAYOUT_KEY,
+  SHARED_INTERNAL_LAYOUT_KEY_LEGACY,
   normalizeModulePageLayout,
+  normalizeSharedInternalLayout,
+  createDefaultSharedInternalLayout,
   isModulePageContentWidget,
+  sharedInternalLayoutHasContent,
 } from '@/config/modulePageLayouts'
 import {
   isHeroWithMenuWidgetType,
   resolveHeroWithMenuChromeBreakingSettings,
 } from '@/config/heroWithMenuSettings'
 
-/** ویجت‌های هدر/نوار که رنگ و ظاهر را حمل می‌کنند */
+/** ویجت‌های هدر/نوار که رنگ و ظاهر را حمل می‌کنند.
+ * hero_slider محتواست نه کروم — روی صفحات داخلی (مثل /repairs) کپی نمی‌شود.
+ */
 export const CHROME_HEADER_TYPES = new Set([
   'breaking_news',
-  'hero_slider',
   'site_menu',
   'site_top_nav',
   'corporate_header',
@@ -68,36 +74,42 @@ function isContentWidget(type) {
   )
 }
 
+/** فقط سکشن ۱ (اولین ردیف) صفحه اصلی — منبع «اعمال هدر و رنگ به همه» */
+function getHomeSectionOne(homeLayout) {
+  const L = normalizeHomeLayout(homeLayout)
+  const first = (L.rows || [])[0]
+  return first && typeof first === 'object' ? first : null
+}
+
 /**
- * اگر خبر فوری داخل هیرو باشگاه/مدرسه embed شده باشد، برای صفحات داخلی
- * یک ویجت breaking_news جامد هم‌تم می‌سازد تا پروفایل با خانه هماهنگ بماند.
+ * اگر خبر فوری داخل هیرو باشگاه/مدرسه در سکشن ۱ embed شده باشد،
+ * برای صفحات داخلی یک ویجت breaking_news جامد هم‌تم می‌سازد.
  */
 function synthesizeEmbeddedChrome(homeLayout) {
-  const L = normalizeHomeLayout(homeLayout)
-  for (const row of L.rows || []) {
-    for (const col of row.columns || []) {
-      for (const w of col.widgets || []) {
-        const type = String(w?.type || '')
-        const s = w?.settings && typeof w.settings === 'object' ? w.settings : {}
-        if (isHeroWithMenuWidgetType(type) && s.show_menu !== false) {
-          return [
-            {
-              type: 'breaking_news',
-              settings: resolveHeroWithMenuChromeBreakingSettings(s),
-            },
-          ]
-        }
-        if (
-          (type === 'school_landing' || type === 'school_hero_breaking') &&
-          (s.embed_breaking === true || s.show_breaking_in_hero === true)
-        ) {
-          return [
-            {
-              type: 'breaking_news',
-              settings: cloneSettings(s.breaking_news || s),
-            },
-          ]
-        }
+  const row = getHomeSectionOne(homeLayout)
+  if (!row) return []
+  for (const col of row.columns || []) {
+    for (const w of col.widgets || []) {
+      const type = String(w?.type || '')
+      const s = w?.settings && typeof w.settings === 'object' ? w.settings : {}
+      if (isHeroWithMenuWidgetType(type) && s.show_menu !== false) {
+        return [
+          {
+            type: 'breaking_news',
+            settings: resolveHeroWithMenuChromeBreakingSettings(s),
+          },
+        ]
+      }
+      if (
+        (type === 'school_landing' || type === 'school_hero_breaking') &&
+        (s.embed_breaking === true || s.show_breaking_in_hero === true)
+      ) {
+        return [
+          {
+            type: 'breaking_news',
+            settings: cloneSettings(s.breaking_news || s),
+          },
+        ]
       }
     }
   }
@@ -105,24 +117,82 @@ function synthesizeEmbeddedChrome(homeLayout) {
 }
 
 /**
- * ویجت‌های هدر را به ترتیب ظاهر در صفحه اصلی برمی‌گرداند.
+ * ویجت‌های سکشن ۱ صفحه اصلی را برای همگام‌سازی برمی‌گرداند.
+ * سکشن‌های ۲ به بعد اصلاً خوانده نمی‌شوند.
+ * ویجت‌های محتوای صفحه (*_page / *_content) منتقل نمی‌شوند.
  */
 export function extractChromeWidgets(homeLayout) {
-  const L = normalizeHomeLayout(homeLayout)
+  const row = getHomeSectionOne(homeLayout)
+  if (!row) return []
   const out = []
-  for (const row of L.rows || []) {
-    for (const col of row.columns || []) {
-      for (const w of col.widgets || []) {
-        if (!isChromeWidget(w?.type)) continue
-        out.push({
-          type: w.type,
-          settings: cloneSettings(w.settings),
-        })
-      }
+  for (const col of row.columns || []) {
+    for (const w of col.widgets || []) {
+      if (!w?.type) continue
+      if (isContentWidget(w.type)) continue
+      out.push({
+        type: w.type,
+        settings: cloneSettings(w.settings),
+      })
     }
   }
   if (out.length) return out
-  return synthesizeEmbeddedChrome(L)
+  return synthesizeEmbeddedChrome(homeLayout)
+}
+
+/**
+ * کل سکشن ۱ خانه را به‌صورت چیدمان مشترک کپی می‌کند (بدون ویجت محتوا).
+ */
+export function extractHomeSectionOneAsLayout(homeLayout) {
+  const home = normalizeHomeLayout(homeLayout)
+  const first = getHomeSectionOne(home)
+  const base = createDefaultSharedInternalLayout()
+  if (!first) {
+    return normalizeSharedInternalLayout({
+      ...base,
+      page_width: home.page_width,
+      max_width: home.max_width,
+      gutter: home.gutter,
+    })
+  }
+  const columns = (first.columns || []).map((col) => ({
+    ...col,
+    id: uid('col_shared'),
+    widgets: (col.widgets || [])
+      .filter((w) => w?.type && !isContentWidget(w.type))
+      .map((w) => ({
+        ...createWidgetInstance(w.type, cloneSettings(w.settings)),
+        id: uid('w_shared'),
+      })),
+  }))
+  const hasWidgets = columns.some((c) => (c.widgets || []).length > 0)
+  if (!hasWidgets) {
+    const synthesized = synthesizeEmbeddedChrome(home)
+    if (synthesized.length) {
+      return normalizeSharedInternalLayout({
+        ...base,
+        page_width: home.page_width,
+        max_width: home.max_width,
+        gutter: home.gutter,
+        rows: [buildChromeRow(synthesized, 'shared')],
+      })
+    }
+  }
+  return normalizeSharedInternalLayout({
+    ...base,
+    page_width: home.page_width,
+    max_width: home.max_width,
+    gutter: home.gutter,
+    rows: [
+      {
+        ...first,
+        id: uid('sec_shared'),
+        width: first.width === 'boxed' ? 'boxed' : 'full',
+        columns: hasWidgets
+          ? columns
+          : [createColumn(100, [])],
+      },
+    ],
+  })
 }
 
 /**
@@ -155,6 +225,104 @@ function stripChromeWidgets(layout) {
     rows.push({ ...row, columns })
   }
   return { ...L, rows }
+}
+
+const INHERITED_HERO_TYPES = new Set([
+  'hero_slider',
+  'deep_slider',
+  'gallery_slider',
+])
+
+/** اسلایدرهایی که با «اعمال هدر» از خانه کپی شده‌اند (نه ویجت دستی صفحه). */
+function isSyncedHeroWidget(widget) {
+  const type = String(widget?.type || '')
+  if (!INHERITED_HERO_TYPES.has(type)) return false
+  const id = String(widget?.id || '')
+  return (
+    /_live_/i.test(id) ||
+    /^w_mod_/i.test(id) ||
+    /_sync_/i.test(id) ||
+    /^w_chrome_/i.test(id)
+  )
+}
+
+/**
+ * هیرو/اسلایدر همگام‌شده از خانه را از چیدمان صفحه داخلی برمی‌دارد.
+ * ویجت اسلایدری که کاربر خودش در صفحات داخلی گذاشته بماند.
+ */
+export function stripSyncedHeroWidgets(layout) {
+  const L = normalizeHomeLayout(layout)
+  const rows = []
+  for (const row of L.rows || []) {
+    const columns = (row.columns || []).map((col) => ({
+      ...col,
+      widgets: (col.widgets || []).filter((w) => !isSyncedHeroWidget(w)),
+    }))
+    const hasWidgets = columns.some((c) => (c.widgets || []).length > 0)
+    if (!hasWidgets) continue
+    rows.push({ ...row, columns })
+  }
+  return { ...L, rows }
+}
+
+/**
+ * چیدمان مشترک صفحات داخلی را فقط از سکشن ۱ خانه می‌سازد.
+ */
+export function buildSharedInternalLayoutFromHome(homeLayout) {
+  return extractHomeSectionOneAsLayout(homeLayout)
+}
+
+/**
+ * چیدمان مشترک را بالای محتوای صفحه می‌چسباند.
+ * کروم تکراری صفحه حذف می‌شود؛ ویجت‌های اختصاصی صفحه می‌مانند.
+ */
+export function composeInternalPageLayout(
+  pageLayout,
+  sharedLayout,
+  options = {},
+) {
+  const shared = normalizeSharedInternalLayout(sharedLayout)
+  if (!sharedInternalLayoutHasContent(shared)) {
+    return normalizeModulePageLayout(pageLayout, options.pageKey)
+  }
+  const base = stripChromeWidgets(pageLayout)
+  let rows = [...(shared.rows || []), ...(base.rows || [])]
+
+  if (!rows.length && options.contentWidget) {
+    rows = [
+      {
+        id: uid('sec_content'),
+        template: '1',
+        width: 'inherit',
+        padding_y: 'none',
+        columns: [
+          createColumn(100, [
+            {
+              ...createWidgetInstance(options.contentWidget, {}),
+              id: uid('w_content'),
+            },
+          ]),
+        ],
+      },
+    ]
+  }
+
+  rows = rows.map((row) => {
+    const widgets = (row.columns || []).flatMap((c) => c.widgets || [])
+    if (!widgets.length) return row
+    const onlyChrome = widgets.every((w) => isChromeWidget(w?.type))
+    if (onlyChrome) return { ...row, width: 'full' }
+    if (row.width === 'full') return { ...row, width: 'inherit' }
+    return row
+  })
+
+  return normalizeHomeLayout({
+    ...base,
+    page_width: shared.page_width ?? base.page_width,
+    max_width: shared.max_width ?? base.max_width,
+    gutter: shared.gutter ?? base.gutter,
+    rows,
+  })
 }
 
 /**
@@ -280,12 +448,33 @@ export function buildSyncedLayoutsFromHome(settings) {
 
   const applied = []
 
+  // یک چیدمان مشترک برای همه صفحات داخلی؛ صفحه اصلی دست‌نخورده می‌ماند
+  const shared = buildSharedInternalLayoutFromHome(home)
+  moduleMap[SHARED_INTERNAL_LAYOUT_KEY] = shared
+  delete moduleMap[SHARED_INTERNAL_LAYOUT_KEY_LEGACY]
+  applied.push({
+    key: SHARED_INTERNAL_LAYOUT_KEY,
+    label: 'چیدمان مشترک صفحات داخلی',
+    path: '/adminsettings?tab=pages&page=shared',
+  })
+
   MODULE_PAGE_DEFS.forEach((def) => {
     const prev = normalizeModulePageLayout(moduleMap[def.key], def.key)
-    moduleMap[def.key] = applyChromeToLayout(prev, home, {
-      idPrefix: def.key,
-      contentWidget: def.contentWidget,
-    })
+    if (def.keepOwnChrome) {
+      moduleMap[def.key] = stripSyncedHeroWidgets(prev)
+    } else {
+      // فقط محتوا؛ کروم از shared در زمان اجرا می‌آید
+      let contentOnly = stripSyncedHeroWidgets(stripChromeWidgets(prev))
+      if (!(contentOnly.rows || []).length) {
+        contentOnly = normalizeModulePageLayout(null, def.key)
+      }
+      moduleMap[def.key] = {
+        ...contentOnly,
+        page_width: shared.page_width,
+        max_width: shared.max_width,
+        gutter: shared.gutter,
+      }
+    }
     applied.push({ key: def.key, label: def.label, path: def.path })
   })
 
@@ -384,4 +573,4 @@ export function describeChromeFromHome(homeLayout) {
   }
 }
 
-export { isChromeWidget, isContentWidget }
+export { isChromeWidget, isContentWidget, stripChromeWidgets }

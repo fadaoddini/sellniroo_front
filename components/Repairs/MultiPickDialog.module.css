@@ -1,0 +1,130 @@
+/* حالت جمع‌وجور: هر آیتم یک خط، شیت باریک‌تر */
+
+.compactSheet {
+  font-family: var(--font-iran, iran, Tahoma, sans-serif);
+
+  max-width: 340px;
+  max-height: min(70vh, 520px);
+  border-radius: 16px;
+}
+
+.compactHeader {
+  padding: 0.7rem 0.85rem 0.55rem;
+}
+
+.compactTitle {
+  font-size: 0.88rem;
+}
+
+.compactClose {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+
+.compactSearch {
+  margin: 0.45rem 0.75rem 0;
+}
+
+.compactSearchInput {
+  padding: 0.45rem 2rem 0.45rem 0.7rem;
+  border-radius: 9px;
+  font-size: 0.78rem;
+}
+
+.compactBody {
+  padding: 0.35rem 0.55rem 0.25rem;
+}
+
+.compactList {
+  gap: 0.12rem;
+}
+
+.compactOption {
+  padding: 0.38rem 0.5rem;
+  border-radius: 8px;
+  border-width: 1px;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  min-height: 0;
+}
+
+.compactOptionText {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.compactOptionLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.compactOptionMeta {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+  line-height: 1.2;
+  padding: 0.12rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(244, 174, 82, 0.14);
+  color: #8a6a10;
+}
+
+.compactOption.optionSelected .compactOptionMeta,
+:global(.optionSelected) .compactOptionMeta {
+  background: rgba(212, 98, 26, 0.18);
+  color: #6b4a08;
+}
+
+.compactRadio {
+  width: 16px;
+  height: 16px;
+}
+
+.compactCheck {
+  width: 18px;
+  height: 18px;
+}
+
+.compactFooter {
+  padding: 0.5rem 0.75rem 0.65rem;
+  gap: 0.4rem;
+}
+
+.compactClear,
+.compactDone {
+  padding: 0.4rem 0.75rem;
+  border-radius: 9px;
+  font-size: 0.74rem;
+  min-height: 0;
+}
+
+@media (max-width: 640px) {
+  .compactSheet {
+    max-width: 100%;
+    max-height: min(72vh, calc(100dvh - 24px));
+    border-radius: 16px 16px 0 0;
+  }
+
+  .compactOption {
+    padding: 0.48rem 0.55rem;
+    min-height: 0;
+    font-size: 0.8rem;
+  }
+
+  .compactClear,
+  .compactDone {
+    padding: 0.55rem 0.75rem;
+    min-height: 42px;
+  }
+}

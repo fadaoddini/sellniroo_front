@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
+  ChevronDown,
   Loader2,
   MapPin,
   Package,
@@ -91,6 +92,7 @@ export default function ShopProfilePanel({
   const [error, setError] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [openOrderId, setOpenOrderId] = useState(null)
   const controlled = Boolean(controlledSection)
 
   useEffect(() => {
@@ -217,9 +219,10 @@ export default function ShopProfilePanel({
             </Link>
           </div>
         ) : (
-          <ul className={styles.list}>
+          <ul className={styles.orderList}>
             {orders.map((o, idx) => {
               const paid = isOrderPaid(o)
+              const open = openOrderId === o.id
               const mode =
                 o.payment_mode_label ||
                 MODE_FA[o.payment_mode] ||
@@ -237,21 +240,58 @@ export default function ShopProfilePanel({
                 (s, it) => s + (Number(it.quantity) || 0),
                 0,
               )
+              const panelId = `shop-order-panel-${o.id}`
+              const triggerId = `shop-order-trigger-${o.id}`
               return (
                 <li
                   key={o.id}
-                  className={`${styles.card} ${paid ? styles.cardPaid : styles.cardUnpaid}`}
-                  style={{ animationDelay: `${Math.min(idx, 8) * 40}ms` }}
+                  className={`${styles.orderRow} ${
+                    paid ? styles.orderPaid : styles.orderUnpaid
+                  } ${open ? styles.orderOpen : ''}`}
+                  style={{ animationDelay: `${Math.min(idx, 8) * 35}ms` }}
                 >
-                  <div className={styles.cardAccent} aria-hidden />
-                  <div className={styles.cardBody}>
-                    <div className={styles.cardTop}>
-                      <div className={styles.cardTitleBlock}>
-                        <span className={styles.orderId}>سفارش #{o.id}</span>
+                  <button
+                    type="button"
+                    id={triggerId}
+                    className={styles.orderTrigger}
+                    aria-expanded={open}
+                    aria-controls={panelId}
+                    onClick={() =>
+                      setOpenOrderId((cur) => (cur === o.id ? null : o.id))
+                    }
+                  >
+                    <span
+                      className={styles.orderAccent}
+                      aria-hidden
+                    />
+                    <span className={styles.orderMain}>
+                      <span className={styles.orderTitleLine}>
+                        <strong className={styles.orderId}>
+                          سفارش #{o.id}
+                        </strong>
                         <span className={styles.shopName}>
                           {o.shop_title || 'فروشگاه'}
                         </span>
-                      </div>
+                      </span>
+                      <span className={styles.orderMetaLine}>
+                        {formatDate(o.created_at) ? (
+                          <time dateTime={o.created_at}>
+                            {formatDate(o.created_at)}
+                          </time>
+                        ) : null}
+                        {itemCount > 0 ? (
+                          <span>
+                            {itemCount.toLocaleString('fa-IR')} قلم
+                          </span>
+                        ) : null}
+                        {fulfill ? <span>{fulfill}</span> : null}
+                      </span>
+                    </span>
+                    <span className={styles.orderSide}>
+                      <strong className={styles.price}>
+                        {formatPrice(o.final_price)}
+                        <small> ت</small>
+                      </strong>
                       <span
                         className={`${styles.badge} ${
                           paid ? styles.badgePaid : styles.badgeUnpaid
@@ -259,91 +299,164 @@ export default function ShopProfilePanel({
                       >
                         {paymentLabel(o)}
                       </span>
-                    </div>
+                    </span>
+                    <ChevronDown
+                      className={`${styles.chevron} ${
+                        open ? styles.chevronOpen : ''
+                      }`}
+                      size={18}
+                      strokeWidth={2.2}
+                      aria-hidden
+                    />
+                  </button>
 
-                    <div className={styles.priceRow}>
-                      <strong className={styles.price}>
-                        {formatPrice(o.final_price)}
-                        <small> تومان</small>
-                      </strong>
-                      {formatDate(o.created_at) ? (
-                        <time className={styles.date} dateTime={o.created_at}>
-                          {formatDate(o.created_at)}
-                        </time>
-                      ) : null}
-                    </div>
+                  <div
+                    id={panelId}
+                    role="region"
+                    aria-labelledby={triggerId}
+                    aria-hidden={!open}
+                    className={`${styles.orderPanel} ${
+                      open ? styles.orderPanelOpen : ''
+                    }`}
+                  >
+                    <div className={styles.orderPanelInner}>
+                      <div className={styles.orderDetailGrid}>
+                        <div className={styles.orderInfoCol}>
+                          <div className={styles.chips}>
+                            {mode ? (
+                              <span
+                                className={`${styles.chip} ${
+                                  o.payment_mode === 'wallet'
+                                    ? styles.chipWallet
+                                    : ''
+                                }`}
+                              >
+                                {o.payment_mode === 'wallet' ? (
+                                  <Wallet size={12} strokeWidth={2.25} />
+                                ) : null}
+                                {mode}
+                              </span>
+                            ) : null}
+                            {o.pickup_from_shop ? (
+                              <span className={styles.chip}>حضوری</span>
+                            ) : (
+                              <span className={styles.chip}>ارسال</span>
+                            )}
+                            {itemCount > 0 ? (
+                              <span className={styles.chip}>
+                                {itemCount.toLocaleString('fa-IR')} قلم
+                              </span>
+                            ) : null}
+                            {fulfill ? (
+                              <span
+                                className={`${styles.chip} ${styles.chipMuted}`}
+                              >
+                                {fulfill}
+                              </span>
+                            ) : null}
+                            {review ? (
+                              <span
+                                className={`${styles.chip} ${styles.chipWarn}`}
+                              >
+                                {review}
+                              </span>
+                            ) : null}
+                          </div>
 
-                    <div className={styles.chips}>
-                      {mode ? (
-                        <span
-                          className={`${styles.chip} ${
-                            o.payment_mode === 'wallet' ? styles.chipWallet : ''
-                          }`}
-                        >
-                          {o.payment_mode === 'wallet' ? (
-                            <Wallet size={12} strokeWidth={2.25} />
+                          {Number(o.wallet_amount) > 0 ||
+                          (Number(o.payable_amount) > 0 && !paid) ? (
+                            <div className={styles.splitRow}>
+                              {Number(o.wallet_amount) > 0 ? (
+                                <span>
+                                  کیف پول:{' '}
+                                  <strong>
+                                    {formatPrice(o.wallet_amount)} تومان
+                                  </strong>
+                                </span>
+                              ) : null}
+                              {Number(o.payable_amount) > 0 && !paid ? (
+                                <span>
+                                  باقیمانده:{' '}
+                                  <strong>
+                                    {formatPrice(o.payable_amount)} تومان
+                                  </strong>
+                                </span>
+                              ) : null}
+                            </div>
                           ) : null}
-                          {mode}
-                        </span>
-                      ) : null}
-                      {o.pickup_from_shop ? (
-                        <span className={styles.chip}>حضوری</span>
-                      ) : (
-                        <span className={styles.chip}>ارسال</span>
-                      )}
-                      {itemCount > 0 ? (
-                        <span className={styles.chip}>
-                          {itemCount.toLocaleString('fa-IR')} قلم
-                        </span>
-                      ) : null}
-                      {fulfill ? (
-                        <span className={`${styles.chip} ${styles.chipMuted}`}>
-                          {fulfill}
-                        </span>
-                      ) : null}
-                      {review ? (
-                        <span className={`${styles.chip} ${styles.chipWarn}`}>
-                          {review}
-                        </span>
-                      ) : null}
-                    </div>
 
-                    {Number(o.wallet_amount) > 0 ||
-                    (Number(o.payable_amount) > 0 && !paid) ? (
-                      <div className={styles.splitRow}>
-                        {Number(o.wallet_amount) > 0 ? (
-                          <span>
-                            کیف پول:{' '}
-                            <strong>
-                              {formatPrice(o.wallet_amount)} تومان
-                            </strong>
-                          </span>
-                        ) : null}
-                        {Number(o.payable_amount) > 0 && !paid ? (
-                          <span>
-                            باقیمانده:{' '}
-                            <strong>
-                              {formatPrice(o.payable_amount)} تومان
-                            </strong>
-                          </span>
-                        ) : null}
+                          <div className={styles.detailFooter}>
+                            <span>
+                              مبلغ کل:{' '}
+                              <strong>
+                                {formatPrice(o.final_price)} تومان
+                              </strong>
+                            </span>
+                            {formatDate(o.created_at) ? (
+                              <time dateTime={o.created_at}>
+                                {formatDate(o.created_at)}
+                              </time>
+                            ) : null}
+                          </div>
+                        </div>
+
+                        <aside className={styles.invoiceCol} aria-label="فاکتور">
+                          <div className={styles.invoiceHead}>
+                            <span>فاکتور</span>
+                            <strong>#{o.id}</strong>
+                          </div>
+                          {o.items?.length ? (
+                            <table className={styles.invoiceTable}>
+                              <thead>
+                                <tr>
+                                  <th scope="col">کالا</th>
+                                  <th scope="col">تعداد</th>
+                                  <th scope="col">فی</th>
+                                  <th scope="col">مبلغ</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {o.items.map((it) => {
+                                  const unit = Number(
+                                    it.unit_price ?? it.price ?? 0,
+                                  )
+                                  const qty = Number(it.quantity) || 0
+                                  const line = unit * qty
+                                  return (
+                                    <tr key={it.id}>
+                                      <td className={styles.invName}>
+                                        {it.product_name}
+                                      </td>
+                                      <td className={styles.invNum}>
+                                        {qty.toLocaleString('fa-IR')}
+                                      </td>
+                                      <td className={styles.invNum}>
+                                        {formatPrice(unit)}
+                                      </td>
+                                      <td className={styles.invNum}>
+                                        {formatPrice(line)}
+                                      </td>
+                                    </tr>
+                                  )
+                                })}
+                              </tbody>
+                              <tfoot>
+                                <tr>
+                                  <td colSpan={3}>جمع</td>
+                                  <td className={styles.invNum}>
+                                    {formatPrice(o.final_price)}
+                                  </td>
+                                </tr>
+                              </tfoot>
+                            </table>
+                          ) : (
+                            <p className={styles.noItems}>
+                              جزئیات اقلام در دسترس نیست.
+                            </p>
+                          )}
+                        </aside>
                       </div>
-                    ) : null}
-
-                    {o.items?.length ? (
-                      <ul className={styles.items}>
-                        {o.items.map((it) => (
-                          <li key={it.id}>
-                            <span className={styles.itemName}>
-                              {it.product_name}
-                            </span>
-                            <span className={styles.itemQty}>
-                              ×{(it.quantity || 0).toLocaleString('fa-IR')}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : null}
+                    </div>
                   </div>
                 </li>
               )
@@ -362,56 +475,48 @@ export default function ShopProfilePanel({
               <p>آدرسی ذخیره نشده است.</p>
             </div>
           ) : (
-            <ul className={styles.list}>
+            <ul className={styles.addrList}>
               {addresses.map((a, idx) => (
                 <li
                   key={a.id}
-                  className={styles.card}
-                  style={{ animationDelay: `${Math.min(idx, 8) * 40}ms` }}
+                  className={styles.addrRow}
+                  style={{ animationDelay: `${Math.min(idx, 8) * 35}ms` }}
                 >
-                  <div className={styles.cardAccent} aria-hidden />
-                  <div className={styles.cardBody}>
-                    <div className={styles.cardTop}>
-                      <div className={styles.cardTitleBlock}>
-                        <span className={styles.orderId}>
-                          {a.name} {a.family}
-                        </span>
-                        {a.mobile ? (
-                          <span className={styles.shopName} dir="ltr">
-                            {a.mobile}
-                          </span>
-                        ) : null}
-                      </div>
-                      <button
-                        type="button"
-                        className={styles.iconBtn}
-                        aria-label="حذف آدرس"
-                        onClick={() => removeAddr(a.id)}
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
-                    <p className={styles.addrText}>
-                      {a.address}
+                  <span className={styles.addrAccent} aria-hidden />
+                  <span className={styles.addrIcon} aria-hidden>
+                    <MapPin size={14} strokeWidth={2.1} />
+                  </span>
+                  <div className={styles.addrMain}>
+                    <span className={styles.addrName}>
+                      {[a.name, a.family].filter(Boolean).join(' ') || 'آدرس'}
+                    </span>
+                    {a.mobile ? (
+                      <span className={styles.addrMobile} dir="ltr">
+                        {a.mobile}
+                      </span>
+                    ) : null}
+                    <span className={styles.addrLine} title={a.address || ''}>
+                      {a.address || '—'}
                       {a.description ? (
-                        <span className={styles.addrDesc}>
-                          {' '}
-                          · {a.description}
-                        </span>
+                        <em className={styles.addrDesc}> · {a.description}</em>
                       ) : null}
-                    </p>
-                    <div className={styles.chips}>
-                      {a.latitude != null ? (
-                        <span className={`${styles.chip} ${styles.chipOk}`}>
-                          موقعیت نقشه
-                        </span>
-                      ) : (
-                        <span className={`${styles.chip} ${styles.chipWarn}`}>
-                          بدون مختصات
-                        </span>
-                      )}
-                    </div>
+                    </span>
                   </div>
+                  <span
+                    className={`${styles.addrBadge} ${
+                      a.latitude != null ? styles.addrBadgeOk : styles.addrBadgeWarn
+                    }`}
+                  >
+                    {a.latitude != null ? 'نقشه' : 'بدون نقشه'}
+                  </span>
+                  <button
+                    type="button"
+                    className={styles.iconBtn}
+                    aria-label="حذف آدرس"
+                    onClick={() => removeAddr(a.id)}
+                  >
+                    <Trash2 size={14} />
+                  </button>
                 </li>
               ))}
             </ul>

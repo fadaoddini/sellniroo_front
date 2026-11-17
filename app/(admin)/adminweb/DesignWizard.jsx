@@ -15,8 +15,8 @@ const STEPS = [
   {
     id: 'pages',
     label: 'صفحات داخلی',
-    hint: 'درباره، تماس، سرور ابری و…',
-    href: '/adminsettings?tab=pages&wizard=1',
+    hint: 'اول چیدمان مشترک، بعد محتوای هر صفحه',
+    href: '/adminsettings?tab=pages&page=shared&wizard=1',
   },
   {
     id: 'shop',

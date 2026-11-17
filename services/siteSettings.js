@@ -17,9 +17,15 @@ import {
 } from '@/config/homeLayout'
 import {
   MODULE_PAGE_DEFS,
+  SHARED_INTERNAL_LAYOUT_KEY,
+  SHARED_INTERNAL_LAYOUT_KEY_LEGACY,
+  SHARED_INTERNAL_LAYOUT_EVENT,
+  isSharedInternalLayoutKey,
   normalizeModulePageLayout,
   normalizeModulePageLayoutsMap,
+  normalizeSharedInternalLayout,
   getModulePageDef,
+  getSharedInternalLayoutRaw,
 } from '@/config/modulePageLayouts'
 import {
   DEFAULT_REBO_PRICING,
@@ -56,6 +62,7 @@ import {
   buildSyncedLayoutsFromHome,
   describeChromeFromHome,
   deriveJobSinglePageColorsFromHome,
+  stripChromeWidgets,
 } from '@/config/chromeThemeSync'
 
 export const DEFAULT_SITE_SETTINGS = {
@@ -799,6 +806,14 @@ export async function syncHomeChromeTheme(authHeaders = {}) {
         detail: data.news_list_layout,
       }),
     )
+    const sharedSaved = normalizeSharedInternalLayout(
+      getSharedInternalLayoutRaw(data.module_page_layouts),
+    )
+    window.dispatchEvent(
+      new CustomEvent(SHARED_INTERNAL_LAYOUT_EVENT, {
+        detail: sharedSaved,
+      }),
+    )
     MODULE_PAGE_DEFS.forEach((def) => {
       const layout = data.module_page_layouts?.[def.key]
       if (!layout) return
@@ -816,15 +831,24 @@ export async function syncHomeChromeTheme(authHeaders = {}) {
   }
 }
 
-/** ذخیره چیدمان یک صفحه داخلی ماژول (مثلاً repairs) */
+/** ذخیره چیدمان یک صفحه داخلی ماژول یا چیدمان مشترک (shared) */
 export async function saveModulePageLayout(pageKey, layout, authHeaders = {}) {
   const key = String(pageKey || '').trim()
   if (!key) throw new Error('کلید صفحه نامعتبر است')
-  const normalized = normalizeModulePageLayout(layout, key)
+  const savingShared = isSharedInternalLayoutKey(key)
+  const storageKey = savingShared ? SHARED_INTERNAL_LAYOUT_KEY : key
+  // صفحات تکی: کروم را ذخیره نکن — مال چیدمان مشترک است
+  const normalized = savingShared
+    ? normalizeSharedInternalLayout(layout)
+    : stripChromeWidgets(normalizeModulePageLayout(layout, key))
   const current = await fetchSiteSettings({ force: true })
   const nextMap = {
     ...(current.module_page_layouts || {}),
-    [key]: normalized,
+    [storageKey]: normalized,
+  }
+  // کلید قدیمی را پاک کن تا دو منبع گیج‌کننده نماند
+  if (savingShared) {
+    delete nextMap[SHARED_INTERNAL_LAYOUT_KEY_LEGACY]
   }
   const body = { module_page_layouts: nextMap }
   const url = Config.endpoints.news.siteSettings.update()
@@ -838,7 +862,9 @@ export async function saveModulePageLayout(pageKey, layout, authHeaders = {}) {
     body: JSON.stringify(body),
   })
   if (!res.ok) {
-    let msg = `ذخیره چیدمان صفحه ${key} ناموفق (${res.status})`
+    let msg = savingShared
+      ? `ذخیره چیدمان مشترک ناموفق (${res.status})`
+      : `ذخیره چیدمان صفحه ${key} ناموفق (${res.status})`
     try {
       const j = await res.json()
       msg = j?.message || j?.detail || msg
@@ -850,14 +876,31 @@ export async function saveModulePageLayout(pageKey, layout, authHeaders = {}) {
   const json = await res.json()
   const data = normalizeSiteSettings(json?.data || json)
   rememberSettingsCache(data, { broadcast: true })
-  const saved = normalizeModulePageLayout(
-    data.module_page_layouts?.[key],
-    key,
-  )
-  const def = getModulePageDef(key)
-  const eventName = def?.event || `module-page-layout-changed:${key}`
+  const saved = savingShared
+    ? normalizeSharedInternalLayout(
+        getSharedInternalLayoutRaw(data.module_page_layouts),
+      )
+    : normalizeModulePageLayout(data.module_page_layouts?.[key], key)
   if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent(eventName, { detail: saved }))
+    if (savingShared) {
+      window.dispatchEvent(
+        new CustomEvent(SHARED_INTERNAL_LAYOUT_EVENT, { detail: saved }),
+      )
+      MODULE_PAGE_DEFS.forEach((def) => {
+        const pageLayout = data.module_page_layouts?.[def.key]
+        if (!pageLayout) return
+        window.dispatchEvent(
+          new CustomEvent(
+            def.event || `module-page-layout-changed:${def.key}`,
+            { detail: pageLayout },
+          ),
+        )
+      })
+    } else {
+      const def = getModulePageDef(key)
+      const eventName = def?.event || `module-page-layout-changed:${key}`
+      window.dispatchEvent(new CustomEvent(eventName, { detail: saved }))
+    }
     window.dispatchEvent(
       new CustomEvent('module-page-layouts-changed', {
         detail: data.module_page_layouts,

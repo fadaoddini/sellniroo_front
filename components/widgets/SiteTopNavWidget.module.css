@@ -6,11 +6,12 @@
   margin: var(--stn-mt, 0) var(--stn-mr, 0) var(--stn-mb, 0) var(--stn-ml, 0);
 }
 
+/* تمام‌عرض نسبت به سکشن والد — نه 100vw (اسکرول‌بار و پرش عرض می‌سازد) */
 .shellFullBleed {
-  width: 100vw;
-  max-width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
   margin-top: var(--stn-mt, 0);
   margin-bottom: var(--stn-mb, 0);
 }
@@ -85,22 +86,27 @@
 
 /* دسکتاپ: پین زیر نوار خبر فوری (--pb-bn-sticky-h) */
 @media (min-width: 768px) {
+  /* inset: همان عرض منو (--home-max-width) بماند — یهو فول‌اسکرین نشود */
   .shellPinned {
     position: fixed !important;
     top: calc(var(--pb-bn-sticky-h, 0px) + var(--stn-pin-top, 0px)) !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    max-width: none !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%);
+    width: min(100%, var(--home-max-width, 1200px)) !important;
+    max-width: var(--home-max-width, 1200px) !important;
     margin: 0 !important;
     z-index: 999;
   }
 
+  /* فقط وقتی full_bleed روشن است، نوار پس‌زمینه لبه به لبه می‌شود */
   .shellPinned.shellFullBleed {
-    width: 100vw !important;
-    max-width: 100vw !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
   }
 
   .shellPinned .header,

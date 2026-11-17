@@ -31,6 +31,7 @@ export default function FilterDialog({
   onClose,
   searchable = true,
   themeStyle,
+  zIndex = null,
 }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [mounted, setMounted] = useState(false)
@@ -92,7 +93,10 @@ export default function FilterDialog({
   const content = (
     <div
       className={styles.overlay}
-      style={themeStyle}
+      style={{
+        ...(themeStyle || {}),
+        ...(zIndex != null ? { zIndex } : {}),
+      }}
       role="presentation"
       onClick={onClose}
     >

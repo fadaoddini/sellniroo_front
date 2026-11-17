@@ -35,8 +35,14 @@ import {
 import { getShopLayoutModeDef } from '@/config/shopLayoutModes'
 import {
   createDefaultModulePageLayout,
+  createDefaultSharedInternalLayout,
   getModulePageDef,
+  getSharedInternalLayoutRaw,
+  isSharedInternalLayoutKey,
   normalizeModulePageLayout,
+  normalizeSharedInternalLayout,
+  SHARED_INTERNAL_LAYOUT_EVENT,
+  SHARED_INTERNAL_LAYOUT_KEY,
 } from '@/config/modulePageLayouts'
 import {
   DEFAULT_HOME_LAYOUT,
@@ -185,6 +191,25 @@ function resolveLayoutModeMeta(layoutMode, moduleMap = {}) {
   const mode = String(layoutMode || 'home')
   if (mode.startsWith('module:')) {
     const pageKey = mode.slice('module:'.length)
+    if (isSharedInternalLayoutKey(pageKey)) {
+      return {
+        empty: createDefaultSharedInternalLayout(),
+        normalize: (raw) => normalizeSharedInternalLayout(raw),
+        settingsKey: 'module_page_layouts',
+        getRaw: (settings) =>
+          getSharedInternalLayoutRaw(settings?.module_page_layouts),
+        save: (layout, headers) =>
+          saveModulePageLayout(SHARED_INTERNAL_LAYOUT_KEY, layout, headers),
+        event: SHARED_INTERNAL_LAYOUT_EVENT,
+        title: 'چیدمان مشترک صفحات داخلی',
+        hint:
+          'خبر فوری، منو و ویجت‌های مشترک را اینجا بگذارید و ذخیره کنید. همه صفحات داخلی از همین چیدمان می‌گیرند — نه از صفحه اصلی و نه از چیدمان تک‌تک صفحات. صفحه اصلی جداست.',
+        savedMsg: 'چیدمان مشترک صفحات داخلی ذخیره شد',
+        modulePageKey: SHARED_INTERNAL_LAYOUT_KEY,
+        contentWidget: null,
+        isSharedInternal: true,
+      }
+    }
     const def = getModulePageDef(pageKey)
     return {
       empty: createDefaultModulePageLayout(pageKey),
@@ -195,7 +220,7 @@ function resolveLayoutModeMeta(layoutMode, moduleMap = {}) {
       event: def?.event || `module-page-layout-changed:${pageKey}`,
       title: def ? `طراحی ${def.label}` : `طراحی صفحه ${pageKey}`,
       hint: def
-        ? `چیدمان ${def.path} از اینجاست. ویجت «محتوای کامل» را بگذارید و اطرافش منو، CTA و ویجت‌های دیگر را بچینید.`
+        ? `فقط محتوای اختصاصی ${def.path} را اینجا بچینید. هدر و ظاهر مشترک از «چیدمان مشترک» می‌آید؛ ویجت «محتوای کامل» را نگه دارید.`
         : 'چیدمان صفحه داخلی ماژول',
       savedMsg: def
         ? `چیدمان ${def.label} ذخیره شد`
@@ -382,10 +407,10 @@ export default function SiteSkeletonStudio({
   const updateRow = (sectionId, updater) => {
     setLayout((prev) => {
       const L = normalizeLayout(prev)
-      return {
+      return normalizeLayout({
         ...L,
         rows: L.rows.map((r) => (r.id === sectionId ? updater(r) : r)),
-      }
+      })
     })
   }
 
@@ -393,7 +418,7 @@ export default function SiteSkeletonStudio({
     const sec = createSection(templateId)
     setLayout((prev) => {
       const L = normalizeLayout(prev)
-      return { ...L, rows: [...L.rows, sec] }
+      return normalizeLayout({ ...L, rows: [...L.rows, sec] })
     })
     setSelectedSectionId(sec.id)
     setSelectedWidgetRef(null)
@@ -472,9 +497,9 @@ export default function SiteSkeletonStudio({
       const n = result?.summary?.targets?.length || 0
       const types = (result?.chrome?.types || []).join('، ')
       setMsg(
-        `هدر و رنگ‌ها روی ${n.toLocaleString('fa-IR')} چیدمان اعمال شد` +
+        `سکشن ۱ صفحه اصلی روی ${n.toLocaleString('fa-IR')} چیدمان اعمال شد` +
           (types ? ` (${types})` : '') +
-          '. صفحات داخلی، پروفایل، فروشگاه، سینگل محصول، سینگل آگهی و اخبار هم‌سبک شدند.',
+          '. فقط ویجت‌های سکشن اول منتقل شدند؛ سکشن‌های بعدی دست‌نخورده ماندند.',
       )
     } catch (e) {
       setErr(e?.message || 'همگام‌سازی هدر ناموفق بود')
@@ -544,7 +569,7 @@ export default function SiteSkeletonStudio({
               className={styles.extBtnGhost}
               onClick={syncChromeToAllPages}
               disabled={loading || saving || syncingChrome}
-              title="هدر و ترکیب رنگی صفحه اصلی را به صفحات داخلی، پروفایل، فروشگاه، سینگل محصول، سینگل آگهی و اخبار منتقل می‌کند"
+              title="فقط ویجت‌های سکشن ۱ صفحه اصلی را به چیدمان مشترک و بقیه صفحات منتقل می‌کند (سکشن‌های بعدی نه)"
             >
               {syncingChrome ? (
                 <RefreshCw size={14} className={styles.spin} />

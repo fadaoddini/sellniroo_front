@@ -14,7 +14,11 @@ import HeroSliderSlot from '@/components/modules/HeroSliderSlot'
 import LayoutSection from '@/components/layout/LayoutSection'
 import { fetchSiteSettings } from '@/services/siteSettings'
 import { isSadraAppShell, SADRA_APP_BG } from '@/config/sadraTheme'
-import { MODULE_PAGE_DEFS } from '@/config/modulePageLayouts'
+import ModulePageShell from '@/components/layout/ModulePageShell'
+import {
+  MODULE_PAGE_DEFS,
+  getModulePageDefForPath,
+} from '@/config/modulePageLayouts'
 
 function isHomepagePath(pathname) {
   if (!pathname) return false
@@ -141,6 +145,14 @@ export default function SiteChrome({ siteName = '', children }) {
   }
 
   const moduleBuilder = isModuleBuilderPath(pathname)
+  const moduleDef = getModulePageDefForPath(pathname)
+
+  const withModuleChrome = (node) => {
+    if (!moduleDef) return node
+    return (
+      <ModulePageShell pageKey={moduleDef.key}>{node}</ModulePageShell>
+    )
+  }
 
   /* سبد خرید: بدون هیرو/برندبار — فقط هدر دسکتاپ + منوی پایین موبایل */
   if (cartPath) {
@@ -180,7 +192,7 @@ export default function SiteChrome({ siteName = '', children }) {
             shopListPath ? ' siteMain--shop-list' : ''
           }${moduleBuilder ? ' siteMain--module-page' : ''}`}
         >
-          {children}
+          {moduleBuilder ? withModuleChrome(children) : children}
         </main>
         <SiteFooter />
       </>

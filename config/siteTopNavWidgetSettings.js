@@ -164,7 +164,8 @@ export const DEFAULT_SITE_TOP_NAV_WIDGET_SETTINGS = {
   sticky: true,
   sticky_offset: 0,
   height: 56,
-  full_bleed: true,
+  /* هم‌عرض محتوای صفحه / --home-max-width؛ لبه‌به‌لبه فقط با روشن‌کردن دستی */
+  full_bleed: false,
   blur: 16,
   shadow: true,
   border_width: 1,
@@ -506,7 +507,7 @@ export function buildSiteTopNavViewportPatch(raw, device, key, value) {
 
 export function siteTopNavCssVars(settings, opts = {}) {
   const s = normalizeSiteTopNavSettings(settings || {}, opts)
-  const fullBleed = s.full_bleed !== false
+  const fullBleed = s.full_bleed === true
   return {
     '--stn-h': `${s.height}px`,
     '--stn-sticky-top': s.sticky ? `${s.sticky_offset}px` : 'auto',

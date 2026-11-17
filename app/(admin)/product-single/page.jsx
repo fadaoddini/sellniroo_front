@@ -199,7 +199,7 @@ function PxField({ label, value, onChange, min = 0, max = 200 }) {
   )
 }
 
-export default function ProductSingleAdminPage() {
+export default function ProductSingleAdminPage({ embedded = false } = {}) {
   const router = useRouter()
   const { isAuthenticated, loading, user, canManageEmployees, getAuthHeaders } =
     useAuth()
@@ -280,13 +280,27 @@ export default function ProductSingleAdminPage() {
         <div className={styles.denied}>
           <Shield size={28} />
           <h1>دسترسی محدود</h1>
-          <Link href="/dashboard">داشبورد</Link>
+          {!embedded ? <Link href="/dashboard">داشبورد</Link> : null}
+          <p style={{ marginTop: 8, fontSize: 13 }}>
+            تنظیمات سینگل فقط برای کارکنان مجاز است.
+          </p>
         </div>
       </div>
     )
   }
 
-  if (moduleOn === false) notFound()
+  if (moduleOn === false) {
+    if (embedded) {
+      return (
+        <div className={styles.page} dir="rtl">
+          <div className={styles.denied}>
+            <h1>ماژول فروشگاه خاموش است</h1>
+          </div>
+        </div>
+      )
+    }
+    notFound()
+  }
 
   const groups = {
     nav: 'ناوبری',
@@ -300,8 +314,12 @@ export default function ProductSingleAdminPage() {
   }
 
   return (
-    <div className={styles.page} dir="rtl">
-      <div className={styles.wrap}>
+    <div
+      className={`${styles.page}${embedded ? ` ${styles.embeddedInHub || ''}` : ''}`}
+      dir="rtl"
+      style={embedded ? { minHeight: 0, padding: 0, background: 'transparent' } : undefined}
+    >
+      <div className={styles.wrap} style={embedded ? { maxWidth: 'none', padding: 0 } : undefined}>
         <header className={styles.header}>
           <div>
             <h1 className={styles.title}>
@@ -312,16 +330,27 @@ export default function ProductSingleAdminPage() {
             </p>
           </div>
           <div className={styles.actions}>
-            <Link href="/adminweb?mode=product_single" className={styles.ghostBtn}>
-              چیدمان صفحه‌ساز <ExternalLink size={13} />
-            </Link>
-            <Link href="/shop-manage" className={styles.ghostBtn}>
-              مدیریت محصولات
-            </Link>
-            <Link href="/dashboard" className={styles.ghostBtn}>
-              <LayoutDashboard size={14} />
-              داشبورد
-            </Link>
+            {!embedded ? (
+              <>
+                <Link href="/adminweb?mode=product_single" className={styles.ghostBtn}>
+                  چیدمان صفحه‌ساز <ExternalLink size={13} />
+                </Link>
+                <Link href="/dashboard/my-shop?tab=products" className={styles.ghostBtn}>
+                  محصولات
+                </Link>
+                <Link href="/dashboard/my-shop" className={styles.ghostBtn}>
+                  فروشگاه من
+                </Link>
+                <Link href="/dashboard" className={styles.ghostBtn}>
+                  <LayoutDashboard size={14} />
+                  داشبورد
+                </Link>
+              </>
+            ) : (
+              <Link href="/adminweb?mode=product_single" className={styles.ghostBtn}>
+                چیدمان صفحه‌ساز <ExternalLink size={13} />
+              </Link>
+            )}
             <button type="button" className={styles.ghostBtn} onClick={load}>
               <RefreshCw size={14} />
               بروزرسانی

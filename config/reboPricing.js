@@ -39,6 +39,8 @@ const SKIP_TYPES = new Set([
   'rebo_dashboard',
   'rebo_usecases',
   'rebo_pricing',
+  'rebo_order_steps',
+  'rebo_setup_costs',
   'rebo_ops',
   'rebo_cloud_order',
   'rebo_closing',

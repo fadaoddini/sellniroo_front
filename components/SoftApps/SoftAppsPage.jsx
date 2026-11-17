@@ -71,10 +71,8 @@ export default function SoftAppsPage() {
 
   return (
     <div className={styles.page} dir={dir}>
-      <div className={styles.atmosphere} aria-hidden />
       <div className={styles.inner}>
         <header className={styles.hero}>
-          <p className={styles.brand}>سلنیرو</p>
           <h1 className={styles.title}>
             {isEn ? 'Utility Software' : 'نرم‌افزارهای کاربردی'}
           </h1>

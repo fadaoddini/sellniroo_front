@@ -26,6 +26,7 @@ import {
   Search,
   MessageCircle,
   Headphones,
+  AppWindow,
 } from "lucide-react";
 
 const ICONS = {
@@ -51,6 +52,7 @@ const ICONS = {
   search: Search,
   message: MessageCircle,
   headphones: Headphones,
+  appwindow: AppWindow,
 };
 
 const ProfileTabs = ({ tabs, activeTab, onChange, tone = "job" }) => {

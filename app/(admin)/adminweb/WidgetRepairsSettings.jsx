@@ -243,7 +243,7 @@ export default function WidgetRepairsSettings({
       <div className={styles.wsLabelRow}>
         <p className={styles.wsMiniLabel}>ویجت تعمیرات</p>
         <Link
-          href="/repairs-manage"
+          href="/todoservice"
           className={styles.wsGhostLink}
           target="_blank"
         >

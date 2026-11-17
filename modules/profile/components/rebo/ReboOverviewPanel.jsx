@@ -1,16 +1,13 @@
 'use client'
 
-import Link from 'next/link'
 import {
   ArrowLeft,
   Boxes,
-  Calculator,
   Cloud,
   Headphones,
   Package,
   Search,
   Server,
-  Sparkles,
 } from 'lucide-react'
 import { formatRial } from '@/config/reboPricing'
 import styles from '../../styles/ReboHub.module.css'
@@ -84,19 +81,11 @@ export default function ReboOverviewPanel({
 
   const actions = [
     {
-      key: 'packages',
-      title: 'انتخاب بسته سایت',
-      desc: 'کاریابی، فروشگاه، مدرسه و… را از صفحه قیمت بسازید',
-      href: '/#rebo-cost',
-      icon: Calculator,
-      external: true,
-    },
-    {
       key: 'cart',
       title: cartCount ? 'تأیید سبد سفارش' : 'سبد سفارش',
       desc: cartCount
         ? `${cartCount.toLocaleString('fa-IR')} مورد آماده‌ی ثبت`
-        : 'بعد از انتخاب بسته، اینجا ثبت کنید',
+        : 'سبد سفارش بسته را از همین پروفایل مدیریت کنید',
       tab: 'rebo',
       icon: Package,
     },
@@ -127,24 +116,6 @@ export default function ReboOverviewPanel({
 
   return (
     <section className={styles.overview} dir="rtl" lang="fa">
-      <header className={styles.overviewHero}>
-        <div className={styles.overviewHeroIcon} aria-hidden>
-          <Sparkles size={22} strokeWidth={1.8} />
-        </div>
-        <div className={styles.overviewHeroCopy}>
-          <p className={styles.eyebrow}>داشبورد مشتری ربو</p>
-          <h2>از انتخاب بسته تا سرور و پیگیری، همه اینجا</h2>
-          <p>
-            سبد سفارش، درخواست‌های ثبت‌شده، سرور ابری اشتراکی و مشاوره راه‌اندازی
-            را در یک پروفایل مدیریت کنید.
-          </p>
-        </div>
-        <Link href="/#rebo-cost" className={styles.heroCta}>
-          مشاهده بسته‌ها
-          <ArrowLeft size={14} />
-        </Link>
-      </header>
-
       <div className={styles.statGrid}>
         {stats.map((s) => (
           <article
@@ -161,8 +132,13 @@ export default function ReboOverviewPanel({
       <div className={styles.actionGrid}>
         {actions.map((a) => {
           const Icon = a.icon
-          const body = (
-            <>
+          return (
+            <button
+              key={a.key}
+              type="button"
+              className={styles.actionCard}
+              onClick={() => onNavigate?.(a.tab)}
+            >
               <span className={styles.actionIcon} aria-hidden>
                 <Icon size={18} strokeWidth={1.8} />
               </span>
@@ -171,23 +147,6 @@ export default function ReboOverviewPanel({
                 <p>{a.desc}</p>
               </div>
               <ArrowLeft size={14} className={styles.actionArrow} />
-            </>
-          )
-          if (a.external) {
-            return (
-              <Link key={a.key} href={a.href} className={styles.actionCard}>
-                {body}
-              </Link>
-            )
-          }
-          return (
-            <button
-              key={a.key}
-              type="button"
-              className={styles.actionCard}
-              onClick={() => onNavigate?.(a.tab)}
-            >
-              {body}
             </button>
           )
         })}

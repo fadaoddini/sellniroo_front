@@ -162,6 +162,7 @@ export default function SaleAccessBar({ enabled = false, stats = null }) {
                 has_sale_access: updated?.has_sale_access ?? next,
                 is_marketing: updated?.is_marketing ?? next,
                 is_sales: updated?.is_sales ?? next,
+                can_edit_price: updated?.can_edit_price ?? row.can_edit_price,
               }
             : row
         )
@@ -169,6 +170,32 @@ export default function SaleAccessBar({ enabled = false, stats = null }) {
       setMessage(res?.message || 'دسترسی بروزرسانی شد')
     } catch (err) {
       setError(err?.message || err?.error || 'تغییر دسترسی ناموفق بود')
+    } finally {
+      setBusyEmpId(null)
+    }
+  }
+
+  const togglePriceEdit = async (emp) => {
+    if (busyEmpId) return
+    setBusyEmpId(emp.id)
+    setError(null)
+    const next = !emp.can_edit_price
+    try {
+      const res = await karmandanService.setSalePriceEdit(emp.id, next)
+      const updated = res?.data
+      setEmployees((prev) =>
+        prev.map((row) =>
+          row.id === emp.id
+            ? {
+                ...row,
+                can_edit_price: updated?.can_edit_price ?? next,
+              }
+            : row
+        )
+      )
+      setMessage(res?.message || 'اجازه قیمت دلخواه بروزرسانی شد')
+    } catch (err) {
+      setError(err?.message || err?.error || 'تغییر اجازه قیمت ناموفق بود')
     } finally {
       setBusyEmpId(null)
     }
@@ -472,7 +499,9 @@ export default function SaleAccessBar({ enabled = false, stats = null }) {
       {panel === 'access' ? (
         <div className={styles.panel}>
           <p className={styles.hint}>
-            کارمند فقط لیدهای خودش را می‌بیند؛ مدیر و سوپریوزر همه را می‌بینند.
+            کارمند فقط لیدهای خودش را می‌بیند. با «قیمت دلخواه» اجازه می‌دهید در
+            پیش‌فاکتور/فاکتور قیمت را دستی وارد کند؛ در غیر این صورت فقط قیمت
+            کاتالوگ اعمال می‌شود.
           </p>
           <div className={styles.toolbar}>
             <div className={styles.search}>
@@ -500,17 +529,32 @@ export default function SaleAccessBar({ enabled = false, stats = null }) {
                       {emp.mobile ? ` · ${emp.mobile}` : ''}
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    className={`${styles.switch} ${emp.has_sale_access ? styles.switchOn : ''}`}
-                    disabled={busyEmpId === emp.id}
-                    onClick={() => toggleAccess(emp)}
-                  >
-                    <span className={styles.knob} />
-                    <span className={styles.switchLabel}>
-                      {emp.has_sale_access ? 'دارد' : 'ندارد'}
-                    </span>
-                  </button>
+                  <div className={styles.rowActions}>
+                    <button
+                      type="button"
+                      className={`${styles.switch} ${emp.has_sale_access ? styles.switchOn : ''}`}
+                      disabled={busyEmpId === emp.id}
+                      onClick={() => toggleAccess(emp)}
+                      title="دسترسی صفحه فروش"
+                    >
+                      <span className={styles.knob} />
+                      <span className={styles.switchLabel}>
+                        فروش: {emp.has_sale_access ? 'دارد' : 'ندارد'}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.switch} ${emp.can_edit_price ? styles.switchOn : ''}`}
+                      disabled={busyEmpId === emp.id || !emp.has_sale_access}
+                      onClick={() => togglePriceEdit(emp)}
+                      title="اجازه ورود قیمت دلخواه در پیش‌فاکتور و فاکتور"
+                    >
+                      <span className={styles.knob} />
+                      <span className={styles.switchLabel}>
+                        قیمت: {emp.can_edit_price ? 'آزاد' : 'کاتالوگ'}
+                      </span>
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>

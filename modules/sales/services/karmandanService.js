@@ -384,6 +384,18 @@ const karmandanService = {
     }
   },
 
+  setSalePriceEdit: async (id, can_edit_price) => {
+    try {
+      const response = await axios.post(
+        Config.endpoints.karmandan.setSaleAccess(id),
+        { can_edit_price: !!can_edit_price }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { error: 'خطا در تغییر اجازه قیمت دلخواه' };
+    }
+  },
+
   getSaleCompanies: async () => {
     try {
       const response = await axios.get(

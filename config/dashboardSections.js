@@ -16,8 +16,8 @@ export const DASHBOARD_SECTION_DEFS = [
   { id: 'inventory', labelFa: 'انبارداری', labelEn: 'Inventory' },
   {
     id: 'shop',
-    labelFa: 'فروشگاه من',
-    labelEn: 'My shop',
+    labelFa: 'فروشگاه',
+    labelEn: 'Shop',
   },
   {
     id: 'marketplace',
@@ -102,12 +102,11 @@ export function resolveDashboardGroup(action) {
     return 'content'
   }
   if (
-    href === '/repairs-manage' ||
-    href === '/repairs-tech' ||
+    href === '/todoservice' ||
     href === '/repairs' ||
     href.startsWith('/repairs/') ||
     id === 'repairs' ||
-    id === 'repairs-manage' ||
+    id === 'todoservice' ||
     id.startsWith('repairs-')
   ) {
     return 'repairs'
@@ -151,9 +150,10 @@ export function resolveDashboardGroup(action) {
     return 'marketplace'
   }
   if (
-    href === '/shop-manage' ||
     href === '/shop-panel' ||
     href === '/dashboard/my-shop' ||
+    href === '/dashboard/shop-accounting' ||
+    href.startsWith('/dashboard/shop-accounting') ||
     href === '/product-single' ||
     href === '/adminshop' ||
     href === '/adminshops' ||
@@ -165,6 +165,9 @@ export function resolveDashboardGroup(action) {
     id === 'shop-manage' ||
     id === 'shop-panel' ||
     id === 'my-shop' ||
+    id === 'shop-accounting' ||
+    id === 'shop-settings' ||
+    id === 'shop-categories' ||
     id === 'product-single' ||
     id === 'adminshop' ||
     id === 'adminshops' ||

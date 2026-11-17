@@ -69,6 +69,8 @@ import {
   ReboOps,
   ReboPillars,
   ReboPricing,
+  ReboOrderSteps,
+  ReboSetupCosts,
   ReboStack,
   ReboUsecases,
   REBO_WIDGET_TYPES,
@@ -109,6 +111,7 @@ import {
   RepairsTechniciansWidget,
   RepairsTrackWidget,
 } from '@/components/Repairs/RepairsWidgets'
+import { TodoServiceWidget } from '@/modules/todoservice'
 import { isModulePageContentWidget } from '@/config/modulePageLayouts'
 import { SITE_MODULE_KEYS } from '@/config/siteModules'
 import { widgetMeta } from '@/config/pageBuilderWidgets'
@@ -286,6 +289,7 @@ function isSelfSpacedWidgetType(type) {
     type === 'repairs_services' ||
     type === 'repairs_request' ||
     type === 'repairs_track' ||
+    type === 'repairs_todoservice' ||
     isSliderWidgetType(type) ||
     isJobBoardWidgetType(type)
   )
@@ -335,7 +339,7 @@ function widgetBleedClass(instance, sectionWidth, constrainBleed) {
     return normalizeNavWidgetSettings(raw).bar_full_bleed !== false
   }
   if (isSiteTopNavWidgetType(type)) {
-    return normalizeSiteTopNavSettings(raw).full_bleed !== false
+    return normalizeSiteTopNavSettings(raw).full_bleed === true
   }
   if (isDeepSliderWidgetType(type)) {
     return normalizeDeepSliderSettings(raw).full_bleed !== false
@@ -488,6 +492,10 @@ function renderWidget(instance, { articleSlot, settings, productContext } = {}) 
       return <ReboUsecases settings={s} />
     case 'rebo_pricing':
       return <ReboPricing settings={s} />
+    case 'rebo_order_steps':
+      return <ReboOrderSteps settings={s} />
+    case 'rebo_setup_costs':
+      return <ReboSetupCosts settings={s} />
     case 'rebo_ops':
       return <ReboOps settings={s} />
     case 'rebo_cloud_order':
@@ -625,6 +633,12 @@ function renderWidget(instance, { articleSlot, settings, productContext } = {}) 
       return (
         <ModuleGate moduleKey={SITE_MODULE_KEYS.REPAIRS}>
           <RepairsTrackWidget settings={s} />
+        </ModuleGate>
+      )
+    case 'repairs_todoservice':
+      return (
+        <ModuleGate moduleKey={SITE_MODULE_KEYS.REPAIRS}>
+          <TodoServiceWidget settings={s} />
         </ModuleGate>
       )
     case 'nobat_hero':

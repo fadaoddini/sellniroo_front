@@ -7,9 +7,7 @@ import {
   Boxes,
   Calculator,
   Check,
-  ExternalLink,
   Info,
-  Play,
   Sparkles,
   X,
   Zap,
@@ -21,7 +19,6 @@ import {
   getPackageFeatureLabels,
   getPackagePriceInfo,
 } from '@/config/reboPricing'
-import { resolvePackageLivePreview } from '@/config/reboLivePreview'
 import {
   buildReboOrderNextPath,
   writeReboPackageCart,
@@ -42,13 +39,12 @@ const ACCENTS = [
   '#c2410c',
 ]
 
-/** کارت‌هایی که دو ستون اشغال می‌کنند */
-const WIDE_PACKAGE_MATCHERS = [
-  /فروشگاه\s*تکی/i,
-  /کاریابی/i,
-  /مدرسه/i,
-  /بدنسازی/i,
-  /gym_bodybuilding|pkg_gym_bodybuilding|shop_single|jobs|school/i,
+/** موضوعات ویژه — بخش جدا با ردیف ۳تایی */
+const FEATURED_PACKAGE_MATCHERS = [
+  { id: 'jobs', test: /کاریابی|jobs|job_board/i },
+  { id: 'shop_single', test: /فروشگاه\s*تکی|shop_single|single_store/i },
+  { id: 'school', test: /مدرسه|school/i },
+  { id: 'gym', test: /بدنسازی|gym_bodybuilding|pkg_gym/i },
 ]
 
 const PHONE_THEMES = [
@@ -154,9 +150,23 @@ function packageHaystack(pkgOrItem) {
     .join(' ')
 }
 
-function isWidePackage(pkg) {
+function featuredMatchId(pkg) {
   const hay = packageHaystack(pkg)
-  return WIDE_PACKAGE_MATCHERS.some((re) => re.test(hay))
+  const hit = FEATURED_PACKAGE_MATCHERS.find((m) => m.test.test(hay))
+  return hit?.id || null
+}
+
+function isFeaturedPackage(pkg) {
+  return !!featuredMatchId(pkg)
+}
+
+function sortFeaturedPackages(list) {
+  const order = FEATURED_PACKAGE_MATCHERS.map((m) => m.id)
+  return [...list].sort((a, b) => {
+    const ai = order.indexOf(featuredMatchId(a) || '')
+    const bi = order.indexOf(featuredMatchId(b) || '')
+    return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi)
+  })
 }
 
 function resolvePhoneTheme(pkgOrItem) {
@@ -304,68 +314,6 @@ function DetailsDialog({ open, onClose, accent, title, icon: Icon, children }) {
   )
 }
 
-/** پیش‌نمایش واقعی سامانه در iframe */
-function LivePreviewDialog({ open, onClose, preview, title, accent }) {
-  const portalReady = usePortalLock(open, onClose)
-  if (!open || !portalReady || !preview?.href) return null
-
-  return createPortal(
-    <div className={styles.liveRoot} role="presentation">
-      <button
-        type="button"
-        className={styles.dialogBackdrop}
-        aria-label="بستن"
-        onClick={onClose}
-      />
-      <div
-        className={styles.liveDialog}
-        role="dialog"
-        aria-modal="true"
-        aria-label={preview.label || title}
-        style={{ '--accent': accent }}
-        dir="rtl"
-      >
-        <header className={styles.liveHead}>
-          <div>
-            <p className={styles.dialogKicker}>پیش‌نمایش زنده</p>
-            <h3 className={styles.dialogTitle}>{title}</h3>
-            {preview.hint ? (
-              <p className={styles.liveHint}>{preview.hint}</p>
-            ) : null}
-          </div>
-          <div className={styles.liveHeadActions}>
-            <a
-              href={preview.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.liveOpenTab}
-            >
-              <ExternalLink size={14} strokeWidth={2.2} />
-              تب جدید
-            </a>
-            <button
-              type="button"
-              className={styles.dialogClose}
-              aria-label="بستن"
-              onClick={onClose}
-            >
-              <X size={18} />
-            </button>
-          </div>
-        </header>
-        <div className={styles.liveFrameWrap}>
-          <iframe
-            title={preview.label || title}
-            src={preview.href}
-            className={styles.liveFrame}
-          />
-        </div>
-      </div>
-    </div>,
-    document.body,
-  )
-}
-
 export default function ReboPricing({ settings: raw = {} }) {
   const router = useRouter()
   const { isAuthenticated } = useAuth()
@@ -374,11 +322,20 @@ export default function ReboPricing({ settings: raw = {} }) {
     useReboPricingState()
   const [ordering, setOrdering] = useState(false)
   const [detail, setDetail] = useState(null)
-  const [livePreview, setLivePreview] = useState(null)
 
   const paidPackages = useMemo(
     () => packages.filter(isPaidPackage),
     [packages],
+  )
+
+  const featuredPackages = useMemo(
+    () => sortFeaturedPackages(paidPackages.filter(isFeaturedPackage)),
+    [paidPackages],
+  )
+
+  const regularPackages = useMemo(
+    () => paidPackages.filter((pkg) => !isFeaturedPackage(pkg)),
+    [paidPackages],
   )
 
   const paidGroups = useMemo(
@@ -452,6 +409,109 @@ export default function ReboPricing({ settings: raw = {} }) {
 
   const closeDetail = () => setDetail(null)
 
+  const renderPackageCard = (pkg, idx, { featured = false } = {}) => {
+    const Icon = resolveLucideIcon(pkg.icon, Boxes)
+    const features = getPackageFeatureLabels(pkg)
+    const priceInfo = getPackagePriceInfo(pkg)
+    const accent = ACCENTS[idx % ACCENTS.length]
+    const price = priceInfo.active ? priceInfo.finalPrice : pkg.price
+    const phoneTheme = resolvePhoneTheme(pkg)
+    return (
+      <article
+        key={pkg.id}
+        className={`${styles.pkgCard}${
+          featured ? ` ${styles.pkgCardFeatured}` : ''
+        }`}
+        style={{ '--accent': accent }}
+      >
+        <div className={styles.media}>
+          <PhonePreview
+            accent={accent}
+            title={pkg.name}
+            icon={Icon}
+            theme={phoneTheme}
+          />
+        </div>
+
+        <div className={styles.body}>
+          <div className={styles.cardBadges}>
+            {featured ? (
+              <span className={styles.featuredChip}>ویژه</span>
+            ) : null}
+            {priceInfo.active ? (
+              <span className={styles.dealChip}>
+                <Sparkles size={11} strokeWidth={2.2} />
+                {priceInfo.percent.toLocaleString('fa-IR')}٪
+              </span>
+            ) : null}
+          </div>
+          <div className={styles.nameRow}>
+            <span className={styles.iconWrap} aria-hidden>
+              <Icon size={14} strokeWidth={1.75} />
+            </span>
+            <div className={styles.meta}>
+              <strong>{pkg.name}</strong>
+              {pkg.desc ? <small>{pkg.desc}</small> : null}
+            </div>
+          </div>
+
+          {priceInfo.active ? (
+            <div className={styles.smallDeal}>
+              <ReboDiscountCountdown
+                endsAt={priceInfo.endsAt}
+                percent={priceInfo.percent}
+                label={priceInfo.label}
+                accent={accent}
+                compact
+              />
+            </div>
+          ) : null}
+
+          <div
+            className={`${styles.priceCompact}${
+              priceInfo.active ? ` ${styles.priceCompactDeal}` : ''
+            }`}
+          >
+            {priceInfo.active ? (
+              <del>{formatRial(priceInfo.original)}</del>
+            ) : null}
+            <strong>{formatRial(price)}</strong>
+            <em>{currency}</em>
+          </div>
+
+          <div className={styles.cardActions}>
+            <button
+              type="button"
+              className={styles.btnDetails}
+              onClick={() =>
+                setDetail({
+                  kind: 'pkg',
+                  pkg,
+                  Icon,
+                  accent,
+                  features,
+                  priceInfo,
+                })
+              }
+            >
+              <Info size={12} strokeWidth={2.2} />
+              جزئیات
+            </button>
+            <button
+              type="button"
+              className={styles.btnOrder}
+              disabled={ordering}
+              onClick={() => goOrder(new Set([pkg.id]), new Set())}
+            >
+              <Zap size={12} strokeWidth={2.2} />
+              سفارش
+            </button>
+          </div>
+        </div>
+      </article>
+    )
+  }
+
   return (
     <section
       className={styles.pricing}
@@ -483,9 +543,35 @@ export default function ReboPricing({ settings: raw = {} }) {
             ) : null}
           </header>
         ) : null}
+      </div>
 
+      {featuredPackages.length > 0 ? (
+        <div className={styles.featuredBand}>
+          <div
+            className={styles.featuredBandInner}
+            style={{
+              maxWidth: s.max_width ? `${s.max_width}px` : undefined,
+            }}
+          >
+            <h3 className={styles.featuredTitle}>
+              <Sparkles size={14} strokeWidth={2.2} />
+              ویژه‌ها
+            </h3>
+            <div className={styles.pkgGrid}>
+              {featuredPackages.map((pkg, idx) =>
+                renderPackageCard(pkg, idx, { featured: true }),
+              )}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <div
+        className={styles.inner}
+        style={{ maxWidth: s.max_width ? `${s.max_width}px` : undefined }}
+      >
         <div className={styles.groups}>
-          {paidPackages.length > 0 ? (
+          {regularPackages.length > 0 ? (
             <div>
               {s.show_topics_heading !== false ? (
                 <h3 className={styles.groupTitle}>
@@ -494,181 +580,9 @@ export default function ReboPricing({ settings: raw = {} }) {
                 </h3>
               ) : null}
               <div className={styles.pkgGrid}>
-                {paidPackages.map((pkg, idx) => {
-                  const Icon = resolveLucideIcon(pkg.icon, Boxes)
-                  const features = getPackageFeatureLabels(pkg)
-                  const priceInfo = getPackagePriceInfo(pkg)
-                  const accent = ACCENTS[idx % ACCENTS.length]
-                  const price = priceInfo.active
-                    ? priceInfo.finalPrice
-                    : pkg.price
-                  const wide = isWidePackage(pkg)
-                  const phoneTheme = resolvePhoneTheme(pkg)
-                  const featurePreview = features.slice(0, wide ? 6 : 0)
-                  const widgetCount = Array.isArray(pkg.widget_types)
-                    ? pkg.widget_types.length
-                    : 0
-                  const live = resolvePackageLivePreview(pkg)
-                  return (
-                    <article
-                      key={pkg.id}
-                      className={`${styles.pkgCard}${
-                        wide ? ` ${styles.pkgCardWide}` : ''
-                      }`}
-                      style={{ '--accent': accent }}
-                    >
-                      <div className={styles.media}>
-                        <PhonePreview
-                          accent={accent}
-                          title={pkg.name}
-                          icon={Icon}
-                          theme={phoneTheme}
-                        />
-                        {priceInfo.active ? (
-                          <span className={styles.dealChip}>
-                            <Sparkles size={11} strokeWidth={2.2} />
-                            {priceInfo.percent.toLocaleString('fa-IR')}٪
-                          </span>
-                        ) : null}
-                      </div>
-
-                      <div className={styles.body}>
-                        <div className={styles.nameRow}>
-                          <span className={styles.iconWrap} aria-hidden>
-                            <Icon size={15} strokeWidth={1.75} />
-                          </span>
-                          <div className={styles.meta}>
-                            <strong>{pkg.name}</strong>
-                            {pkg.desc ? <small>{pkg.desc}</small> : null}
-                          </div>
-                        </div>
-
-                        {wide ? (
-                          <div className={styles.wideExtras}>
-                            {phoneTheme.chips?.length ? (
-                              <div className={styles.wideTags}>
-                                {phoneTheme.chips.map((chip) => (
-                                  <span key={chip}>{chip}</span>
-                                ))}
-                              </div>
-                            ) : null}
-                            {featurePreview.length > 0 ? (
-                              <ul className={styles.wideFeatures}>
-                                {featurePreview.map((f) => (
-                                  <li key={f}>
-                                    <span
-                                      className={styles.featCheck}
-                                      aria-hidden
-                                    >
-                                      <Check size={11} strokeWidth={2.5} />
-                                    </span>
-                                    {f}
-                                  </li>
-                                ))}
-                              </ul>
-                            ) : null}
-                            <div className={styles.wideMetaRow}>
-                              {widgetCount > 0 ? (
-                                <span>
-                                  {widgetCount.toLocaleString('fa-IR')} ماژول
-                                </span>
-                              ) : null}
-                              {phoneTheme.bar ? (
-                                <span>{phoneTheme.bar}</span>
-                              ) : null}
-                            </div>
-                            {priceInfo.active ? (
-                              <div className={styles.wideDeal}>
-                                <ReboDiscountCountdown
-                                  endsAt={priceInfo.endsAt}
-                                  percent={priceInfo.percent}
-                                  label={priceInfo.label}
-                                  accent={accent}
-                                />
-                              </div>
-                            ) : null}
-                          </div>
-                        ) : priceInfo.active ? (
-                          <div className={styles.smallDeal}>
-                            <ReboDiscountCountdown
-                              endsAt={priceInfo.endsAt}
-                              percent={priceInfo.percent}
-                              label={priceInfo.label}
-                              accent={accent}
-                              compact
-                            />
-                          </div>
-                        ) : null}
-
-                        <div
-                          className={`${styles.priceCompact}${
-                            priceInfo.active
-                              ? ` ${styles.priceCompactDeal}`
-                              : ''
-                          }`}
-                        >
-                          {priceInfo.active ? (
-                            <del>{formatRial(priceInfo.original)}</del>
-                          ) : null}
-                          <strong>{formatRial(price)}</strong>
-                          <em>{currency}</em>
-                        </div>
-
-                        <div
-                          className={`${styles.cardActions}${
-                            live ? ` ${styles.cardActionsTriple}` : ''
-                          }`}
-                        >
-                          <button
-                            type="button"
-                            className={styles.btnDetails}
-                            onClick={() =>
-                              setDetail({
-                                kind: 'pkg',
-                                pkg,
-                                Icon,
-                                accent,
-                                features,
-                                priceInfo,
-                                live,
-                              })
-                            }
-                          >
-                            <Info size={13} strokeWidth={2.2} />
-                            جزئیات
-                          </button>
-                          {live ? (
-                            <button
-                              type="button"
-                              className={styles.btnPreview}
-                              onClick={() =>
-                                setLivePreview({
-                                  preview: live,
-                                  title: pkg.name,
-                                  accent,
-                                })
-                              }
-                            >
-                              <Play size={13} strokeWidth={2.2} />
-                              تست زنده
-                            </button>
-                          ) : null}
-                          <button
-                            type="button"
-                            className={styles.btnOrder}
-                            disabled={ordering}
-                            onClick={() =>
-                              goOrder(new Set([pkg.id]), new Set())
-                            }
-                          >
-                            <Zap size={13} strokeWidth={2.2} />
-                            سفارش
-                          </button>
-                        </div>
-                      </div>
-                    </article>
-                  )
-                })}
+                {regularPackages.map((pkg, idx) =>
+                  renderPackageCard(pkg, idx + featuredPackages.length),
+                )}
               </div>
             </div>
           ) : null}
@@ -750,14 +664,6 @@ export default function ReboPricing({ settings: raw = {} }) {
         </div>
       </div>
 
-      <LivePreviewDialog
-        open={!!livePreview}
-        onClose={() => setLivePreview(null)}
-        preview={livePreview?.preview}
-        title={livePreview?.title || ''}
-        accent={livePreview?.accent || ACCENTS[0]}
-      />
-
       <DetailsDialog
         open={!!detail}
         onClose={closeDetail}
@@ -821,22 +727,6 @@ export default function ReboPricing({ settings: raw = {} }) {
             </div>
 
             <div className={styles.dialogActions}>
-              {detail.live ? (
-                <button
-                  type="button"
-                  className={styles.dialogPreview}
-                  onClick={() => {
-                    const live = detail.live
-                    const title = detail.pkg.name
-                    const accent = detail.accent
-                    closeDetail()
-                    setLivePreview({ preview: live, title, accent })
-                  }}
-                >
-                  <Play size={14} strokeWidth={2.2} />
-                  {detail.live.label || 'تست زنده'}
-                </button>
-              ) : null}
               <button
                 type="button"
                 className={styles.dialogOrder}

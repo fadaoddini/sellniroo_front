@@ -1,0 +1,5 @@
+html:has(.todoServiceTheme),
+body:has(.todoServiceTheme) {
+  background: #ffffff !important;
+  color: #1a1a1a;
+}

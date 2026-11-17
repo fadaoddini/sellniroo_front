@@ -333,7 +333,7 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
   const closeDrawer = useCallback(() => setDrawerOpen(false), [])
   const openDrawer = useCallback(() => setDrawerOpen(true), [])
 
-  const fullBleed = settings.full_bleed !== false
+  const fullBleed = settings.full_bleed === true
   const showBottomNav = isMobile && !!settings.mobile_bottom_nav
   const showTopBar = !isMobile || !!settings.mobile_show_top
   const profileChrome = useMemo(

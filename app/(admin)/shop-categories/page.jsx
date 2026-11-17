@@ -56,9 +56,12 @@ function CategoriesShell({
           <LayoutDashboard size={14} />
           داشبورد
         </Link>
-        <Link href="/shop-manage" className={styles.backLink}>
+        <Link href="/dashboard/my-shop?tab=products" className={styles.backLink}>
           <Package size={14} />
           محصولات
+        </Link>
+        <Link href="/dashboard/my-shop" className={styles.backLink}>
+          فروشگاه من
         </Link>
       </div>
       {children}

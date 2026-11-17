@@ -9,10 +9,101 @@ export const REBO_WIDGET_TYPES = [
   'rebo_usecases',
   'school_animation',
   'rebo_pricing',
+  'rebo_order_steps',
+  'rebo_setup_costs',
   'rebo_ops',
   'rebo_cloud_order',
   'rebo_closing',
   'rebo_showcase',
+]
+
+export const DEFAULT_REBO_SETUP_COST_ITEMS = [
+  {
+    id: 'package',
+    icon: 'package',
+    title: 'بسته سایت',
+    amount_label: 'طبق بسته انتخابی',
+    text: 'هزینه خودِ سایت همان قیمت بسته‌ای است که انتخاب می‌کنید و از قبل مشخص شده است.',
+  },
+  {
+    id: 'server',
+    icon: 'server',
+    title: 'سرور و میزبانی',
+    amount_label: '۱۰۰٬۰۰۰ تومان / روز',
+    text: 'اگر ما میزبان شما باشیم، سرور لینوکسی ابری با ۸ گیگ رم و ۸ هسته CPU با هزینه روزانه ۱۰۰ هزار تومان ارائه می‌شود.',
+  },
+  {
+    id: 'support',
+    icon: 'support',
+    title: 'پشتیبانی ماهانه',
+    amount_label: '۳٬۰۰۰٬۰۰۰ تومان / ماه',
+    text: 'در صورت نیاز، پشتیبانی ماهانه ۳ میلیون تومان اضافه می‌شود و شامل آموزش و تغییرات جزئی در طول قرارداد است. اگر قابلیت خاصی بخواهید اضافه شود، ابتدا بررسی و برآورد دقیق و معقول اعلام می‌گردد.',
+  },
+  {
+    id: 'sms',
+    icon: 'sms',
+    title: 'پیامک',
+    amount_label: '۲۵۰ تومان / پیامک',
+    text: 'هزینه ارسال پیامک را به ازای هر پیامک ۲۵۰ تومان در نظر بگیرید.',
+  },
+  {
+    id: 'ssl',
+    icon: 'ssl',
+    title: 'گواهینامه SSL',
+    amount_label: 'حدود ۷۰۰٬۰۰۰ تومان / سال برای هر SSL',
+    text: 'برای هر سرویس معمولاً دو گواهینامه SSL نیاز است؛ هزینه هر SSL در حال حاضر نزدیک به ۷۰۰ هزار تومان در سال است.',
+  },
+]
+
+export const DEFAULT_REBO_SETUP_COST_FOOTER =
+  'بنابراین سالیانه هزینه اضافه‌ای بابت خودِ سایت پرداخت نخواهید کرد؛ از سال بعد فقط هزینه‌های سرور، پشتیبانی در صورت نیاز، گواهینامه‌ها و پیامک‌ها را خواهید داشت.'
+
+export const DEFAULT_REBO_ORDER_STEPS = [
+  {
+    id: 'domain',
+    title: 'انتخاب دامنه',
+    text: 'دامنه اختصاصی کسب‌وکارتان را ثبت کنید — مثلاً از طریق سایت nic.ir.',
+    links: [{ label: 'ثبت دامنه در nic.ir', href: 'https://www.nic.ir' }],
+  },
+  {
+    id: 'server',
+    title: 'سفارش سرور',
+    text: 'اگر دوست دارید ما میزبان شما باشیم، سرور را از ربو سفارش دهید. در غیر این صورت می‌توانید از پارس‌پک یا هر سرویس دیگری یک سرور لینوکسی ابری تهیه کنید.',
+    links: [
+      { label: 'میزبانی با ربو', href: '/cloud-server' },
+      { label: 'پارس‌پک', href: 'https://parspack.com' },
+    ],
+  },
+  {
+    id: 'sms',
+    title: 'پنل پیامکی',
+    text: 'یک پنل پیامکی اختصاصی سفارش دهید، یا گزینه «پنل پیامکی با ما» را انتخاب کنید تا ربو این بخش را برایتان پوشش دهد.',
+    links: [{ label: 'هماهنگی پنل پیامکی', href: '/contact' }],
+  },
+  {
+    id: 'consult',
+    title: 'جلسه مشاوره رایگان',
+    text: 'یک جلسه رایگان برای هماهنگی، شنیدن نیازها و سلیقه شما برگزار می‌کنیم تا مسیر دقیقاً مطابق کسب‌وکارتان شکل بگیرد.',
+    links: [{ label: 'درخواست مشاوره', href: '/contact' }],
+  },
+  {
+    id: 'contract',
+    title: 'امضای قرارداد',
+    text: 'توافقات رسمی، محدوده کار و زمان‌بندی در قرارداد شفاف ثبت می‌شود تا همکاری با خیال راحت شروع شود.',
+    links: [],
+  },
+  {
+    id: 'delivery',
+    title: 'تحویل سایت',
+    text: 'اگر نیازتان در بسته‌های آماده ما باشد، سایت را در کمتر از ۱۰ روز کاری تحویل می‌دهیم. و اصلاً نگران نباشید — حتی اگر نیازتان در بسته‌ها نباشد (که بعید می‌دانیم)، ایده شما را در کمترین زمان ممکن به یک نرم‌افزار ایده‌آل و کاربردی تبدیل می‌کنیم.',
+    links: [{ label: 'مشاهده بسته‌ها', href: '/#rebo-cost' }],
+  },
+  {
+    id: 'launch',
+    title: 'آماده‌اید؛ شروع کنید',
+    text: 'سایتتان آماده است و می‌توانید کار را شروع کنید — تیم ربو کنار شما می‌ماند.',
+    links: [{ label: 'ورود به پروفایل', href: '/profile?tab=rebo' }],
+  },
 ]
 
 export const REBO_WIDGET_TYPE_SET = new Set(REBO_WIDGET_TYPES)
@@ -107,6 +198,9 @@ export const REBO_SHARED_ROOT_KEYS = new Set([
   'music_label',
   'music_loop',
   'music_volume',
+  'order_steps',
+  'setup_cost_items',
+  'setup_cost_footer',
 ])
 
 /** کلیدهای وابسته به ویوپورت */
@@ -353,6 +447,38 @@ const TYPE_DEFAULTS = {
     padding_top: 64,
     padding_bottom: 64,
   },
+  rebo_order_steps: {
+    ...BASE_DEFAULTS,
+    title: 'از سفارش تا تحویل — گام‌به‌گام با ربو',
+    subtitle:
+      'مسیر شفاف راه‌اندازی سایت اختصاصی؛ از دامنه و سرور تا مشاوره، قرارداد و شروع کار.',
+    kicker: 'مراحل سفارش',
+    headline: '',
+    show_kicker: true,
+    show_title: true,
+    show_subtitle: true,
+    padding_top: 64,
+    padding_bottom: 64,
+    order_steps: DEFAULT_REBO_ORDER_STEPS.map((row) => ({
+      ...row,
+      links: (row.links || []).map((l) => ({ ...l })),
+    })),
+  },
+  rebo_setup_costs: {
+    ...BASE_DEFAULTS,
+    title: 'هزینه‌های راه‌اندازی با ربو',
+    subtitle:
+      'شفاف و قابل پیش‌بینی: بسته سایت، سرور، پشتیبانی، پیامک و گواهینامه SSL.',
+    kicker: 'هزینه‌های راه‌اندازی',
+    headline: '',
+    show_kicker: true,
+    show_title: true,
+    show_subtitle: true,
+    padding_top: 64,
+    padding_bottom: 64,
+    setup_cost_items: DEFAULT_REBO_SETUP_COST_ITEMS.map((row) => ({ ...row })),
+    setup_cost_footer: DEFAULT_REBO_SETUP_COST_FOOTER,
+  },
   rebo_ops: {
     ...BASE_DEFAULTS,
     title: 'پشتیبانی',
@@ -445,6 +571,80 @@ export function normalizeUsecaseIndustries(raw, defaults = []) {
       const label = String(row?.label ?? '').trim()
       return { id, label: label || fallback[i % fallback.length]?.label || id }
     })
+    .slice(0, 12)
+}
+
+export function normalizeOrderSteps(raw, defaults = DEFAULT_REBO_ORDER_STEPS) {
+  const fallback =
+    Array.isArray(defaults) && defaults.length
+      ? defaults
+      : DEFAULT_REBO_ORDER_STEPS
+  if (!Array.isArray(raw) || !raw.length) {
+    return fallback.map((row) => ({
+      id: row.id,
+      title: row.title,
+      text: row.text,
+      links: Array.isArray(row.links)
+        ? row.links.map((l) => ({
+            label: String(l?.label || '').trim(),
+            href: String(l?.href || '').trim(),
+          }))
+        : [],
+    }))
+  }
+  return raw
+    .map((row, i) => {
+      const base = fallback[i % fallback.length] || {}
+      const linksRaw = Array.isArray(row?.links) ? row.links : base.links || []
+      return {
+        id: String(row?.id || base.id || `step_${i + 1}`).trim() || `step_${i + 1}`,
+        title: String(row?.title ?? base.title ?? '').trim(),
+        text: String(row?.text ?? base.text ?? '').trim(),
+        links: linksRaw
+          .map((l) => ({
+            label: String(l?.label || '').trim(),
+            href: String(l?.href || '').trim(),
+          }))
+          .filter((l) => l.label && l.href)
+          .slice(0, 4),
+      }
+    })
+    .filter((row) => row.title || row.text)
+    .slice(0, 12)
+}
+
+const SETUP_COST_ICONS = new Set([
+  'package',
+  'server',
+  'support',
+  'sms',
+  'ssl',
+])
+
+export function normalizeSetupCostItems(
+  raw,
+  defaults = DEFAULT_REBO_SETUP_COST_ITEMS,
+) {
+  const fallback =
+    Array.isArray(defaults) && defaults.length
+      ? defaults
+      : DEFAULT_REBO_SETUP_COST_ITEMS
+  if (!Array.isArray(raw) || !raw.length) {
+    return fallback.map((row) => ({ ...row }))
+  }
+  return raw
+    .map((row, i) => {
+      const base = fallback[i % fallback.length] || {}
+      const iconRaw = String(row?.icon || base.icon || 'package').trim()
+      return {
+        id: String(row?.id || base.id || `cost_${i + 1}`).trim() || `cost_${i + 1}`,
+        icon: SETUP_COST_ICONS.has(iconRaw) ? iconRaw : 'package',
+        title: String(row?.title ?? base.title ?? '').trim(),
+        amount_label: String(row?.amount_label ?? base.amount_label ?? '').trim(),
+        text: String(row?.text ?? base.text ?? '').trim(),
+      }
+    })
+    .filter((row) => row.title || row.text)
     .slice(0, 12)
 }
 
@@ -557,6 +757,18 @@ function coerce(merged, rawRoot, type) {
       rawRoot.usecase_industries,
       d.usecase_industries,
     ),
+    order_steps: normalizeOrderSteps(
+      rawRoot.order_steps,
+      d.order_steps || DEFAULT_REBO_ORDER_STEPS,
+    ),
+    setup_cost_items: normalizeSetupCostItems(
+      rawRoot.setup_cost_items,
+      d.setup_cost_items || DEFAULT_REBO_SETUP_COST_ITEMS,
+    ),
+    setup_cost_footer:
+      Object.prototype.hasOwnProperty.call(rawRoot, 'setup_cost_footer')
+        ? String(rawRoot.setup_cost_footer ?? '')
+        : String(d.setup_cost_footer ?? DEFAULT_REBO_SETUP_COST_FOOTER),
     show_music_btn: bool(rawRoot, 'show_music_btn', d),
     music_url: str(rawRoot, 'music_url', d),
     music_label: (() => {
@@ -716,6 +928,8 @@ export function reboContentFieldsForType(type) {
     case 'rebo_dashboard':
     case 'rebo_ops':
     case 'rebo_pricing':
+    case 'rebo_order_steps':
+    case 'rebo_setup_costs':
     case 'rebo_cloud_order':
       return ['kicker', 'title', 'subtitle', 'cta_label', 'cta_href']
     case 'rebo_closing':

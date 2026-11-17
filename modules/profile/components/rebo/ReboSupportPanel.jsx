@@ -9,6 +9,7 @@ import {
   MessageCircle,
   Phone,
 } from 'lucide-react'
+import { goHomeHash } from '@/utils/goHomeHash'
 import styles from '../../styles/ReboHub.module.css'
 
 export default function ReboSupportPanel({ site = null, onNavigate }) {
@@ -88,7 +89,9 @@ export default function ReboSupportPanel({ site = null, onNavigate }) {
           <ol className={styles.steps}>
             <li>
               بسته و امکانات را از صفحه قیمت انتخاب کنید
-              <Link href="/#rebo-cost">رفتن به بسته‌ها</Link>
+              <button type="button" onClick={() => goHomeHash('rebo-cost')}>
+                رفتن به بسته‌ها
+              </button>
             </li>
             <li>
               سبد را در پروفایل تأیید و ثبت کنید

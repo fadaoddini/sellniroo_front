@@ -211,7 +211,7 @@
 }
 
 .tipJob .tipTitle {
-  font-family: var(--font-iran-extra, var(--font-iran-bold, Tahoma, sans-serif));
+  font-family: var(--font-iran-bold);
   color: #2a1a0e;
   font-size: 1.05rem;
   font-weight: 800;

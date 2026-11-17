@@ -37,6 +37,7 @@ const PersianDatePicker = ({
   disabled = false,
   minYear = 1300,
   maxYear,
+  zIndex = 10050,
 }) => {
   const todayPersian = getTodayPersian()
   const yearMax = maxYear || (todayPersian?.year || 1404) + 5
@@ -203,6 +204,7 @@ const PersianDatePicker = ({
             top: dropdownPos.top,
             left: dropdownPos.left,
             width: dropdownPos.width,
+            zIndex,
           }}
           role="dialog"
           aria-label="انتخاب تاریخ شمسی"

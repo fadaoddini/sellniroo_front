@@ -8,6 +8,7 @@ import axios from "axios";
 import Config from "@/config/config";
 import { useAuth } from "@/contexts/AuthContext";
 import { getFullImageUrl } from "@/utils/imageUrl";
+import { goHomeHash } from "@/utils/goHomeHash";
 import styles from "../styles/ProfileHeader.module.css";
 import {
   Mail,
@@ -93,7 +94,6 @@ const VARIANT_META = {
     headerClass: "headerRepairs",
     shortcuts: [
       { href: "/profile?tab=requests", label: "سفارش‌ها", icon: Wrench },
-      { href: "/profile?tab=repairs", label: "تعمیرات", icon: Wrench },
       { href: "/repairs", label: "سرویس", icon: Wrench, primary: true },
       { href: "/repairs?tab=track", label: "پیگیری", icon: Wrench },
     ],
@@ -124,7 +124,6 @@ const VARIANT_META = {
     shortcuts: [
       { href: "/profile?tab=shop", label: "سفارش‌ها", icon: Package },
       { href: "/booking", label: "نوبت", icon: CalendarCheck, primary: true },
-      { href: "/profile?tab=repairs", label: "تعمیرات", icon: Wrench },
       { href: "/shop", label: "قطعات", icon: Store },
     ],
   },
@@ -621,13 +620,30 @@ const ProfileHeader = memo(function ProfileHeader({
               <nav className={styles.quickNav} aria-label="میانبرهای پروفایل">
                 {shortcutItems.map((item) => {
                   const Icon = item.icon || Package;
+                  const className = `${styles.quickLink} ${
+                    item.primary ? styles.quickPrimary : ""
+                  }`;
+                  const hashMatch = String(item.href || "").match(
+                    /^\/?#([\w-]+)$/
+                  );
+                  if (hashMatch) {
+                    return (
+                      <button
+                        key={item.href + item.label}
+                        type="button"
+                        className={className}
+                        onClick={() => goHomeHash(hashMatch[1])}
+                      >
+                        <Icon size={15} strokeWidth={2.2} />
+                        <span>{item.label}</span>
+                      </button>
+                    );
+                  }
                   return (
                     <Link
                       key={item.href + item.label}
                       href={item.href}
-                      className={`${styles.quickLink} ${
-                        item.primary ? styles.quickPrimary : ""
-                      }`}
+                      className={className}
                     >
                       <Icon size={15} strokeWidth={2.2} />
                       <span>{item.label}</span>

@@ -5,13 +5,27 @@
   --accent: #b45309;
   --accent-dark: #92400e;
   --ok: #0d9488;
+  --rp-font: var(--font-iran, iran, Tahoma, sans-serif);
+  --rp-bold: var(--font-iran-bold, iran_bold, iran, Tahoma, sans-serif);
+  --rp-extra: var(--font-iran-extra, iran_extra, iran, Tahoma, sans-serif);
   position: relative;
   min-height: 70vh;
-  padding: 2.75rem 0 4rem;
+  padding: 1.75rem 0 2.75rem;
   background:
     linear-gradient(165deg, #f3ebe1 0%, #f7f4ef 40%, #faf9f6 100%);
   color: var(--ink);
-  font-family: var(--font-iran);
+  font-family: var(--rp-font);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.page :where(button, input, textarea, select) {
+  font-family: var(--rp-font);
+}
+
+.page :where(strong, b, label, th) {
+  font-family: var(--rp-bold);
+  font-weight: 700;
 }
 
 .atmosphere {
@@ -31,53 +45,57 @@
 }
 
 .wide {
-  width: min(1100px, calc(100% - 2rem));
+  width: min(var(--home-max-width, 1200px), 100%);
+  margin-inline: auto;
+  box-sizing: border-box;
 }
 
 .brand {
   margin: 0 0 0.4rem;
-  font-family: var(--font-edameh);
-  font-size: clamp(1.7rem, 4vw, 2.2rem);
+  font-family: var(--rp-extra);
+  font-size: clamp(1.15rem, 2.8vw, 1.45rem);
   font-weight: 700;
   color: var(--accent);
 }
 
 .title {
   margin: 0 0 0.45rem;
-  font-family: var(--font-edameh);
-  font-size: 1.25rem;
+  font-family: var(--rp-extra);
+  font-size: 1rem;
 }
 
 .subtitle {
-  margin: 0 0 1.5rem;
+  margin: 0 0 1.1rem;
   color: var(--muted);
-  font-size: 0.92rem;
-  line-height: 1.7;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  font-family: var(--rp-font);
 }
 
 .verifiedBar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  margin: 0 0 1.1rem;
-  padding: 0.7rem 0.9rem;
-  border-radius: 12px;
+  gap: 0.6rem;
+  margin: 0 0 0.85rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
   background: rgba(13, 148, 136, 0.08);
   border: 1px solid rgba(13, 148, 136, 0.22);
-  font-size: 0.88rem;
+  font-size: 0.78rem;
   color: var(--muted);
 }
 
 .verifiedBar strong {
   color: var(--ink);
-  font-weight: 800;
-  letter-spacing: 0.02em;
+  font-family: var(--rp-bold);
+  font-weight: 700;
+  letter-spacing: 0;
 }
 
 .form {
   display: grid;
-  gap: 0.85rem;
+  gap: 0.7rem;
 }
 
 .row2 {
@@ -99,18 +117,19 @@
 }
 
 .field label {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: var(--muted);
+  font-family: var(--rp-bold);
 }
 
 .field input,
 .field textarea,
 .field select {
   border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 0.7rem 0.85rem;
-  font-family: inherit;
-  font-size: 0.9rem;
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  font-family: var(--rp-font);
+  font-size: 0.8rem;
   background: rgba(255, 255, 255, 0.85);
 }
 
@@ -170,7 +189,7 @@
 
 .card h3 {
   margin: 0 0 0.55rem;
-  font-family: var(--font-edameh);
+  font-family: var(--rp-extra);
   font-size: 1rem;
 }
 
@@ -230,7 +249,7 @@
   justify-content: space-between;
   font-weight: 700;
   margin-top: 0.5rem;
-  font-family: var(--font-edameh);
+  font-family: var(--rp-extra);
 }
 
 /* manage */
@@ -245,14 +264,16 @@
   background:
     radial-gradient(900px 360px at 100% -10%, rgba(180, 83, 9, 0.14), transparent 55%),
     #f4f1ec;
-  font-family: var(--font-iran);
+  font-family: var(--rp-font);
   color: var(--ink);
 }
 
 .manageWrap {
-  max-width: 1100px;
+  max-width: var(--home-max-width, 1200px);
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .manageHeader {
@@ -271,8 +292,8 @@
 
 .manageHeader h1 {
   margin: 0 0 4px;
-  font-size: 17px;
-  font-family: var(--font-edameh);
+  font-size: 14px;
+  font-family: var(--rp-extra);
 }
 
 .manageHeader p {
@@ -330,8 +351,8 @@
 
 .stat strong {
   display: block;
-  font-family: var(--font-edameh);
-  font-size: 1.15rem;
+  font-family: var(--rp-extra);
+  font-size: 0.95rem;
   color: var(--accent-dark);
 }
 
@@ -347,70 +368,109 @@
   opacity: 0.92;
 }
 
-/* صفحه /repairs — تم طلایی هم‌تراز صدرا و /booking */
+/* صفحه /repairs — پالت صدرا + Iran / Bold / Extra */
 .hub {
-  --rp-ink: #1c1c1e;
-  --rp-muted: #6b6560;
-  --rp-line: rgba(179, 140, 0, 0.22);
-  --rp-accent: #b38c00;
-  --rp-accent-deep: #8f7000;
-  --rp-gold: #dbbe00;
-  --rp-soft: #fff9e8;
+  --rp-ink: #1e3b2f;
+  --rp-muted: #7f8c6a;
+  --rp-line: color-mix(in srgb, #7f8c6a 28%, transparent);
+  --rp-accent: #c8b48a;
+  --rp-accent-deep: #1e3b2f;
+  --rp-soft: #f5f0e6;
+  --rp-surface: #ffffff;
+  --rp-font: var(--font-iran, 'iran', Tahoma, sans-serif);
+  --rp-bold: var(--font-iran-bold, 'iran_bold', 'iran', Tahoma, sans-serif);
+  --rp-extra: var(--font-iran-extra, 'iran_extra', 'iran', Tahoma, sans-serif);
   box-sizing: border-box;
   width: 100%;
-  max-width: 1100px;
+  max-width: var(--home-max-width, 1200px);
   margin: 0 auto;
-  padding: 1.5rem 1rem 3.5rem;
-  font-family: var(--font-iran, Tahoma, sans-serif);
+  padding: 1.25rem 0 2.75rem;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  font-size: 0.8125rem;
+  line-height: 1.5;
   color: var(--rp-ink);
-  background:
-    radial-gradient(720px 260px at 88% -8%, rgba(219, 190, 0, 0.18), transparent 55%),
-    radial-gradient(520px 200px at 8% 12%, rgba(179, 140, 0, 0.08), transparent 50%),
-    linear-gradient(180deg, #fbf7ef 0%, #f5f1ea 100%);
+  background: transparent;
   min-height: 60vh;
+  animation: hubIn 0.45s ease both;
+}
+
+@keyframes hubIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.hub,
+.hub * {
+  font-family: 'iran', Tahoma, Arial, sans-serif !important;
+}
+
+.hub :is(h1, h2, h3),
+.hub :is(h1, h2, h3) * {
+  font-family: 'iran_extra', Tahoma, Arial, sans-serif !important;
+  font-weight: 700 !important;
+}
+
+.hub :is(strong, b, label, button, th),
+.hubEyebrow,
+.asideEyebrow,
+.hubTab,
+.asideLink {
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif !important;
+  font-weight: 700 !important;
 }
 
 .hubHero {
-  margin-bottom: 1.25rem;
-  max-width: 40rem;
+  margin-bottom: 1.15rem;
+  max-width: 36rem;
+  padding: 0.15rem 0 0.35rem;
+  border-bottom: 1px solid var(--rp-line);
 }
 
 .hubEyebrow {
   margin: 0 0 0.35rem;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  color: var(--rp-accent);
+  font-size: 0.66rem;
+  font-family: var(--rp-bold);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--rp-muted);
+  text-transform: none;
 }
 
 .hubHero h1 {
-  margin: 0 0 0.4rem;
-  font-size: clamp(1.55rem, 3.2vw, 2rem);
-  font-weight: 900;
-  font-family: var(--font-edameh, Georgia, serif);
-  line-height: 1.25;
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.12rem, 2.5vw, 1.4rem);
+  font-weight: 700;
+  font-family: var(--rp-extra);
+  line-height: 1.35;
   color: var(--rp-ink);
 }
 
 .hubHero p {
-  margin: 0;
+  margin: 0 0 0.85rem;
   color: var(--rp-muted);
-  font-size: 0.92rem;
-  line-height: 1.65;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  font-family: var(--rp-font);
+  max-width: 34rem;
 }
 
 .hubTabs {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.4rem;
+  gap: 0.3rem;
   width: 100%;
-  margin-bottom: 1.35rem;
-  padding: 0.4rem;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.92);
+  margin-bottom: 1.15rem;
+  padding: 0.28rem;
+  border-radius: 12px;
+  background: color-mix(in srgb, #ffffff 88%, #f5f0e6);
   border: 1px solid var(--rp-line);
-  box-shadow: 0 8px 24px rgba(60, 45, 0, 0.05);
-  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 28px color-mix(in srgb, #1e3b2f 6%, transparent);
   box-sizing: border-box;
 }
 
@@ -418,69 +478,95 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
+  gap: 0.35rem;
   width: 100%;
-  min-height: 48px;
-  padding: 0.7rem 0.65rem;
-  border-radius: 12px;
+  min-height: 40px;
+  padding: 0.5rem 0.45rem;
+  border-radius: 9px;
   border: none;
   background: transparent;
-  font: inherit;
-  font-size: 0.92rem;
-  font-weight: 800;
+  font-family: var(--rp-bold);
+  font-size: 0.76rem;
+  font-weight: 700;
   color: var(--rp-muted);
   cursor: pointer;
   white-space: nowrap;
   transition:
-    background 0.15s ease,
-    color 0.15s ease,
-    box-shadow 0.15s ease;
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .hubTab svg {
   flex-shrink: 0;
-  width: 17px;
-  height: 17px;
+  width: 15px;
+  height: 15px;
+  opacity: 0.85;
 }
 
 .hubTab:hover {
-  background: var(--rp-soft);
+  background: color-mix(in srgb, #c8b48a 22%, #f5f0e6);
   color: var(--rp-ink);
 }
 
 .hubTabOn {
-  background: linear-gradient(135deg, var(--rp-gold), var(--rp-accent));
-  color: #1c1c1e;
-  box-shadow: 0 6px 16px rgba(179, 140, 0, 0.28);
+  background: var(--rp-ink);
+  color: #f5f0e6;
+  box-shadow: 0 8px 18px color-mix(in srgb, #1e3b2f 22%, transparent);
+}
+
+.hubTabOn svg {
+  opacity: 1;
+  color: #c8b48a;
 }
 
 .hubTabOn:hover {
-  background: linear-gradient(135deg, var(--rp-gold), var(--rp-accent));
-  color: #1c1c1e;
-  filter: brightness(1.02);
+  background: #163028;
+  color: #f5f0e6;
+  filter: none;
+}
+
+@media (max-width: 767px) {
+  .hub,
+  .trackInner {
+    padding-inline: max(0.75rem, env(safe-area-inset-left, 0px));
+  }
 }
 
 @media (max-width: 560px) {
   .hubTabs {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.35rem;
+    gap: 0.3rem;
   }
 
   .hubTab {
-    min-height: 44px;
-    font-size: 0.84rem;
-    padding: 0.6rem 0.45rem;
+    min-height: 38px;
+    font-size: 0.72rem;
+    padding: 0.45rem 0.35rem;
   }
 }
 
 .hubBody {
   width: 100%;
+  animation: hubBodyIn 0.35s ease 0.05s both;
+}
+
+@keyframes hubBodyIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .hubRequest {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(220px, 0.7fr);
-  gap: 1.1rem;
+  grid-template-columns: minmax(0, 1.2fr) minmax(220px, 0.72fr);
+  gap: 1rem;
   align-items: start;
 }
 
@@ -497,42 +583,61 @@
 }
 
 .asideCard {
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--rp-surface);
   border: 1px solid var(--rp-line);
-  border-radius: 16px;
-  padding: 1rem 1.05rem;
-  margin-bottom: 0.75rem;
-  box-shadow: 0 8px 20px rgba(60, 45, 0, 0.04);
+  border-radius: 12px;
+  padding: 0.9rem 0.95rem;
+  margin-bottom: 0.7rem;
+  box-shadow: 0 8px 22px color-mix(in srgb, #1e3b2f 5%, transparent);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.asideCard:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, #c8b48a 55%, #7f8c6a);
+  box-shadow: 0 12px 26px color-mix(in srgb, #1e3b2f 8%, transparent);
 }
 
 .asideEyebrow {
-  margin: 0 0 0.3rem;
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  color: var(--rp-accent);
+  margin: 0 0 0.28rem;
+  font-size: 0.64rem;
+  font-family: var(--rp-bold);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--rp-muted);
 }
 
 .asideCard strong {
   display: block;
-  margin-bottom: 0.45rem;
-  font-size: 0.95rem;
-  font-family: var(--font-edameh, Georgia, serif);
+  margin-bottom: 0.4rem;
+  font-size: 0.88rem;
+  font-family: var(--rp-extra);
+  font-weight: 700;
+  color: var(--rp-ink);
 }
 
 .asideSteps {
   margin: 0;
-  padding-inline-start: 1.15rem;
+  padding-inline-start: 1.05rem;
   color: var(--rp-muted);
-  font-size: 0.86rem;
-  line-height: 1.7;
+  font-size: 0.76rem;
+  line-height: 1.6;
+  font-family: var(--rp-font);
+}
+
+.asideSteps li + li {
+  margin-top: 0.2rem;
 }
 
 .asideText {
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.65rem;
   color: var(--rp-muted);
-  font-size: 0.86rem;
-  line-height: 1.65;
+  font-size: 0.76rem;
+  line-height: 1.55;
+  font-family: var(--rp-font);
 }
 
 .asideLink {
@@ -540,47 +645,80 @@
   align-items: center;
   gap: 0.35rem;
   appearance: none;
-  border: none;
-  background: linear-gradient(135deg, var(--rp-gold), var(--rp-accent));
-  color: #1c1c1e;
-  font: inherit;
-  font-size: 0.84rem;
-  font-weight: 800;
-  padding: 0.55rem 0.85rem;
-  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, #c8b48a 55%, transparent);
+  background: var(--rp-ink);
+  color: #f5f0e6;
+  font-family: var(--rp-bold);
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.5rem 0.8rem;
+  border-radius: 9px;
   cursor: pointer;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
 }
 
-/* ─── /repairs/track/[token] — تم طلایی جزئیات پرونده ─── */
+.asideLink:hover {
+  background: #163028;
+  border-color: #c8b48a;
+  transform: translateY(-1px);
+}
+
+/* ─── /repairs/track/[token] — پالت صدرا ─── */
 .trackPage {
-  --tp-ink: #1c1c1e;
-  --tp-muted: #6b6560;
-  --tp-line: rgba(179, 140, 0, 0.22);
-  --tp-accent: #b38c00;
-  --tp-deep: #8f7000;
-  --tp-gold: #dbbe00;
-  --tp-soft: #fff9e8;
-  --tp-ok: #0f766e;
-  --tp-bad: #b91c1c;
+  --tp-ink: #1e3b2f;
+  --tp-muted: #7f8c6a;
+  --tp-line: color-mix(in srgb, #7f8c6a 26%, transparent);
+  --tp-accent: #c8b48a;
+  --tp-deep: #1e3b2f;
+  --tp-gold: #c8b48a;
+  --tp-soft: #f5f0e6;
+  --tp-ok: #1e3b2f;
+  --tp-bad: #8b3a3a;
+  --rp-font: var(--font-iran, 'iran', Tahoma, sans-serif);
+  --rp-bold: var(--font-iran-bold, 'iran_bold', 'iran', Tahoma, sans-serif);
+  --rp-extra: var(--font-iran-extra, 'iran_extra', 'iran', Tahoma, sans-serif);
   box-sizing: border-box;
   width: 100%;
   min-height: 60vh;
-  padding: 1.35rem 0 3.5rem;
-  font-family: var(--font-iran, Tahoma, sans-serif);
+  padding: 1.25rem 0 2.75rem;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  font-size: 0.8125rem;
+  line-height: 1.5;
   color: var(--tp-ink);
-  background:
-    radial-gradient(720px 260px at 90% -6%, rgba(219, 190, 0, 0.18), transparent 55%),
-    radial-gradient(480px 200px at 6% 18%, rgba(179, 140, 0, 0.08), transparent 52%),
-    linear-gradient(180deg, #fbf7ef 0%, #f5f1ea 100%);
+  background: transparent;
+}
+
+.trackPage,
+.trackPage * {
+  font-family: 'iran', Tahoma, Arial, sans-serif !important;
+}
+
+.trackPage :is(h1, h2, h3),
+.trackPage :is(h1, h2, h3) * {
+  font-family: 'iran_extra', Tahoma, Arial, sans-serif !important;
+  font-weight: 700 !important;
+}
+
+.trackPage :is(strong, b, label, button, th) {
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif !important;
+  font-weight: 700 !important;
 }
 
 .trackInner {
-  width: min(920px, calc(100% - 2rem));
+  width: 100%;
+  max-width: var(--home-max-width, 1200px);
   margin: 0 auto;
+  box-sizing: border-box;
+  padding-inline: 0;
 }
 
 .trackHero {
-  margin-bottom: 1.15rem;
+  margin-bottom: 1.1rem;
+  padding-bottom: 1.05rem;
+  border-bottom: 1px solid var(--tp-line);
 }
 
 .trackHeroTop {
@@ -589,16 +727,24 @@
   justify-content: space-between;
   gap: 0.75rem;
   flex-wrap: wrap;
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.95rem;
+}
+
+.trackHeroActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
 }
 
 .trackBack,
+.trackDeskLink,
 .trackPrintBtn {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
   font: inherit;
-  font-size: 0.82rem;
+  font-size: 0.74rem;
   font-weight: 700;
   text-decoration: none;
   color: var(--tp-deep);
@@ -608,127 +754,167 @@
   padding: 0;
 }
 
+.trackDeskLink,
 .trackPrintBtn {
-  padding: 0.45rem 0.75rem;
+  padding: 0.42rem 0.7rem;
   border-radius: 10px;
   border: 1px solid var(--tp-line);
-  background: rgba(255, 255, 255, 0.85);
+  background: color-mix(in srgb, #ffffff 88%, #f5f0e6);
   color: var(--tp-ink);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.trackDeskLink:hover,
+.trackPrintBtn:hover {
+  background: #fff;
+  border-color: color-mix(in srgb, #7f8c6a 42%, transparent);
 }
 
 .trackPrintWait {
-  font-size: 0.78rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: var(--tp-muted);
-  background: rgba(255, 255, 255, 0.7);
+  background: color-mix(in srgb, #ffffff 70%, #f5f0e6);
   border: 1px dashed var(--tp-line);
   border-radius: 10px;
-  padding: 0.45rem 0.7rem;
+  padding: 0.42rem 0.65rem;
 }
 
 .trackEyebrow {
-  margin: 0 0 0.3rem;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  color: var(--tp-accent);
+  margin: 0 0 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--tp-muted);
 }
 
 .trackTitleRow {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: space-between;
   flex-wrap: wrap;
-  gap: 0.65rem;
-  margin-bottom: 0.35rem;
+  gap: 0.85rem 1rem;
+}
+
+.trackTitleMain {
+  flex: 1 1 16rem;
+  min-width: 0;
 }
 
 .trackTitleRow h1 {
-  margin: 0;
-  font-size: clamp(1.35rem, 3vw, 1.85rem);
-  font-weight: 900;
-  font-family: var(--font-edameh, Georgia, serif);
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.15rem, 2.6vw, 1.55rem);
+  font-weight: 700;
+  font-family: var(--rp-extra);
   line-height: 1.25;
+  color: var(--tp-deep);
+}
+
+.trackTitleRow h1 span {
+  direction: ltr;
+  unicode-bidi: isolate;
 }
 
 .trackLead {
   margin: 0;
-  color: var(--tp-muted);
-  font-size: 0.9rem;
+  color: color-mix(in srgb, #1e3b2f 68%, #7f8c6a);
+  font-size: 0.8rem;
   line-height: 1.65;
-  max-width: 36rem;
+  max-width: 38rem;
 }
 
 .trackBadge {
   display: inline-flex;
   align-items: center;
-  padding: 0.28rem 0.7rem;
-  border-radius: 999px;
+  align-self: flex-start;
+  padding: 0.4rem 0.75rem;
+  border-radius: 10px;
   font-size: 0.74rem;
-  font-weight: 800;
-  background: rgba(219, 190, 0, 0.22);
+  font-weight: 700;
+  background: color-mix(in srgb, #c8b48a 22%, #ffffff);
   color: var(--tp-deep);
-  border: 1px solid rgba(179, 140, 0, 0.28);
+  border: 1px solid color-mix(in srgb, #c8b48a 45%, transparent);
+  white-space: nowrap;
+}
+
+.trackBadgeLive {
+  background: color-mix(in srgb, #1e3b2f 8%, #ffffff);
+  color: var(--tp-deep);
+  border-color: color-mix(in srgb, #7f8c6a 35%, transparent);
+  animation: track-badge-in 0.45s ease both;
 }
 
 .trackBadgeOk {
-  background: rgba(15, 118, 110, 0.12);
+  background: color-mix(in srgb, #1e3b2f 12%, #ffffff);
   color: var(--tp-ok);
-  border-color: rgba(15, 118, 110, 0.25);
+  border-color: color-mix(in srgb, #1e3b2f 22%, transparent);
 }
 
 .trackBadgeBad {
-  background: rgba(185, 28, 28, 0.1);
+  background: color-mix(in srgb, #8b3a3a 10%, #ffffff);
   color: var(--tp-bad);
-  border-color: rgba(185, 28, 28, 0.22);
+  border-color: color-mix(in srgb, #8b3a3a 22%, transparent);
+}
+
+@keyframes track-badge-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .trackPipeline {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 0.35rem;
-  margin: 0 0 1.15rem;
-  padding: 0.55rem;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.92);
+  gap: 0.3rem;
+  margin: 0 0 1.05rem;
+  padding: 0.4rem;
+  border-radius: 14px;
+  background: color-mix(in srgb, #ffffff 82%, #f5f0e6);
   border: 1px solid var(--tp-line);
-  box-shadow: 0 8px 22px rgba(60, 45, 0, 0.05);
 }
 
 .trackPipeStep {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.22rem;
   text-align: center;
-  padding: 0.45rem 0.2rem;
-  border-radius: 12px;
+  padding: 0.5rem 0.2rem 0.45rem;
+  border-radius: 11px;
   color: var(--tp-muted);
   min-width: 0;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .trackPipeDot {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border-radius: 999px;
-  font-size: 0.72rem;
-  font-weight: 800;
-  background: #f3eee4;
-  border: 1px solid rgba(28, 28, 30, 0.08);
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: color-mix(in srgb, #f5f0e6 80%, #ffffff);
+  border: 1px solid color-mix(in srgb, #7f8c6a 18%, transparent);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .trackPipeLabel {
-  font-size: 0.78rem;
-  font-weight: 800;
+  font-size: 0.72rem;
+  font-weight: 700;
   color: inherit;
   white-space: nowrap;
 }
 
 .trackPipeHint {
-  font-size: 0.65rem;
-  opacity: 0.85;
+  font-size: 0.62rem;
+  opacity: 0.9;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -740,114 +926,235 @@
 }
 
 .trackPipeDone .trackPipeDot {
-  background: linear-gradient(135deg, var(--tp-gold), var(--tp-accent));
-  color: #1c1c1e;
+  background: color-mix(in srgb, #c8b48a 55%, #ffffff);
+  color: var(--tp-deep);
   border-color: transparent;
 }
 
 .trackPipeOn {
-  background: var(--tp-soft);
+  background: color-mix(in srgb, #1e3b2f 7%, #ffffff);
   color: var(--tp-ink);
-  box-shadow: inset 0 0 0 1px rgba(179, 140, 0, 0.28);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #7f8c6a 28%, transparent);
 }
 
 .trackPipeOn .trackPipeDot {
-  background: #1c1c1e;
-  color: var(--tp-gold);
+  background: var(--tp-deep);
+  color: var(--tp-soft);
   border-color: transparent;
+  animation: track-dot-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes track-dot-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, #1e3b2f 0%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 5px color-mix(in srgb, #1e3b2f 10%, transparent);
+  }
+}
+
+.trackDeferNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin: 0 0 1rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, #7f8c6a 28%, transparent);
+  background: linear-gradient(165deg, color-mix(in srgb, #c8b48a 16%, #ffffff) 0%, #ffffff 78%);
+  color: #1e3b2f;
+}
+
+.trackDeferNote strong {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.trackDeferNote p {
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.55;
+  color: color-mix(in srgb, #1e3b2f 72%, #7f8c6a);
+  font-weight: 600;
+}
+
+.trackDeferNote svg {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  color: #1e3b2f;
 }
 
 .trackCancelNote {
   margin: 0 0 1rem;
   padding: 0.75rem 1rem;
   border-radius: 12px;
-  background: rgba(185, 28, 28, 0.08);
+  background: color-mix(in srgb, #8b3a3a 8%, #ffffff);
   color: var(--tp-bad);
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 700;
 }
 
 .trackStats {
+  display: none;
+}
+
+.trackStatWidgets {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.65rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.85rem;
 }
 
-.trackStat {
+.trackStatWidget {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-height: 5.4rem;
   padding: 0.85rem 0.9rem;
   border-radius: 14px;
-  background: linear-gradient(160deg, #fff9e8, #ffffff);
-  border: 1px solid var(--tp-line);
+  background:
+    linear-gradient(160deg, #ffffff 0%, color-mix(in srgb, #f5f0e6 55%, #ffffff) 100%);
+  border: 1px solid color-mix(in srgb, #7f8c6a 22%, transparent);
+  box-shadow: 0 10px 22px color-mix(in srgb, #1e3b2f 5%, transparent);
 }
 
-.trackStat span {
-  display: block;
+.trackStatWidget::after {
+  content: '';
+  position: absolute;
+  inset: auto -18% -40% auto;
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  background: color-mix(in srgb, #c8b48a 18%, transparent);
+}
+
+.trackStatWidgetAccent {
+  background:
+    linear-gradient(155deg, #1e3b2f 0%, #163028 100%);
+  border-color: color-mix(in srgb, #c8b48a 40%, transparent);
+}
+
+.trackStatWidgetAccent::after {
+  background: color-mix(in srgb, #c8b48a 22%, transparent);
+}
+
+.trackStatWidgetAccent .trackStatLabel,
+.trackStatWidgetAccent .trackStatValue,
+.trackStatWidgetAccent .trackStatValue em {
+  color: #f5f0e6;
+}
+
+.trackStatWidgetAccent .trackStatLabel {
+  color: #c8b48a;
+}
+
+.trackStatLabel {
+  position: relative;
+  z-index: 1;
+  font-size: 0.7rem;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif !important;
+  font-weight: 700;
+  color: #7f8c6a;
+}
+
+.trackStatValue {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  font-family: 'iran_extra', Tahoma, Arial, sans-serif !important;
+  font-weight: 700;
+  color: #1e3b2f;
+  line-height: 1.25;
+}
+
+.trackStatValue em {
+  font-style: normal;
   font-size: 0.72rem;
-  color: var(--tp-muted);
-  margin-bottom: 0.25rem;
+  font-family: 'iran', Tahoma, Arial, sans-serif !important;
+  font-weight: 700;
+  color: #7f8c6a;
+  margin-inline-start: 0.1rem;
 }
 
-.trackStat strong {
-  font-family: var(--font-edameh, Georgia, serif);
-  font-size: 1.05rem;
-  color: var(--tp-deep);
-}
-
-.trackStatRemain {
-  color: var(--tp-accent) !important;
-}
-
-.trackGrid {
+.trackGrid,
+.trackGrid2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
+  gap: 0.7rem;
+  margin-bottom: 0.7rem;
+}
+
+.trackGrid3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-bottom: 0.7rem;
 }
 
 .trackCard {
-  background: rgba(255, 255, 255, 0.94);
+  background: #fff;
   border: 1px solid var(--tp-line);
-  border-radius: 16px;
-  padding: 1rem 1.05rem;
-  margin-bottom: 0.75rem;
-  box-shadow: 0 8px 20px rgba(60, 45, 0, 0.04);
+  border-radius: 14px;
+  padding: 0.95rem 1rem;
+  margin-bottom: 0.7rem;
+  box-shadow: none;
 }
 
 .trackCardAccent {
-  background: linear-gradient(160deg, #fff9e8, #ffffff);
+  background: linear-gradient(160deg, color-mix(in srgb, #c8b48a 12%, #ffffff), #ffffff);
 }
 
 .trackCardHead {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  margin-bottom: 0.75rem;
-  color: var(--tp-accent);
+  gap: 0.4rem;
+  margin-bottom: 0.7rem;
+  color: var(--tp-muted);
 }
 
 .trackCardHead h2 {
   margin: 0;
-  font-size: 0.95rem;
-  font-family: var(--font-edameh, Georgia, serif);
-  font-weight: 800;
+  font-size: 0.86rem;
+  font-family: var(--rp-extra);
+  font-weight: 700;
   color: var(--tp-ink);
 }
 
 .trackDl {
   margin: 0;
   display: grid;
-  gap: 0.65rem;
+  gap: 0.6rem;
+}
+
+.trackDl2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem 0.75rem;
+}
+
+.trackDl3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem 0.75rem;
 }
 
 .trackDl div {
   display: grid;
-  gap: 0.15rem;
+  gap: 0.12rem;
+  min-width: 0;
+}
+
+.trackDl3 .trackDlSpan {
+  grid-column: 1 / -1;
 }
 
 .trackDl dt {
   margin: 0;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--tp-muted);
   display: inline-flex;
   align-items: center;
@@ -856,7 +1163,7 @@
 
 .trackDl dd {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   font-weight: 650;
   line-height: 1.55;
   color: var(--tp-ink);
@@ -864,7 +1171,7 @@
 
 .trackReport {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   line-height: 1.75;
   color: var(--tp-ink);
   white-space: pre-wrap;
@@ -882,52 +1189,482 @@
 .trackTable {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.84rem;
+  font-size: 0.8rem;
 }
 
 .trackTable th,
 .trackTable td {
-  padding: 0.6rem 0.45rem;
-  border-bottom: 1px solid rgba(179, 140, 0, 0.14);
+  padding: 0.55rem 0.4rem;
+  border-bottom: 1px solid color-mix(in srgb, #7f8c6a 16%, transparent);
   text-align: start;
   vertical-align: top;
 }
 
 .trackTable th {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--tp-muted);
   font-weight: 700;
 }
 
 .trackTable td strong {
   display: block;
-  font-weight: 750;
+  font-weight: 700;
 }
 
 .trackLineNote {
   display: block;
   margin-top: 0.2rem;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--tp-muted);
   font-weight: 500;
 }
 
+
+.trackInfoCard {
+  margin-bottom: 0.7rem;
+}
+
+.trackInfoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem 0.85rem;
+}
+
+.trackInfoItem {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  min-width: 0;
+  padding: 0.35rem 0;
+  border-bottom: 1px dashed color-mix(in srgb, #7f8c6a 16%, transparent);
+}
+
+.trackInfoWide {
+  grid-column: 1 / -1;
+}
+
+.trackInfoKey {
+  flex: 0 0 auto;
+  font-size: 0.7rem;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif !important;
+  font-weight: 700;
+  color: #7f8c6a;
+  white-space: nowrap;
+}
+
+.trackInfoKey::after {
+  content: ':';
+  margin-inline-start: 0.1rem;
+}
+
+.trackInfoVal {
+  min-width: 0;
+  font-size: 0.82rem;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif !important;
+  font-weight: 700;
+  color: #1e3b2f;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.trackFullRow {
+  width: 100%;
+}
+
+.trackInvoicePair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-bottom: 0.7rem;
+}
+
+.trackInvoicePair:has(> :only-child) {
+  grid-template-columns: 1fr;
+}
+
+.trackInvoiceDoc {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 0.85rem 0.9rem;
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, #fffdf8 0%, #ffffff 42%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 27px,
+      color-mix(in srgb, #c8b48a 10%, transparent) 28px
+    );
+  border: 1px solid color-mix(in srgb, #7f8c6a 24%, transparent);
+  box-shadow: 0 10px 22px color-mix(in srgb, #1e3b2f 5%, transparent);
+}
+
+.trackInvoiceDocHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding-bottom: 0.55rem;
+  margin-bottom: 0.45rem;
+  border-bottom: 1px solid color-mix(in srgb, #c8b48a 40%, transparent);
+}
+
+.trackInvoiceDocHead span {
+  display: block;
+  font-size: 0.66rem;
+  color: #7f8c6a;
+  font-weight: 700;
+  margin-bottom: 0.15rem;
+}
+
+.trackInvoiceDocHead h3 {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #1e3b2f;
+}
+
+.trackInvoiceDocHead strong {
+  font-size: 0.86rem;
+  color: #9a7f4e;
+  white-space: nowrap;
+}
+
+.trackInvoiceDocList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.trackInvoiceDocList li {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px dashed color-mix(in srgb, #7f8c6a 14%, transparent);
+}
+
+.trackInvoiceDocList li:last-child {
+  border-bottom: none;
+}
+
+.trackInvoiceDocList strong {
+  display: block;
+  font-size: 0.78rem;
+  color: #1e3b2f;
+}
+
+.trackInvoiceDocMeta {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.12rem;
+  text-align: left;
+}
+
+.trackInvoiceDocMeta span {
+  font-size: 0.64rem;
+  color: #7f8c6a;
+  font-weight: 700;
+}
+
+.trackInvoiceDocMeta em {
+  font-style: normal;
+  font-size: 0.78rem;
+  font-family: 'iran_extra', Tahoma, Arial, sans-serif !important;
+  font-weight: 700;
+  color: #1e3b2f;
+}
+
+.trackBandsCard {
+  padding-bottom: 0.75rem;
+}
+
+.trackBands {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.trackBands:has(> :only-child) {
+  grid-template-columns: 1fr;
+}
+
+.trackBand {
+  padding: 0.55rem 0.65rem 0.45rem;
+  border-radius: 11px;
+  background: color-mix(in srgb, #f5f0e6 55%, #ffffff);
+  border: 1px solid color-mix(in srgb, #7f8c6a 18%, transparent);
+}
+
+.trackBandTitle {
+  margin: 0 0 0.4rem;
+  font-size: 0.7rem;
+  font-family: 'iran_bold', Tahoma, Arial, sans-serif !important;
+  font-weight: 700;
+  color: #7f8c6a;
+}
+
+.trackBandList,
+.trackPayHistoryList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.trackBandRow,
+.trackPayHistoryRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding: 0.4rem 0.15rem;
+  border-top: 1px solid color-mix(in srgb, #7f8c6a 12%, transparent);
+}
+
+.trackBandRow:first-child,
+.trackPayHistoryRow:first-child {
+  border-top: none;
+  padding-top: 0.15rem;
+}
+
+.trackBandMain {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.trackBandMain strong {
+  font-size: 0.78rem;
+  color: #1e3b2f;
+  line-height: 1.4;
+}
+
+.trackBandMeta {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.18rem;
+  text-align: left;
+}
+
+.trackBandMeta span {
+  font-size: 0.66rem;
+  color: #7f8c6a;
+  font-weight: 700;
+}
+
+.trackBandMeta em {
+  font-style: normal;
+  font-size: 0.78rem;
+  font-family: 'iran_extra', Tahoma, Arial, sans-serif !important;
+  font-weight: 700;
+  color: #1e3b2f;
+  direction: ltr;
+}
+
+.trackFinanceLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: stretch;
+  margin-bottom: 0.7rem;
+}
+
+.trackFinanceLayoutSolo {
+  grid-template-columns: 1fr;
+}
+
+.trackFinanceLayout > .trackFinanceCard {
+  margin-bottom: 0;
+}
+
+.trackFinanceBank {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.trackFinanceBank > :first-child {
+  flex: 1 1 auto;
+}
+
+.trackManualForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.75rem 0.8rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, #7f8c6a 22%, transparent);
+}
+
+.trackManualForm .trackFormLabel {
+  margin: 0;
+}
+
+.trackManualForm .trackBtn {
+  width: 100%;
+}
+
+.trackManualFields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.trackBtnGhostOn {
+  background: color-mix(in srgb, #1e3b2f 8%, #ffffff) !important;
+  border-color: color-mix(in srgb, #1e3b2f 28%, transparent) !important;
+  color: #1e3b2f !important;
+}
+
+.trackFinanceCard {
+  background: linear-gradient(165deg, color-mix(in srgb, #c8b48a 10%, #ffffff), #ffffff 58%);
+}
+
+.trackPayInline {
+  margin-top: 0.7rem;
+  padding-top: 0.7rem;
+  border-top: 1px dashed color-mix(in srgb, #7f8c6a 28%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.trackPayInlineHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.trackPayInlineHead h3 {
+  margin: 0;
+  font-size: 0.86rem;
+  color: #1e3b2f;
+}
+
+.trackPayInlineHead strong {
+  font-size: 0.9rem;
+  color: #9a7f4e;
+}
+
+.trackFinanceChips {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin-bottom: 0.55rem;
+}
+
+.trackFinanceChips > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  padding: 0.42rem 0.55rem;
+  border-radius: 9px;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, #7f8c6a 20%, transparent);
+  font-size: 0.68rem;
+  color: #7f8c6a;
+  font-weight: 700;
+  min-width: 0;
+}
+
+.trackFinanceChips strong {
+  color: #1e3b2f;
+  font-size: 0.76rem;
+  font-family: 'iran_extra', Tahoma, Arial, sans-serif !important;
+}
+
+.trackFinanceChips small {
+  margin-inline-start: 0.15rem;
+  font-size: 0.62rem;
+  color: #7f8c6a;
+  font-family: 'iran', Tahoma, Arial, sans-serif !important;
+  font-weight: 600;
+}
+
+.trackFinanceRemain {
+  background: color-mix(in srgb, #1e3b2f 8%, #ffffff) !important;
+  border-color: color-mix(in srgb, #1e3b2f 18%, transparent) !important;
+  color: #1e3b2f !important;
+}
+
+.trackFinanceNote {
+  margin: 0 0 0.55rem;
+  font-size: 0.72rem;
+  color: #7f8c6a;
+}
+
+.trackFinanceNote strong {
+  color: #1e3b2f;
+}
+
+.trackPayHistory {
+  margin-top: 0.35rem;
+  padding-top: 0.55rem;
+  border-top: 1px dashed color-mix(in srgb, #7f8c6a 28%, transparent);
+}
+
+.trackPayHistoryList {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem 0.65rem;
+}
+
+.trackPayHistoryRow {
+  padding: 0.45rem 0.5rem;
+  border: 1px solid color-mix(in srgb, #7f8c6a 14%, transparent);
+  border-radius: 10px;
+  background: #fff;
+  border-top-color: color-mix(in srgb, #7f8c6a 14%, transparent);
+}
+
+.trackPayHistoryRow:first-child {
+  padding-top: 0.45rem;
+}
+
+.trackPayCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.trackPayCard .trackCardHead {
+  margin-bottom: 0;
+}
+
+.trackPayAmount {
+  margin: 0;
+}
+
 .trackInvoice {
-  border-style: dashed;
-  background: linear-gradient(165deg, #fffdf5, #ffffff);
+  border-style: solid;
+  background: linear-gradient(165deg, color-mix(in srgb, #f5f0e6 70%, #ffffff), #ffffff);
 }
 
 .trackInvoiceRows {
   display: grid;
-  gap: 0.45rem;
-  margin-bottom: 0.85rem;
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
 }
 
 .trackInvoiceRows > div {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  font-size: 0.86rem;
+  font-size: 0.8rem;
   color: var(--tp-muted);
 }
 
@@ -945,53 +1682,53 @@
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  font-family: var(--font-edameh, Georgia, serif);
-  font-weight: 800;
-  font-size: 0.95rem;
-  margin-top: 0.4rem;
+  font-family: var(--rp-extra);
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-top: 0.35rem;
 }
 
 .trackTotalRemain {
-  color: var(--tp-accent);
-  font-size: 1.05rem;
+  color: #9a7f4e;
+  font-size: 0.86rem;
 }
 
 .trackPayStatus {
   display: inline-flex;
   padding: 0.15rem 0.45rem;
-  border-radius: 999px;
-  font-size: 0.72rem;
+  border-radius: 8px;
+  font-size: 0.68rem;
   font-weight: 700;
-  background: var(--tp-soft);
+  background: color-mix(in srgb, #c8b48a 18%, #ffffff);
   color: var(--tp-deep);
 }
 
 .trackPayCard {
-  border-color: rgba(179, 140, 0, 0.4);
-  background: linear-gradient(160deg, #fff6d6, #ffffff 55%);
+  border-color: color-mix(in srgb, #c8b48a 40%, transparent);
+  background: linear-gradient(160deg, color-mix(in srgb, #c8b48a 14%, #ffffff), #ffffff 58%);
 }
 
 .trackProposeCard {
-  border-color: rgba(179, 140, 0, 0.45);
-  background: linear-gradient(165deg, #fff8e0, #ffffff 60%);
+  border-color: color-mix(in srgb, #7f8c6a 30%, transparent);
+  background: linear-gradient(165deg, color-mix(in srgb, #7f8c6a 8%, #ffffff), #ffffff 62%);
 }
 
 .trackProposeIntro {
-  margin: 0 0 0.85rem;
-  font-size: 0.86rem;
+  margin: 0 0 0.8rem;
+  font-size: 0.8rem;
   color: var(--tp-muted);
   line-height: 1.6;
 }
 
 .trackProposeList {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.7rem;
 }
 
 .trackProposeItem {
-  padding: 0.9rem 1rem;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.92);
+  padding: 0.85rem 0.95rem;
+  border-radius: 12px;
+  background: #fff;
   border: 1px solid var(--tp-line);
 }
 
@@ -1007,26 +1744,26 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  font-size: 0.72rem;
-  font-weight: 800;
+  font-size: 0.68rem;
+  font-weight: 700;
   color: var(--tp-deep);
 }
 
 .trackProposeAmount {
-  font-family: var(--font-edameh, Georgia, serif);
-  color: var(--tp-accent);
-  font-size: 1rem;
+  font-family: var(--rp-extra);
+  color: #9a7f4e;
+  font-size: 0.95rem;
 }
 
 .trackProposeItem h3 {
   margin: 0 0 0.35rem;
-  font-size: 0.98rem;
-  font-family: var(--font-edameh, Georgia, serif);
+  font-size: 0.9rem;
+  font-family: var(--rp-extra);
 }
 
 .trackProposeDesc {
-  margin: 0 0 0.75rem;
-  font-size: 0.86rem;
+  margin: 0 0 0.7rem;
+  font-size: 0.8rem;
   color: var(--tp-muted);
   line-height: 1.65;
 }
@@ -1038,31 +1775,31 @@
 }
 
 .trackProposeShop > span {
-  font-size: 0.84rem;
+  font-size: 0.8rem;
   color: var(--tp-muted);
 }
 
 .trackPayAmount {
-  margin: 0 0 0.85rem;
-  font-size: 0.92rem;
+  margin: 0 0 0.8rem;
+  font-size: 0.86rem;
   color: var(--tp-muted);
 }
 
 .trackPayAmount strong {
   color: var(--tp-deep);
-  font-family: var(--font-edameh, Georgia, serif);
-  font-size: 1.15rem;
+  font-family: var(--rp-extra);
+  font-size: 0.92rem;
 }
 
 .trackBank {
   display: grid;
-  gap: 0.45rem;
-  margin-bottom: 0.9rem;
-  padding: 0.85rem 0.95rem;
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
+  padding: 0.8rem 0.9rem;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.85);
+  background: color-mix(in srgb, #f5f0e6 55%, #ffffff);
   border: 1px solid var(--tp-line);
-  font-size: 0.86rem;
+  font-size: 0.8rem;
 }
 
 .trackBank > div {
@@ -1078,21 +1815,34 @@
 
 .trackBank strong {
   color: var(--tp-ink);
-  font-weight: 750;
+  font-weight: 700;
 }
 
 .trackBank p {
   margin: 0.35rem 0 0;
   color: var(--tp-muted);
   line-height: 1.6;
-  font-size: 0.82rem;
+  font-size: 0.76rem;
 }
 
 .trackPayActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 0.85rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin-bottom: 0.8rem;
+}
+
+.trackPayActions:has(> :nth-child(2):last-child) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.trackPayActions:has(> :only-child) {
+  grid-template-columns: 1fr;
+}
+
+.trackPayActions .trackBtn,
+.trackPayActions .trackBtnGhost {
+  width: 100%;
 }
 
 .trackBtn,
@@ -1102,20 +1852,25 @@
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  border-radius: 12px;
-  padding: 0.8rem 1.1rem;
+  border-radius: 11px;
+  padding: 0.7rem 1rem;
   font: inherit;
-  font-size: 0.9rem;
-  font-weight: 800;
+  font-size: 0.8rem;
+  font-weight: 700;
   cursor: pointer;
   text-decoration: none;
   border: none;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .trackBtn {
-  background: linear-gradient(135deg, var(--tp-gold), var(--tp-accent));
-  color: #1c1c1e;
-  box-shadow: 0 6px 16px rgba(179, 140, 0, 0.28);
+  background: var(--tp-deep);
+  color: var(--tp-soft);
+  box-shadow: none;
+}
+
+.trackBtn:hover {
+  background: #163028;
 }
 
 .trackBtn:disabled,
@@ -1130,58 +1885,71 @@
   border: 1px solid var(--tp-line);
 }
 
+.trackBtnGhost:hover {
+  background: color-mix(in srgb, #c8b48a 14%, #ffffff);
+}
+
 .trackCardForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
   padding-top: 0.75rem;
   border-top: 1px dashed var(--tp-line);
 }
 
 .trackFormLabel {
   margin: 0 0 0.65rem;
-  font-size: 0.82rem;
-  font-weight: 750;
+  font-size: 0.78rem;
+  font-weight: 700;
   color: var(--tp-deep);
 }
 
 .trackFields {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.7rem;
-  margin-bottom: 0.75rem;
+  gap: 0.65rem;
+  margin-bottom: 0.7rem;
 }
 
 .trackField {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
-  font-size: 0.76rem;
+  gap: 0.28rem;
+  font-size: 0.72rem;
   color: var(--tp-muted);
 }
 
 .trackField input {
   border: 1px solid var(--tp-line);
-  border-radius: 11px;
-  padding: 0.7rem 0.8rem;
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
   font: inherit;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   background: #fff;
   color: var(--tp-ink);
 }
 
+.trackField input:focus {
+  outline: none;
+  border-color: color-mix(in srgb, #7f8c6a 55%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, #c8b48a 22%, transparent);
+}
+
 .trackFlash {
-  margin: 0.75rem 0 0;
-  padding: 0.75rem 0.95rem;
-  border-radius: 12px;
-  font-size: 0.88rem;
+  margin: 0.7rem 0 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: 11px;
+  font-size: 0.8rem;
   font-weight: 650;
 }
 
 .trackFlashOk {
-  background: rgba(15, 118, 110, 0.1);
+  background: color-mix(in srgb, #1e3b2f 8%, #ffffff);
   color: var(--tp-ok);
 }
 
 .trackFlashErr {
-  background: rgba(185, 28, 28, 0.08);
+  background: color-mix(in srgb, #8b3a3a 8%, #ffffff);
   color: var(--tp-bad);
 }
 
@@ -1189,71 +1957,71 @@
 .trackMutedCenter {
   margin: 0.5rem 0 0;
   color: var(--tp-muted);
-  font-size: 0.88rem;
+  font-size: 0.8rem;
 }
 
 .trackMutedCenter {
   text-align: center;
-  padding: 0.85rem;
+  padding: 0.8rem;
 }
 
 .trackEmpty {
   text-align: center;
-  padding: 2.5rem 1.25rem;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.92);
+  padding: 2.4rem 1.2rem;
+  border-radius: 16px;
+  background: #fff;
   border: 1px solid var(--tp-line);
 }
 
 .trackEmpty svg {
-  color: var(--tp-accent);
-  margin-bottom: 0.65rem;
+  color: var(--tp-muted);
+  margin-bottom: 0.6rem;
 }
 
 .trackEmpty h1 {
-  margin: 0 0 0.4rem;
-  font-family: var(--font-edameh, Georgia, serif);
-  font-size: 1.35rem;
+  margin: 0 0 0.35rem;
+  font-family: var(--rp-extra);
+  font-size: 0.95rem;
 }
 
 .trackEmpty p {
-  margin: 0 0 1.1rem;
+  margin: 0 0 1rem;
   color: var(--tp-muted);
-  font-size: 0.9rem;
+  font-size: 0.82rem;
 }
 
 .trackEmptyActions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.45rem;
   justify-content: center;
 }
 
 .trackSkeleton {
   display: grid;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
+  gap: 0.7rem;
+  margin-bottom: 0.7rem;
 }
 
 .trackSkelHero,
 .trackSkelRow,
 .trackSkelCard {
-  border-radius: 14px;
-  background: linear-gradient(90deg, #efe8d8, #f7f2e6, #efe8d8);
+  border-radius: 12px;
+  background: linear-gradient(90deg, #efe9dc, #f7f3ea, #efe9dc);
   background-size: 200% 100%;
   animation: track-shimmer 1.2s ease infinite;
 }
 
 .trackSkelHero {
-  height: 110px;
+  height: 108px;
 }
 
 .trackSkelRow {
-  height: 72px;
+  height: 68px;
 }
 
 .trackSkelCard {
-  height: 140px;
+  height: 132px;
 }
 
 @keyframes track-shimmer {
@@ -1262,6 +2030,31 @@
   }
   100% {
     background-position: -100% 0;
+  }
+}
+
+@media (max-width: 980px) {
+  .trackFinanceLayout {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.9fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .trackDl3,
+  .trackFinanceChips,
+  .trackGrid3,
+  .trackPayHistoryList,
+  .trackInfoGrid,
+  .trackStatWidgets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .trackFinanceLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .trackPayActions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1275,7 +2068,18 @@
   }
 
   .trackGrid,
-  .trackFields {
+  .trackGrid2,
+  .trackGrid3,
+  .trackBands,
+  .trackDl2,
+  .trackDl3,
+  .trackFinanceChips,
+  .trackFields,
+  .trackPayActions,
+  .trackPayHistoryList,
+  .trackInvoicePair,
+  .trackInfoGrid,
+  .trackStatWidgets {
     grid-template-columns: 1fr;
   }
 }
@@ -1288,6 +2092,10 @@
   .trackPipeHint {
     display: none;
   }
+
+  .trackTitleRow {
+    flex-direction: column;
+  }
 }
 
 @media print {
@@ -1297,6 +2105,7 @@
   }
 
   .trackBack,
+  .trackDeskLink,
   .trackPrintBtn,
   .trackPrintWait,
   .trackPayCard,
@@ -1307,8 +2116,87 @@
 
   .trackCard,
   .trackStat,
-  .trackPipeline {
+  .trackPipeline,
+  .trackStats {
     box-shadow: none;
     break-inside: avoid;
   }
+}
+
+.trackPayAltOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120000;
+  background: rgba(16, 24, 22, 0.45);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.trackPayAltCard {
+  width: min(360px, 100%);
+  border-radius: 14px;
+  border: 1px solid var(--tp-line, rgba(30, 59, 47, 0.14));
+  background: #fff;
+  box-shadow: 0 22px 50px rgba(20, 32, 28, 0.28);
+  padding: 1rem 1.05rem 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  color: var(--tp-ink, #1e3b2f);
+}
+
+.trackPayAltIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, #7f8c6a 16%, transparent);
+  color: var(--tp-deep, #1e3b2f);
+}
+
+.trackPayAltTitle {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.trackPayAltText {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #5c655f;
+  line-height: 1.55;
+}
+
+.trackPayAltActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.trackPayAltActions .trackBtn,
+.trackPayAltActions .trackBtnGhost {
+  flex: 1 1 130px;
+}
+
+.trackReceiptWaiting {
+  margin-top: 0.7rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, #1e3b2f 18%, transparent);
+  background: color-mix(in srgb, #1e3b2f 6%, #ffffff);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.trackReceiptWaiting .trackFlashOk,
+.trackReceiptWaiting .trackMutedCenter {
+  margin: 0;
 }

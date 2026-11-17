@@ -356,7 +356,8 @@
 
 .breakingNewsConfigured.breakingNewsSticky {
   position: sticky !important;
-  top: var(--bn-sticky-top, 0) !important;
+  /* مارجین بالا در top هم لحاظ شود تا با sticky از بین نرود */
+  top: calc(var(--bn-sticky-top, 0px) + var(--bn-mt, 0px)) !important;
   z-index: 1001;
 }
 
@@ -374,12 +375,12 @@
   pointer-events: none;
 }
 
-/* دسکتاپ: پین ثابت — specificity بالاتر از .breakingNewsSticky تا واقعاً fixed شود و مارجین نماند */
+/* دسکتاپ: پین ثابت — margin روی fixed بی‌اثر است؛ فاصلهٔ بالا از --bn-mt در top می‌آید */
 @media (min-width: 768px) {
   .breakingNewsConfigured.breakingNewsSticky.breakingNewsPinned,
   .breakingNews.breakingNewsPinned {
     position: fixed !important;
-    top: var(--bn-pin-top, 0px) !important;
+    top: calc(var(--bn-pin-top, 0px) + var(--bn-mt, 0px)) !important;
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;

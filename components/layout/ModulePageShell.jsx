@@ -1,52 +1,67 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import PageBuilderRenderer from '@/components/layout/PageBuilderRenderer'
 import {
   createDefaultModulePageLayout,
   getModulePageDef,
+  getSharedInternalLayoutRaw,
   normalizeModulePageLayout,
+  SHARED_INTERNAL_LAYOUT_EVENT,
+  sharedInternalLayoutHasContent,
+  normalizeSharedInternalLayout,
 } from '@/config/modulePageLayouts'
 import {
-  applyChromeToLayout,
-  extractChromeWidgets,
+  composeInternalPageLayout,
+  stripSyncedHeroWidgets,
 } from '@/config/chromeThemeSync'
 import { fetchSiteSettings } from '@/services/siteSettings'
 
+const ModulePageShellContext = createContext(false)
+
 /**
- * پوسته چیدمان صفحات داخلی ماژول — مثل /news با news_list_layout
- * اگر هدر در چیدمان صفحه نباشد، از هدر صفحه اصلی قرض می‌گیرد.
- * @param {{ pageKey: string, children: React.ReactNode, fallback?: React.ReactNode }} props
+ * پوسته چیدمان صفحات داخلی ماژول.
+ * هدر/منو از «چیدمان مشترک» (سکشن ۱ صفحه اصلی) می‌آید.
+ * اگر داخل یک ModulePageShell دیگر باشیم، فقط children را رد می‌کند
+ * تا شاخه‌های تو در تو (مثل /repairs/track) دوبار کروم نگیرند.
  */
 export default function ModulePageShell({
   pageKey,
   children,
   fallback = null,
 }) {
+  const nested = useContext(ModulePageShellContext)
   const def = getModulePageDef(pageKey)
   const empty = createDefaultModulePageLayout(pageKey)
   const [layout, setLayout] = useState(empty)
 
   useEffect(() => {
+    if (nested) return undefined
     let cancelled = false
     const resolve = (settings, pageOverride = null) => {
-      const pageLayout = normalizeModulePageLayout(
-        pageOverride ?? settings?.module_page_layouts?.[pageKey],
-        pageKey,
+      const pageLayout = stripSyncedHeroWidgets(
+        normalizeModulePageLayout(
+          pageOverride ?? settings?.module_page_layouts?.[pageKey],
+          pageKey,
+        ),
       )
-      const home = settings?.home_layout
-      // صفحه مدرسه کروم اختصاصی دارد؛ هدر خانه را رویش ننشان.
       if (def?.keepOwnChrome) {
         return pageLayout
       }
-      // همیشه هدر/رنگ خانه را روی صفحات ماژول (مثل پروفایل) بنشان —
-      // وگرنه هدر قدیمی ذخیره‌شده، «اعمال هدر و رنگ به همه» را خنثی می‌کند.
-      if (extractChromeWidgets(home).length > 0) {
-        return applyChromeToLayout(pageLayout, home, {
-          idPrefix: `${pageKey}_live`,
-          contentWidget: def?.contentWidget,
-        })
+
+      const shared = normalizeSharedInternalLayout(
+        getSharedInternalLayoutRaw(settings?.module_page_layouts),
+      )
+      if (sharedInternalLayoutHasContent(shared)) {
+        return stripSyncedHeroWidgets(
+          composeInternalPageLayout(pageLayout, shared, {
+            pageKey,
+            contentWidget: def?.contentWidget,
+          }),
+        )
       }
+
+      // چیدمان مشترک خالی است → فقط محتوای صفحه (بدون هدر اجباری خانه)
       return pageLayout
     }
     ;(async () => {
@@ -72,7 +87,7 @@ export default function ModulePageShell({
           }
         })
     }
-    const onHome = () => {
+    const onSharedOrHome = () => {
       fetchSiteSettings({ force: true })
         .then((s) => {
           if (!cancelled) setLayout(resolve(s))
@@ -80,22 +95,30 @@ export default function ModulePageShell({
         .catch(() => {})
     }
     window.addEventListener(eventName, onLayout)
-    window.addEventListener('home-layout-changed', onHome)
-    window.addEventListener('module-page-layouts-changed', onHome)
+    window.addEventListener(SHARED_INTERNAL_LAYOUT_EVENT, onSharedOrHome)
+    window.addEventListener('home-layout-changed', onSharedOrHome)
+    window.addEventListener('module-page-layouts-changed', onSharedOrHome)
     return () => {
       cancelled = true
       window.removeEventListener(eventName, onLayout)
-      window.removeEventListener('home-layout-changed', onHome)
-      window.removeEventListener('module-page-layouts-changed', onHome)
+      window.removeEventListener(SHARED_INTERNAL_LAYOUT_EVENT, onSharedOrHome)
+      window.removeEventListener('home-layout-changed', onSharedOrHome)
+      window.removeEventListener('module-page-layouts-changed', onSharedOrHome)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageKey])
+  }, [pageKey, nested])
+
+  if (nested) {
+    return children
+  }
 
   return (
-    <PageBuilderRenderer
-      layout={normalizeModulePageLayout(layout, pageKey)}
-      articleSlot={children}
-      fallback={fallback || children}
-    />
+    <ModulePageShellContext.Provider value={true}>
+      <PageBuilderRenderer
+        layout={normalizeModulePageLayout(layout, pageKey)}
+        articleSlot={children}
+        fallback={fallback || children}
+      />
+    </ModulePageShellContext.Provider>
   )
 }

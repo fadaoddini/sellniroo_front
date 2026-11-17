@@ -64,7 +64,7 @@
 }
 
 .brandName {
-  font-family: var(--font-iran-extra);
+  font-family: var(--font-iran-bold);
   font-size: 16px;
   color: #1a1a2e;
 }

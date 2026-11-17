@@ -503,17 +503,22 @@ export const AuthProvider = ({ children }) => {
       console.log("Send OTP response:", response.data);
 
       const data = response.data || {};
+      // هرگز کد OTP را از پاسخ API در UI نشان نده
+      const safeMessage = String(data.message || "").replace(
+        /(?:کد\s*(?:موقت|تایید)?[^\d]{0,20})?\b\d{4}\b/g,
+        ""
+      ).replace(/\s{2,}/g, " ").trim();
       // کد قبلی هنوز معتبر است — برو به مرحلهٔ ورود کد
       if (data.status === "ok" || data.status === "failed") {
         return {
           success: true,
           message:
-            data.message ||
+            safeMessage ||
             (data.status === "failed"
               ? "کد قبلی هنوز معتبر است"
               : "کد تایید ارسال شد"),
           waitTime: data.wait_time || 0,
-          debugOtp: data.debug_otp || null,
+          smsSent: data.sms_sent !== false,
         };
       }
       return {

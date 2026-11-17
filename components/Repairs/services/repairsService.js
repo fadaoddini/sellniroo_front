@@ -60,6 +60,30 @@ const repairsService = {
         headers: authHeaders(),
       })
     ),
+  techArrive: (id) =>
+    wrap(() =>
+      axios.post(
+        Config.endpoints.repairs.techJob(id),
+        { action: 'arrive' },
+        { headers: authHeaders() },
+      )
+    ),
+  techStartWork: (id) =>
+    wrap(() =>
+      axios.post(
+        Config.endpoints.repairs.techJob(id),
+        { action: 'start_work' },
+        { headers: authHeaders() },
+      )
+    ),
+  techSyncTimer: (id) =>
+    wrap(() =>
+      axios.post(
+        Config.endpoints.repairs.techJob(id),
+        { action: 'sync_timer' },
+        { headers: authHeaders() },
+      )
+    ),
   techFinishWork: (id) =>
     wrap(() =>
       axios.post(
@@ -84,18 +108,66 @@ const repairsService = {
     wrap(() => axios.get(Config.endpoints.repairs.lookup(params))),
   track: (token) =>
     wrap(() => axios.get(Config.endpoints.repairs.track(token))),
+  trackRate: (token, payload) =>
+    wrap(() =>
+      axios.post(Config.endpoints.repairs.trackRate(token), payload),
+    ),
+  rateTechnician: (id, payload) =>
+    wrap(() =>
+      axios.patch(
+        Config.endpoints.repairs.manageJob(id),
+        { action: 'rate_technician', ...payload },
+        { headers: authHeaders() },
+      ),
+    ),
   payGateway: (token, stage, extra = {}) =>
     wrap(() =>
-      axios.post(Config.endpoints.repairs.pay(token), {
-        stage,
-        method: 'gateway',
-        ...extra,
-      })
+      axios.post(
+        Config.endpoints.repairs.pay(token),
+        {
+          stage,
+          method: 'gateway',
+          ...extra,
+        },
+        { headers: authHeaders() },
+      )
     ),
+  payWallet: (token, stage, extra = {}) =>
+    wrap(() =>
+      axios.post(
+        Config.endpoints.repairs.pay(token),
+        {
+          stage,
+          method: 'wallet',
+          ...extra,
+        },
+        { headers: authHeaders() },
+      )
+    ),
+  walletBalance: async () => {
+    try {
+      const res = await axios.get(Config.endpoints.order.wallet(), {
+        headers: authHeaders(),
+      })
+      // این endpoint مستقیم { balance, ... } برمی‌گرداند (بدون data)
+      const body = res.data?.data ?? res.data
+      return { success: true, data: body }
+    } catch (e) {
+      return {
+        success: false,
+        error: e.response?.data?.message || 'خطا',
+        code: e.response?.data?.code,
+        httpStatus: e.response?.status,
+      }
+    }
+  },
   payCard: (token, stage, formData) =>
     wrap(() =>
       axios.post(Config.endpoints.repairs.pay(token), formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          ...authHeaders(),
+        },
       })
     ),
   proposalAction: (token, id, payload) =>
@@ -243,11 +315,66 @@ const repairsService = {
         headers: authHeaders(),
       })
     ),
-  approveComplete: (id) =>
+  adjustPayable: (id, payableAmount, note = '') =>
     wrap(() =>
       axios.patch(
         Config.endpoints.repairs.manageJob(id),
-        { action: 'approve_complete' },
+        {
+          action: 'adjust_payable',
+          payable_amount: payableAmount,
+          note: note || undefined,
+        },
+        { headers: authHeaders() },
+      )
+    ),
+  approveComplete: (id, extra = {}) =>
+    wrap(() =>
+      axios.patch(
+        Config.endpoints.repairs.manageJob(id),
+        { action: 'approve_complete', ...extra },
+        { headers: authHeaders() },
+      )
+    ),
+  archiveJob: (id, extra = {}) =>
+    wrap(() =>
+      axios.patch(
+        Config.endpoints.repairs.manageJob(id),
+        { action: 'archive', ...extra },
+        { headers: authHeaders() },
+      )
+    ),
+  unarchiveJob: (id) =>
+    wrap(() =>
+      axios.patch(
+        Config.endpoints.repairs.manageJob(id),
+        { action: 'unarchive' },
+        { headers: authHeaders() },
+      )
+    ),
+  setWarranty: (id, warrantyUntil, clear = false) =>
+    wrap(() =>
+      axios.patch(
+        Config.endpoints.repairs.manageJob(id),
+        {
+          action: 'set_warranty',
+          warranty_until: warrantyUntil || undefined,
+          clear_warranty: clear || undefined,
+        },
+        { headers: authHeaders() },
+      )
+    ),
+  setServiceReminder: (id, payload = {}) =>
+    wrap(() =>
+      axios.patch(
+        Config.endpoints.repairs.manageJob(id),
+        { action: 'set_service_reminder', ...payload },
+        { headers: authHeaders() },
+      )
+    ),
+  archivedJobs: (params = {}) =>
+    wrap(() =>
+      axios.get(
+        Config.endpoints.repairs.manageJobs({ archived: '1', ...params }),
         { headers: authHeaders() },
       )
     ),
@@ -299,9 +426,47 @@ const repairsService = {
         headers: authHeaders(),
       })
     ),
-  accounting: () =>
+  respondServiceReminder: (deviceId, payload = {}) =>
     wrap(() =>
-      axios.get(Config.endpoints.repairs.accounting(), {
+      axios.post(
+        Config.endpoints.repairs.myReminderRespond(deviceId),
+        payload,
+        { headers: authHeaders() },
+      )
+    ),
+  accounting: (params = {}) =>
+    wrap(() =>
+      axios.get(Config.endpoints.repairs.accounting(params), {
+        headers: authHeaders(),
+      })
+    ),
+  expenses: (params = {}) =>
+    wrap(() =>
+      axios.get(Config.endpoints.repairs.manageExpenses(params), {
+        headers: authHeaders(),
+      })
+    ),
+  createExpense: (formData) =>
+    wrap(() =>
+      axios.post(Config.endpoints.repairs.manageExpenses(), formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          ...authHeaders(),
+        },
+      })
+    ),
+  updateExpense: (id, formData) =>
+    wrap(() =>
+      axios.patch(Config.endpoints.repairs.manageExpense(id), formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          ...authHeaders(),
+        },
+      })
+    ),
+  deleteExpense: (id) =>
+    wrap(() =>
+      axios.delete(Config.endpoints.repairs.manageExpense(id), {
         headers: authHeaders(),
       })
     ),

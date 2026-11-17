@@ -1,0 +1,161 @@
+.sheet {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 14mm 16mm;
+  background: #fff;
+  color: #1a1f1c;
+  font-family: var(--font-iran, iran, Tahoma, sans-serif);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  box-sizing: border-box;
+  direction: rtl;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 2px solid #1e3b2f;
+  margin-bottom: 1rem;
+}
+
+.brand {
+  margin: 0 0 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #8a7a55;
+}
+
+.head h1 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: var(--font-iran-extra, iran_extra, iran, Tahoma, sans-serif);
+  color: #1e3b2f;
+}
+
+.headMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  text-align: left;
+  font-size: 0.72rem;
+}
+
+.headMeta span {
+  display: block;
+  color: #6b716c;
+  font-weight: 700;
+}
+
+.headMeta strong {
+  color: #1a1f1c;
+}
+
+.parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.parties h2,
+.block h2 {
+  margin: 0 0 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1e3b2f;
+}
+
+.parties p,
+.report {
+  margin: 0.15rem 0;
+  font-size: 0.74rem;
+  line-height: 1.55;
+  font-weight: 600;
+  color: #4a554e;
+}
+
+.block {
+  margin-bottom: 0.85rem;
+}
+
+.block table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+}
+
+.block th,
+.block td {
+  border: 1px solid #e4ddd0;
+  padding: 0.35rem 0.45rem;
+  text-align: right;
+}
+
+.block th {
+  background: #f5f0e6;
+  font-weight: 700;
+  color: #1e3b2f;
+}
+
+.totals {
+  margin: 0.85rem 0 1rem;
+  border: 1px solid #e4ddd0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.totals > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  border-bottom: 1px solid #f0ebe1;
+}
+
+.totals > div:last-child {
+  border-bottom: none;
+}
+
+.totalStrong {
+  background: #f5f0e6;
+  color: #1e3b2f;
+}
+
+.totalRemain {
+  background: #eef5f1;
+  color: #1e3b2f;
+  font-size: 0.82rem !important;
+}
+
+.foot {
+  margin-top: 1.25rem;
+  padding-top: 0.65rem;
+  border-top: 1px dashed #d5cec0;
+}
+
+.foot p {
+  margin: 0.15rem 0;
+  font-size: 0.66rem;
+  color: #8a7a55;
+  font-weight: 700;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 8mm;
+  }
+
+  .sheet {
+    width: auto;
+    min-height: auto;
+    padding: 0;
+    box-shadow: none;
+  }
+}

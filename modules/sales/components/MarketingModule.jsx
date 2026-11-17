@@ -52,6 +52,15 @@ const TOUR_DEMO_FOLLOWUPS = [
   },
 ]
 
+const CUSTOMER_JOBS = [
+  { value: 'realtor', label: 'املاکی' },
+  { value: 'contractor', label: 'مجری پروژه' },
+  { value: 'peymankar', label: 'پیمانکار' },
+  { value: 'engineer', label: 'مهندس ساختمان' },
+  { value: 'agent', label: 'نماینده' },
+  { value: 'other', label: 'سایر' },
+]
+
 const MarketingModule = () => {
   const router = useRouter()
   const {
@@ -203,6 +212,7 @@ const MarketingModule = () => {
     phone: '',
     description: '',
     customer_name: '',
+    customer_job: '',
     followUpDate: '',
     followUpTime: '',
   })
@@ -230,6 +240,8 @@ const MarketingModule = () => {
         tracking_code: lead.tracking_code || '',
         description: lead.description || '',
         customer_name: lead.customer_name || '',
+        customer_job: lead.customer_job || '',
+        customer_job_display: lead.customer_job_display || '',
         createdAt: lead.created_at,
         nextFollowUp: lead.next_follow_up,
         nextFollowUpTime: lead.next_follow_up_time,
@@ -320,6 +332,10 @@ const MarketingModule = () => {
       alert('عنوان و موبایل الزامی است')
       return
     }
+    if (!formData.customer_job) {
+      alert('طبقه‌بندی شغل مشتری را انتخاب کنید')
+      return
+    }
     
     try {
       setLoading(true)
@@ -329,6 +345,7 @@ const MarketingModule = () => {
         phone: formData.phone,
         description: formData.description || '',
         customer_name: formData.customer_name || '',
+        customer_job: formData.customer_job,
         status: 'new',
         next_follow_up: formData.followUpDate || null,
         next_follow_up_time: formData.followUpTime || null,
@@ -346,6 +363,7 @@ const MarketingModule = () => {
         phone: '', 
         description: '',
         customer_name: '',
+        customer_job: '',
         followUpDate: '',
         followUpTime: '',
       })
@@ -1117,6 +1135,23 @@ const MarketingModule = () => {
                   onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
                   placeholder="نام مشتری..."
                 />
+              </div>
+              <div className={styles.formGroup}>
+                <label>شغل / طبقه مشتری *</label>
+                <select
+                  value={formData.customer_job}
+                  onChange={(e) =>
+                    setFormData({ ...formData, customer_job: e.target.value })
+                  }
+                  required
+                >
+                  <option value="">انتخاب کنید...</option>
+                  {CUSTOMER_JOBS.map((job) => (
+                    <option key={job.value} value={job.value}>
+                      {job.label}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className={styles.formGroup}>
                 <label>شماره موبایل *</label>

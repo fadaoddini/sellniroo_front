@@ -178,6 +178,46 @@ const shopOwnerApi = {
       body: JSON.stringify(payload),
     }).then(parse)
   },
+
+  accounting(params = {}) {
+    return fetch(Config.endpoints.order.ownerAccounting(params), {
+      headers: authHeaders(),
+      cache: 'no-store',
+    }).then(parse)
+  },
+
+  listExpenses(params = {}) {
+    return fetch(Config.endpoints.order.ownerExpenses(params), {
+      headers: authHeaders(),
+      cache: 'no-store',
+    }).then(parse)
+  },
+
+  createExpense(payload) {
+    return fetch(Config.endpoints.order.ownerExpenses(), {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify(payload),
+    }).then(parse)
+  },
+
+  updateExpense(id, payload) {
+    return fetch(Config.endpoints.order.ownerExpenseDetail(id), {
+      method: 'PATCH',
+      headers: authHeaders(),
+      body: JSON.stringify(payload),
+    }).then(parse)
+  },
+
+  deleteExpense(id) {
+    return fetch(Config.endpoints.order.ownerExpenseDetail(id), {
+      method: 'DELETE',
+      headers: authHeaders(),
+    }).then(async (res) => {
+      if (res.status === 204) return null
+      return parse(res)
+    })
+  },
 }
 
 export default shopOwnerApi

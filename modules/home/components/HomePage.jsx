@@ -73,6 +73,32 @@ const HomePage = ({ seoSubtitle = '', siteName = '' }) => {
     return () => window.clearTimeout(t)
   }, [dataReady])
 
+  // اسکرول به هش بعد از آماده شدن صفحه (مثلاً /#rebo-cost از پروفایل)
+  useEffect(() => {
+    if (!dataReady || showSplash) return undefined
+    const raw = typeof window !== 'undefined' ? window.location.hash : ''
+    const id = raw.replace(/^#/, '').trim()
+    if (!id) return undefined
+
+    let tries = 0
+    const maxTries = 20
+    const tick = () => {
+      const el = document.getElementById(id)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        return true
+      }
+      return false
+    }
+    if (tick()) return undefined
+
+    const iv = window.setInterval(() => {
+      tries += 1
+      if (tick() || tries >= maxTries) window.clearInterval(iv)
+    }, 80)
+    return () => window.clearInterval(iv)
+  }, [dataReady, showSplash, homeLayout])
+
   return (
     <div
       className={[styles.homeContainer, appShell ? styles.homeAppShell : '']

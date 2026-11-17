@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -10,7 +10,6 @@ import {
   Lock,
   RefreshCw,
   ArrowUpLeft,
-  Code2,
   LayoutDashboard,
   LayoutTemplate,
   Boxes,
@@ -20,6 +19,10 @@ import {
   Package,
   FolderTree,
   BookOpen,
+  Menu,
+  X,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react'
 import {
   normalizeIranMobile,
@@ -44,13 +47,18 @@ const NAV_BASE = [
 ]
 
 /**
- * پوستهٔ مشترک پورتال مالک (adminweb / adminnews / …)
+ * پوستهٔ مشترک پورتال مالک
+ * — هدر تمام‌عرض + سایدبار + نوار افقی اختیاری هر صفحه
+ *
+ * pageNav?: [{ id, label, icon?, href?, onClick?, active? }]
  */
 export default function OwnerPortalShell({
   brand = 'web',
   brandAccent = 'admin',
   tagline = '',
+  title = '',
   wide = false,
+  pageNav = null,
   loading = false,
   allowed = false,
   isAuthenticated = false,
@@ -63,6 +71,8 @@ export default function OwnerPortalShell({
 }) {
   const pathname = usePathname()
   const { multiVendor } = useShopMode()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   const NAV = useMemo(
     () =>
@@ -83,6 +93,15 @@ export default function OwnerPortalShell({
       }),
     [multiVendor],
   )
+
+  const pageTitle =
+    title ||
+    NAV.find(
+      (item) =>
+        pathname === item.href ||
+        (item.href !== '/adminweb' && pathname?.startsWith(item.href)),
+    )?.label ||
+    `${brandAccent}${brand}`
 
   if (loading) {
     return (
@@ -119,85 +138,173 @@ export default function OwnerPortalShell({
     )
   }
 
+  const navItems = (
+    <>
+      {NAV.map((item) => {
+        const Icon = item.icon
+        const on =
+          pathname === item.href ||
+          (item.href !== '/adminweb' && pathname?.startsWith(item.href))
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`${portalStyles.sideItem} ${
+              on ? portalStyles.sideItemOn : ''
+            }`}
+            onClick={() => setSidebarOpen(false)}
+            title={item.label}
+          >
+            <Icon size={18} strokeWidth={1.9} />
+            {!sidebarCollapsed ? <span>{item.label}</span> : null}
+          </Link>
+        )
+      })}
+    </>
+  )
+
   return (
-    <div className={styles.page} dir="rtl">
-      <div className={`${styles.shell} ${wide ? styles.shellWide : ''}`}>
-        <header className={styles.hero}>
-          <div className={styles.heroGlow} aria-hidden />
-          <div className={styles.heroBrand}>
-            <span className={styles.badge}>
-              <Shield size={12} />
-              مالک سیستم
-            </span>
-            <h1 className={styles.brand}>
-              {brandAccent}
-              <span className={styles.brandAccent}>{brand}</span>
-            </h1>
-            {tagline ? <p className={styles.tagline}>{tagline}</p> : null}
-          </div>
-          <div className={styles.heroIdentity}>
-            <div className={styles.avatar}>
-              <Code2 size={18} />
-            </div>
-            <div>
-              <p className={styles.ownerName}>{OWNER_PROFILE.name}</p>
-              <p className={styles.ownerRole}>{displayName}</p>
-              <p className={styles.sessionMobile} dir="ltr">
-                {user?.mobile}
-              </p>
-            </div>
-            <Link
-              href="/"
-              className={styles.extBtnGhost}
-              style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.2)' }}
+    <div className={portalStyles.app} dir="rtl">
+      <header className={portalStyles.topBar}>
+        <div className={portalStyles.topBarInner}>
+          <div className={portalStyles.topBarStart}>
+            <button
+              type="button"
+              className={portalStyles.iconBtn}
+              aria-label="منو"
+              onClick={() => setSidebarOpen((v) => !v)}
             >
+              {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+            <button
+              type="button"
+              className={`${portalStyles.iconBtn} ${portalStyles.collapseBtn}`}
+              aria-label={sidebarCollapsed ? 'باز کردن سایدبار' : 'جمع کردن سایدبار'}
+              onClick={() => setSidebarCollapsed((v) => !v)}
+            >
+              {sidebarCollapsed ? (
+                <PanelLeftOpen size={18} />
+              ) : (
+                <PanelLeftClose size={18} />
+              )}
+            </button>
+            <Link href="/adminweb" className={portalStyles.brandLink}>
+              <span className={portalStyles.brandMark}>
+                <Shield size={14} />
+              </span>
+              <span className={portalStyles.brandText}>
+                <strong>
+                  {brandAccent}
+                  <em>{brand}</em>
+                </strong>
+                {tagline ? <small>{tagline}</small> : null}
+              </span>
+            </Link>
+          </div>
+
+          <div className={portalStyles.topBarCenter}>
+            <h1 className={portalStyles.pageHeading}>{pageTitle}</h1>
+          </div>
+
+          <div className={portalStyles.topBarEnd}>
+            <div className={portalStyles.userChip}>
+              <span className={portalStyles.userAvatar} aria-hidden>
+                {(OWNER_PROFILE.name || 'R').slice(0, 1)}
+              </span>
+              <span className={portalStyles.userMeta}>
+                <strong>{OWNER_PROFILE.name}</strong>
+                <small dir="ltr">{user?.mobile || displayName || '—'}</small>
+              </span>
+            </div>
+            <Link href="/" className={portalStyles.siteBtn}>
               <ArrowUpLeft size={14} />
               سایت
             </Link>
           </div>
-        </header>
+        </div>
+      </header>
 
-        <nav className={portalStyles.portalNav} aria-label="پورتال ادمین">
-          {NAV.map((item) => {
-            const Icon = item.icon
-            const on =
-              pathname === item.href ||
-              (item.href !== '/adminweb' && pathname?.startsWith(item.href))
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`${portalStyles.portalNavItem} ${
-                  on ? portalStyles.portalNavOn : ''
-                }`}
-              >
-                <Icon size={13} />
-                {item.label}
-              </Link>
-            )
-          })}
-        </nav>
+      <div
+        className={`${portalStyles.frame} ${
+          sidebarCollapsed ? portalStyles.frameCollapsed : ''
+        } ${wide ? portalStyles.frameWide : ''}`}
+      >
+        <aside
+          className={`${portalStyles.sidebar} ${
+            sidebarOpen ? portalStyles.sidebarOpen : ''
+          }`}
+          aria-label="منوی اصلی ادمین"
+        >
+          <div className={portalStyles.sideScroll}>{navItems}</div>
+          <div className={portalStyles.sideFoot}>
+            <span>مالک سیستم</span>
+            {!sidebarCollapsed ? (
+              <small>{OWNER_PROFILE.brandFa || 'Rebo'}</small>
+            ) : null}
+          </div>
+        </aside>
 
-        <div className={portalStyles.portalBody}>{children}</div>
+        {sidebarOpen ? (
+          <button
+            type="button"
+            className={portalStyles.backdrop}
+            aria-label="بستن منو"
+            onClick={() => setSidebarOpen(false)}
+          />
+        ) : null}
 
-        <p className={styles.pageFoot}>
-          طراح {OWNER_PROFILE.name} ·{' '}
-          <a
-            href={OWNER_PROFILE.siteUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {OWNER_PROFILE.site}
-          </a>
-          <br />
-          {OWNER_PROFILE.engineLine}
-          <br />
-          تمامی حقوق برای سایت {OWNER_PROFILE.brandFa} محفوظ است
-          {normalizeIranMobile(user?.mobile) &&
-          OWNER_PHONES.includes(normalizeIranMobile(user?.mobile))
-            ? ' · مالک پلتفرم'
-            : ''}
-        </p>
+        <div className={portalStyles.main}>
+          {Array.isArray(pageNav) && pageNav.length ? (
+            <nav className={portalStyles.pageNav} aria-label="منوی این صفحه">
+              {pageNav.map((item) => {
+                const Icon = item.icon
+                const key = item.id || item.href || item.label
+                const active = !!item.active
+                const cls = `${portalStyles.pageNavItem} ${
+                  active ? portalStyles.pageNavItemOn : ''
+                }`
+                if (item.href) {
+                  return (
+                    <Link key={key} href={item.href} className={cls}>
+                      {Icon ? <Icon size={15} strokeWidth={2} /> : null}
+                      {item.label}
+                    </Link>
+                  )
+                }
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    className={cls}
+                    onClick={item.onClick}
+                  >
+                    {Icon ? <Icon size={15} strokeWidth={2} /> : null}
+                    {item.label}
+                  </button>
+                )
+              })}
+            </nav>
+          ) : null}
+
+          <div className={portalStyles.content}>{children}</div>
+
+          <p className={portalStyles.foot}>
+            طراح {OWNER_PROFILE.name} ·{' '}
+            <a
+              href={OWNER_PROFILE.siteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {OWNER_PROFILE.site}
+            </a>
+            {' · '}
+            {OWNER_PROFILE.engineLine}
+            {normalizeIranMobile(user?.mobile) &&
+            OWNER_PHONES.includes(normalizeIranMobile(user?.mobile))
+              ? ' · مالک پلتفرم'
+              : ''}
+          </p>
+        </div>
       </div>
     </div>
   )

@@ -1178,6 +1178,90 @@ news: {
       noVersion: true,
     }),
   },
+  siteFactory: {
+    suggest: (domain) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `site-factory/suggest/?domain=${encodeURIComponent(domain || '')}`,
+      noVersion: true,
+    }),
+    provision: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'site-factory/provision/',
+      noVersion: true,
+    }),
+    provisionStatus: (id) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `site-factory/provision/${id}/`,
+      noVersion: true,
+    }),
+    ssl: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'site-factory/ssl/',
+      noVersion: true,
+    }),
+    sslStatus: (id) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `site-factory/ssl/${id}/`,
+      noVersion: true,
+    }),
+    sites: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'site-factory/sites/',
+      noVersion: true,
+    }),
+    siteStatus: (siteId) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `site-factory/sites/${encodeURIComponent(siteId || '')}/status/`,
+      noVersion: true,
+    }),
+    siteUpdate: (siteId) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `site-factory/sites/${encodeURIComponent(siteId || '')}/update/`,
+      noVersion: true,
+    }),
+    updateStatus: (id) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `site-factory/update/${id}/`,
+      noVersion: true,
+    }),
+  },
+  git: {
+    overview: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'git/overview/',
+      noVersion: true,
+    }),
+    status: (repo) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `git/status/?repo=${encodeURIComponent(repo || '')}`,
+      noVersion: true,
+    }),
+    add: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'git/add/',
+      noVersion: true,
+    }),
+    commit: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'git/commit/',
+      noVersion: true,
+    }),
+    push: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'git/push/',
+      noVersion: true,
+    }),
+    update: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'git/update/',
+      noVersion: true,
+    }),
+    packPublish: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'git/pack-publish/',
+      noVersion: true,
+    }),
+  },
   siteModules: {
     list: () => Config.getApiUrl({
       segment: 'api',
@@ -1668,6 +1752,89 @@ news: {
     // ============================================
     // RASAD (رصد علاقه استانی)
     // ============================================
+    todo: {
+      tasks: (params = {}) =>
+        Config.getApiUrl({
+          segment: 'api/todo',
+          endpoint: 'tasks/',
+          params,
+          noVersion: true,
+        }),
+      task: (id) =>
+        Config.getApiUrl({
+          segment: 'api/todo',
+          endpoint: `tasks/${id}/`,
+          noVersion: true,
+        }),
+      board: (params = {}) =>
+        Config.getApiUrl({
+          segment: 'api/todo',
+          endpoint: 'tasks/board/',
+          params,
+          noVersion: true,
+        }),
+      stats: () =>
+        Config.getApiUrl({
+          segment: 'api/todo',
+          endpoint: 'tasks/stats/',
+          noVersion: true,
+        }),
+      assignees: () =>
+        Config.getApiUrl({
+          segment: 'api/todo',
+          endpoint: 'tasks/assignees/',
+          noVersion: true,
+        }),
+      archived: () =>
+        Config.getApiUrl({
+          segment: 'api/todo',
+          endpoint: 'tasks/archived/',
+          noVersion: true,
+        }),
+      move: (id) =>
+        Config.getApiUrl({
+          segment: 'api/todo',
+          endpoint: `tasks/${id}/move/`,
+          noVersion: true,
+        }),
+      assign: (id) =>
+        Config.getApiUrl({
+          segment: 'api/todo',
+          endpoint: `tasks/${id}/assign/`,
+          noVersion: true,
+        }),
+      archive: (id) =>
+        Config.getApiUrl({
+          segment: 'api/todo',
+          endpoint: `tasks/${id}/archive/`,
+          noVersion: true,
+        }),
+      unarchive: (id) =>
+        Config.getApiUrl({
+          segment: 'api/todo',
+          endpoint: `tasks/${id}/unarchive/`,
+          noVersion: true,
+        }),
+      comments: (id) =>
+        Config.getApiUrl({
+          segment: 'api/todo',
+          endpoint: `tasks/${id}/comments/`,
+          noVersion: true,
+        }),
+      reports: (id) =>
+        Config.getApiUrl({
+          segment: 'api/todo',
+          endpoint: `tasks/${id}/reports/`,
+          noVersion: true,
+        }),
+      reviewReport: (taskId, reportId) =>
+        Config.getApiUrl({
+          segment: 'api/todo',
+          endpoint: `tasks/${taskId}/reports/${reportId}/review/`,
+          noVersion: true,
+        }),
+    },
+
     rasad: {
       provinces: (params = {}) => {
         return Config.getApiUrl({
@@ -2019,6 +2186,9 @@ news: {
       my: () => Config.getApiUrl({
         segment: 'api', endpoint: 'v1/repairs/my/', noVersion: true,
       }),
+      myReminderRespond: (id) => Config.getApiUrl({
+        segment: 'api', endpoint: `v1/repairs/my/reminders/${id}/`, noVersion: true,
+      }),
       techMe: () => Config.getApiUrl({
         segment: 'api', endpoint: 'v1/repairs/tech/me/', noVersion: true,
       }),
@@ -2036,6 +2206,9 @@ news: {
       }),
       track: (token) => Config.getApiUrl({
         segment: 'api', endpoint: `v1/repairs/track/${token}/`, noVersion: true,
+      }),
+      trackRate: (token) => Config.getApiUrl({
+        segment: 'api', endpoint: `v1/repairs/track/${token}/rate/`, noVersion: true,
       }),
       pay: (token) => Config.getApiUrl({
         segment: 'api', endpoint: `v1/repairs/track/${token}/pay/`, noVersion: true,
@@ -2104,6 +2277,12 @@ news: {
       }),
       accounting: (params = {}) => Config.getApiUrl({
         segment: 'api', endpoint: 'v1/repairs/manage/accounting/', params, noVersion: true,
+      }),
+      manageExpenses: (params = {}) => Config.getApiUrl({
+        segment: 'api', endpoint: 'v1/repairs/manage/expenses/', params, noVersion: true,
+      }),
+      manageExpense: (id) => Config.getApiUrl({
+        segment: 'api', endpoint: `v1/repairs/manage/expenses/${id}/`, noVersion: true,
       }),
     },
 
@@ -2244,6 +2423,11 @@ news: {
         segment: 'api',
         endpoint: 'v1/softapps/',
         params,
+        noVersion: true,
+      }),
+      my: () => Config.getApiUrl({
+        segment: 'api',
+        endpoint: 'v1/softapps/my/',
         noVersion: true,
       }),
       detail: (slug) => Config.getApiUrl({
@@ -3141,6 +3325,26 @@ news: {
         Config.getApiUrl({
           segment: 'api/order',
           endpoint: `v1/owner/orders/${id}/`,
+          noVersion: true,
+        }),
+      ownerAccounting: (params = {}) =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: 'v1/owner/accounting/',
+          params,
+          noVersion: true,
+        }),
+      ownerExpenses: (params = {}) =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: 'v1/owner/expenses/',
+          params,
+          noVersion: true,
+        }),
+      ownerExpenseDetail: (id) =>
+        Config.getApiUrl({
+          segment: 'api/order',
+          endpoint: `v1/owner/expenses/${id}/`,
           noVersion: true,
         }),
       platformUnsettled: (params = {}) =>
