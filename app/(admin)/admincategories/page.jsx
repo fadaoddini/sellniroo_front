@@ -1,19 +1,6 @@
-'use client'
+import { redirect } from 'next/navigation'
 
-import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
-import useOwnerGate from '@/components/Admin/useOwnerGate'
-import PlatformCategoriesManager from '@/components/Admin/PlatformCategoriesManager'
-
-/** مدیریت کامل دسته‌بندی محصولات + تزریق قالب مشاغل */
-export default function AdminCategoriesPage() {
-  const gate = useOwnerGate('/admincategories')
-  return (
-    <PlatformCategoriesManager
-      gate={gate}
-      Shell={OwnerPortalShell}
-      shellProps={{
-        deniedHomeHref: '/dashboard',
-      }}
-    />
-  )
+/** مدیریت دسته‌بندی در داشبورد است — این مسیر دیگر پورتال جدا نیست */
+export default function AdminCategoriesRedirectPage() {
+  redirect('/shop-categories')
 }

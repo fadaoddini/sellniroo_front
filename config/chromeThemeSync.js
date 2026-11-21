@@ -117,6 +117,69 @@ function synthesizeEmbeddedChrome(homeLayout) {
 }
 
 /**
+ * تنظیمات ویجت‌های کروم چیدمان مشترک را با سکشن ۱ صفحه اصلی یکی می‌کند
+ * (مثلاً خبر فوری /reboserver دقیقاً مثل خانه).
+ */
+export function applyHomeChromeSettingsToShared(sharedLayout, homeLayout) {
+  const home = normalizeHomeLayout(homeLayout)
+  const homeChrome = extractChromeWidgets(home)
+  if (!homeChrome.length) {
+    return normalizeSharedInternalLayout(sharedLayout)
+  }
+  const settingsByType = {}
+  for (const w of homeChrome) {
+    const t = String(w?.type || '')
+    if (!t || settingsByType[t]) continue
+    settingsByType[t] = cloneSettings(w.settings)
+  }
+
+  const shared = normalizeSharedInternalLayout(sharedLayout)
+  let sawBreaking = false
+  const rows = (shared.rows || []).map((row) => ({
+    ...row,
+    columns: (row.columns || []).map((col) => ({
+      ...col,
+      widgets: (col.widgets || []).map((w) => {
+        const t = String(w?.type || '')
+        if (t === 'breaking_news') sawBreaking = true
+        if (t && settingsByType[t]) {
+          return { ...w, settings: cloneSettings(settingsByType[t]) }
+        }
+        return w
+      }),
+    })),
+  }))
+
+  if (!sawBreaking && settingsByType.breaking_news) {
+    return normalizeSharedInternalLayout({
+      ...shared,
+      rows: [
+        buildChromeRow(
+          [{ type: 'breaking_news', settings: settingsByType.breaking_news }],
+          'home_bn',
+        ),
+        ...rows,
+      ],
+    })
+  }
+
+  return normalizeSharedInternalLayout({ ...shared, rows })
+}
+
+/**
+ * منبع ظاهر کروم سراسری: چیدمان مشترک با تنظیمات هم‌تراز خانه، وگرنه خود خانه.
+ */
+export function resolveSiteChromeLayout(settings) {
+  const home = normalizeHomeLayout(settings?.home_layout)
+  const rawShared = getSharedInternalLayoutRaw(settings?.module_page_layouts)
+  const shared = normalizeSharedInternalLayout(rawShared)
+  if (sharedInternalLayoutHasContent(shared)) {
+    return applyHomeChromeSettingsToShared(shared, home)
+  }
+  return home
+}
+
+/**
  * ویجت‌های سکشن ۱ صفحه اصلی را برای همگام‌سازی برمی‌گرداند.
  * سکشن‌های ۲ به بعد اصلاً خوانده نمی‌شوند.
  * ویجت‌های محتوای صفحه (*_page / *_content) منتقل نمی‌شوند.

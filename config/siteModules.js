@@ -840,10 +840,10 @@ export const SITE_MODULES_CATALOG = [
     key: SITE_MODULE_KEYS.SCHOOL,
     name: 'مدرسه',
     name_en: 'School',
-    description: 'معلمان، دانش‌آموزان، دروس، تکالیف و آزمون',
+    description: 'معلمان، دانش‌آموزان، دروس، تکالیف و آزمون — ورود از /profile',
     category: 'pages',
     parentKey: null,
-    componentPath: 'components/School/SchoolHub.jsx',
+    componentPath: 'modules/profile/components/SchoolProfilePage.jsx',
     defaultActive: true,
   },
   {
@@ -947,7 +947,7 @@ export const SITE_MODULES_CATALOG = [
     name: 'ماژول پرداخت',
     name_en: 'Payment Module',
     description:
-      'درگاه سراسری — فروشگاه، کیف پول، اخبار، کاریابی و امکانات بعدی؛ تنظیمات از داشبورد و adminweb',
+      'درگاه سراسری — فروشگاه، کیف پول، اخبار، کاریابی؛ تنظیمات از /dashboard → تنظیمات پرداخت',
     category: 'commerce',
     parentKey: null,
     componentPath: '',
@@ -1187,10 +1187,10 @@ export const DASHBOARD_ROUTE_MODULES = {
   '/faq': SITE_MODULE_KEYS.FAQ,
   '/faq-manage': SITE_MODULE_KEYS.FAQ,
   '/curved-timeline-manage': SITE_MODULE_KEYS.CURVED_TIMELINE,
-  '/school': SITE_MODULE_KEYS.SCHOOL,
   '/school-manage': SITE_MODULE_KEYS.SCHOOL,
-  '/school/teacher': SITE_MODULE_KEYS.SCHOOL,
-  '/school/student': SITE_MODULE_KEYS.SCHOOL,
+  '/home-hero-manage': SITE_MODULE_KEYS.SCHOOL,
+  '/teachers': SITE_MODULE_KEYS.SCHOOL,
+  '/counselors': SITE_MODULE_KEYS.SCHOOL,
   '/apps': SITE_MODULE_KEYS.SOFTAPPS,
   '/apps-manage': SITE_MODULE_KEYS.SOFTAPPS,
   '/repairs': SITE_MODULE_KEYS.REPAIRS,
@@ -1201,10 +1201,17 @@ export const DASHBOARD_ROUTE_MODULES = {
   '/gym/billiard': SITE_MODULE_KEYS.GYM_BILLIARD,
   '/gym/billiard/dashboard': SITE_MODULE_KEYS.GYM_BILLIARD,
   '/cloud-server': SITE_MODULE_KEYS.CLOUD_SERVER,
+  '/reboserver': SITE_MODULE_KEYS.CLOUD_SERVER,
+  '/serversystem': SITE_MODULE_KEYS.CLOUD_SERVER,
   '/cloud-manage': SITE_MODULE_KEYS.CLOUD_SERVER,
+  '/paymentsystem': SITE_MODULE_KEYS.PAYMENT,
   '/payment-manage': SITE_MODULE_KEYS.PAYMENT,
+  '/rebosystem': SITE_MODULE_KEYS.DATA_PACK_REBO_THEME_ONE,
+  '/rebolearn': SITE_MODULE_KEYS.DATA_PACK_REBO_THEME_ONE,
   '/rebo-manage': SITE_MODULE_KEYS.DATA_PACK_REBO_THEME_ONE,
   '/rebo-pricing': SITE_MODULE_KEYS.DATA_PACK_REBO_THEME_ONE,
+  '/reboaccunting': SITE_MODULE_KEYS.DATA_PACK_REBO_THEME_ONE,
+  '/todorebo': SITE_MODULE_KEYS.DATA_PACK_REBO_THEME_ONE,
   // عمومی — وابسته به والد shop
   '/shop-manage': SITE_MODULE_KEYS.SHOP, // redirect → shop-accounting
   '/shop-panel': SITE_MODULE_KEYS.SHOP,
@@ -1295,6 +1302,12 @@ export const DASHBOARD_SECTION_MODULES = {
   curved_timeline: SITE_MODULE_KEYS.CURVED_TIMELINE,
   school: SITE_MODULE_KEYS.SCHOOL,
   'school-manage': SITE_MODULE_KEYS.SCHOOL,
+  'school-profile': SITE_MODULE_KEYS.SCHOOL,
+  'school-teacher': SITE_MODULE_KEYS.SCHOOL,
+  'school-student': SITE_MODULE_KEYS.SCHOOL,
+  'school-counselor': SITE_MODULE_KEYS.SCHOOL,
+  'school-account': SITE_MODULE_KEYS.SCHOOL,
+  'home-hero-manage': SITE_MODULE_KEYS.SCHOOL,
   softapps: SITE_MODULE_KEYS.SOFTAPPS,
   'apps-manage': SITE_MODULE_KEYS.SOFTAPPS,
   apps: SITE_MODULE_KEYS.SOFTAPPS,
@@ -1313,11 +1326,18 @@ export const DASHBOARD_SECTION_MODULES = {
   hero_with_menu: SITE_MODULE_KEYS.HERO_WITH_MENU,
   'data-pack-gym-bodybuilding-theme-one': SITE_MODULE_KEYS.DATA_PACK_GYM_BODYBUILDING_THEME_ONE,
   'cloud-server': SITE_MODULE_KEYS.CLOUD_SERVER,
+  'reboserver': SITE_MODULE_KEYS.CLOUD_SERVER,
+  'serversystem': SITE_MODULE_KEYS.CLOUD_SERVER,
   'cloud-manage': SITE_MODULE_KEYS.CLOUD_SERVER,
   payment: SITE_MODULE_KEYS.PAYMENT,
+  'paymentsystem': SITE_MODULE_KEYS.PAYMENT,
   'payment-manage': SITE_MODULE_KEYS.PAYMENT,
+  'rebosystem': SITE_MODULE_KEYS.DATA_PACK_REBO_THEME_ONE,
+  'rebolearn': SITE_MODULE_KEYS.DATA_PACK_REBO_THEME_ONE,
   'rebo-manage': SITE_MODULE_KEYS.DATA_PACK_REBO_THEME_ONE,
   'rebo-pricing': SITE_MODULE_KEYS.DATA_PACK_REBO_THEME_ONE,
+  'reboaccunting': SITE_MODULE_KEYS.DATA_PACK_REBO_THEME_ONE,
+  'todorebo': SITE_MODULE_KEYS.DATA_PACK_REBO_THEME_ONE,
   shop: SITE_MODULE_KEYS.SHOP,
   'shop-manage': SITE_MODULE_KEYS.SHOP,
   'shop-panel': SITE_MODULE_KEYS.SHOP,
@@ -1430,6 +1450,14 @@ export function isDashboardItemModuleActive(href, moduleMap, sectionCode) {
     key === SITE_MODULE_KEYS.SHOP_PRODUCT
   ) {
     return isShopModuleOn(moduleMap) && !!moduleMap[key]
+  }
+
+  // تنظیمات پرداخت: وقتی ماژول payment روشن است، یا فروشگاه روشن است (نیاز به درگاه)
+  if (key === SITE_MODULE_KEYS.PAYMENT) {
+    if (Object.prototype.hasOwnProperty.call(moduleMap, SITE_MODULE_KEYS.PAYMENT)) {
+      if (moduleMap[SITE_MODULE_KEYS.PAYMENT]) return true
+    }
+    return isShopModuleOn(moduleMap)
   }
 
   if (!Object.prototype.hasOwnProperty.call(moduleMap, key)) {

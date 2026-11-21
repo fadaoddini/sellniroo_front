@@ -295,24 +295,8 @@ export default function ReboPackageOrdersPanel() {
     })
   }
 
-  const submitPaid = async () => {
-    if (method === 'receipt' && !receiptFile) {
-      setErr('تصویر رسید واریز را انتخاب کنید')
-      return
-    }
-    if (
-      method === 'wallet' &&
-      walletBalance != null &&
-      walletBalance < Number(cart.total || 0)
-    ) {
-      setErr(
-        `موجودی کیف پول کافی نیست (موجودی: ${formatRial(walletBalance)} ${currency})`,
-      )
-      return
-    }
-
+  const submitContract = async () => {
     const fd = new FormData()
-    fd.append('method', method)
     fd.append('note', note || '')
     fd.append('packages', JSON.stringify(cart.packages || []))
     fd.append('items', JSON.stringify(cart.items || []))
@@ -326,13 +310,9 @@ export default function ReboPackageOrdersPanel() {
         ''
       ).trim(),
     )
-    if (method === 'receipt') {
-      fd.append('receipt_image', receiptFile)
-      fd.append('receipt_note', receiptNote || '')
-    }
 
     const response = await axios.post(
-      Config.endpoints.reboOrders.checkout(),
+      Config.endpoints.reboOrders.createContract(),
       fd,
       {
         headers: {
@@ -343,34 +323,23 @@ export default function ReboPackageOrdersPanel() {
       },
     )
     if (!response.data?.success) {
-      throw new Error(response.data?.message || 'پرداخت ناموفق بود')
+      throw new Error(response.data?.message || 'ثبت قرارداد ناموفق بود')
     }
-    const data = response.data.data || {}
-    const order = data.order || {}
-    if (data.payment_url) {
-      finishSuccess('در حال انتقال به درگاه…', {
-        request_number: order.request_number || '',
-        code: order.code || '',
-        title: `سفارش ربو ${order.code || ''}`.trim(),
-      })
-      window.location.href = data.payment_url
-      return
-    }
-    const paid = order.status === 'paid'
-    const awaiting = order.status === 'awaiting_review'
+    const order = response.data?.data?.order || {}
+    const code = order.code || ''
+    clearReboPackageCart()
     finishSuccess(
       response.data.message ||
-        (paid
-          ? 'پرداخت با موفقیت انجام شد'
-          : awaiting
-            ? 'رسید ثبت شد و پس از تأیید مدیر نهایی می‌شود'
-            : 'سفارش ثبت شد'),
+        'قرارداد ثبت شد — اقساط را در میزکار ربو پیگیری کنید',
       {
         request_number: order.request_number || '',
-        code: order.code || '',
-        title: `سفارش ربو ${order.code || ''}`.trim(),
+        code,
+        title: `قرارداد ربو ${code}`.trim(),
       },
     )
+    if (code) {
+      window.location.href = `/todorebo?code=${encodeURIComponent(code)}`
+    }
   }
 
   const submit = async () => {
@@ -385,7 +354,7 @@ export default function ReboPackageOrdersPanel() {
     setOrderCode('')
     try {
       if (paymentsOn && payCfg?.module_active !== false) {
-        await submitPaid()
+        await submitContract()
       } else {
         await submitLeadOnly()
       }
@@ -433,7 +402,7 @@ export default function ReboPackageOrdersPanel() {
         <h2>بسته‌های انتخاب‌شده</h2>
         <p className={styles.sub}>
           {paymentsOn
-            ? 'سبد را بررسی کنید، روش پرداخت را انتخاب کنید و سفارش را نهایی کنید.'
+            ? 'سبد را بررسی کنید؛ با ثبت قرارداد به میزکار اقساط (/todorebo) می‌روید.'
             : 'یک‌کلیکه از صفحه قیمت‌گذاری آمده‌اند — تأیید کنید تا درخواست ثبت شود.'}
         </p>
       </header>
@@ -449,15 +418,20 @@ export default function ReboPackageOrdersPanel() {
             ) : null}
           </div>
           <div className={styles.successActions}>
-            {requestNumber ? (
+            {orderCode ? (
               <Link
-                href={`/profile?tab=track&request=${encodeURIComponent(requestNumber)}`}
+                href={`/todorebo?code=${encodeURIComponent(orderCode)}`}
                 className={styles.cta}
               >
-                پیگیری سفارش
+                ادامه در میزکار قرارداد
                 <ArrowLeft size={14} />
               </Link>
-            ) : null}
+            ) : (
+              <Link href="/profile?tab=desk" className={styles.cta}>
+                میزکار سفارش‌ها
+                <ArrowLeft size={14} />
+              </Link>
+            )}
             <button
               type="button"
               className={styles.ctaGhost}
@@ -525,143 +499,46 @@ export default function ReboPackageOrdersPanel() {
 
           {paymentsOn ? (
             <div className={styles.payBox}>
-              <h3>روش پرداخت</h3>
-              <div className={styles.payMethods} role="radiogroup" aria-label="روش پرداخت">
-                {availableMethods.map((m) => {
-                  const Icon = m.icon
-                  const on = method === m.id
-                  return (
-                    <button
-                      key={m.id}
-                      type="button"
-                      role="radio"
-                      aria-checked={on}
-                      className={`${styles.payMethod} ${on ? styles.payMethodOn : ''}`}
-                      onClick={() => setMethod(m.id)}
-                      disabled={busy}
-                    >
-                      <span className={styles.payMethodIcon} aria-hidden>
-                        <Icon size={15} strokeWidth={2} />
-                      </span>
-                      <strong>{m.label}</strong>
-                      <small>{m.desc}</small>
-                    </button>
-                  )
-                })}
-              </div>
-
-              {method === 'wallet' ? (
-                <div className={styles.walletCard}>
-                  <span className={styles.walletIcon} aria-hidden>
-                    <Wallet size={16} />
-                  </span>
-                  <div>
-                    <strong>موجودی کیف پول</strong>
-                    <p>
-                      {walletBalance == null
-                        ? 'در حال دریافت…'
-                        : `${formatRial(walletBalance)} ${currency}`}
-                    </p>
-                  </div>
-                </div>
-              ) : null}
-
-              {method === 'receipt' ? (
-                <div className={styles.receiptBox}>
-                  <div className={styles.bankCard}>
-                    <div className={styles.bankCardTop}>
-                      <span>
-                        <Building2 size={14} />
-                        {payCfg?.bank_name || 'واریز به کارت'}
-                      </span>
-                      <em>{formatRial(cart.total)} {currency}</em>
-                    </div>
-                    {payCfg?.bank_card ? (
-                      <div className={styles.bankCardNumber}>
-                        <span dir="ltr">{payCfg.bank_card}</span>
-                        <button
-                          type="button"
-                          className={styles.copyBtn}
-                          onClick={() => copyValue('card', payCfg.bank_card)}
-                        >
-                          <Copy size={13} />
-                          {copiedKey === 'card' ? 'کپی شد' : 'کپی کارت'}
-                        </button>
+              <h3>اقساط قرارداد (ماده ۱)</h3>
+              <p className={styles.receiptHint}>
+                بعد از ثبت، میزکار `/todorebo` با چهار ستون باز می‌شود؛ مبلغ طبق بسته
+                انتخابی به سه قسط ۴۰٪ / ۳۰٪ / ۳۰٪ تقسیم می‌شود و پرداخت هر قسط همان‌جاست.
+              </p>
+              <ul className={styles.list} style={{ marginTop: 8 }}>
+                {(() => {
+                  const total = Number(cart.total || 0)
+                  const deposit = Math.floor((total * 40) / 100)
+                  const layout = Math.floor((total * 30) / 100)
+                  const launch = total - deposit - layout
+                  return [
+                    { label: 'پیش‌پرداخت', pct: 40, amount: deposit },
+                    {
+                      label: 'طراحی قالب و تایید چیدمان',
+                      pct: 30,
+                      amount: layout,
+                    },
+                    {
+                      label: 'تحویل نهایی و راه‌اندازی',
+                      pct: 30,
+                      amount: launch,
+                    },
+                  ].map((row) => (
+                    <li key={row.label} className={styles.card}>
+                      <div className={styles.meta}>
+                        <strong>
+                          {row.label} ({row.pct}٪)
+                        </strong>
                       </div>
-                    ) : (
-                      <p className={styles.bankEmpty}>
-                        شماره کارت هنوز در تنظیمات پرداخت ربو ثبت نشده است.
-                      </p>
-                    )}
-                    <div className={styles.bankCardMeta}>
-                      {payCfg?.bank_owner ? (
-                        <span>
-                          <UserRound size={13} />
-                          {payCfg.bank_owner}
-                        </span>
-                      ) : null}
-                      {payCfg?.bank_sheba ? (
-                        <button
-                          type="button"
-                          className={styles.shebaBtn}
-                          onClick={() => copyValue('sheba', payCfg.bank_sheba)}
-                        >
-                          <span dir="ltr">شبا: {payCfg.bank_sheba}</span>
-                          <Copy size={12} />
-                          {copiedKey === 'sheba' ? 'کپی شد' : null}
-                        </button>
-                      ) : null}
-                    </div>
-                  </div>
-
-                  {payCfg?.payment_instructions ? (
-                    <p className={styles.receiptHint}>
-                      {payCfg.payment_instructions}
-                    </p>
-                  ) : (
-                    <p className={styles.receiptHint}>
-                      مبلغ سفارش را واریز کنید و تصویر رسید را بارگذاری کنید تا
-                      پس از تأیید مدیر، سفارش پرداخت‌شده شود.
-                    </p>
-                  )}
-
-                  <label
-                    className={`${styles.uploadZone} ${
-                      receiptFile ? styles.uploadZoneOn : ''
-                    }`}
-                  >
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) =>
-                        setReceiptFile(e.target.files?.[0] || null)
-                      }
-                    />
-                    <span className={styles.uploadIcon} aria-hidden>
-                      <ImagePlus size={18} />
-                    </span>
-                    <strong>
-                      {receiptFile ? receiptFile.name : 'بارگذاری تصویر رسید'}
-                    </strong>
-                    <small>
-                      {receiptFile
-                        ? 'برای تعویض، فایل دیگری انتخاب کنید'
-                        : 'فرمت تصویر · JPG یا PNG'}
-                    </small>
-                  </label>
-
-                  <label className={styles.receiptNoteLabel}>
-                    توضیح رسید (اختیاری)
-                    <input
-                      type="text"
-                      className={styles.receiptNote}
-                      placeholder="مثلاً ساعت واریز یا نام واریزکننده"
-                      value={receiptNote}
-                      onChange={(e) => setReceiptNote(e.target.value)}
-                    />
-                  </label>
-                </div>
-              ) : null}
+                      <div className={styles.side}>
+                        <b>
+                          {formatRial(row.amount)}
+                          <i>{currency}</i>
+                        </b>
+                      </div>
+                    </li>
+                  ))
+                })()}
+              </ul>
             </div>
           ) : null}
 
@@ -681,11 +558,7 @@ export default function ReboPackageOrdersPanel() {
                 </>
               ) : paymentsOn ? (
                 <>
-                  {method === 'gateway'
-                    ? 'پرداخت آنلاین'
-                    : method === 'wallet'
-                      ? 'پرداخت از کیف پول'
-                      : 'ثبت سفارش با فیش'}
+                  ثبت قرارداد و اقساط
                   <ArrowLeft size={14} />
                 </>
               ) : (

@@ -15,10 +15,7 @@ import LayoutSection from '@/components/layout/LayoutSection'
 import { fetchSiteSettings } from '@/services/siteSettings'
 import { isSadraAppShell, SADRA_APP_BG } from '@/config/sadraTheme'
 import ModulePageShell from '@/components/layout/ModulePageShell'
-import {
-  MODULE_PAGE_DEFS,
-  getModulePageDefForPath,
-} from '@/config/modulePageLayouts'
+import { getModulePageDefForPath } from '@/config/modulePageLayouts'
 
 function isHomepagePath(pathname) {
   if (!pathname) return false
@@ -78,14 +75,7 @@ function isCartPath(pathname) {
 function isModuleBuilderPath(pathname) {
   if (!pathname) return false
   const p = pathname.replace(/\/+$/, '') || ''
-  if (
-    MODULE_PAGE_DEFS.some((d) => {
-      const path = String(d.path || '').replace(/\/+$/, '') || ''
-      return path && (p === path || p.startsWith(`${path}/`))
-    })
-  ) {
-    return true
-  }
+  if (getModulePageDefForPath(p)) return true
   return p === '/gym' || p.startsWith('/gym/')
 }
 

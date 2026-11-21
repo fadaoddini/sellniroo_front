@@ -179,7 +179,7 @@ export default function CounselorProfilePanel({
   const publicUrl = useMemo(() => {
     if (!form) return ''
     return teacherPublicAbsoluteUrl(
-      form.public_path || (form.public_slug ? `/school/counselors/${form.public_slug}` : ''),
+      form.public_path || (form.public_slug ? `/counselors/${form.public_slug}` : ''),
     )
   }, [form])
 
@@ -481,7 +481,7 @@ export default function CounselorProfilePanel({
                       <Copy size={14} /> کپی لینک
                     </button>
                     <Link
-                      href={form.public_path || `/school/counselors/${form.public_slug}`}
+                      href={form.public_path || `/counselors/${form.public_slug}`}
                       className={styles.btnGhost}
                       target="_blank"
                     >

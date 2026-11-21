@@ -47,7 +47,7 @@ export default function SchoolProfilePanel() {
   const student = me.student
   const teacher = me.teacher
   const links = []
-  links.push({ href: '/school', label: 'مدرسه' })
+  links.push({ href: '/profile', label: 'مدرسه' })
   if (teacher || me.is_admin || me.can_view_teacher_panel) {
     links.push({ href: '/profile?tab=teacher', label: 'پنل معلم' })
   }

@@ -21,7 +21,7 @@ export const DEFAULT_SCHOOL_HERO_BREAKING_NEWS = {
   show_cart: false,
   guest_visible: true,
   guest_label: 'ورود',
-  guest_href: '/login?next=/school',
+  guest_href: '/login?next=/profile',
   color_bg: 'transparent',
   color_text: '#ffffff',
   color_link: '#a5c1ae',
@@ -60,30 +60,24 @@ export const DEFAULT_SCHOOL_HERO_BREAKING_NEWS = {
   },
 }
 
+/** ادغام تنظیمات خبر فوری هیرو — بدون اجبار شفافیت؛ مقدار ذخیره‌شده اولویت دارد */
 export function buildHeroBreakingNewsSettings(raw = {}) {
   const src = raw && typeof raw === 'object' ? raw : {}
-  const base = { ...DEFAULT_SCHOOL_HERO_BREAKING_NEWS, ...src }
-  const forceClear = {
-    color_bg: 'transparent',
-    shadow: false,
-    sticky: true,
-    bar_full_bleed: true,
-    color_profile_text: '#ffffff',
-    color_border: 'transparent',
+  const mergeVp = (vp) => {
+    const defVp =
+      DEFAULT_SCHOOL_HERO_BREAKING_NEWS[vp] &&
+      typeof DEFAULT_SCHOOL_HERO_BREAKING_NEWS[vp] === 'object'
+        ? DEFAULT_SCHOOL_HERO_BREAKING_NEWS[vp]
+        : {}
+    const srcVp = src[vp] && typeof src[vp] === 'object' ? src[vp] : {}
+    return { ...defVp, ...srcVp }
   }
-  const mergeVp = (vp) => ({
-    ...(DEFAULT_SCHOOL_HERO_BREAKING_NEWS[vp] || {}),
-    ...(src[vp] && typeof src[vp] === 'object' ? src[vp] : {}),
-    ...forceClear,
-    color_text: '#ffffff',
-    color_link: '#a5c1ae',
-    color_profile_text: '#ffffff',
-  })
+  const { mobile: _m, desktop: _d, ...rootDef } = DEFAULT_SCHOOL_HERO_BREAKING_NEWS
+  const { mobile: _sm, desktop: _sd, ...rootSrc } = src
   return {
-    ...base,
-    ...forceClear,
-    color_text: '#ffffff',
-    color_profile_text: '#ffffff',
+    ...rootDef,
+    ...rootSrc,
+    sticky: src.sticky !== false,
     mobile: mergeVp('mobile'),
     desktop: mergeVp('desktop'),
   }
@@ -108,9 +102,9 @@ export const DEFAULT_SCHOOL_LANDING = {
   subtitle:
     'از کارنامه و نمودار پیشرفت تا پنل مشاور، آزمون هوش، حضور و غیاب و تکالیف — برای مدیر، معلم، مشاور و دانش‌آموز.',
   cta_label: 'ورود به سامانه',
-  cta_href: '/login?next=/school',
+  cta_href: '/login?next=/profile',
   secondary_label: 'داشبورد دانش‌آموز',
-  secondary_href: '/login?next=/school/student',
+  secondary_href: '/login?next=' + encodeURIComponent('/profile?tab=students'),
   hide_hero: false,
   hide_mobile_dock: false,
   hide_portals: false,

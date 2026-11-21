@@ -8,7 +8,7 @@ export function teacherPublicAbsoluteUrl(publicPathOrSlug) {
   if (!publicPathOrSlug) return ''
   if (String(publicPathOrSlug).startsWith('http')) return String(publicPathOrSlug)
   if (String(publicPathOrSlug).startsWith('/')) return `${origin}${publicPathOrSlug}`
-  return `${origin}/school/teachers/${publicPathOrSlug}`
+  return `${origin}/teachers/${publicPathOrSlug}`
 }
 
 export function teacherQrImageUrl(absoluteUrl, size = 220) {

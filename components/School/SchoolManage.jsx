@@ -138,7 +138,7 @@ export default function SchoolManage({ embedded = false } = {}) {
               <p className={styles.tagline}>نمای کلی معلمان، دانش‌آموزان، معدل و فعالیت‌ها</p>
               <nav className={styles.heroNav}>
                 <Link href="/dashboard"><LayoutDashboard size={12} /> داشبورد</Link>
-                <Link href="/school"><GraduationCap size={12} /> هاب</Link>
+                <Link href="/profile"><GraduationCap size={12} /> پروفایل</Link>
                 <button type="button" onClick={load}><RefreshCw size={12} /> بروزرسانی</button>
               </nav>
             </div>
@@ -239,7 +239,7 @@ export default function SchoolManage({ embedded = false } = {}) {
               <>
                 <div className={styles.panelHead}>
                   <h2 className={styles.panelTitle}><HeartHandshake size={16} /> مشاوران مدرسه</h2>
-                  <Link href="/school/counselor" className={styles.btnGhost}>
+                  <Link href="/profile?tab=counselor" className={styles.btnGhost}>
                     <ExternalLink size={14} /> پنل مشاوره
                   </Link>
                 </div>

@@ -5,24 +5,24 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import {
-  Boxes,
   CheckCircle2,
   CreditCard,
-  ExternalLink,
   LayoutDashboard,
   Loader2,
   Package,
   RefreshCw,
   Save,
   Settings2,
-  Shield,
   Wallet,
   XCircle,
 } from 'lucide-react'
+import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
+import { getReboSystemPageNav } from '@/components/Admin/reboSystemNav'
 import { useAuth } from '@/contexts/AuthContext'
 import Config from '@/config/config'
 import { formatRial } from '@/config/reboPricing'
-import { isPlatformOwner } from '@/utils/ownerAccess'
+import { isPlatformOwner, OWNER_PROFILE } from '@/utils/ownerAccess'
+import aw from '../adminweb/AdminWeb.module.css'
 import styles from './ReboManage.module.css'
 
 const TABS = [
@@ -109,6 +109,26 @@ function OrderCard({ order, busyId, onApprove, onReject }) {
         <p className={styles.meta}>توضیح رسید: {order.receipt_note}</p>
       ) : null}
       {order.note ? <p className={styles.meta}>توضیح مشتری: {order.note}</p> : null}
+      {order.hosting_choice ? (
+        <p className={styles.meta}>
+          میزبانی:{' '}
+          {order.hosting_choice_display ||
+            (order.hosting_choice === 'our_cloud'
+              ? 'سرور ابری ربو'
+              : order.hosting_choice === 'own_server'
+                ? 'سرور اختصاصی مشتری'
+                : order.hosting_choice)}
+          {order.hosting_choice === 'our_cloud' ? (
+            <>
+              {' · '}
+              <a href="/reboserver" target="_blank" rel="noreferrer">
+                /reboserver
+              </a>
+            </>
+          ) : null}
+          {order.own_server_note ? ` · ${order.own_server_note}` : null}
+        </p>
+      ) : null}
 
       {canReview ? (
         <div className={styles.cardActions}>
@@ -250,67 +270,45 @@ export default function ReboManagePage() {
     setSettings((s) => ({ ...(s || {}), [key]: value }))
   }
 
-  if (loading || !isAuthenticated) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.loading}>
-          <Loader2 className={styles.spin} size={28} />
-        </div>
-      </div>
-    )
-  }
-
-  if (!canManage) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.denied}>
-          <Shield size={28} />
-          <h1>دسترسی ندارید</h1>
-          <p>این بخش فقط برای مدیر سایت و کارکنان مجاز است.</p>
-          <Link href="/dashboard" className={styles.btn}>
-            بازگشت به داشبورد
-          </Link>
-        </div>
-      </div>
-    )
-  }
+  const displayName =
+    user?.display_name ||
+    [user?.first_name, user?.last_name].filter(Boolean).join(' ') ||
+    OWNER_PROFILE.name
 
   return (
-    <div className={styles.page} dir="rtl" lang="fa">
-      <div className={styles.wrap}>
-        <header className={styles.header}>
-          <div className={styles.headerLeft}>
-            <span className={styles.headerIcon} aria-hidden>
-              <Boxes size={22} />
-            </span>
-            <div>
-              <h1 className={styles.pageTitle}>مدیریت ربو</h1>
-              <p className={styles.pageDesc}>
-                سفارش بسته‌ها، تأیید فیش‌ها، پرداخت‌ها و تنظیمات اختصاصی ربو
-              </p>
-            </div>
-          </div>
-          <div className={styles.headerActions}>
-            <button
-              type="button"
-              className={styles.btnGhost}
-              onClick={load}
-              disabled={loadingData}
-            >
-              <RefreshCw size={14} className={loadingData ? styles.spin : undefined} />
-              بروزرسانی
-            </button>
-            <Link href="/rebo-pricing" className={styles.btnGhost}>
-              قیمت‌گذاری
-              <ExternalLink size={13} />
-            </Link>
-            <Link href="/dashboard" className={styles.btnGhost}>
-              داشبورد
-            </Link>
-          </div>
-        </header>
+    <OwnerPortalShell
+      brand="وب"
+      brandAccent="ادمین "
+      tagline="مدیریت سفارش و پرداخت ربو"
+      title="مدیریت ربو"
+      wide
+      pageNav={getReboSystemPageNav('/rebo-manage')}
+      loading={loading}
+      isAuthenticated={isAuthenticated}
+      allowed={canManage}
+      user={user}
+      displayName={displayName}
+      deniedTitle="دسترسی ندارید"
+      deniedMessage="این بخش فقط برای مدیر سایت و کارکنان مجاز است."
+      deniedHomeHref="/dashboard"
+    >
+      <div className={styles.embed} dir="rtl" lang="fa">
+        <div className={styles.toolbar}>
+          <p className={styles.toolbarLead}>
+            سفارش بسته‌ها، تأیید فیش‌ها و تنظیمات پرداخت اختصاصی ربو
+          </p>
+          <button
+            type="button"
+            className={styles.btnGhost}
+            onClick={load}
+            disabled={loadingData}
+          >
+            <RefreshCw size={14} className={loadingData ? styles.spin : undefined} />
+            بروزرسانی
+          </button>
+        </div>
 
-        <div className={styles.tabs} role="tablist">
+        <div className={aw.awTabs} role="tablist">
           {TABS.map((t) => {
             const Icon = t.icon
             const on = tab === t.id
@@ -320,7 +318,7 @@ export default function ReboManagePage() {
                 type="button"
                 role="tab"
                 aria-selected={on}
-                className={`${styles.tab} ${on ? styles.tabActive : ''}`}
+                className={`${aw.awTab} ${on ? aw.awTabOn : ''}`}
                 onClick={() => setTab(t.id)}
               >
                 <Icon size={14} />
@@ -591,6 +589,6 @@ export default function ReboManagePage() {
           </section>
         ) : null}
       </div>
-    </div>
+    </OwnerPortalShell>
   )
 }

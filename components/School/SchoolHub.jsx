@@ -23,7 +23,7 @@ export default function SchoolHub() {
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
-      router.replace('/login?next=/school')
+      router.replace('/login?next=/profile')
     }
   }, [loading, isAuthenticated, router])
 

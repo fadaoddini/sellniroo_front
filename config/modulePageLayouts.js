@@ -105,11 +105,22 @@ export const MODULE_PAGE_DEFS = [
     key: 'cloud_server',
     path: '/cloud-server',
     label: 'صفحه سرور ابری',
-    desc: 'سفارش و شارژ سرور ابری اشتراکی ربو',
+    desc: 'سفارش و شارژ سرور ابری اشتراکی ربو — هدر مشترک صفحات داخلی',
     moduleKey: SITE_MODULE_KEYS.CLOUD_SERVER,
     contentWidget: 'cloud_server_page',
     event: 'module-page-layout-changed:cloud_server',
-    keepOwnChrome: true,
+    keepOwnChrome: false,
+  },
+  {
+    key: 'reboserver',
+    path: '/reboserver',
+    label: 'پنل سرور ربو (/reboserver)',
+    desc:
+      'مدیریت سرور ابری قرارداد — خبر فوری و هدر از «چیدمان مشترک» می‌آید (مثل بقیه صفحات داخلی)',
+    moduleKey: SITE_MODULE_KEYS.CLOUD_SERVER,
+    contentWidget: 'reboserver_page',
+    event: 'module-page-layout-changed:reboserver',
+    keepOwnChrome: false,
   },
   {
     key: 'inventory',
@@ -131,16 +142,6 @@ export const MODULE_PAGE_DEFS = [
     contentWidget: 'gym_bodybuilding_page',
     event: 'module-page-layout-changed:gym_bodybuilding',
     keepOwnChrome: false,
-  },
-  {
-    key: 'school',
-    path: '/school',
-    label: 'صفحه مدرسه',
-    desc: 'هاب عمومی مدرسه — فوری، هیرو، منو و لندینگ',
-    moduleKey: SITE_MODULE_KEYS.SCHOOL,
-    contentWidget: 'school_page',
-    event: 'module-page-layout-changed:school',
-    keepOwnChrome: true,
   },
 ]
 

@@ -109,7 +109,7 @@ export default function CounselorDashboard({
                 معرفی مشاور، آزمون‌های IQ/EQ و پرونده اختصاصی دانش‌آموزان و معلمان
               </p>
               <nav className={styles.heroNav}>
-                <Link href="/school"><Home size={12} /> هاب مدرسه</Link>
+                <Link href="/profile"><Home size={12} /> پروفایل مدرسه</Link>
                 <Link href="/"><ArrowUpLeft size={12} /> سایت</Link>
                 <button type="button" onClick={load}><RefreshCw size={12} /> بروزرسانی</button>
               </nav>

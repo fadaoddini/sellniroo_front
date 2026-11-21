@@ -7,7 +7,7 @@ export const DEFAULT_HEADER_MENU = [
   { id: 'jobs', label_fa: 'آگهی‌ها', label_en: 'Jobs', href: '/jobs', icon: 'Briefcase', sort_order: 20, mobile_sort_order: 20 },
   { id: 'news', label_fa: 'اخبار', label_en: 'News', href: '/news', icon: 'Newspaper', sort_order: 30, mobile_sort_order: 30 },
   { id: 'faq', label_fa: 'سوالات متداول', label_en: 'FAQ', href: '/faq', icon: 'HelpCircle', sort_order: 35, mobile_sort_order: 35 },
-  { id: 'school', label_fa: 'مدرسه', label_en: 'School', href: '/school', icon: 'GraduationCap', sort_order: 37, mobile_sort_order: 37 },
+  { id: 'school', label_fa: 'مدرسه', label_en: 'School', href: '/profile', icon: 'GraduationCap', sort_order: 37, mobile_sort_order: 37 },
   { id: 'softapps', label_fa: 'نرم‌افزارها', label_en: 'Apps', href: '/apps', icon: 'AppWindow', sort_order: 38, mobile_sort_order: 38 },
   { id: 'repairs', label_fa: 'تعمیرات', label_en: 'Repairs', href: '/repairs', icon: 'Wrench', sort_order: 39, mobile_sort_order: 39 },
   { id: 'about', label_fa: 'درباره ما', label_en: 'About', href: '/about', icon: 'Info', sort_order: 40, mobile_sort_order: 40 },
@@ -46,7 +46,9 @@ export function resolveHeaderMenuModuleKey(item) {
   if (path === '/post-job') return SITE_MODULE_KEYS.JOB_BOARD
   if (path === '/news' || path.startsWith('/news/')) return SITE_MODULE_KEYS.NEWS
   if (path === '/faq' || path.startsWith('/faq/')) return SITE_MODULE_KEYS.FAQ
-  if (path === '/school' || path.startsWith('/school/')) return SITE_MODULE_KEYS.SCHOOL
+  if (path.startsWith('/teachers') || path.startsWith('/counselors')) {
+    return SITE_MODULE_KEYS.SCHOOL
+  }
   return null
 }
 

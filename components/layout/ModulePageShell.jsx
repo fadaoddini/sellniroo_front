@@ -12,6 +12,7 @@ import {
   normalizeSharedInternalLayout,
 } from '@/config/modulePageLayouts'
 import {
+  applyHomeChromeSettingsToShared,
   composeInternalPageLayout,
   stripSyncedHeroWidgets,
 } from '@/config/chromeThemeSync'
@@ -49,8 +50,11 @@ export default function ModulePageShell({
         return pageLayout
       }
 
-      const shared = normalizeSharedInternalLayout(
-        getSharedInternalLayoutRaw(settings?.module_page_layouts),
+      const shared = applyHomeChromeSettingsToShared(
+        normalizeSharedInternalLayout(
+          getSharedInternalLayoutRaw(settings?.module_page_layouts),
+        ),
+        settings?.home_layout,
       )
       if (sharedInternalLayoutHasContent(shared)) {
         return stripSyncedHeroWidgets(

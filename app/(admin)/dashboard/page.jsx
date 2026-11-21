@@ -14,7 +14,7 @@ import {
   RefreshCw, Briefcase, TrendingUp, CheckCircle,
   Newspaper, Zap, Eye, Settings, Warehouse, Headphones, Calendar,
   BarChart3, Megaphone, Images, Settings2, Tags, Radio, Info, PanelTop, BookOpen, Brain, HelpCircle, GraduationCap, Star, FolderOpen, GalleryHorizontal, FileText, CreditCard, ShoppingBag, Package, Store, Wallet,
-  Database, MapPin, Handshake, Building2, ClipboardList, ScrollText, ChevronDown, CalendarCheck, AppWindow, Wrench, ExternalLink, UserCog, Boxes, Dumbbell, GitBranch, Radar,
+  Database, MapPin, Handshake, Building2, ClipboardList, ScrollText, ChevronDown, CalendarCheck, AppWindow, Wrench, ExternalLink, UserCog, Boxes, Dumbbell, GitBranch, Radar, HeartHandshake, UserRound,
 } from 'lucide-react'
 import GuidedTour, { useGuidedTour } from '@/components/Admin/GuidedTour'
 import {
@@ -93,7 +93,13 @@ const Dashboard = () => {
       quizManage: 'مدیریت آزمون',
       faqManage: 'سوالات متداول',
       curvedTimelineManage: 'تایم لاین منحنی',
-      schoolManage: 'مدرسه',
+      schoolManage: 'مدیریت مدرسه',
+      schoolProfile: 'پروفایل مدرسه',
+      schoolTeacher: 'پنل معلم',
+      schoolStudent: 'پنل دانش‌آموز',
+      schoolCounselor: 'پنل مشاور',
+      schoolAccount: 'حساب کاربری مدرسه',
+      homeHeroManage: 'تنظیمات صفحه اصلی',
       softappsManage: 'نرم‌افزارهای کاربردی',
       todoService: 'میزکار سرویس (Todo)',
       repairsManage: 'داشبورد کامل تعمیرات',
@@ -120,7 +126,7 @@ const Dashboard = () => {
       postJob: 'ثبت آگهی',
       platformConnections: 'اتصالات پیام‌رسان',
       adminPortal: 'ادمین وب',
-      paymentManage: 'ماژول پرداخت',
+      paymentManage: 'تنظیمات پرداخت',
       reboManage: 'مدیریت ربو',
       shopManage: 'محصولات',
       shopPanel: 'فروشگاه من',
@@ -184,7 +190,13 @@ const Dashboard = () => {
       quizManage: 'Quiz manage',
       faqManage: 'FAQ manage',
       curvedTimelineManage: 'Curved timeline',
-      schoolManage: 'School',
+      schoolManage: 'School admin',
+      schoolProfile: 'School profile',
+      schoolTeacher: 'Teacher panel',
+      schoolStudent: 'Student panel',
+      schoolCounselor: 'Counselor panel',
+      schoolAccount: 'School account',
+      homeHeroManage: 'Home page settings',
       softappsManage: 'Utility software',
       todoService: 'Service desk (Todo)',
       repairsManage: 'Full repairs dashboard',
@@ -211,7 +223,7 @@ const Dashboard = () => {
       postJob: 'Post a job',
       platformConnections: 'Messenger bots',
       adminPortal: 'Admin Web',
-      paymentManage: 'Payment module',
+      paymentManage: 'Payment settings',
       reboManage: 'Rebo management',
       shopManage: 'Products',
       shopPanel: 'My shop',
@@ -471,6 +483,9 @@ const Dashboard = () => {
   const shopOn = isShopModuleOn(moduleMap)
   const multiVendorOn = isEffectiveMultiVendor(moduleMap)
   const singleStoreOn = isEffectiveSingleStore(moduleMap)
+  const schoolOn =
+    !Object.prototype.hasOwnProperty.call(moduleMap, SITE_MODULE_KEYS.SCHOOL) ||
+    !!moduleMap[SITE_MODULE_KEYS.SCHOOL]
 
   const quickActions = useMemo(() => {
     const linked = (assignedSections || []).filter((d) => d.href)
@@ -551,6 +566,69 @@ const Dashboard = () => {
       group: 'gym',
       sectionCode: 'gym-bodybuilding',
     })
+
+    if (schoolOn && canManageTicker) {
+      pushAction({
+        id: 'school-manage',
+        icon: <GraduationCap />,
+        label: t.schoolManage,
+        href: '/profile?tab=manage',
+        color: '#004733',
+        bgColor: 'rgba(0, 71, 51, 0.12)',
+        group: 'school',
+        sectionCode: 'school-manage',
+      })
+      pushAction({
+        id: 'school-teacher',
+        icon: <GraduationCap />,
+        label: t.schoolTeacher,
+        href: '/profile?tab=teacher',
+        color: '#2b6a4d',
+        bgColor: 'rgba(43, 106, 77, 0.14)',
+        group: 'school',
+        sectionCode: 'school-teacher',
+      })
+      pushAction({
+        id: 'school-student',
+        icon: <BookOpen />,
+        label: t.schoolStudent,
+        href: '/profile?tab=students',
+        color: '#568d66',
+        bgColor: 'rgba(86, 141, 102, 0.16)',
+        group: 'school',
+        sectionCode: 'school-student',
+      })
+      pushAction({
+        id: 'school-counselor',
+        icon: <HeartHandshake />,
+        label: t.schoolCounselor,
+        href: '/profile?tab=counselor',
+        color: '#ad080f',
+        bgColor: 'rgba(173, 8, 15, 0.12)',
+        group: 'school',
+        sectionCode: 'school-counselor',
+      })
+      pushAction({
+        id: 'school-profile',
+        icon: <UserRound />,
+        label: t.schoolProfile,
+        href: '/profile',
+        color: '#1e4d6b',
+        bgColor: '#e8f1f6',
+        group: 'school',
+        sectionCode: 'school-profile',
+      })
+      pushAction({
+        id: 'school-account',
+        icon: <UserCog />,
+        label: t.schoolAccount,
+        href: '/profile?tab=account',
+        color: '#455a64',
+        bgColor: '#eceff1',
+        group: 'school',
+        sectionCode: 'school-account',
+      })
+    }
 
     linked.forEach((d) => {
       pushAction({
@@ -691,6 +769,18 @@ const Dashboard = () => {
         bgColor: '#e3f2fd',
         group: 'content',
       })
+      if (schoolOn) {
+        pushAction({
+          id: 'home-hero-manage',
+          icon: <Images />,
+          label: t.homeHeroManage,
+          href: '/home-hero-manage',
+          color: '#004733',
+          bgColor: 'rgba(0, 71, 51, 0.12)',
+          group: 'content',
+          sectionCode: 'home-hero-manage',
+        })
+      }
       pushAction({
         id: 'site-settings',
         icon: <Settings2 />,
@@ -762,15 +852,6 @@ const Dashboard = () => {
         color: '#023c2c',
         bgColor: '#e8f5ef',
         group: 'site',
-      })
-      pushAction({
-        id: 'school-manage',
-        icon: <GraduationCap />,
-        label: t.schoolManage,
-        href: '/school-manage',
-        color: '#1e4d6b',
-        bgColor: '#e8f1f6',
-        group: 'content',
       })
       pushAction({
         id: 'apps-manage',
@@ -955,7 +1036,7 @@ const Dashboard = () => {
         href: '/payment-manage',
         color: '#0f766e',
         bgColor: '#e6f7f4',
-        group: 'sales',
+        group: 'site',
         sectionCode: 'payment',
       })
       pushAction({
@@ -1085,6 +1166,7 @@ const Dashboard = () => {
     shopOn,
     multiVendorOn,
     singleStoreOn,
+    schoolOn,
     language,
     user,
     moduleMap,
@@ -1093,6 +1175,7 @@ const Dashboard = () => {
     t.inventoryManage,
     t.ticker,
     t.heroSlider,
+    t.homeHeroManage,
     t.siteSettings,
     t.aboutManage,
     t.headerMenu,
@@ -1102,6 +1185,11 @@ const Dashboard = () => {
     t.faqManage,
     t.curvedTimelineManage,
     t.schoolManage,
+    t.schoolProfile,
+    t.schoolTeacher,
+    t.schoolStudent,
+    t.schoolCounselor,
+    t.schoolAccount,
     t.softappsManage,
     t.todoService,
     t.repairsManage,

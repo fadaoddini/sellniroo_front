@@ -19,11 +19,23 @@ const STEPS = [
     href: '/adminsettings?tab=pages&page=shared&wizard=1',
   },
   {
+    id: 'profile',
+    label: 'چیدمان پروفایل',
+    hint: 'بخش‌های پروفایل همین سیستم',
+    href: '/adminsettings?tab=profile&wizard=1',
+  },
+  {
     id: 'shop',
     label: 'طراحی فروشگاه',
     hint: 'لیست و سینگل محصول',
     href: '/adminsettings?tab=shop&wizard=1',
     moduleKey: 'shop',
+  },
+  {
+    id: 'checkout',
+    label: 'سفارش و سبد',
+    hint: 'مسیر خرید / رزرو',
+    href: '/adminsettings?tab=checkout&wizard=1',
   },
   {
     id: 'jobs',
@@ -38,24 +50,6 @@ const STEPS = [
     hint: 'لیست و سینگل خبر',
     href: '/adminsettings?tab=news&wizard=1',
     moduleKey: 'news',
-  },
-  {
-    id: 'profile',
-    label: 'چیدمان پروفایل',
-    hint: 'بخش‌های پروفایل همین سیستم',
-    href: '/adminsettings?tab=profile&wizard=1',
-  },
-  {
-    id: 'checkout',
-    label: 'سفارش و سبد',
-    hint: 'مسیر خرید / رزرو',
-    href: '/adminsettings?tab=checkout&wizard=1',
-  },
-  {
-    id: 'corporate',
-    label: 'ظاهر شرکتی',
-    hint: 'رنگ هدر و موبایل',
-    href: '/adminsettings?tab=corporate&wizard=1',
   },
 ]
 

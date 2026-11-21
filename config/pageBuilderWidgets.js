@@ -1087,16 +1087,6 @@ export const PAGE_BUILDER_WIDGETS = [
 
   // ─── مدرسه ───
   w({
-    type: 'school_page',
-    label: 'محتوای کامل صفحه مدرسه',
-    desc: 'جایگاه محتوای /school در چیدمان ماژول',
-    category: 'school',
-    icon: 'GraduationCap',
-    moduleKey: 'school',
-    status: 'ready',
-    builderModes: ['module:school'],
-  }),
-  w({
     type: 'school_animation',
     label: 'ویجت انیمیشن مدرسه',
     desc: 'صحنه پیکسلی مدرسه مثل ربو — موزیک، مهمانی، شهر رنگی، مدرسه آسمان علم',
@@ -1118,10 +1108,11 @@ export const PAGE_BUILDER_WIDGETS = [
   w({
     type: 'school_hero_breaking',
     label: 'هیرو خبر فوری',
-    desc: 'خبر فوری شفاف روی گرادیان هیرو مدرسه — یک تکه، بدون درز رنگی',
+    desc: 'هیرو مدرسه + نوار خبر فوری روی گرادیان — متن، CTA و ظاهر نوار',
     category: 'school',
     icon: 'Megaphone',
     moduleKey: 'school',
+    settingsPanel: 'school_hero_breaking',
     status: 'ready',
   }),
   w({
@@ -1766,6 +1757,16 @@ export const PAGE_BUILDER_WIDGETS = [
     status: 'ready',
     moduleKey: 'cloud_server',
     builderModes: ['module:cloud_server'],
+  }),
+  w({
+    type: 'reboserver_page',
+    label: 'محتوای پنل سرور ربو',
+    desc: 'مدیریت سرور، شارژ و روز باقی‌مانده در /reboserver',
+    category: 'platform',
+    icon: 'Cloud',
+    status: 'ready',
+    moduleKey: 'cloud_server',
+    builderModes: ['module:reboserver'],
   }),
 ]
 

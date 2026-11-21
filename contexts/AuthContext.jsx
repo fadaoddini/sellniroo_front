@@ -44,8 +44,8 @@ const PUBLIC_PATHS = [
   "/repairs/",
   "/faq",
   "/faq/",
-  "/school",
-  "/school/",
+  "/teachers",
+  "/counselors",
 ];
 
 // ✅ بررسی مسیر عمومی
@@ -62,7 +62,8 @@ const isPublicPath = (pathname) => {
   if (pathname.startsWith("/booking")) return true;
   if (pathname.startsWith("/repairs")) return true;
   if (pathname.startsWith("/faq")) return true;
-  if (pathname.startsWith("/school")) return true;
+  if (pathname.startsWith("/teachers")) return true;
+  if (pathname.startsWith("/counselors")) return true;
 
   const dynamicPatterns = [
     "/about/",

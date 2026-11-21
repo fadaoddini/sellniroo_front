@@ -6,12 +6,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import {
-  CreditCard,
-  LayoutDashboard,
   RefreshCw,
   Save,
-  Shield,
-  ExternalLink,
   Settings2,
   Wallet,
   Target,
@@ -23,9 +19,12 @@ import {
   Star,
   Inbox,
 } from 'lucide-react'
+import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
+import { getPaymentSystemPageNav } from '@/components/Admin/paymentSystemNav'
 import { useAuth } from '@/contexts/AuthContext'
 import Config from '@/config/config'
-import { isPlatformOwner } from '@/utils/ownerAccess'
+import { isPlatformOwner, OWNER_PROFILE } from '@/utils/ownerAccess'
+import aw from '../adminweb/AdminWeb.module.css'
 import styles from './PaymentManage.module.css'
 
 const TABS = [
@@ -69,6 +68,187 @@ function ToggleSwitch({ checked, onChange, title, desc }) {
         </span>
       </span>
     </label>
+  )
+}
+
+function parseAuthData(raw) {
+  if (!raw) return {}
+  if (typeof raw === 'object') return raw
+  try {
+    const parsed = JSON.parse(raw)
+    return parsed && typeof parsed === 'object' ? parsed : {}
+  } catch {
+    return {}
+  }
+}
+
+function GatewayCredentialFields({ gateway, onSave, busy }) {
+  const code = String(gateway.gateway_code || '').toLowerCase()
+  const initial = parseAuthData(gateway.auth_data)
+  const [merchantId, setMerchantId] = useState(
+    initial.merchant_id || initial.merchantId || initial.merchant || ''
+  )
+  const [terminalId, setTerminalId] = useState(
+    initial.terminal_id || initial.terminalId || ''
+  )
+  const [username, setUsername] = useState(initial.username || '')
+  const [password, setPassword] = useState(initial.password || '')
+  const [rawJson, setRawJson] = useState(
+    gateway.auth_data || JSON.stringify(initial, null, 2) || '{}'
+  )
+  const [showAdvanced, setShowAdvanced] = useState(false)
+
+  useEffect(() => {
+    const next = parseAuthData(gateway.auth_data)
+    setMerchantId(next.merchant_id || next.merchantId || next.merchant || '')
+    setTerminalId(next.terminal_id || next.terminalId || '')
+    setUsername(next.username || '')
+    setPassword(next.password || '')
+    setRawJson(gateway.auth_data || JSON.stringify(next, null, 2) || '{}')
+  }, [gateway.id, gateway.auth_data])
+
+  const buildAuthPayload = () => {
+    if (showAdvanced) return rawJson || '{}'
+    const base = parseAuthData(gateway.auth_data)
+    if (code.includes('zarin') || code.includes('zarrin')) {
+      return JSON.stringify({ ...base, merchant_id: String(merchantId || '').trim() })
+    }
+    if (code === 'parsian' || code === 'melat' || code === 'meli') {
+      return JSON.stringify({
+        ...base,
+        merchant_id: String(merchantId || '').trim(),
+        terminal_id: String(terminalId || '').trim(),
+        username: String(username || '').trim(),
+        password: String(password || ''),
+      })
+    }
+    return JSON.stringify({
+      ...base,
+      merchant_id: String(merchantId || '').trim(),
+    })
+  }
+
+  const isZarin = code.includes('zarin') || code.includes('zarrin')
+  const isBankGw = code === 'parsian' || code === 'melat' || code === 'meli'
+
+  return (
+    <div className={styles.itemBody}>
+      {!showAdvanced ? (
+        <div className={styles.credGrid}>
+          {(isZarin || !isBankGw) && code !== 'manual' ? (
+            <div className={styles.field}>
+              <label htmlFor={`gw-merchant-${gateway.id}`}>
+                {isZarin ? 'مرچنت کد زرین‌پال (Merchant ID)' : 'شناسه پذیرنده / Merchant ID'}
+              </label>
+              <input
+                id={`gw-merchant-${gateway.id}`}
+                dir="ltr"
+                placeholder={isZarin ? 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' : '…'}
+                value={merchantId}
+                onChange={(e) => setMerchantId(e.target.value)}
+              />
+              {isZarin ? (
+                <span className={styles.fieldHint}>
+                  از پنل زرین‌پال → درگاه‌ها کپی کنید. بدون این مقدار پرداخت آنلاین ساخته نمی‌شود.
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+          {isBankGw ? (
+            <>
+              <div className={styles.field}>
+                <label htmlFor={`gw-merchant-${gateway.id}`}>Merchant / پذیرنده</label>
+                <input
+                  id={`gw-merchant-${gateway.id}`}
+                  dir="ltr"
+                  value={merchantId}
+                  onChange={(e) => setMerchantId(e.target.value)}
+                />
+              </div>
+              <div className={styles.field}>
+                <label htmlFor={`gw-terminal-${gateway.id}`}>Terminal ID</label>
+                <input
+                  id={`gw-terminal-${gateway.id}`}
+                  dir="ltr"
+                  value={terminalId}
+                  onChange={(e) => setTerminalId(e.target.value)}
+                />
+              </div>
+              <div className={styles.field}>
+                <label htmlFor={`gw-user-${gateway.id}`}>نام کاربری</label>
+                <input
+                  id={`gw-user-${gateway.id}`}
+                  dir="ltr"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+              <div className={styles.field}>
+                <label htmlFor={`gw-pass-${gateway.id}`}>رمز</label>
+                <input
+                  id={`gw-pass-${gateway.id}`}
+                  dir="ltr"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+            </>
+          ) : null}
+          {code === 'manual' ? (
+            <p className={styles.fieldHint}>
+              درگاه دستی به کلید درگاه نیاز ندارد؛ برای واریز کارت از تنظیمات پرداخت ربو استفاده کنید.
+            </p>
+          ) : null}
+        </div>
+      ) : (
+        <div className={styles.field}>
+          <label htmlFor={`gw-auth-${gateway.id}`} className={styles.fieldLabelIcon}>
+            <KeyRound size={12} />
+            credentials (JSON)
+          </label>
+          <textarea
+            id={`gw-auth-${gateway.id}`}
+            className={styles.authInput}
+            value={rawJson}
+            onChange={(e) => setRawJson(e.target.value)}
+            rows={3}
+            spellCheck={false}
+          />
+        </div>
+      )}
+
+      <div className={styles.itemMeta}>
+        <div className={styles.metaRow}>
+          <span className={styles.metaKey}>شناسه</span>
+          <span className={styles.metaVal}>#{gateway.id}</span>
+        </div>
+        <div className={styles.metaRow}>
+          <span className={styles.metaKey}>ترتیب</span>
+          <span className={styles.metaVal}>{gateway.sort_order ?? '—'}</span>
+        </div>
+        <div className={styles.itemActions}>
+          {code !== 'manual' ? (
+            <button
+              type="button"
+              className={styles.miniBtn}
+              onClick={() => setShowAdvanced((v) => !v)}
+            >
+              {showAdvanced ? 'فرم ساده' : 'JSON پیشرفته'}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className={`${styles.miniBtn} ${styles.miniBtnPrimary}`}
+            disabled={busy}
+            onClick={() => onSave({ auth_data: buildAuthPayload() })}
+          >
+            <Save size={13} />
+            ذخیره کلید
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -203,69 +383,43 @@ export default function PaymentManagePage() {
     return { activeGw, activePurpose, paid, unpaid, totalPayments: payments.length }
   }, [gateways, purposes, payments])
 
-  if (loading || !isAuthenticated) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.stateBox}>
-          <RefreshCw size={26} className={styles.spin} />
-          <p>در حال بررسی دسترسی…</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (!canManage) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.denied}>
-          <Shield size={32} />
-          <h1>دسترسی محدود</h1>
-          <p>فقط مدیر می‌تواند تنظیمات پرداخت را مدیریت کند.</p>
-          <Link href="/dashboard" className={styles.solidBtn}>
-            داشبورد
-          </Link>
-        </div>
-      </div>
-    )
-  }
+  const displayName =
+    user?.display_name ||
+    [user?.first_name, user?.last_name].filter(Boolean).join(' ') ||
+    OWNER_PROFILE.name
 
   return (
-    <div className={styles.page} dir="rtl">
-      <div className={styles.wrap}>
-        <header className={styles.header}>
-          <div className={styles.headerLeft}>
-            <span className={styles.headerIcon}>
-              <CreditCard size={24} />
-            </span>
-            <div>
-              <h1 className={styles.pageTitle}>ماژول پرداخت</h1>
-              <p className={styles.pageDesc}>
-                درگاه سراسری برای فروشگاه، اخبار، کاریابی، کیف پول و امکانات بعدی
-              </p>
-            </div>
-          </div>
-          <div className={styles.headerActions}>
-            {isPlatformOwner(user) ? (
-              <Link href="/adminweb" className={styles.ghostBtn}>
-                <ExternalLink size={14} />
-                adminweb
-              </Link>
-            ) : null}
-            <Link href="/dashboard" className={styles.ghostBtn}>
-              <LayoutDashboard size={14} />
-              داشبورد
-            </Link>
-            <button
-              type="button"
-              className={styles.ghostBtn}
-              onClick={load}
-              disabled={loadingData}
-            >
-              <RefreshCw size={14} className={loadingData ? styles.spin : undefined} />
-              بروزرسانی
-            </button>
-          </div>
-        </header>
+    <OwnerPortalShell
+      brand="وب"
+      brandAccent="ادمین "
+      tagline="درگاه سراسری و اهداف پرداخت"
+      title="ماژول پرداخت"
+      wide
+      pageNav={getPaymentSystemPageNav('/payment-manage')}
+      loading={loading}
+      isAuthenticated={isAuthenticated}
+      allowed={canManage}
+      user={user}
+      displayName={displayName}
+      deniedTitle="دسترسی محدود"
+      deniedMessage="فقط مدیر می‌تواند تنظیمات پرداخت را مدیریت کند."
+      deniedHomeHref="/dashboard"
+    >
+      <div className={styles.embed} dir="rtl">
+        <div className={styles.toolbar}>
+          <p className={styles.toolbarLead}>
+            درگاه سراسری برای فروشگاه، اخبار، کاریابی، کیف پول و امکانات بعدی
+          </p>
+          <button
+            type="button"
+            className={styles.ghostBtn}
+            onClick={load}
+            disabled={loadingData}
+          >
+            <RefreshCw size={14} className={loadingData ? styles.spin : undefined} />
+            بروزرسانی
+          </button>
+        </div>
 
         <div className={styles.stats}>
           <div className={`${styles.statCard} ${styles.statTeal}`}>
@@ -309,7 +463,7 @@ export default function PaymentManagePage() {
           </div>
         ) : null}
 
-        <div className={styles.tabs} role="tablist">
+        <div className={aw.awTabs} role="tablist">
           {TABS.map((t) => {
             const Icon = t.icon
             const count =
@@ -326,7 +480,7 @@ export default function PaymentManagePage() {
                 type="button"
                 role="tab"
                 aria-selected={tab === t.id}
-                className={`${styles.tab} ${tab === t.id ? styles.tabOn : ''}`}
+                className={`${aw.awTab} ${tab === t.id ? aw.awTabOn : ''}`}
                 onClick={() => setTab(t.id)}
               >
                 <Icon size={15} />
@@ -498,9 +652,7 @@ export default function PaymentManagePage() {
               <div>
                 <h2 className={styles.cardTitle}>درگاه‌ها</h2>
                 <p className={styles.hint}>
-                  برای زرین‌پال در فیلد credentials مقدار JSON مثل{' '}
-                  <code className={styles.code}>{`{"merchant_id":"..."}`}</code>{' '}
-                  بگذارید.
+                  مرچنت‌کد زرین‌پال یا مشخصات درگاه بانکی را اینجا وارد و ذخیره کنید.
                 </p>
               </div>
             </div>
@@ -544,73 +696,37 @@ export default function PaymentManagePage() {
                       </div>
                     </div>
 
-                    <div className={styles.itemBody}>
-                      <div className={styles.field}>
-                        <label
-                          htmlFor={`gw-auth-${g.id}`}
-                          className={styles.fieldLabelIcon}
+                    <div className={styles.itemActionsTop}>
+                      <button
+                        type="button"
+                        className={`${styles.miniBtn} ${
+                          g.is_enable ? styles.miniBtnDanger : styles.miniBtnPrimary
+                        }`}
+                        onClick={() =>
+                          patchGateway(g.id, { is_enable: !g.is_enable })
+                        }
+                      >
+                        <Power size={13} />
+                        {g.is_enable ? 'خاموش' : 'روشن'}
+                      </button>
+                      {!g.is_default ? (
+                        <button
+                          type="button"
+                          className={styles.miniBtn}
+                          onClick={() =>
+                            patchGateway(g.id, { is_default: true })
+                          }
                         >
-                          <KeyRound size={12} />
-                          credentials (JSON)
-                        </label>
-                        <textarea
-                          id={`gw-auth-${g.id}`}
-                          className={styles.authInput}
-                          defaultValue={g.auth_data || '{}'}
-                          rows={3}
-                          spellCheck={false}
-                        />
-                      </div>
-                      <div className={styles.itemMeta}>
-                        <div className={styles.metaRow}>
-                          <span className={styles.metaKey}>شناسه</span>
-                          <span className={styles.metaVal}>#{g.id}</span>
-                        </div>
-                        <div className={styles.metaRow}>
-                          <span className={styles.metaKey}>ترتیب</span>
-                          <span className={styles.metaVal}>{g.sort_order ?? '—'}</span>
-                        </div>
-                        <div className={styles.itemActions}>
-                          <button
-                            type="button"
-                            className={`${styles.miniBtn} ${
-                              g.is_enable ? styles.miniBtnDanger : styles.miniBtnPrimary
-                            }`}
-                            onClick={() =>
-                              patchGateway(g.id, { is_enable: !g.is_enable })
-                            }
-                          >
-                            <Power size={13} />
-                            {g.is_enable ? 'خاموش' : 'روشن'}
-                          </button>
-                          {!g.is_default ? (
-                            <button
-                              type="button"
-                              className={styles.miniBtn}
-                              onClick={() =>
-                                patchGateway(g.id, { is_default: true })
-                              }
-                            >
-                              <Star size={13} />
-                              پیش‌فرض
-                            </button>
-                          ) : null}
-                          <button
-                            type="button"
-                            className={`${styles.miniBtn} ${styles.miniBtnPrimary}`}
-                            onClick={() => {
-                              const el = document.getElementById(`gw-auth-${g.id}`)
-                              patchGateway(g.id, {
-                                auth_data: el?.value || '{}',
-                              })
-                            }}
-                          >
-                            <Save size={13} />
-                            ذخیره کلید
-                          </button>
-                        </div>
-                      </div>
+                          <Star size={13} />
+                          پیش‌فرض
+                        </button>
+                      ) : null}
                     </div>
+                    <GatewayCredentialFields
+                      gateway={g}
+                      busy={saving}
+                      onSave={(patch) => patchGateway(g.id, patch)}
+                    />
                   </article>
                 ))}
               </div>
@@ -779,6 +895,6 @@ export default function PaymentManagePage() {
           </section>
         ) : null}
       </div>
-    </div>
+    </OwnerPortalShell>
   )
 }

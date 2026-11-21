@@ -40,6 +40,10 @@ import {
   normalizeCheckoutPipelines,
 } from '@/config/checkoutPipelines'
 import {
+  DEFAULT_HOME_HERO_SLIDER,
+  normalizeHomeHeroSlider,
+} from '@/config/homeHeroSlider'
+import {
   normalizeProductSingleLayoutsMap,
   normalizeShopListLayoutsMap,
   resolveActiveShopLayoutMode,
@@ -129,6 +133,7 @@ export const DEFAULT_SITE_SETTINGS = {
   rebo_pricing: { ...DEFAULT_REBO_PRICING },
   profile_layout: { ...DEFAULT_PROFILE_LAYOUT, sections: { ...DEFAULT_PROFILE_LAYOUT.sections } },
   checkout_pipelines: normalizeCheckoutPipelines(DEFAULT_CHECKOUT_PIPELINES),
+  home_hero_slider: { ...DEFAULT_HOME_HERO_SLIDER },
 }
 
 const resolveAsset = (src) => {
@@ -216,6 +221,9 @@ export const normalizeSiteSettings = (raw = {}) => {
   )
   data.checkout_pipelines = normalizeCheckoutPipelines(
     raw.checkout_pipelines || data.checkout_pipelines
+  )
+  data.home_hero_slider = normalizeHomeHeroSlider(
+    raw.home_hero_slider || data.home_hero_slider
   )
   return data
 }
@@ -980,6 +988,42 @@ export async function saveProfileLayout(layout, authHeaders = {}) {
     )
   }
   return data.profile_layout
+}
+
+/** ذخیره محتوای اسلایدر / هیرو صفحه اصلی */
+export async function saveHomeHeroSlider(payload, authHeaders = {}) {
+  const body = { home_hero_slider: normalizeHomeHeroSlider(payload) }
+  const url = Config.endpoints.news.siteSettings.update()
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `ذخیره تنظیمات صفحه اصلی ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeSiteSettings(json?.data || json)
+  rememberSettingsCache(data, { broadcast: true })
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('home-hero-slider-changed', {
+        detail: data.home_hero_slider,
+      }),
+    )
+  }
+  return data.home_hero_slider
 }
 
 /** ذخیره پایپ‌لاین سفارش / سبد سیستم‌ها */

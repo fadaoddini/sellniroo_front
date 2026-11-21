@@ -14,6 +14,12 @@ import {
   ExternalLink,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
+import { getShopDesignPageNav } from '@/components/Admin/shopDesignNav'
+import {
+  isPlatformOwner,
+  OWNER_PROFILE,
+} from '@/utils/ownerAccess'
 import {
   fetchSiteSettings,
   saveProductSinglePageSettings,
@@ -205,6 +211,14 @@ export default function ProductSingleAdminPage({ embedded = false } = {}) {
     useAuth()
   const canAccess =
     user?.is_superuser || user?.is_staff || canManageEmployees
+  const isOwner = isPlatformOwner(user)
+  const inPortal = !embedded && isOwner
+  const nestChrome = embedded || inPortal
+
+  const displayName =
+    user?.display_name ||
+    [user?.first_name, user?.last_name].filter(Boolean).join(' ') ||
+    OWNER_PROFILE.name
 
   const [form, setForm] = useState(() =>
     normalizeProductSinglePageSettings(DEFAULT_PRODUCT_SINGLE_PAGE_SETTINGS)
@@ -215,6 +229,30 @@ export default function ProductSingleAdminPage({ embedded = false } = {}) {
   const [error, setError] = useState('')
   const [toast, setToast] = useState(null)
   const [moduleOn, setModuleOn] = useState(null)
+
+  const wrapPortal = (node) => {
+    if (!inPortal) return node
+    return (
+      <OwnerPortalShell
+        brand="وب"
+        brandAccent="ادمین "
+        tagline="اجزای صفحه محصول"
+        title="سینگل محصول"
+        wide
+        pageNav={getShopDesignPageNav('/product-single')}
+        loading={loading}
+        isAuthenticated={isAuthenticated}
+        allowed={!!canAccess}
+        user={user}
+        displayName={displayName}
+        deniedTitle="دسترسی محدود"
+        deniedMessage="تنظیمات سینگل فقط برای کارکنان مجاز است."
+        deniedHomeHref="/dashboard"
+      >
+        {node}
+      </OwnerPortalShell>
+    )
+  }
 
   const load = useCallback(async () => {
     setLoadingData(true)
@@ -267,36 +305,44 @@ export default function ProductSingleAdminPage({ embedded = false } = {}) {
   }
 
   if (loading || !isAuthenticated) {
-    return (
+    return wrapPortal(
       <div className={styles.page} dir="rtl">
         <div className={styles.stateBox}>در حال بررسی دسترسی…</div>
-      </div>
+      </div>,
     )
   }
 
   if (!canAccess) {
-    return (
+    return wrapPortal(
       <div className={styles.page} dir="rtl">
         <div className={styles.denied}>
           <Shield size={28} />
           <h1>دسترسی محدود</h1>
-          {!embedded ? <Link href="/dashboard">داشبورد</Link> : null}
+          {!nestChrome ? <Link href="/dashboard">داشبورد</Link> : null}
           <p style={{ marginTop: 8, fontSize: 13 }}>
             تنظیمات سینگل فقط برای کارکنان مجاز است.
           </p>
         </div>
-      </div>
+      </div>,
     )
   }
 
   if (moduleOn === false) {
-    if (embedded) {
-      return (
-        <div className={styles.page} dir="rtl">
+    if (nestChrome) {
+      return wrapPortal(
+        <div
+          className={styles.page}
+          dir="rtl"
+          style={
+            inPortal
+              ? { minHeight: 0, padding: 0, background: 'transparent' }
+              : undefined
+          }
+        >
           <div className={styles.denied}>
             <h1>ماژول فروشگاه خاموش است</h1>
           </div>
-        </div>
+        </div>,
       )
     }
     notFound()
@@ -313,13 +359,20 @@ export default function ProductSingleAdminPage({ embedded = false } = {}) {
     extra: 'سایر',
   }
 
-  return (
+  return wrapPortal(
     <div
-      className={`${styles.page}${embedded ? ` ${styles.embeddedInHub || ''}` : ''}`}
+      className={`${styles.page}${nestChrome ? ` ${styles.embeddedInHub || ''}` : ''}`}
       dir="rtl"
-      style={embedded ? { minHeight: 0, padding: 0, background: 'transparent' } : undefined}
+      style={
+        nestChrome
+          ? { minHeight: 0, padding: 0, background: 'transparent' }
+          : undefined
+      }
     >
-      <div className={styles.wrap} style={embedded ? { maxWidth: 'none', padding: 0 } : undefined}>
+      <div
+        className={styles.wrap}
+        style={nestChrome ? { maxWidth: 'none', padding: 0 } : undefined}
+      >
         <header className={styles.header}>
           <div>
             <h1 className={styles.title}>
@@ -330,7 +383,7 @@ export default function ProductSingleAdminPage({ embedded = false } = {}) {
             </p>
           </div>
           <div className={styles.actions}>
-            {!embedded ? (
+            {!nestChrome ? (
               <>
                 <Link href="/adminweb?mode=product_single" className={styles.ghostBtn}>
                   چیدمان صفحه‌ساز <ExternalLink size={13} />
@@ -347,8 +400,8 @@ export default function ProductSingleAdminPage({ embedded = false } = {}) {
                 </Link>
               </>
             ) : (
-              <Link href="/adminweb?mode=product_single" className={styles.ghostBtn}>
-                چیدمان صفحه‌ساز <ExternalLink size={13} />
+              <Link href="/shopdesign" className={styles.ghostBtn}>
+                طراحی فروشگاه <ExternalLink size={13} />
               </Link>
             )}
             <button type="button" className={styles.ghostBtn} onClick={load}>
@@ -929,6 +982,6 @@ export default function ProductSingleAdminPage({ embedded = false } = {}) {
           </>
         )}
       </div>
-    </div>
+    </div>,
   )
 }

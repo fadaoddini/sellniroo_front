@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import {
   ArrowLeft,
@@ -20,6 +20,12 @@ import {
 import BreakingNews from '@/components/common/breakingnews/BreakingNews'
 import { useAuth } from '@/contexts/AuthContext'
 import {
+  DEFAULT_HOME_HERO_SLIDER,
+  homePageThemeStyle,
+  normalizeHomeHeroSlider,
+} from '@/config/homeHeroSlider'
+import { fetchSiteSettings } from '@/services/siteSettings'
+import {
   buildHeroBreakingNewsSettings,
   CHART_MONTHS,
   COUNSELOR_TESTS,
@@ -35,7 +41,7 @@ function isLoginHref(href) {
   return path === '/login' || path.endsWith('/login')
 }
 
-function resolveAuthedHref(href, fallback = '/school') {
+function resolveAuthedHref(href, fallback = '/profile') {
   if (!isLoginHref(href)) return href
   try {
     const q = String(href).split('?')[1] || ''
@@ -56,17 +62,6 @@ const PORTAL_ICONS = {
 
 const TOOL_ICONS = [FileSpreadsheet, ClipboardList, BookOpen, CalendarCheck]
 
-const MARQUEE = [
-  'کارنامه ماهانه',
-  'نمودار پیشرفت',
-  'پنل مشاور',
-  'آزمون IQ / EQ',
-  'حضور و غیاب',
-  'آزمون‌ساز',
-  'رتبه کلاسی',
-  'تکالیف تصویری',
-]
-
 function visibilityClass(s) {
   if (!s.show_on_mobile && !s.show_on_desktop) return styles.hiddenMobile
   if (!s.show_on_mobile) return styles.hiddenMobile
@@ -74,8 +69,21 @@ function visibilityClass(s) {
   return undefined
 }
 
-function HeroSection({ s, breakingSettings = null, ctaHref, ctaLabel }) {
+function HeroSection({
+  s,
+  content,
+  breakingSettings = null,
+  ctaHref,
+  ctaLabel,
+}) {
   const withBreaking = !!breakingSettings
+  const c = content || DEFAULT_HOME_HERO_SLIDER
+  const subjects = c.report?.subjects || []
+  const months = c.chart?.months || []
+  const marqueeItems = c.marquee?.items?.length
+    ? c.marquee.items
+    : DEFAULT_HOME_HERO_SLIDER.marquee.items
+
   return (
     <section
       className={`${styles.hero} ${withBreaking ? styles.heroWithBreaking : ''}`}
@@ -96,89 +104,110 @@ function HeroSection({ s, breakingSettings = null, ctaHref, ctaLabel }) {
         <div className={styles.heroCopy}>
           <p className={styles.heroEyebrow}>
             <Sparkles size={14} />
-            سامانه یکپارچه آموزش
+            {c.eyebrow || 'سامانه یکپارچه آموزش'}
           </p>
-          <h1 className={styles.brand}>{s.brand}</h1>
-          <p className={styles.headline}>{s.headline}</p>
-          <p className={styles.subtitle}>{s.subtitle}</p>
-          <div className={styles.ctaRow}>
-            <Link href={ctaHref} className={styles.ctaPrimary}>
-              {ctaLabel}
-              <ArrowLeft size={17} />
-            </Link>
-            <Link href={s.secondary_href} className={styles.ctaGhost}>
-              {s.secondary_label}
-            </Link>
-          </div>
+          <h1 className={styles.brand}>{c.brand || s.brand}</h1>
+          <p className={styles.headline}>{c.headline || s.headline}</p>
+          <p className={styles.subtitle}>{c.subtitle || s.subtitle}</p>
+          {c.show_cta !== false || c.show_secondary !== false ? (
+            <div className={styles.ctaRow}>
+              {c.show_cta !== false ? (
+                <Link href={ctaHref} className={styles.ctaPrimary}>
+                  {ctaLabel}
+                  <ArrowLeft size={17} />
+                </Link>
+              ) : null}
+              {c.show_secondary !== false ? (
+                <Link
+                  href={c.secondary_href || s.secondary_href}
+                  className={styles.ctaGhost}
+                >
+                  {c.secondary_label || s.secondary_label}
+                </Link>
+              ) : null}
+            </div>
+          ) : null}
         </div>
 
         <div className={styles.heroDeck} aria-hidden>
-          <div className={styles.floatReport}>
-            <div className={styles.floatReportTop}>
-              <strong>کارنامه ماهانه</strong>
-              <span>رتبه ۳ / ۲۸</span>
-            </div>
-            <div className={styles.floatGpa}>
-              <em>۱۷٫۸</em>
-              <small>معدل</small>
-            </div>
-            <div className={styles.miniBars}>
-              {REPORT_SUBJECTS.slice(0, 4).map((row) => (
-                <div key={row.name} className={styles.miniBarRow}>
-                  <span>{row.name}</span>
-                  <div className={styles.miniBarTrack}>
-                    <div className={styles.miniBarFill} style={{ width: `${row.bar}%` }} />
+          {c.report?.show !== false ? (
+            <div className={styles.floatReport}>
+              <div className={styles.floatReportTop}>
+                <strong>{c.report?.title || 'کارنامه ماهانه'}</strong>
+                <span>{c.report?.rank || 'رتبه ۳ / ۲۸'}</span>
+              </div>
+              <div className={styles.floatGpa}>
+                <em>{c.report?.gpa || '۱۷٫۸'}</em>
+                <small>{c.report?.gpa_label || 'معدل'}</small>
+              </div>
+              <div className={styles.miniBars}>
+                {subjects.slice(0, 4).map((row) => (
+                  <div key={row.name} className={styles.miniBarRow}>
+                    <span>{row.name}</span>
+                    <div className={styles.miniBarTrack}>
+                      <div
+                        className={styles.miniBarFill}
+                        style={{ width: `${row.bar}%` }}
+                      />
+                    </div>
+                    <b>{row.score}</b>
                   </div>
-                  <b>{row.score}</b>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          ) : null}
 
-          <div className={styles.floatChart}>
-            <div className={styles.floatChartHead}>
-              <BarChart3 size={14} />
-              روند شش‌ماهه
+          {c.chart?.show !== false ? (
+            <div className={styles.floatChart}>
+              <div className={styles.floatChartHead}>
+                <BarChart3 size={14} />
+                {c.chart?.title || 'روند شش‌ماهه'}
+              </div>
+              <div className={styles.sparkBars}>
+                {months.map((m, i) => (
+                  <i
+                    key={`${m.label}-${i}`}
+                    style={{ height: `${m.v}%`, animationDelay: `${0.06 * i}s` }}
+                    title={m.label}
+                  />
+                ))}
+              </div>
+              <p>
+                <TrendingUp size={13} />
+                {c.chart?.trend || 'رشد ۲۶٪ از مهر'}
+              </p>
             </div>
-            <div className={styles.sparkBars}>
-              {CHART_MONTHS.map((m, i) => (
-                <i
-                  key={m.label}
-                  style={{ height: `${m.v}%`, animationDelay: `${0.06 * i}s` }}
-                  title={m.label}
-                />
-              ))}
-            </div>
-            <p>
-              <TrendingUp size={13} />
-              رشد ۲۶٪ از مهر
-            </p>
-          </div>
+          ) : null}
 
-          <div className={styles.floatBadge}>
-            <Brain size={16} />
-            IQ · EQ
-          </div>
+          {c.badge?.show !== false ? (
+            <div className={styles.floatBadge}>
+              <Brain size={16} />
+              {c.badge?.text || 'IQ · EQ'}
+            </div>
+          ) : null}
         </div>
       </div>
 
-      <div className={styles.marquee} aria-hidden>
-        <div className={styles.marqueeTrack}>
-          {[...MARQUEE, ...MARQUEE].map((item, i) => (
-            <span key={`${item}-${i}`}>
-              {item}
-              <em />
-            </span>
-          ))}
+      {c.marquee?.show !== false ? (
+        <div className={styles.marquee} aria-hidden>
+          <div className={styles.marqueeTrack}>
+            {[...marqueeItems, ...marqueeItems].map((item, i) => (
+              <span key={`${item}-${i}`}>
+                {item}
+                <em />
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : null}
     </section>
   )
 }
 
-function PortalsSection() {
-  const byId = Object.fromEntries(SCHOOL_PORTALS.map((p) => [p.id, p]))
-  const order = ['admin', 'counselor', 'teacher', 'student']
+function PortalsSection({ content }) {
+  const portals = content?.portals || DEFAULT_HOME_HERO_SLIDER.portals
+  const fallbackById = Object.fromEntries(SCHOOL_PORTALS.map((p) => [p.id, p]))
+  const items = (portals.items || []).filter((p) => p.show !== false)
 
   return (
     <section className={`${styles.portalsBand} ${styles.bgWhite}`} aria-label="ورود نقش‌ها">
@@ -186,26 +215,24 @@ function PortalsSection() {
         <header className={styles.bandHead}>
           <p className={styles.kickerOnLight}>
             <Sparkles size={13} />
-            چهار درگاه زنده
+            {portals.kicker}
           </p>
           <h2 className={styles.bandTitleDark}>
-            هر نقش،
-            <em> صحنه خودش</em>
+            {portals.title}
+            <em>{portals.title_em}</em>
           </h2>
-          <p className={styles.bandLeadDark}>
-            مدیر، مشاور، معلم و دانش‌آموز — ورود جدا، امکانات اختصاصی، یک هسته مشترک.
-          </p>
+          <p className={styles.bandLeadDark}>{portals.lead}</p>
         </header>
 
         <div className={styles.bento}>
-          {order.map((id) => {
-            const p = byId[id]
-            const Icon = PORTAL_ICONS[id]
+          {items.map((p) => {
+            const Icon = PORTAL_ICONS[p.id] || GraduationCap
+            const href = p.href || fallbackById[p.id]?.href || '/profile'
             return (
               <Link
-                key={id}
-                href={p.href}
-                className={`${styles.bentoCard} ${styles[`bento_${id}`]}`}
+                key={p.id}
+                href={href}
+                className={`${styles.bentoCard} ${styles[`bento_${p.id}`] || ''}`}
               >
                 <span className={styles.bentoIcon}>
                   <Icon size={16} strokeWidth={1.6} />
@@ -215,7 +242,7 @@ function PortalsSection() {
                   <p>{p.desc}</p>
                 </div>
                 <span className={styles.bentoGo}>
-                  ورود
+                  {portals.enter_label || 'ورود'}
                   <ArrowLeft size={13} />
                 </span>
               </Link>
@@ -227,7 +254,16 @@ function PortalsSection() {
   )
 }
 
-function ReportPreviewSection() {
+function ReportPreviewSection({ content }) {
+  const band = content?.report_band || DEFAULT_HOME_HERO_SLIDER.report_band
+  const subjects = content?.report?.subjects?.length
+    ? content.report.subjects
+    : REPORT_SUBJECTS
+  const months = content?.chart?.months?.length
+    ? content.chart.months
+    : CHART_MONTHS
+  const stats = band.stats || []
+
   return (
     <section className={`${styles.reportBand} ${styles.bgRed}`} aria-label="کارنامه و نمودار">
       <div className={styles.bandGlowSoft} aria-hidden />
@@ -235,28 +271,20 @@ function ReportPreviewSection() {
         <header className={styles.reportIntro}>
           <p className={styles.kickerOnDark}>
             <BarChart3 size={13} />
-            کارنامه هوشمند
+            {band.kicker}
           </p>
           <h2 className={styles.bandTitle}>
-            نمره را ببین،
-            <em> مسیر را بساز</em>
+            {band.title}
+            <em>{band.title_em}</em>
           </h2>
-          <p className={styles.bandLead}>
-            معدل، رتبه کلاسی و نمودار شش‌ماهه — همان چیزی که دانش‌آموز و والدین در پنل می‌بینند.
-          </p>
+          <p className={styles.bandLead}>{band.lead}</p>
           <div className={styles.statRow}>
-            <div className={styles.statPulse}>
-              <strong>۱۷٫۸</strong>
-              <span>معدل</span>
-            </div>
-            <div className={styles.statPulse}>
-              <strong>۳</strong>
-              <span>رتبه کلاس</span>
-            </div>
-            <div className={styles.statPulse}>
-              <strong>۲۶٪</strong>
-              <span>رشد ترم</span>
-            </div>
+            {stats.map((st) => (
+              <div key={st.label} className={styles.statPulse}>
+                <strong>{st.value}</strong>
+                <span>{st.label}</span>
+              </div>
+            ))}
           </div>
         </header>
 
@@ -264,16 +292,16 @@ function ReportPreviewSection() {
           <div className={`${styles.reportSheet} ${styles.sheetTiltA}`}>
             <div className={styles.reportSheetHead}>
               <div>
-                <h3>کارنامه آذر</h3>
-                <p>پایه نهم · نمونه زنده</p>
+                <h3>{band.sheet_title}</h3>
+                <p>{band.sheet_meta}</p>
               </div>
               <span className={styles.rankPill}>
                 <Medal size={14} />
-                رتبه ۳
+                {band.rank_pill}
               </span>
             </div>
             <ul className={styles.scoreList}>
-              {REPORT_SUBJECTS.map((row) => (
+              {subjects.map((row) => (
                 <li key={row.name}>
                   <span>{row.name}</span>
                   <div className={styles.scoreMeter}>
@@ -288,11 +316,11 @@ function ReportPreviewSection() {
           <div className={`${styles.chartCard} ${styles.sheetTiltB}`}>
             <div className={styles.chartCardHead}>
               <BarChart3 size={15} />
-              <span>نمودار پیشرفت</span>
+              <span>{band.chart_title}</span>
             </div>
             <div className={styles.chartArea} role="img" aria-label="نمودار میله‌ای پیشرفت">
-              {CHART_MONTHS.map((m, i) => (
-                <div key={m.label} className={styles.chartCol}>
+              {months.map((m, i) => (
+                <div key={`${m.label}-${i}`} className={styles.chartCol}>
                   <div
                     className={styles.chartBar}
                     style={{ height: `${m.v}%`, animationDelay: `${0.08 * i}s` }}
@@ -303,7 +331,7 @@ function ReportPreviewSection() {
             </div>
             <p className={styles.trendLine}>
               <TrendingUp size={14} />
-              رشد از مهر تا اسفند · تمرکز بعدی: ریاضی و انگلیسی
+              {band.chart_trend}
             </p>
           </div>
         </div>
@@ -312,7 +340,12 @@ function ReportPreviewSection() {
   )
 }
 
-function CounselingSection({ s }) {
+function CounselingSection({ content, secondaryHref, counselorHref }) {
+  const c = content?.counseling || DEFAULT_HOME_HERO_SLIDER.counseling
+  const tests = c.tests?.length ? c.tests : COUNSELOR_TESTS
+  const ctaHref = counselorHref || c.cta_href
+  const secHref = secondaryHref || content?.secondary_href || '/profile'
+
   return (
     <section className={`${styles.counselBand} ${styles.bgWhite}`} aria-label="پنل مشاور">
       <div className={styles.wrap}>
@@ -320,17 +353,15 @@ function CounselingSection({ s }) {
           <div className={styles.counselCopy}>
             <p className={styles.kickerOnLight}>
               <HeartHandshake size={13} />
-              پنل مشاور
+              {c.kicker}
             </p>
             <h2 className={styles.bandTitleDark}>
-              هوش و هیجان،
-              <em> کنار هم</em>
+              {c.title}
+              <em>{c.title_em}</em>
             </h2>
-            <p className={styles.bandLeadDark}>
-              آزمون IQ و EQ، پرونده دانش‌آموز و پیشنهاد مسیر رشد — صحنه اختصاصی مشاور مدرسه.
-            </p>
+            <p className={styles.bandLeadDark}>{c.lead}</p>
             <div className={styles.testList}>
-              {COUNSELOR_TESTS.map((t) => (
+              {tests.map((t) => (
                 <div key={t.title} className={`${styles.testItem} ${styles.testItemLight}`}>
                   <span className={styles.testItemIcon}>
                     <Sparkles size={15} />
@@ -343,13 +374,17 @@ function CounselingSection({ s }) {
               ))}
             </div>
             <div className={`${styles.ctaRow} ${styles.counselCta}`}>
-              <Link href="/login?next=/school/counselor" className={styles.ctaPrimary}>
-                ورود مشاور
-                <ArrowLeft size={16} />
-              </Link>
-              <Link href={s.secondary_href} className={styles.ctaGhostDark}>
-                آزمون دانش‌آموز
-              </Link>
+              {c.show_cta !== false ? (
+                <Link href={ctaHref} className={styles.ctaPrimary}>
+                  {c.cta_label}
+                  <ArrowLeft size={16} />
+                </Link>
+              ) : null}
+              {c.show_secondary !== false ? (
+                <Link href={secHref} className={styles.ctaGhostDark}>
+                  {c.secondary_label}
+                </Link>
+              ) : null}
             </div>
           </div>
 
@@ -369,7 +404,10 @@ function CounselingSection({ s }) {
   )
 }
 
-function ToolsSection() {
+function ToolsSection({ content }) {
+  const t = content?.tools || DEFAULT_HOME_HERO_SLIDER.tools
+  const items = t.items?.length ? t.items : TEACHER_TOOLS
+
   return (
     <section className={`${styles.toolsBand} ${styles.bgGreen}`} aria-label="ابزار معلم">
       <div className={styles.bandGlowSoft} aria-hidden />
@@ -377,27 +415,25 @@ function ToolsSection() {
         <header className={styles.bandHead}>
           <p className={styles.kickerOnDark}>
             <GraduationCap size={13} />
-            جریان کار معلم
+            {t.kicker}
           </p>
           <h2 className={styles.bandTitle}>
-            از نمره
-            <em> تا حضور</em>
+            {t.title}
+            <em>{t.title_em}</em>
           </h2>
-          <p className={styles.bandLead}>
-            چهار ستون اصلی داشبورد معلم — سریع، شفاف، آماده کلاس.
-          </p>
+          <p className={styles.bandLead}>{t.lead}</p>
         </header>
         <div className={styles.toolsRail}>
-          {TEACHER_TOOLS.map((t, i) => {
+          {items.map((item, i) => {
             const Icon = TOOL_ICONS[i] || BookOpen
             return (
-              <article key={t.title} className={styles.toolCard}>
+              <article key={item.title} className={styles.toolCard}>
                 <span className={styles.toolNum}>{String(i + 1).padStart(2, '0')}</span>
                 <div className={styles.toolIcon}>
                   <Icon size={26} strokeWidth={1.45} />
                 </div>
-                <h3>{t.title}</h3>
-                <p>{t.desc}</p>
+                <h3>{item.title}</h3>
+                <p>{item.desc}</p>
               </article>
             )
           })}
@@ -407,26 +443,30 @@ function ToolsSection() {
   )
 }
 
-function ClosingSection({ s, ctaHref, ctaLabel, counselorHref }) {
+function ClosingSection({ content, ctaHref, ctaLabel, counselorHref }) {
+  const c = content?.closing || DEFAULT_HOME_HERO_SLIDER.closing
+
   return (
     <section className={`${styles.closing} ${styles.bgWhite}`} aria-label="شروع">
       <div className={styles.wrap}>
         <p className={styles.kickerOnLight}>
           <Sparkles size={13} />
-          الان شروع کن
+          {c.kicker}
         </p>
-        <h2 className={styles.closingTitleDark}>مدرسه‌تان روشن است</h2>
-        <p className={styles.closingLeadDark}>
-          کارنامه، نمودار، مشاوره و کلاس — با یک ورود در دسترس.
-        </p>
+        <h2 className={styles.closingTitleDark}>{c.title}</h2>
+        <p className={styles.closingLeadDark}>{c.lead}</p>
         <div className={styles.ctaRow}>
-          <Link href={ctaHref} className={styles.ctaPrimary}>
-            {ctaLabel}
-            <ArrowLeft size={16} />
-          </Link>
-          <Link href={counselorHref} className={styles.ctaGhostDark}>
-            پنل مشاور
-          </Link>
+          {c.show_cta !== false ? (
+            <Link href={ctaHref} className={styles.ctaPrimary}>
+              {ctaLabel}
+              <ArrowLeft size={16} />
+            </Link>
+          ) : null}
+          {c.show_counselor !== false ? (
+            <Link href={counselorHref} className={styles.ctaGhostDark}>
+              {c.counselor_label}
+            </Link>
+          ) : null}
         </div>
       </div>
     </section>
@@ -439,16 +479,10 @@ export default function SchoolLanding({
   breakingSettings: breakingProp = null,
 } = {}) {
   const { isAuthenticated } = useAuth()
+  const [heroContent, setHeroContent] = useState(() =>
+    normalizeHomeHeroSlider(DEFAULT_HOME_HERO_SLIDER),
+  )
   const s = normalizeSchoolSettings(raw)
-  const show = sections || {
-    hero: !s.hide_hero,
-    portals: !s.hide_portals,
-    report: true,
-    counseling: true,
-    tools: true,
-    closing: true,
-  }
-  const showDock = !s.hide_mobile_dock && show.hero !== false
   const embedBreaking =
     breakingProp != null ||
     raw?.embed_breaking === true ||
@@ -459,15 +493,91 @@ export default function SchoolLanding({
       )
     : null
 
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const settings = await fetchSiteSettings()
+        if (cancelled) return
+        setHeroContent(
+          normalizeHomeHeroSlider(settings?.home_hero_slider || {}),
+        )
+      } catch {
+        /* defaults remain */
+      }
+    })()
+    const onChanged = (ev) => {
+      if (ev?.detail) setHeroContent(normalizeHomeHeroSlider(ev.detail))
+    }
+    window.addEventListener('home-hero-slider-changed', onChanged)
+    return () => {
+      cancelled = true
+      window.removeEventListener('home-hero-slider-changed', onChanged)
+    }
+  }, [])
+
+  const mergedContent = useMemo(() => {
+    // محتوای دیتابیس اولویت دارد؛ فیلدهای ویجت فقط به‌عنوان پشتیبان متن قدیمی
+    return normalizeHomeHeroSlider({
+      ...heroContent,
+      brand: heroContent.brand || s.brand,
+      headline: heroContent.headline || s.headline,
+      subtitle: heroContent.subtitle || s.subtitle,
+      cta_label: heroContent.cta_label || s.cta_label,
+      cta_href: heroContent.cta_href || s.cta_href,
+      secondary_label: heroContent.secondary_label || s.secondary_label,
+      secondary_href: heroContent.secondary_href || s.secondary_href,
+      show_on_mobile:
+        heroContent.show_on_mobile !== false && s.show_on_mobile !== false,
+      show_on_desktop:
+        heroContent.show_on_desktop !== false && s.show_on_desktop !== false,
+    })
+  }, [heroContent, s])
+
+  const show = useMemo(() => {
+    if (sections) {
+      return {
+        hero: !!sections.hero,
+        portals: !!sections.portals,
+        report: !!sections.report,
+        counseling: !!sections.counseling,
+        tools: !!sections.tools,
+        closing: !!sections.closing,
+        mobile_dock: !!sections.mobile_dock,
+      }
+    }
+    const sec = mergedContent.sections || {}
+    return {
+      hero: !s.hide_hero && sec.hero !== false,
+      portals: !s.hide_portals && sec.portals !== false,
+      report: sec.report_band !== false,
+      counseling: sec.counseling !== false,
+      tools: sec.tools !== false,
+      closing: sec.closing !== false,
+      mobile_dock: sec.mobile_dock !== false,
+    }
+  }, [mergedContent.sections, sections, s.hide_hero, s.hide_portals])
+
+  const showDock =
+    !s.hide_mobile_dock && show.hero !== false && show.mobile_dock !== false
+
   const cta = useMemo(() => {
-    if (!isAuthenticated || !isLoginHref(s.cta_href)) {
-      return { href: s.cta_href, label: s.cta_label }
+    const href = mergedContent.cta_href || s.cta_href
+    const label = mergedContent.cta_label || s.cta_label
+    if (!isAuthenticated || !isLoginHref(href)) {
+      return { href, label }
     }
     return {
-      href: resolveAuthedHref(s.cta_href, '/school'),
-      label: 'ورود به مدرسه',
+      href: resolveAuthedHref(href, '/profile'),
+      label: label || 'ورود به مدرسه',
     }
-  }, [isAuthenticated, s.cta_href, s.cta_label])
+  }, [
+    isAuthenticated,
+    mergedContent.cta_href,
+    mergedContent.cta_label,
+    s.cta_href,
+    s.cta_label,
+  ])
 
   const studentHref = isAuthenticated
     ? '/profile?tab=students'
@@ -479,32 +589,57 @@ export default function SchoolLanding({
     ? '/profile?tab=counselor'
     : '/login?next=' + encodeURIComponent('/profile?tab=counselor')
 
+  const visibilitySource = {
+    show_on_mobile: mergedContent.show_on_mobile,
+    show_on_desktop: mergedContent.show_on_desktop,
+  }
+
+  const themeStyle = useMemo(
+    () => homePageThemeStyle(mergedContent.theme),
+    [mergedContent.theme],
+  )
+
   return (
     <div
-      className={`${styles.root} ${breakingSettings ? styles.rootHeroBreaking : ''} ${showDock ? styles.appShell : ''} ${visibilityClass(s) || ''}`}
+      className={`${styles.root} ${breakingSettings ? styles.rootHeroBreaking : ''} ${showDock ? styles.appShell : ''} ${visibilityClass(visibilitySource) || ''}`}
+      style={themeStyle}
     >
       {show.hero ? (
         <HeroSection
           s={s}
+          content={mergedContent}
           breakingSettings={breakingSettings}
           ctaHref={cta.href}
           ctaLabel={cta.label}
         />
       ) : null}
-      {show.portals ? <PortalsSection /> : null}
-      {show.report ? <ReportPreviewSection /> : null}
-      {show.counseling ? <CounselingSection s={s} /> : null}
-      {show.tools ? <ToolsSection /> : null}
+      {show.portals ? <PortalsSection content={mergedContent} /> : null}
+      {show.report ? <ReportPreviewSection content={mergedContent} /> : null}
+      {show.counseling ? (
+        <CounselingSection
+          content={mergedContent}
+          counselorHref={counselorHref}
+          secondaryHref={
+            isAuthenticated
+              ? resolveAuthedHref(
+                  mergedContent.secondary_href || s.secondary_href,
+                  '/profile',
+                )
+              : mergedContent.secondary_href || s.secondary_href
+          }
+        />
+      ) : null}
+      {show.tools ? <ToolsSection content={mergedContent} /> : null}
       {show.closing ? (
         <ClosingSection
-          s={s}
+          content={mergedContent}
           ctaHref={cta.href}
           ctaLabel={cta.label}
           counselorHref={counselorHref}
         />
       ) : null}
 
-      {showDock ? (
+      {showDock && mergedContent.show_cta !== false ? (
         <nav className={styles.mobileDock} aria-label="میانبر موبایل">
           <Link href={cta.href} className={styles.mobileDockPrimary}>
             {cta.label}

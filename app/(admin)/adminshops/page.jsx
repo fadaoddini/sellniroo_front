@@ -1,12 +1,6 @@
-import { Suspense } from 'react'
-import AdminShopsPage from './Client'
+import { redirect } from 'next/navigation'
 
-export const dynamic = 'force-dynamic'
-
-export default function Page() {
-  return (
-    <Suspense fallback={null}>
-      <AdminShopsPage />
-    </Suspense>
-  )
+/** مدیریت فروشگاه در داشبورد است — این مسیر دیگر پورتال جدا نیست */
+export default function AdminShopsRedirectPage() {
+  redirect('/dashboard/my-shop')
 }

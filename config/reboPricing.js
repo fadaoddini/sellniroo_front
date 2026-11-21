@@ -58,51 +58,170 @@ const SKIP_TYPES = new Set([
   'quiz_page',
   'sale_page',
   'cloud_server_page',
+  'reboserver_page',
   'deep_slider',
 ])
 
 export const DEFAULT_SUPPORT_PLANS = [
   {
-    id: 'starter',
-    name: 'مبتدی',
-    monthly_price: 3_000_000,
-    level: 1,
+    id: 'basic',
+    name: 'پایه',
+    monthly_price: 2_500_000,
+    months: 1,
+    level: 0,
+    hours_per_month: 0,
+    suitable_for:
+      'پشتیبانی فنی محدود: رفع نواقص احتمالی و آموزش‌های استفاده از سامانه',
+    breakdown: [
+      {
+        id: 'tech',
+        title: 'پشتیبانی فنی',
+        detail: 'رفع نواقص و خطاهای عملکردی گزارش‌شده',
+        monthly: 'به‌صورت محدود',
+      },
+      {
+        id: 'training',
+        title: 'آموزش استفاده از سامانه',
+        detail: 'راهنمایی محدود کار با پنل و امکانات تحویل‌شده',
+        monthly: 'به‌صورت محدود',
+      },
+      {
+        id: 'out_of_scope',
+        title: 'خارج از این پلن',
+        detail:
+          'جلسات انتقال نیازمندی، کار توسعه/تغییر، جلسات آنلاین منظم و گزارش‌نویسی دوره‌ای مشمول پلن پایه نیست',
+        monthly: '—',
+      },
+    ],
   },
   {
-    id: 'standard',
-    name: 'استاندارد',
+    id: 'bronze',
+    name: 'برنزی',
     monthly_price: 9_000_000,
-    level: 2,
+    months: 1,
+    level: 1,
+    hours_per_month: 10,
+    suitable_for: 'پروژه‌های کوچک و متوسط با نیاز پشتیبانی پایه',
+    breakdown: [
+      {
+        id: 'requirements',
+        title: 'جلسات انتقال نیازمندی‌ها',
+        detail: '۱ روز در هفته × ۲۰ دقیقه',
+        monthly: 'حدود ۱ ساعت و ۲۰ دقیقه',
+      },
+      {
+        id: 'work',
+        title: 'جلسات کار مفید روی پروژه',
+        detail: '۲ روز در هفته × ۱ ساعت',
+        monthly: 'حدود ۸ ساعت',
+      },
+      {
+        id: 'meeting',
+        title: 'جلسات آنلاین',
+        detail: 'ماهیانه ۱ جلسه ۳۰ دقیقه‌ای',
+        monthly: '۳۰ دقیقه',
+      },
+      {
+        id: 'report',
+        title: 'گزارش‌نویسی جلسات',
+        detail: 'حدود ۳۰ دقیقه در ماه',
+        monthly: '۳۰ دقیقه',
+      },
+    ],
   },
   {
-    id: 'advanced',
-    name: 'پیشرفته',
+    id: 'silver',
+    name: 'نقره‌ای',
     monthly_price: 17_000_000,
-    level: 3,
+    months: 1,
+    level: 2,
+    hours_per_month: 16,
+    suitable_for: 'پروژه‌های متوسط و بزرگ با نیاز پشتیبانی حرفه‌ای',
+    breakdown: [
+      {
+        id: 'requirements',
+        title: 'جلسات انتقال نیازمندی‌ها',
+        detail: '۲ روز در هفته × ۲۰ دقیقه',
+        monthly: 'حدود ۲ ساعت و ۴۰ دقیقه',
+      },
+      {
+        id: 'work',
+        title: 'جلسات کار مفید روی پروژه',
+        detail: '۳ روز در هفته × ۱ ساعت',
+        monthly: 'حدود ۱۲ ساعت',
+      },
+      {
+        id: 'meeting',
+        title: 'جلسات آنلاین',
+        detail: 'ماهیانه ۲ جلسه ۳۰ دقیقه‌ای',
+        monthly: '۶۰ دقیقه',
+      },
+      {
+        id: 'report',
+        title: 'گزارش‌نویسی جلسات',
+        detail: 'حدود ۳۰ دقیقه در ماه',
+        monthly: '۳۰ دقیقه',
+      },
+    ],
   },
   {
-    id: 'pro',
-    name: 'حرفه‌ای',
-    monthly_price: 35_000_000,
-    level: 4,
+    id: 'gold',
+    name: 'طلایی',
+    monthly_price: 25_000_000,
+    months: 1,
+    level: 3,
+    hours_per_month: 26,
     featured: true,
+    suitable_for: 'پروژه‌های بزرگ و سازمانی با نیاز پشتیبانی کامل',
+    breakdown: [
+      {
+        id: 'requirements',
+        title: 'جلسات انتقال نیازمندی‌ها',
+        detail: '۳ روز در هفته × ۲۰ دقیقه',
+        monthly: 'حدود ۴ ساعت',
+      },
+      {
+        id: 'work',
+        title: 'جلسات کار مفید روی پروژه',
+        detail: '۵ روز در هفته × ۱ ساعت',
+        monthly: 'حدود ۲۰ ساعت',
+      },
+      {
+        id: 'meeting',
+        title: 'جلسات آنلاین',
+        detail: 'ماهیانه ۲ جلسه ۴۵ دقیقه‌ای',
+        monthly: '۹۰ دقیقه',
+      },
+      {
+        id: 'report',
+        title: 'گزارش‌نویسی جلسات',
+        detail: 'حدود ۳۰ دقیقه در ماه',
+        monthly: '۳۰ دقیقه',
+      },
+    ],
   },
 ]
 
 export const DEFAULT_SUPPORT = {
   free_months: 3,
-  monthly_price: 3_000_000,
+  monthly_price: 2_500_000,
+  renew_window_days: 10,
   currency_label: 'تومان',
-  title: 'پشتیبانی',
-  desc: 'سه ماه رایگان پس از تحویل؛ سپس پلن ماهانه را از مبتدی تا حرفه‌ای انتخاب کنید.',
+  title: 'پشتیبانی پس از تحویل',
+  desc:
+    'پس از تحویل، سه ماه پشتیبانی رایگان؛ سپس یکی از پلن‌های پایه، برنزی، نقره‌ای یا طلایی را برای تمدید ماهانه انتخاب کنید.',
   notes:
-    'نگران به‌روزرسانی و تغییرات قالب و بک‌اند نباشید — این بخش فقط دسته‌بندی پشتیبانی است.',
-  plans: DEFAULT_SUPPORT_PLANS.map((p) => ({ ...p })),
+    'ساعت‌ها و جلسات هر پلن مشخص است؛ تغییرات اساسی و امکانات خارج از سفارش اولیه خارج از پوشش است.',
+  inflation_note: 'قیمت‌ها ممکن است بر اساس تورم افزایش یابد.',
+  plans: DEFAULT_SUPPORT_PLANS.map((p) => ({
+    ...p,
+    breakdown: (p.breakdown || []).map((b) => ({ ...b })),
+  })),
 }
 
 export const DEFAULT_CLOUD_SERVER = {
   enabled: true,
-  daily_price: 75_000,
+  daily_price: 100_000,
   currency_label: 'تومان',
   title: 'سرور ابری اشتراکی',
   desc: 'اگر سرور اختصاصی نمی‌خواهید، می‌توانید از سرور ابری ما استفاده کنید — هزینه روزانه.',
@@ -375,20 +494,46 @@ export function normalizeReboPricing(raw = {}) {
   }
 }
 
+function normalizeSupportBreakdown(rawList, fallbackList = []) {
+  const list = Array.isArray(rawList) && rawList.length ? rawList : fallbackList
+  return (list || [])
+    .filter((b) => b && typeof b === 'object')
+    .map((b, i) => ({
+      id: String(b.id || `item_${i + 1}`).trim() || `item_${i + 1}`,
+      title: String(b.title || '').trim(),
+      detail: String(b.detail || b.desc || '').trim(),
+      monthly: String(b.monthly || '').trim(),
+    }))
+    .filter((b) => b.title)
+}
+
 function normalizeSupportPlan(raw, index = 0, fallback) {
   const src = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {}
   const base = fallback || DEFAULT_SUPPORT_PLANS[index] || DEFAULT_SUPPORT_PLANS[0]
   const id =
     String(src.id || base.id || `plan_${index + 1}`).trim() || `plan_${index + 1}`
+  const monthly_price = Math.max(
+    0,
+    Math.round(
+      Number(src.monthly_price ?? src.price ?? base.monthly_price) || 0,
+    ),
+  )
   return {
     id,
     name: String(src.name || base.name || `پلن ${index + 1}`).trim() || `پلن ${index + 1}`,
-    monthly_price: Math.max(
-      0,
-      Math.round(Number(src.monthly_price ?? base.monthly_price) || 0),
-    ),
+    monthly_price,
+    price: monthly_price,
+    months: Math.max(1, Math.round(Number(src.months ?? base.months ?? 1) || 1)),
     level: Math.max(1, Math.round(Number(src.level ?? base.level ?? index + 1) || 1)),
     featured: src.featured === true || base.featured === true,
+    hours_per_month: Math.max(
+      0,
+      Math.round(Number(src.hours_per_month ?? base.hours_per_month) || 0),
+    ),
+    suitable_for: String(
+      src.suitable_for || base.suitable_for || '',
+    ).trim(),
+    breakdown: normalizeSupportBreakdown(src.breakdown, base.breakdown || []),
   }
 }
 
@@ -410,12 +555,25 @@ export function normalizeSupport(raw = {}) {
       0,
       Math.round(Number(src.monthly_price ?? firstPrice) || 0),
     ),
+    renew_window_days: Math.max(
+      1,
+      Math.round(
+        Number(src.renew_window_days ?? DEFAULT_SUPPORT.renew_window_days ?? 10) ||
+          10,
+      ),
+    ),
     currency_label:
       String(src.currency_label || DEFAULT_SUPPORT.currency_label).trim() ||
       'تومان',
     title: String(src.title || DEFAULT_SUPPORT.title).trim() || DEFAULT_SUPPORT.title,
     desc: String(src.desc ?? DEFAULT_SUPPORT.desc).trim(),
     notes: String(src.notes ?? DEFAULT_SUPPORT.notes).trim(),
+    inflation_note: String(
+      src.inflation_note ?? DEFAULT_SUPPORT.inflation_note ?? '',
+    ).trim(),
+    intro: String(src.intro || '').trim(),
+    coverage: Array.isArray(src.coverage) ? src.coverage : [],
+    terms: Array.isArray(src.terms) ? src.terms : [],
     plans,
   }
 }
@@ -431,9 +589,15 @@ export function normalizeCloudServer(raw = {}) {
       label: String(s.label || '').trim() || `مشخصه ${i + 1}`,
       value: String(s.value || '').trim(),
     }))
+  const daily_price = Math.max(
+    0,
+    Math.round(
+      Number(src.daily_price ?? DEFAULT_CLOUD_SERVER.daily_price) || 0,
+    ),
+  )
   return {
     enabled: src.enabled === false ? false : true,
-    daily_price: Math.max(0, Math.round(Number(src.daily_price) || 0)),
+    daily_price,
     currency_label:
       String(src.currency_label || DEFAULT_CLOUD_SERVER.currency_label).trim() ||
       'تومان',

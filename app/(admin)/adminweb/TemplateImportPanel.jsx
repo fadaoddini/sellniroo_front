@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import axios from 'axios'
 import {
   AlertTriangle,
@@ -103,6 +104,8 @@ async function turnOffModules(keys, moduleMap, headers) {
 
 export default function TemplateImportPanel() {
   const { getAuthHeaders } = useAuth()
+  const searchParams = useSearchParams()
+  const presetDomain = (searchParams?.get('domain') || '').trim()
   const [currentPack, setCurrentPack] = useState(null)
   const [currentName, setCurrentName] = useState('')
   const [moduleMap, setModuleMap] = useState({})
@@ -269,8 +272,9 @@ export default function TemplateImportPanel() {
     setMsg('')
     setDeployJob(null)
     setDeployTpl(tpl)
+    const domain = presetDomain || ''
     setDeployForm({
-      front_domain: '',
+      front_domain: domain,
       site_id: '',
       admin_domain: '',
       linux_user: 'rebo',
@@ -285,6 +289,11 @@ export default function TemplateImportPanel() {
       max_sms_pattern_code: '',
       force: true,
     })
+    if (domain) {
+      window.setTimeout(() => {
+        suggestFromDomain(domain)
+      }, 0)
+    }
   }
 
   const openSslModal = (tpl) => {

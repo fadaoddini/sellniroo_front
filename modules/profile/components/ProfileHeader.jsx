@@ -104,13 +104,14 @@ const VARIANT_META = {
     shortcuts: [],
   },
   rebo: {
-    welcome: "حساب ربو",
+    welcome: "پروفایل ربو",
     headerClass: "headerRebo",
     shortcuts: [
+      { href: "/profile?tab=desk", label: "میزکار", icon: LayoutDashboard, primary: true },
       { href: "/#rebo-cost", label: "بسته", icon: Calculator },
-      { href: "/profile?tab=rebo", label: "سفارش", icon: Boxes },
+      { href: "/profile?tab=cart", label: "سبد", icon: Boxes },
       { href: "/profile?tab=cloud", label: "سرور", icon: Cloud },
-      { href: "/profile?tab=support", label: "مشاوره", icon: MessageCircle, primary: true },
+      { href: "/profile?tab=account", label: "حساب", icon: UserRound },
     ],
   },
   basic: {

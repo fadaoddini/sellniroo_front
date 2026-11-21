@@ -8,60 +8,29 @@ import {
   Suspense,
   lazy,
 } from 'react'
-import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import axios from 'axios'
-import {
-  ArrowLeft,
-  Boxes,
-  Calculator,
-  Cloud,
-  Headphones,
-  Loader2,
-} from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import Config from '@/config/config'
 import { fetchSiteSettings } from '@/services/siteSettings'
-import { fetchSiteModules } from '@/services/siteModules'
-import {
-  isProfileSectionEnabled,
-  normalizeProfileLayout,
-} from '@/config/profileLayout'
-import { normalizeReboPricing } from '@/config/reboPricing'
 import { readReboPackageCart } from '@/utils/reboPackageCart'
-import { readReboOrderHistory } from '@/utils/reboOrderHistory'
 import ProfileHeader from './ProfileHeader'
 import ProfileTabs from './ProfileTabs'
-import ReboOverviewPanel from './rebo/ReboOverviewPanel'
+import ReboOrdersDeskPanel from './rebo/ReboOrdersDeskPanel'
 import ReboPackageOrdersPanel from './ReboPackageOrdersPanel'
-import ReboTrackPanel from './rebo/ReboTrackPanel'
 import ReboSupportPanel from './rebo/ReboSupportPanel'
 import styles from '../styles/ProfilePage.module.css'
 import hubStyles from '../styles/ReboHub.module.css'
 
 const ReboCloudPanel = lazy(() => import('./rebo/ReboCloudPanel'))
-const SoftAppsProfilePanel = lazy(() => import('./SoftAppsProfilePanel'))
 
 const BASE_TABS = [
-  { key: 'overview', label: 'نمای کلی', icon: 'layout' },
-  { key: 'rebo', label: 'سفارش بسته', icon: 'package' },
-  { key: 'track', label: 'پیگیری', icon: 'search' },
-  { key: 'cloud', label: 'سرور ابری', icon: 'cloud' },
-  { key: 'support', label: 'مشاوره', icon: 'headphones' },
+  { key: 'desk', label: 'میزکار', icon: 'layout' },
+  { key: 'cart', label: 'سبد', icon: 'package' },
+  { key: 'cloud', label: 'سرور', icon: 'cloud' },
+  { key: 'support', label: 'پشتیبانی', icon: 'headphones' },
   { key: 'account', label: 'حساب', icon: 'user' },
-]
-
-const SOFTAPPS_TAB = {
-  key: 'softapps',
-  label: 'نرم‌افزارها',
-  icon: 'appwindow',
-}
-
-const REBO_SHORTCUTS = [
-  { href: '/#rebo-cost', label: 'بسته‌ها', icon: Calculator },
-  { href: '/profile?tab=rebo', label: 'سفارش', icon: Boxes },
-  { href: '/profile?tab=cloud', label: 'سرور', icon: Cloud },
-  { href: '/profile?tab=support', label: 'مشاوره', icon: Headphones, primary: true },
 ]
 
 function PanelFallback() {
@@ -87,31 +56,26 @@ function ReboProfileInner() {
   const searchParams = useSearchParams()
 
   const [cart, setCart] = useState(() => readReboPackageCart())
-  const [orders, setOrders] = useState(() => readReboOrderHistory())
   const [cloudSub, setCloudSub] = useState(null)
-  const [cloudCfg, setCloudCfg] = useState(null)
-  const [pricing, setPricing] = useState(null)
   const [site, setSite] = useState(null)
-  const [softappsOn, setSoftappsOn] = useState(false)
 
-  const tabs = useMemo(() => {
-    const list = [...BASE_TABS]
-    if (softappsOn) {
-      const accountIdx = list.findIndex((t) => t.key === 'account')
-      if (accountIdx >= 0) list.splice(accountIdx, 0, SOFTAPPS_TAB)
-      else list.push(SOFTAPPS_TAB)
-    }
-    return list
-  }, [softappsOn])
-
+  const tabs = BASE_TABS
   const tabKeys = useMemo(() => new Set(tabs.map((t) => t.key)), [tabs])
 
   const initialTab = useMemo(() => {
     const q = searchParams.get('tab')
-    if (q && tabKeys.has(q)) return q
+    const legacy = {
+      overview: 'desk',
+      rebo: 'cart',
+      track: 'desk',
+      orders: 'desk',
+      softapps: 'desk',
+    }
+    const mapped = legacy[q] || q
+    if (mapped && tabKeys.has(mapped)) return mapped
     const c = readReboPackageCart()
     const cartCount = (c.packages?.length || 0) + (c.items?.length || 0)
-    return cartCount > 0 ? 'rebo' : 'overview'
+    return cartCount > 0 ? 'cart' : 'desk'
   }, [searchParams, tabKeys])
 
   const [activeTab, setActiveTab] = useState(initialTab)
@@ -119,7 +83,7 @@ function ReboProfileInner() {
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       const qs = searchParams.toString()
-      const next = qs ? `/profile?${qs}` : '/profile?tab=overview'
+      const next = qs ? `/profile?${qs}` : '/profile?tab=desk'
       router.replace(`/login?next=${encodeURIComponent(next)}`)
     }
   }, [authLoading, isAuthenticated, router, searchParams])
@@ -129,66 +93,41 @@ function ReboProfileInner() {
   }, [initialTab])
 
   useEffect(() => {
-    if (!tabKeys.has(activeTab)) setActiveTab('overview')
+    if (!tabKeys.has(activeTab)) setActiveTab('desk')
   }, [tabKeys, activeTab])
 
   useEffect(() => {
-    const refreshLocal = () => {
-      setCart(readReboPackageCart())
-      setOrders(readReboOrderHistory())
-    }
+    const refreshLocal = () => setCart(readReboPackageCart())
     refreshLocal()
     window.addEventListener('rebo-package-cart-changed', refreshLocal)
-    window.addEventListener('rebo-package-orders-changed', refreshLocal)
     window.addEventListener('storage', refreshLocal)
     return () => {
       window.removeEventListener('rebo-package-cart-changed', refreshLocal)
-      window.removeEventListener('rebo-package-orders-changed', refreshLocal)
       window.removeEventListener('storage', refreshLocal)
     }
   }, [])
 
   useEffect(() => {
     let cancelled = false
-    const refresh = async () => {
-      try {
-        const [settings, mods] = await Promise.all([
-          fetchSiteSettings({ force: true }),
-          fetchSiteModules({ force: true }),
-        ])
-        if (cancelled) return
-        setSite(settings || null)
-        setPricing(normalizeReboPricing(settings?.rebo_pricing))
-        const layout = normalizeProfileLayout(settings?.profile_layout)
-        setSoftappsOn(
-          isProfileSectionEnabled(layout, 'softapps', mods?.map || {}),
-        )
-      } catch {
-        /* ignore */
-      }
+    const loadSite = () => {
+      fetchSiteSettings({ force: true })
+        .then((settings) => {
+          if (!cancelled) setSite(settings || null)
+        })
+        .catch(() => {})
     }
-    refresh()
-    const onLayout = () => refresh()
-    const onMods = () => refresh()
-    window.addEventListener('profile-layout-changed', onLayout)
-    window.addEventListener('site-modules-changed', onMods)
+    loadSite()
+    const onPricing = () => loadSite()
+    window.addEventListener('rebo-pricing-changed', onPricing)
     return () => {
       cancelled = true
-      window.removeEventListener('profile-layout-changed', onLayout)
-      window.removeEventListener('site-modules-changed', onMods)
+      window.removeEventListener('rebo-pricing-changed', onPricing)
     }
   }, [])
 
   useEffect(() => {
-    let cancelled = false
-    axios
-      .get(Config.endpoints.cloudServer.config())
-      .then((res) => {
-        if (!cancelled) setCloudCfg(res.data?.data || null)
-      })
-      .catch(() => {})
-
     if (!isAuthenticated) return undefined
+    let cancelled = false
     axios
       .get(Config.endpoints.cloudServer.my(), { headers: getAuthHeaders() })
       .then((res) => {
@@ -221,15 +160,17 @@ function ReboProfileInner() {
     )
   }
 
+  const cartCount =
+    (cart?.packages?.length || 0) + (cart?.items?.length || 0)
+
   return (
-    <div className={`${styles.profilePage} ${hubStyles.page}`}>
+    <div className={`${styles.profilePage} ${hubStyles.page} ${hubStyles.pageCompact}`}>
       <div className={`${styles.container} ${hubStyles.container}`}>
         <div className={hubStyles.headerChrome}>
           <ProfileHeader
             user={user}
             variant="rebo"
-            showShortcuts
-            shortcuts={REBO_SHORTCUTS}
+            showShortcuts={false}
             roleChip={<RoleBadge />}
             footer={
               <div className={hubStyles.headerTabs}>
@@ -249,24 +190,11 @@ function ReboProfileInner() {
           role="tabpanel"
           id={`panel-${activeTab}`}
         >
-          {activeTab === 'overview' ? (
-            <ReboOverviewPanel
-              cart={cart}
-              orders={orders}
-              cloudSub={cloudSub}
-              cloudCfg={cloudCfg}
-              pricing={pricing}
-              onNavigate={handleTabChange}
-            />
+          {activeTab === 'desk' ? (
+            <ReboOrdersDeskPanel onNavigate={handleTabChange} />
           ) : null}
 
-          {activeTab === 'rebo' ? <ReboPackageOrdersPanel /> : null}
-
-          {activeTab === 'track' ? (
-            <ReboTrackPanel
-              initialNumber={searchParams.get('request') || ''}
-            />
-          ) : null}
+          {activeTab === 'cart' ? <ReboPackageOrdersPanel /> : null}
 
           {activeTab === 'cloud' ? (
             <Suspense fallback={<PanelFallback />}>
@@ -278,14 +206,14 @@ function ReboProfileInner() {
             <ReboSupportPanel site={site} onNavigate={handleTabChange} />
           ) : null}
 
-          {activeTab === 'softapps' && softappsOn ? (
-            <Suspense fallback={<PanelFallback />}>
-              <SoftAppsProfilePanel variant="standalone" />
-            </Suspense>
-          ) : null}
-
           {activeTab === 'account' ? (
-            <section className={hubStyles.account} dir="rtl" lang="fa">
+            <section className={`${hubStyles.account} ${hubStyles.compactPanel}`} dir="rtl" lang="fa">
+              <header className={hubStyles.deskHeroCompact}>
+                <div>
+                  <p className={hubStyles.eyebrow}>حساب کاربری</p>
+                  <h2>مشخصات و دسترسی سریع</h2>
+                </div>
+              </header>
               <div className={hubStyles.accountGrid}>
                 <article className={hubStyles.panelCard}>
                   <h3>اطلاعات حساب</h3>
@@ -310,26 +238,17 @@ function ReboProfileInner() {
                     </li>
                   </ul>
                   <p className={hubStyles.accountHint}>
-                    سفارش بسته‌ها با همین موبایل ثبت می‌شود تا تیم ربو بتواند
-                    پیگیری کند.
+                    قراردادها و اقساط با همین موبایل به حساب شما وصل می‌شود.
                   </p>
                 </article>
                 <article className={hubStyles.panelCard}>
-                  <h3>وضعیت خدمات ربو</h3>
+                  <h3>دسترسی سریع</h3>
                   <ul className={hubStyles.infoList}>
                     <li>
                       <span>سبد فعلی</span>
                       <strong>
-                        {(
-                          (cart?.packages?.length || 0) +
-                          (cart?.items?.length || 0)
-                        ).toLocaleString('fa-IR')}{' '}
-                        مورد
+                        {cartCount.toLocaleString('fa-IR')} مورد
                       </strong>
-                    </li>
-                    <li>
-                      <span>سفارش‌های ذخیره‌شده</span>
-                      <strong>{orders.length.toLocaleString('fa-IR')}</strong>
                     </li>
                     <li>
                       <span>سرور ابری</span>
@@ -343,10 +262,9 @@ function ReboProfileInner() {
                   <button
                     type="button"
                     className={hubStyles.linkBtn}
-                    onClick={() => handleTabChange('overview')}
+                    onClick={() => handleTabChange('desk')}
                   >
-                    بازگشت به نمای کلی
-                    <ArrowLeft size={13} />
+                    رفتن به میزکار سفارش‌ها
                   </button>
                 </article>
               </div>

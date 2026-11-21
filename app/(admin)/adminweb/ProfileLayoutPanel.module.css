@@ -1,12 +1,14 @@
 .panel {
-  --ink: #1a1f2e;
-  --muted: rgba(26, 31, 46, 0.58);
-  --line: rgba(26, 31, 46, 0.1);
-  --accent: #26a680;
+  --ink: #1c221a;
+  --muted: rgba(28, 34, 26, 0.58);
+  --line: rgba(28, 34, 26, 0.1);
+  --accent: #2c481e;
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
+  gap: 0.75rem;
   font-family: var(--font-iran-bold), Tahoma, Arial, sans-serif;
+  font-size: 0.78rem;
+  line-height: 1.45;
   color: var(--ink);
 }
 
@@ -35,14 +37,14 @@
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .headActions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
 }
 
 .eyebrow {
@@ -88,7 +90,7 @@
   border: 1px solid var(--line);
   border-radius: 16px;
   padding: 1.1rem 1.15rem;
-  box-shadow: 0 8px 24px rgba(26, 31, 46, 0.04);
+  box-shadow: 0 8px 24px rgba(28, 34, 26, 0.04);
 }
 
 .card h3 {
@@ -184,7 +186,7 @@
   width: 2.4rem;
   height: 1.35rem;
   border-radius: 999px;
-  background: rgba(26, 31, 46, 0.14);
+  background: rgba(28, 34, 26, 0.14);
   position: relative;
   flex-shrink: 0;
   transition: background 0.15s ease;

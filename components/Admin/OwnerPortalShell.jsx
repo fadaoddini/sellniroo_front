@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import {
   Shield,
   ShieldOff,
@@ -13,38 +13,158 @@ import {
   LayoutDashboard,
   LayoutTemplate,
   Boxes,
-  Calculator,
   Cloud,
-  Store,
-  Package,
-  FolderTree,
-  BookOpen,
+  CreditCard,
   Menu,
   X,
   PanelLeftClose,
   PanelLeftOpen,
+  Layers,
+  Settings2,
+  Store,
+  Rocket,
 } from 'lucide-react'
 import {
   normalizeIranMobile,
   OWNER_PHONES,
   OWNER_PROFILE,
 } from '@/utils/ownerAccess'
-import useShopMode from '@/hooks/useShopMode'
+import { REBO_SYSTEM_LINKS } from '@/components/Admin/reboSystemNav'
+import { SERVER_SYSTEM_LINKS } from '@/components/Admin/serverSystemNav'
+import { TEMPLATE_SYSTEM_LINKS } from '@/components/Admin/templateSystemNav'
+import { SHOP_DESIGN_LINKS } from '@/components/Admin/shopDesignNav'
+import { DEPLOY_SYSTEM_LINKS } from '@/components/Admin/deploySystemNav'
 import styles from '@/app/(admin)/adminweb/AdminWeb.module.css'
 import portalStyles from './OwnerPortal.module.css'
 
-const NAV_BASE = [
-  { href: '/adminweb', label: 'داشبورد', icon: LayoutDashboard },
-  { href: '/adminsettings', label: 'طراحی قالب', icon: LayoutTemplate },
-  { href: '/adminmodule', label: 'ماژول‌ها', icon: Boxes },
-  { href: '/rebolearn', label: 'آموزش‌های ربو', icon: BookOpen },
-  { href: '/rebo-pricing', label: 'قیمت ربو', icon: Calculator },
-  { href: '/rebo-manage', label: 'مدیریت ربو', icon: Boxes },
-  { href: '/cloud-manage', label: 'سرور ابری', icon: Cloud },
-  { href: '/adminshops', label: 'فروشگاه‌ها و تسویه', icon: Store },
-  { href: '/adminproducts', label: 'محصولات فروشگاه‌ها', icon: Package },
-  { href: '/admincategories', label: 'دسته‌بندی محصولات', icon: FolderTree },
+const NAV_SECTIONS = [
+  {
+    id: 'core',
+    items: [
+      { href: '/adminweb', label: 'داشبورد', icon: LayoutDashboard },
+      { href: '/adminmodule', label: 'ماژول‌ها', icon: Boxes },
+    ],
+  },
+  {
+    id: 'templatesystem',
+    label: 'طراحی قالب',
+    href: '/templatesystem',
+    icon: LayoutTemplate,
+    children: TEMPLATE_SYSTEM_LINKS.map(({ href, label, icon }) => ({
+      href,
+      label,
+      icon,
+    })),
+  },
+  {
+    id: 'shopdesign',
+    label: 'طراحی فروشگاه',
+    href: '/shopdesign',
+    icon: Store,
+    children: SHOP_DESIGN_LINKS.map(({ href, label, icon }) => ({
+      href,
+      label,
+      icon,
+    })),
+  },
+  {
+    id: 'deploysystem',
+    label: 'دیپلوی',
+    href: '/deploysystem',
+    icon: Rocket,
+    children: DEPLOY_SYSTEM_LINKS.map(({ href, label, icon }) => ({
+      href,
+      label,
+      icon,
+    })),
+  },
+  {
+    id: 'rebosystem',
+    label: 'سیستم ربو',
+    href: '/rebosystem',
+    icon: Layers,
+    children: REBO_SYSTEM_LINKS.map(({ href, label, icon }) => ({
+      href,
+      label,
+      icon,
+    })),
+  },
+  {
+    id: 'paymentsystem',
+    label: 'تنظیمات پرداخت',
+    href: '/paymentsystem',
+    icon: CreditCard,
+    children: [
+      { href: '/payment-manage', label: 'ماژول پرداخت', icon: Settings2 },
+    ],
+  },
+  {
+    id: 'serversystem',
+    label: 'سرور',
+    href: '/serversystem',
+    icon: Cloud,
+    children: SERVER_SYSTEM_LINKS.map(({ href, label, icon }) => ({
+      href,
+      label,
+      icon,
+    })),
+  },
 ]
+
+function splitHref(href) {
+  const raw = String(href || '')
+  const q = raw.indexOf('?')
+  if (q < 0) return { path: raw, query: '' }
+  return { path: raw.slice(0, q), query: raw.slice(q + 1) }
+}
+
+function pathMatches(pathname, href) {
+  if (!pathname || !href) return false
+  const { path } = splitHref(href)
+  if (pathname === path) return true
+  if (path === '/adminweb') return false
+  return pathname.startsWith(path)
+}
+
+function hrefIsActive(pathname, searchParams, href) {
+  if (!pathname || !href) return false
+  const { path, query } = splitHref(href)
+  if (pathname !== path) return false
+  if (!query) {
+    if (path === '/adminmodule') {
+      const tab = searchParams?.get('tab') || 'modules'
+      return tab !== 'sites' && tab !== 'git'
+    }
+    if (path === '/cloud-manage') {
+      const tab = searchParams?.get('tab') || 'settings'
+      return tab === 'settings'
+    }
+    if (path === '/rebo-pricing') {
+      const tab = searchParams?.get('tab') || 'packages'
+      return tab !== 'ops'
+    }
+    if (path === '/adminsettings') {
+      const tab = searchParams?.get('tab') || 'home'
+      return tab === 'home'
+    }
+    return true
+  }
+  const needed = new URLSearchParams(query)
+  for (const [key, value] of needed.entries()) {
+    if ((searchParams?.get(key) || '') !== value) return false
+  }
+  return true
+}
+
+function isSectionPath(pathname, searchParams, section) {
+  if (!pathname || !section) return false
+  if (section.href && hrefIsActive(pathname, searchParams, section.href)) {
+    return true
+  }
+  return (section.children || []).some((item) =>
+    hrefIsActive(pathname, searchParams, item.href),
+  )
+}
 
 /**
  * پوستهٔ مشترک پورتال مالک
@@ -70,37 +190,28 @@ export default function OwnerPortalShell({
   children,
 }) {
   const pathname = usePathname()
-  const { multiVendor } = useShopMode()
+  const searchParams = useSearchParams()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
-  const NAV = useMemo(
-    () =>
-      NAV_BASE.map((item) => {
-        if (item.href === '/adminshops') {
-          return {
-            ...item,
-            label: multiVendor ? 'فروشگاه‌ها و تسویه' : 'فروشگاه',
-          }
-        }
-        if (item.href === '/adminproducts') {
-          return {
-            ...item,
-            label: multiVendor ? 'محصولات فروشگاه‌ها' : 'محصولات',
-          }
-        }
-        return item
-      }),
-    [multiVendor],
-  )
+  const sections = NAV_SECTIONS
+
+  const flatNav = useMemo(() => {
+    const rows = []
+    sections.forEach((section) => {
+      if (section.href) {
+        rows.push({ href: section.href, label: section.label })
+      }
+      ;(section.items || []).forEach((item) => rows.push(item))
+      ;(section.children || []).forEach((item) => rows.push(item))
+    })
+    return rows
+  }, [sections])
 
   const pageTitle =
     title ||
-    NAV.find(
-      (item) =>
-        pathname === item.href ||
-        (item.href !== '/adminweb' && pathname?.startsWith(item.href)),
-    )?.label ||
+    flatNav.find((item) => hrefIsActive(pathname, searchParams, item.href))
+      ?.label ||
     `${brandAccent}${brand}`
 
   if (loading) {
@@ -138,26 +249,78 @@ export default function OwnerPortalShell({
     )
   }
 
+  const closeSidebar = () => setSidebarOpen(false)
+
   const navItems = (
     <>
-      {NAV.map((item) => {
-        const Icon = item.icon
-        const on =
-          pathname === item.href ||
-          (item.href !== '/adminweb' && pathname?.startsWith(item.href))
+      {sections.map((section) => {
+        if (section.children?.length) {
+          const SectionIcon = section.icon || Layers
+          const sectionOn = isSectionPath(pathname, searchParams, section)
+          const hubOn = hrefIsActive(pathname, searchParams, section.href)
+          return (
+            <div key={section.id} className={portalStyles.sideGroup}>
+              {!sidebarCollapsed ? (
+                <p className={portalStyles.sideGroupLabel}>{section.label}</p>
+              ) : null}
+              <Link
+                href={section.href}
+                className={`${portalStyles.sideItem} ${portalStyles.sideItemParent} ${
+                  hubOn ? portalStyles.sideItemOn : sectionOn ? portalStyles.sideItemSoft : ''
+                }`}
+                onClick={closeSidebar}
+                title={section.label}
+              >
+                <SectionIcon size={18} strokeWidth={1.9} />
+                {!sidebarCollapsed ? <span>{section.label}</span> : null}
+              </Link>
+              {!sidebarCollapsed ? (
+                <div className={portalStyles.sideChildren}>
+                  {section.children.map((item) => {
+                    const Icon = item.icon
+                    const on = hrefIsActive(pathname, searchParams, item.href)
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={`${portalStyles.sideItem} ${portalStyles.sideChild} ${
+                          on ? portalStyles.sideItemOn : ''
+                        }`}
+                        onClick={closeSidebar}
+                        title={item.label}
+                      >
+                        <Icon size={16} strokeWidth={1.9} />
+                        <span>{item.label}</span>
+                      </Link>
+                    )
+                  })}
+                </div>
+              ) : null}
+            </div>
+          )
+        }
+
         return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`${portalStyles.sideItem} ${
-              on ? portalStyles.sideItemOn : ''
-            }`}
-            onClick={() => setSidebarOpen(false)}
-            title={item.label}
-          >
-            <Icon size={18} strokeWidth={1.9} />
-            {!sidebarCollapsed ? <span>{item.label}</span> : null}
-          </Link>
+          <div key={section.id} className={portalStyles.sideGroup}>
+            {(section.items || []).map((item) => {
+              const Icon = item.icon
+              const on = hrefIsActive(pathname, searchParams, item.href)
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`${portalStyles.sideItem} ${
+                    on ? portalStyles.sideItemOn : ''
+                  }`}
+                  onClick={closeSidebar}
+                  title={item.label}
+                >
+                  <Icon size={18} strokeWidth={1.9} />
+                  {!sidebarCollapsed ? <span>{item.label}</span> : null}
+                </Link>
+              )
+            })}
+          </div>
         )
       })}
     </>

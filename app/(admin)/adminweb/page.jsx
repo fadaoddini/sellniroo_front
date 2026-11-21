@@ -28,15 +28,15 @@ import {
   Phone,
   ExternalLink,
   CreditCard,
-  Calculator,
   Cloud,
   ShoppingBag,
   Radar,
   LayoutTemplate,
+  Layers,
+  Rocket,
 } from 'lucide-react'
 import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
 import useOwnerGate from '@/components/Admin/useOwnerGate'
-import useShopMode from '@/hooks/useShopMode'
 import {
   fetchSiteModules,
   clearSiteModulesCache,
@@ -57,65 +57,59 @@ const GROUPS = [
     id: 'design',
     title: 'طراحی',
     items: [
-      { href: '/adminsettings', title: 'طراحی قالب', desc: 'خانه و ویجت‌ها', icon: LayoutTemplate, color: '#7c3aed' },
-      { href: '/adminsettings?tab=shop', title: 'طراحی فروشگاه', desc: 'سینگل و لیست', icon: ShoppingBag, color: '#c2410c' },
-      { href: '/adminsettings?tab=jobs', title: 'طراحی کاریابی', desc: 'آگهی و برد', icon: Briefcase, color: '#0d9488' },
-      { href: '/adminsettings?tab=news', title: 'طراحی اخبار', desc: 'لیست و سینگل', icon: Newspaper, color: '#e67e22' },
-      { href: '/adminsettings?tab=profile', title: 'چیدمان پروفایل', desc: 'بخش‌ها', icon: Users, color: '#26a680' },
-      { href: '/adminsettings?tab=checkout', title: 'سفارش و سبد', desc: 'مراحل خرید', icon: ShoppingCart, color: '#c2410c' },
-      { href: '/adminsettings?tab=corporate', title: 'ظاهر شرکتی', desc: 'هدر و منو', icon: PanelTop, color: '#334155' },
-      { href: '/site-settings', title: 'برند و SEO', desc: 'تنظیمات سایت', icon: Settings2, color: '#475569' },
+      { href: '/templatesystem', title: 'طراحی قالب', desc: 'خانه، صفحات، پروفایل', icon: LayoutTemplate, color: '#2c481e' },
+      { href: '/shopdesign', title: 'طراحی فروشگاه', desc: 'لیست، سینگل، سبد', icon: ShoppingBag, color: '#2c481e' },
+      { href: '/product-single', title: 'سینگل محصول', desc: 'اجزای PDP', icon: ShoppingBag, color: '#2c481e' },
+      { href: '/deploysystem', title: 'دیپلوی', desc: 'local_settings', icon: Rocket, color: '#2c481e' },
+      { href: '/adminsettings?tab=jobs', title: 'طراحی کاریابی', desc: 'آگهی و برد', icon: Briefcase, color: '#2c481e' },
+      { href: '/adminsettings?tab=news', title: 'طراحی اخبار', desc: 'لیست و سینگل', icon: Newspaper, color: '#2c481e' },
+      { href: '/site-settings', title: 'برند و SEO', desc: 'تنظیمات سایت', icon: Settings2, color: '#2c481e' },
     ],
   },
   {
     id: 'shop',
     title: 'فروشگاه',
     items: [
-      { href: '/payment-manage', title: 'ماژول پرداخت', desc: 'درگاه و اهداف', icon: CreditCard, color: '#0f766e' },
-      { href: '/adminshops', title: 'فروشگاه‌ها و تسویه', desc: 'حسابداری', icon: ShoppingBag, color: '#b45309' },
-      { href: '/adminproducts', title: 'محصولات فروشگاه‌ها', desc: 'کاتالوگ', icon: ShoppingBag, color: '#9a3412' },
-      { href: '/admincategories', title: 'دسته‌بندی محصولات', desc: 'درخت دسته', icon: ShoppingBag, color: '#7c2d12' },
-      { href: '/dashboard/my-shop?tab=products', title: 'محصولات', desc: 'کاتالوگ فروشگاه من', icon: ShoppingBag, color: '#1e3b2f' },
-      { href: '/product-single', title: 'سینگل محصول', desc: 'اجزای PDP', icon: ShoppingBag, color: '#9a3412' },
+      { href: '/paymentsystem', title: 'تنظیمات پرداخت', desc: 'درگاه و اهداف', icon: CreditCard, color: '#2c481e' },
+      { href: '/product-single', title: 'سینگل محصول', desc: 'اجزای PDP', icon: ShoppingBag, color: '#2c481e' },
+      { href: '/adminsettings?tab=checkout', title: 'سفارش و سبد', desc: 'مراحل خرید', icon: ShoppingCart, color: '#2c481e' },
     ],
   },
   {
     id: 'systems',
     title: 'سیستم‌ها',
     items: [
-      { href: '/adminmodule', title: 'ماژول‌ها', desc: 'روشن و خاموش', icon: Boxes, color: '#2563eb' },
-      { href: '/rebolearn', title: 'آموزش‌های ربو', desc: 'استقرار و CLI', icon: BookOpen, color: '#a16207' },
-      { href: '/rebo-pricing', title: 'قیمت‌گذاری ربو', desc: 'موضوع و بسته', icon: Calculator, color: '#a16207' },
-      { href: '/rebo-manage', title: 'مدیریت ربو', desc: 'سفارش و فیش', icon: Boxes, color: '#0f6b52' },
-      { href: '/cloud-manage', title: 'سرور ابری', desc: 'شارژ و سفارش', icon: Cloud, color: '#0369a1' },
+      { href: '/adminmodule', title: 'ماژول‌ها', desc: 'روشن و خاموش', icon: Boxes, color: '#2c481e' },
+      { href: '/rebosystem', title: 'سیستم ربو', desc: 'آموزش، قیمت، مدیریت', icon: Layers, color: '#2c481e' },
+      { href: '/serversystem', title: 'سرور', desc: 'سایت، گیت، ابری', icon: Cloud, color: '#2c481e' },
     ],
   },
   {
     id: 'content',
     title: 'محتوا و ابزار',
     items: [
-      { href: '/news-management', title: 'مدیریت اخبار', desc: 'محتوا', icon: Newspaper, color: '#e67e22' },
-      { href: '/news-single', title: 'سینگل خبر', desc: 'اجزای خبر', icon: FileText, color: '#d97706' },
-      { href: '/jobs-manage', title: 'آگهی‌ها', desc: 'کاریابی', icon: Briefcase, color: '#0d9488' },
-      { href: '/job-single', title: 'سینگل آگهی', desc: 'اجزای آگهی', icon: Briefcase, color: '#0f766e' },
-      { href: '/menu-lists', title: 'فهرست‌های منو', desc: 'منوها', icon: List, color: '#475569' },
-      { href: '/header-menu', title: 'منوی سایت', desc: 'ظاهر', icon: PanelTop, color: '#334155' },
-      { href: '/hero-slider', title: 'هیرو', desc: 'اسلایدر', icon: Images, color: '#7c3aed' },
-      { href: '/ticker', title: 'نوار خبر', desc: 'تیتر', icon: Megaphone, color: '#b45309' },
-      { href: '/about-manage', title: 'درباره ما', desc: 'محتوا', icon: Info, color: '#2563eb' },
-      { href: '/catalog-manage', title: 'کاتالوگ', desc: 'فلیپ‌بوک', icon: BookOpen, color: '#0f766e' },
-      { href: '/videoinsta-manage', title: 'ویدیو', desc: 'استوری', icon: Images, color: '#db2777' },
-      { href: '/quiz-manage', title: 'آزمون', desc: 'سوالات', icon: Brain, color: '#7c3aed' },
-      { href: '/faq-manage', title: 'FAQ', desc: 'سوالات', icon: HelpCircle, color: '#0369a1' },
-      { href: '/school-manage', title: 'مدرسه', desc: 'آموزش', icon: GraduationCap, color: '#0f6b52' },
-      { href: '/apps-manage', title: 'نرم‌افزارها', desc: 'دانلود', icon: AppWindow, color: '#2563eb' },
-      { href: '/todoservice', title: 'میزکار سرویس', desc: 'مدیر / سرویسکار / مشتری', icon: Wrench, color: '#1e3b2f' },
-      { href: '/platform-connections', title: 'پیام‌رسان', desc: 'اتصالات', icon: Radio, color: '#0d9488' },
-      { href: '/request-types', title: 'درخواست‌ها', desc: 'انواع', icon: Tags, color: '#7c3aed' },
-      { href: '/employees', title: 'کارمندان', desc: 'دسترسی', icon: Users, color: '#334155' },
-      { href: '/sale', title: 'فروش', desc: 'لید', icon: ShoppingCart, color: '#b45309' },
-      { href: '/rasad', title: 'رصد', desc: 'روند استانی', icon: Radar, color: '#0369a1' },
-      { href: '/dashboard', title: 'داشبورد کارمندی', desc: 'خلاصه', icon: LayoutDashboard, color: '#475569' },
+      { href: '/news-management', title: 'مدیریت اخبار', desc: 'محتوا', icon: Newspaper, color: '#2c481e' },
+      { href: '/news-single', title: 'سینگل خبر', desc: 'اجزای خبر', icon: FileText, color: '#2c481e' },
+      { href: '/jobs-manage', title: 'آگهی‌ها', desc: 'کاریابی', icon: Briefcase, color: '#2c481e' },
+      { href: '/job-single', title: 'سینگل آگهی', desc: 'اجزای آگهی', icon: Briefcase, color: '#2c481e' },
+      { href: '/menu-lists', title: 'فهرست‌های منو', desc: 'منوها', icon: List, color: '#2c481e' },
+      { href: '/header-menu', title: 'منوی سایت', desc: 'ظاهر', icon: PanelTop, color: '#2c481e' },
+      { href: '/hero-slider', title: 'هیرو', desc: 'اسلایدر', icon: Images, color: '#2c481e' },
+      { href: '/ticker', title: 'نوار خبر', desc: 'تیتر', icon: Megaphone, color: '#2c481e' },
+      { href: '/about-manage', title: 'درباره ما', desc: 'محتوا', icon: Info, color: '#2c481e' },
+      { href: '/catalog-manage', title: 'کاتالوگ', desc: 'فلیپ‌بوک', icon: BookOpen, color: '#2c481e' },
+      { href: '/videoinsta-manage', title: 'ویدیو', desc: 'استوری', icon: Images, color: '#2c481e' },
+      { href: '/quiz-manage', title: 'آزمون', desc: 'سوالات', icon: Brain, color: '#2c481e' },
+      { href: '/faq-manage', title: 'FAQ', desc: 'سوالات', icon: HelpCircle, color: '#2c481e' },
+      { href: '/school-manage', title: 'مدرسه', desc: 'آموزش', icon: GraduationCap, color: '#2c481e' },
+      { href: '/apps-manage', title: 'نرم‌افزارها', desc: 'دانلود', icon: AppWindow, color: '#2c481e' },
+      { href: '/todoservice', title: 'میزکار سرویس', desc: 'مدیر / سرویسکار / مشتری', icon: Wrench, color: '#2c481e' },
+      { href: '/platform-connections', title: 'پیام‌رسان', desc: 'اتصالات', icon: Radio, color: '#2c481e' },
+      { href: '/request-types', title: 'درخواست‌ها', desc: 'انواع', icon: Tags, color: '#2c481e' },
+      { href: '/employees', title: 'کارمندان', desc: 'دسترسی', icon: Users, color: '#2c481e' },
+      { href: '/sale', title: 'فروش', desc: 'لید', icon: ShoppingCart, color: '#2c481e' },
+      { href: '/rasad', title: 'رصد', desc: 'روند استانی', icon: Radar, color: '#2c481e' },
+      { href: '/dashboard', title: 'داشبورد کارمندی', desc: 'خلاصه', icon: LayoutDashboard, color: '#2c481e' },
     ],
   },
 ]
@@ -128,7 +122,6 @@ function matchesQuery(item, q) {
 
 export default function AdminWebDashboardPage() {
   const gate = useOwnerGate('/adminweb')
-  const { multiVendor } = useShopMode()
   const { getAuthHeaders } = useAuth()
   const [query, setQuery] = useState('')
   const [moduleStats, setModuleStats] = useState({
@@ -142,23 +135,9 @@ export default function AdminWebDashboardPage() {
     const q = query.trim().toLowerCase()
     return GROUPS.map((group) => ({
       ...group,
-      items: group.items
-        .map((item) => {
-          if (item.href === '/adminshops') {
-            return multiVendor
-              ? item
-              : { ...item, title: 'فروشگاه', desc: 'تنظیمات فروشگاه' }
-          }
-          if (item.href === '/adminproducts') {
-            return multiVendor
-              ? item
-              : { ...item, title: 'محصولات', desc: 'کاتالوگ فروشگاه' }
-          }
-          return item
-        })
-        .filter((item) => matchesQuery(item, q)),
+      items: group.items.filter((item) => matchesQuery(item, q)),
     })).filter((group) => group.items.length)
-  }, [multiVendor, query])
+  }, [query])
 
   useEffect(() => {
     if (!gate.allowed) return undefined
@@ -211,7 +190,7 @@ export default function AdminWebDashboardPage() {
 
   const newsBars = useMemo(() => {
     const s = newsStats || {}
-    const palette = ['#c8b48a', '#7f8c6a', '#f5f0e6', '#c8b48a']
+    const palette = ['#2c481e', '#ab863d', '#6a7268', '#8f6e2f']
     const rows = [
       { label: 'منتشرشده', value: Number(s.published || s.published_count || 0) },
       { label: 'پیش‌نویس', value: Number(s.draft || s.draft_count || 0) },
@@ -282,7 +261,7 @@ export default function AdminWebDashboardPage() {
                   <span className={portalStyles.legendLeft}>
                     <span
                       className={portalStyles.legendDot}
-                      style={{ background: '#c8b48a' }}
+                      style={{ background: '#2c481e' }}
                     />
                     فعال
                   </span>
@@ -294,7 +273,7 @@ export default function AdminWebDashboardPage() {
                   <span className={portalStyles.legendLeft}>
                     <span
                       className={portalStyles.legendDot}
-                      style={{ background: '#7f8c6a' }}
+                      style={{ background: '#cfd5c8' }}
                     />
                     خاموش
                   </span>
@@ -304,7 +283,7 @@ export default function AdminWebDashboardPage() {
                   <span className={portalStyles.legendLeft}>
                     <span
                       className={portalStyles.legendDot}
-                      style={{ background: '#f5f0e6' }}
+                      style={{ background: '#ab863d' }}
                     />
                     گروه
                   </span>

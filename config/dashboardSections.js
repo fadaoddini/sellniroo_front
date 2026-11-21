@@ -10,6 +10,7 @@ export const DASHBOARD_SECTION_DEFS = [
   { id: 'booking', labelFa: 'نوبت‌دهی', labelEn: 'Booking' },
   { id: 'repairs', labelFa: 'تعمیرات و سرویس', labelEn: 'Repairs' },
   { id: 'gym', labelFa: 'باشگاه ورزشی', labelEn: 'Gym & clubs' },
+  { id: 'school', labelFa: 'مدیریت مدرسه', labelEn: 'School management' },
   { id: 'content', labelFa: 'محتوا و رسانه', labelEn: 'Content & media' },
   { id: 'site', labelFa: 'سایت و تنظیمات', labelEn: 'Site & settings' },
   { id: 'sales', labelFa: 'فروش و تماس', labelEn: 'Sales & contact' },
@@ -88,18 +89,33 @@ export function resolveDashboardGroup(action) {
   if (
     href === '/ticker' ||
     href === '/hero-slider' ||
+    href === '/home-hero-manage' ||
     href === '/videoinsta-manage' ||
+    id === 'home-hero-manage' ||
     href === '/catalog-manage' ||
     href === '/about-manage' ||
     href === '/quiz-manage' ||
     href === '/faq-manage' ||
-    href === '/school-manage' ||
-    href.startsWith('/school') ||
     href === '/apps-manage' ||
     href === '/apps' ||
     href.startsWith('/apps/')
   ) {
     return 'content'
+  }
+  if (
+    href === '/school-manage' ||
+    href.startsWith('/teachers') ||
+    href.startsWith('/counselors') ||
+    id === 'school' ||
+    id === 'school-manage' ||
+    id === 'school-profile' ||
+    id === 'school-teacher' ||
+    id === 'school-student' ||
+    id === 'school-counselor' ||
+    id === 'school-account' ||
+    id.startsWith('school-')
+  ) {
+    return 'school'
   }
   if (
     href === '/todoservice' ||
@@ -126,13 +142,24 @@ export function resolveDashboardGroup(action) {
   if (
     href === '/site-settings' ||
     href === '/header-menu' ||
+    href === '/payment-manage' ||
+    href === '/paymentsystem' ||
+    href === '/serversystem' ||
+    href === '/cloud-manage' ||
     href === '/adminweb' ||
     href === '/adminmodule' ||
+    href === '/rebosystem' ||
     href === '/rebolearn' ||
+    href === '/rebo-pricing' ||
     href === '/adminnews' ||
     href === '/adminkaryabi' ||
     href === '/adminshop' ||
-    href === '/adminsettings'
+    href === '/adminsettings' ||
+    id === 'payment' ||
+    id === 'payment-manage' ||
+    id === 'paymentsystem' ||
+    id === 'serversystem' ||
+    id === 'cloud-manage'
   ) {
     return 'site'
   }
@@ -181,12 +208,11 @@ export function resolveDashboardGroup(action) {
   if (
     href === '/request-types' ||
     href === '/sale' ||
-    href === '/payment-manage' ||
     href === '/rebo-manage' ||
+    href === '/rebosystem' ||
     id === 'sale' ||
-    id === 'payment' ||
-    id === 'payment-manage' ||
-    id === 'rebo-manage'
+    id === 'rebo-manage' ||
+    id === 'rebosystem'
   ) {
     return 'sales'
   }

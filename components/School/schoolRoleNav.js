@@ -10,7 +10,6 @@ import {
   HeartHandshake,
   LayoutDashboard,
   User,
-  Users,
 } from 'lucide-react'
 
 export const SCHOOL_RANK_FA = {
@@ -118,7 +117,7 @@ export function buildSchoolProfileMenuLinks(me, user = null) {
     })
   }
 
-  links.push({ href: '/school', icon: GraduationCap, label: 'هاب مدرسه', key: 'hub' })
+  links.push({ href: '/profile', icon: GraduationCap, label: 'پروفایل مدرسه', key: 'hub' })
 
   return links
 }
@@ -198,17 +197,19 @@ export function buildSchoolOverviewCards(role, me) {
       },
       {
         key: 'student',
-        href: '/school/student',
+        href: '/profile?tab=students',
         title: 'پیش‌نمایش دانش‌آموز',
         desc: 'ورود به پنل دانش‌آموز',
         icon: BookOpen,
+        tab: 'students',
       },
       {
         key: 'counselor',
-        href: '/school/counselor',
+        href: '/profile?tab=counselor',
         title: 'پنل مشاور',
         desc: 'آزمون و پرونده‌ها',
         icon: HeartHandshake,
+        tab: 'counselor',
       },
     )
   } else if (role === 'teacher') {
@@ -217,7 +218,7 @@ export function buildSchoolOverviewCards(role, me) {
         key: 'panel',
         href: '/profile?tab=teacher',
         title: 'پنل معلم',
-        desc: 'کل امکانات /school/teacher',
+        desc: 'کل امکانات پنل معلم',
         icon: GraduationCap,
         tab: 'teacher',
       },
@@ -234,10 +235,11 @@ export function buildSchoolOverviewCards(role, me) {
     cards.push(
       {
         key: 'panel',
-        href: '/school/counselor',
+        href: '/profile?tab=counselor',
         title: 'پنل مشاور',
         desc: 'داشبورد مشاوره',
         icon: HeartHandshake,
+        tab: 'counselor',
       },
       {
         key: 'tests',
@@ -261,12 +263,13 @@ export function buildSchoolOverviewCards(role, me) {
     cards.push(
       {
         key: 'panel',
-        href: '/school/student',
+        href: '/profile?tab=students',
         title: 'پنل دانش‌آموز',
         desc: student
           ? `${SCHOOL_RANK_FA[student.rank_tier] || student.rank_tier || 'رتبه'} · درس و تکلیف`
           : 'درس، تکلیف و آزمون',
         icon: BookOpen,
+        tab: 'students',
       },
       {
         key: 'report',
@@ -304,20 +307,12 @@ export function buildSchoolOverviewCards(role, me) {
   } else {
     cards.push({
       key: 'hub',
-      href: '/school',
-      title: 'هاب مدرسه',
-      desc: 'ورود نقش‌ها و معرفی سامانه',
+      href: '/profile',
+      title: 'پروفایل مدرسه',
+      desc: 'ورود نقش‌ها و پنل‌ها',
       icon: GraduationCap,
     })
   }
-
-  cards.push({
-    key: 'hub2',
-    href: '/school',
-    title: 'صفحه مدرسه',
-    desc: 'لندینگ و میانبر نقش‌ها',
-    icon: Users,
-  })
 
   return cards
 }

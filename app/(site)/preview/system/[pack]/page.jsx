@@ -17,8 +17,7 @@ const PACK_PREVIEWS = {
     description: 'پیش‌نمایش زنده چیدمان سیستم کاریابی تم دو',
   },
   school_theme_one: {
-    file: 'school_theme_one_module_page_layouts.json',
-    layoutKey: 'school',
+    file: 'school_theme_one_home_layout.json',
     title: 'سیستم مدرسه تم یک',
     description: 'پیش‌نمایش زنده سامانه مدرسه',
   },

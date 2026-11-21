@@ -40,7 +40,7 @@ export default function CounselorPublicProfile({ slug }) {
         <div className={styles.wrap}>
           <div className={styles.panel}>
             <p className={styles.empty}>{err || 'یافت نشد'}</p>
-            <Link href="/school" className={styles.btnGhost}>بازگشت</Link>
+            <Link href="/profile" className={styles.btnGhost}>بازگشت</Link>
           </div>
         </div>
       </div>
@@ -80,7 +80,7 @@ export default function CounselorPublicProfile({ slug }) {
         ) : null}
 
         <nav className={styles.tppFooter}>
-          <Link href="/school">هاب مدرسه</Link>
+          <Link href="/profile">پروفایل مدرسه</Link>
         </nav>
       </div>
     </div>

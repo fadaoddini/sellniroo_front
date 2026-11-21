@@ -655,7 +655,7 @@ export default function TeacherProfilePanel({
                       <Copy size={14} /> کپی لینک
                     </button>
                     <Link
-                      href={form.public_path || `/school/teachers/${form.public_slug}`}
+                      href={form.public_path || `/teachers/${form.public_slug}`}
                       className={styles.btnGhost}
                       target="_blank"
                     >

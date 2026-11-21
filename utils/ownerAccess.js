@@ -19,9 +19,6 @@ export const OWNER_PROFILE = {
 export const OWNER_ONLY_PATHS = [
   '/adminweb',
   '/adminshop',
-  '/adminshops',
-  '/adminproducts',
-  '/admincategories',
   '/adminmodule',
   '/rebolearn',
   '/adminnews',

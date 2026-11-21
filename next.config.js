@@ -88,6 +88,47 @@ const nextConfig = {
   // مخفی کردن هدر X-Powered-By
   poweredByHeader: false,
 
+  // هاب /school حذف شد — همه چیز در /profile است
+  async redirects() {
+    return [
+      {
+        source: '/school',
+        destination: '/profile',
+        permanent: true,
+      },
+      {
+        source: '/school/teacher',
+        destination: '/profile?tab=teacher',
+        permanent: true,
+      },
+      {
+        source: '/school/student',
+        destination: '/profile?tab=students',
+        permanent: true,
+      },
+      {
+        source: '/school/counselor',
+        destination: '/profile?tab=counselor',
+        permanent: true,
+      },
+      {
+        source: '/school/teachers/:slug',
+        destination: '/teachers/:slug',
+        permanent: true,
+      },
+      {
+        source: '/school/counselors/:slug',
+        destination: '/counselors/:slug',
+        permanent: true,
+      },
+      {
+        source: '/school/:path*',
+        destination: '/profile',
+        permanent: true,
+      },
+    ]
+  },
+
   // پروکسی مدیا به Django تا /media از فرانت هم در دسترس باشد
   async rewrites() {
     const api =

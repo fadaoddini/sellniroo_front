@@ -1,12 +1,11 @@
-// app/(admin)/adminsettings — همهٔ طراحی قالب در یک جا
+// app/(admin)/adminsettings — طراحی قالب / فروشگاه / دیپلوی (تب‌محور)
 'use client'
 
 import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import {
   LayoutTemplate,
-  Palette,
   FileCode2,
   Layers,
   UserRound,
@@ -17,8 +16,19 @@ import {
 } from 'lucide-react'
 import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
 import useOwnerGate from '@/components/Admin/useOwnerGate'
+import {
+  getTemplateSystemPageNav,
+  isTemplateSystemTab,
+} from '@/components/Admin/templateSystemNav'
+import {
+  getShopDesignPageNav,
+  isShopDesignTab,
+} from '@/components/Admin/shopDesignNav'
+import {
+  getDeploySystemPageNav,
+  isDeploySystemTab,
+} from '@/components/Admin/deploySystemNav'
 import SiteSkeletonStudio from '../adminweb/SiteSkeletonStudio'
-import CorporateCustomizePanel from '../adminweb/CorporateCustomizePanel'
 import LocalSettingsEditor from '../adminweb/LocalSettingsEditor'
 import ProfileLayoutPanel from '../adminweb/ProfileLayoutPanel'
 import CheckoutPipelinesPanel from '../adminweb/CheckoutPipelinesPanel'
@@ -65,7 +75,6 @@ const BASE_TABS = [
   },
   { id: 'profile', label: 'چیدمان پروفایل', icon: UserRound },
   { id: 'checkout', label: 'سفارش و سبد', icon: ShoppingCart },
-  { id: 'corporate', label: 'سفارشی‌سازی شرکتی', icon: Palette },
   { id: 'local', label: 'local_settings', icon: FileCode2 },
 ]
 
@@ -74,18 +83,59 @@ function visibleTabs(moduleMap) {
 }
 
 function resolveTab(raw, moduleMap) {
+  // سفارشی‌سازی شرکتی حذف شد
+  if (raw === 'corporate') return 'home'
   const allowed = visibleTabs(moduleMap).map((t) => t.id)
   if (allowed.includes(raw)) return raw
   return 'home'
 }
 
+function shellMeta(tab) {
+  if (isDeploySystemTab(tab)) {
+    return {
+      title: 'دیپلوی',
+      tagline: 'استقرار و تنظیمات محلی',
+      nav: getDeploySystemPageNav('/adminsettings?tab=local'),
+    }
+  }
+  if (isShopDesignTab(tab)) {
+    const navActive =
+      tab === 'checkout'
+        ? '/adminsettings?tab=checkout'
+        : '/adminsettings?tab=shop'
+    return {
+      title: 'طراحی فروشگاه',
+      tagline: 'لیست، سینگل و مسیر خرید',
+      nav: getShopDesignPageNav(navActive),
+    }
+  }
+  if (tab === 'jobs' || tab === 'news') {
+    return {
+      title: tab === 'jobs' ? 'طراحی کاریابی' : 'طراحی اخبار',
+      tagline: 'ابزار طراحی محتوا',
+      nav: getTemplateSystemPageNav('/templatesystem'),
+    }
+  }
+  const navActive =
+    tab === 'pages'
+      ? '/adminsettings?tab=pages'
+      : tab === 'profile'
+        ? '/adminsettings?tab=profile'
+        : '/adminsettings'
+  return {
+    title: 'طراحی قالب',
+    tagline: 'خانه، صفحات داخلی و پروفایل',
+    nav: getTemplateSystemPageNav(navActive),
+  }
+}
+
 export default function AdminSettingsPage() {
   const gate = useOwnerGate('/adminsettings')
+  const router = useRouter()
   const { getAuthHeaders } = useAuth()
   const searchParams = useSearchParams()
   const [moduleMap, setModuleMap] = useState({})
   const [activePack, setActivePack] = useState(null)
-  const tabs = useMemo(() => visibleTabs(moduleMap), [moduleMap])
   const [tab, setTab] = useState(() =>
     resolveTab(searchParams?.get('tab'), {}),
   )
@@ -113,6 +163,12 @@ export default function AdminSettingsPage() {
       setPageKey(p)
     }
   }, [searchParams, moduleMap])
+
+  useEffect(() => {
+    if (searchParams?.get('tab') === 'corporate') {
+      router.replace('/adminsettings')
+    }
+  }, [searchParams, router])
 
   useEffect(() => {
     if (!gate.allowed) return undefined
@@ -174,31 +230,25 @@ export default function AdminSettingsPage() {
     tab === 'jobs' ||
     tab === 'news'
 
-  const pageNav = useMemo(
-    () =>
-      tabs.map((t) => ({
-        id: t.id,
-        label: t.label,
-        icon: t.icon,
-        active: tab === t.id,
-        onClick: () => setTab(t.id),
-      })),
-    [tabs, tab],
-  )
+  const meta = shellMeta(tab)
+
+  const goProfile = () => {
+    router.push('/adminsettings?tab=profile')
+  }
 
   return (
     <OwnerPortalShell
       brand="settings"
       brandAccent="admin"
-      tagline="همهٔ طراحی قالب در یک صفحه"
-      title="طراحی قالب"
+      tagline={meta.tagline}
+      title={meta.title}
       wide={wide}
-      pageNav={gate.allowed ? pageNav : null}
+      pageNav={gate.allowed ? meta.nav : null}
       {...gate}
     >
       {gate.allowed ? (
         <>
-          {activePack?.custom ? (
+          {activePack?.custom && isTemplateSystemTab(tab) ? (
             <DesignWizard
               packKey={activePack.key}
               packName={activePack.name}
@@ -278,6 +328,14 @@ export default function AdminSettingsPage() {
                           {activePage.path}
                         </Link>{' '}
                         اعمال می‌شود. هدر مشترک از «چیدمان مشترک» می‌آید.
+                        {activePage.key === 'reboserver' ? (
+                          <>
+                            {' '}
+                            خبر فوری این صفحه از «چیدمان مشترک» می‌آید — همان
+                            ویجتی که آنجا گذاشته‌اید روی /reboserver هم دیده
+                            می‌شود.
+                          </>
+                        ) : null}
                         {activePage.key === 'profile' ? (
                           <>
                             {' '}
@@ -293,7 +351,7 @@ export default function AdminSettingsPage() {
                                 cursor: 'pointer',
                                 fontWeight: 800,
                               }}
-                              onClick={() => setTab('profile')}
+                              onClick={goProfile}
                             >
                               چیدمان پروفایل
                             </button>{' '}
@@ -323,7 +381,6 @@ export default function AdminSettingsPage() {
           {tab === 'news' ? <NewsDesignEmbed moduleMap={moduleMap} /> : null}
           {tab === 'profile' ? <ProfileLayoutPanel /> : null}
           {tab === 'checkout' ? <CheckoutPipelinesPanel /> : null}
-          {tab === 'corporate' ? <CorporateCustomizePanel /> : null}
           {tab === 'local' ? <LocalSettingsEditor /> : null}
         </>
       ) : null}

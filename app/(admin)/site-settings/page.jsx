@@ -8,7 +8,7 @@ import axios from 'axios'
 import {
   Settings2, RefreshCw, Shield, LayoutDashboard, Save, X, Tags,
   Palette, Phone, Search, Share2, ImagePlus, Upload, PhoneCall,
-  Smartphone, Mail, ChevronLeft, Database, Table2, Download,
+  Smartphone, Mail, ChevronLeft, Database, Table2, Download, CreditCard,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -202,6 +202,8 @@ export default function SiteSettingsPage() {
     contactDesc: 'Homepage contact block and channels',
     manageTypes: 'Request types',
     manageTypesHint: 'Add or edit options in the contact form dialog',
+    paymentSettings: 'Payment settings',
+    paymentSettingsHint: 'Gateway Merchant ID, sandbox and purposes',
     contactActive: 'Show contact section',
     contactActiveHint: 'Hide the whole block on the homepage',
     showPhone: 'Visible on site',
@@ -285,6 +287,8 @@ export default function SiteSettingsPage() {
     contactDesc: 'بلاک تماس صفحه اصلی و کانال‌های ارتباطی',
     manageTypes: 'انواع درخواست',
     manageTypesHint: 'گزینه‌های دیالوگ فرم تماس را اضافه یا ویرایش کنید',
+    paymentSettings: 'تنظیمات پرداخت',
+    paymentSettingsHint: 'مرچنت‌کد درگاه، حالت آزمایشی و اهداف پرداخت',
     contactActive: 'نمایش بخش تماس',
     contactActiveHint: 'کل بلاک تماس را در صفحه اصلی مخفی می‌کند',
     showPhone: 'نمایش در سایت',
@@ -597,6 +601,9 @@ export default function SiteSettingsPage() {
           <div className={styles.headerActions}>
             <Link href="/dashboard" className={styles.headerGhost}>
               <LayoutDashboard size={15} /> {t.back}
+            </Link>
+            <Link href="/payment-manage" className={styles.headerGhost} title={t.paymentSettingsHint}>
+              <CreditCard size={15} /> {t.paymentSettings}
             </Link>
             <button type="button" className={styles.headerGhost} onClick={fetchData} aria-label="refresh">
               <RefreshCw size={15} />

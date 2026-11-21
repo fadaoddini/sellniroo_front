@@ -660,8 +660,7 @@ button.metaItem:hover .copyIcon {
   /* پالت پیش‌فرض */
 }
 
-.headerShop,
-.headerRebo {
+.headerShop {
   --ink: #12241f;
   --muted: rgba(18, 36, 31, 0.62);
   --line: rgba(18, 36, 31, 0.1);
@@ -670,13 +669,25 @@ button.metaItem:hover .copyIcon {
   --cream: #eef7f3;
 }
 
-.headerShop .accentBar,
-.headerRebo .accentBar {
+.headerRebo {
+  --ink: #1c221a;
+  --muted: #6a7268;
+  --line: #dde2d8;
+  --gold: #2c481e;
+  --gold-dark: #2c481e;
+  --cream: #f3f4f1;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.headerShop .accentBar {
   background: linear-gradient(90deg, #3dd4a5, #0f6b52);
 }
 
 .headerRebo .accentBar {
-  background: linear-gradient(90deg, #5eead4, #1d4ed8);
+  display: none;
 }
 
 .headerBooking {

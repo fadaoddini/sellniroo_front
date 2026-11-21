@@ -21,6 +21,7 @@ import {
   Wrench,
 } from 'lucide-react'
 import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
+import { getReboSystemPageNav } from '@/components/Admin/reboSystemNav'
 import useOwnerGate from '@/components/Admin/useOwnerGate'
 import { useAuth } from '@/contexts/AuthContext'
 import Config from '@/config/config'
@@ -238,7 +239,9 @@ export default function ReboLearnPage() {
       brand="learn"
       brandAccent="admin"
       tagline="آموزش‌های اختصاصی ربو برای استقرار و مدیریت"
+      title="آموزش‌های ربو"
       wide
+      pageNav={getReboSystemPageNav('/rebolearn')}
       {...gate}
     >
       <div className={styles.page}>

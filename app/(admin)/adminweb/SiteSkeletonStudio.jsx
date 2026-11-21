@@ -115,6 +115,9 @@ import WidgetNobatSettings from './WidgetNobatSettings'
 import WidgetSadraPixelSettings from './WidgetSadraPixelSettings'
 import WidgetFeatureCardsSettings from './WidgetFeatureCardsSettings'
 import WidgetVideoArchiveSettings from './WidgetVideoArchiveSettings'
+import WidgetSchoolHeroBreakingSettings, {
+  isSchoolHeroBreakingWidgetType,
+} from './WidgetSchoolHeroBreakingSettings'
 import { isFeatureCardsWidgetType } from '@/config/featureCardsWidgetSettings'
 import { isVideoArchiveWidgetType } from '@/config/videoArchiveWidgetSettings'
 import { isNobatWidgetType } from '@/config/nobatWidgetSettings'
@@ -1138,6 +1141,23 @@ export default function SiteSkeletonStudio({
               ) : isVideoArchiveWidgetType(selectedWidgetInfo.widget.type) ? (
                 <WidgetVideoArchiveSettings
                   type={selectedWidgetInfo.widget.type}
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : isSchoolHeroBreakingWidgetType(
+                  selectedWidgetInfo.widget.type,
+                ) ? (
+                <WidgetSchoolHeroBreakingSettings
                   settings={selectedWidgetInfo.widget.settings}
                   onChange={(patch) => {
                     if (!selectedWidgetRef) return
