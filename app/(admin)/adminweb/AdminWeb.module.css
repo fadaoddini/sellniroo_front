@@ -6988,6 +6988,29 @@ a.tplBtnGhost:hover {
   gap: 0.42rem;
   margin-top: 0.15rem;
 }
+.siteUpdateCurrent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.35rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 11px;
+  background: rgba(30, 59, 47, 0.12);
+  color: #1e3b2f;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+.siteUpdateCurrentMuted {
+  display: block;
+  padding: 0.35rem 0.55rem;
+  border-radius: 9px;
+  background: rgba(30, 59, 47, 0.06);
+  color: #3d5a4c;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+}
 .siteActionBtn {
   width: 100%;
   display: inline-flex;

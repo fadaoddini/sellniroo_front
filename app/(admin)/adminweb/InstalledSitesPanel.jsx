@@ -539,22 +539,38 @@ export default function InstalledSitesPanel() {
           const job = jobs[site.site_id]
           const domain = displayDomain(site)
 
+          const updateInfo = site.update || {}
+          const needsFront = updateInfo.needs_front !== false
+          const needsAdmin = updateInfo.needs_admin !== false
+          const allCurrent =
+            updateInfo.all_current === true ||
+            (updateInfo.front_current === true &&
+              updateInfo.admin_current === true)
+
           const actions = [
             {
               kind: 'status',
               className: styles.siteBtnStatus,
               loading: busyId === `status:${site.site_id}`,
             },
-            {
-              kind: 'front',
-              className: styles.siteBtnFront,
-              loading: busyId === `update:${site.site_id}:front`,
-            },
-            {
-              kind: 'admin',
-              className: styles.siteBtnAdmin,
-              loading: busyId === `update:${site.site_id}:admin`,
-            },
+            ...(needsFront
+              ? [
+                  {
+                    kind: 'front',
+                    className: styles.siteBtnFront,
+                    loading: busyId === `update:${site.site_id}:front`,
+                  },
+                ]
+              : []),
+            ...(needsAdmin
+              ? [
+                  {
+                    kind: 'admin',
+                    className: styles.siteBtnAdmin,
+                    loading: busyId === `update:${site.site_id}:admin`,
+                  },
+                ]
+              : []),
             {
               kind: 'dump',
               className: styles.siteBtnDump,
@@ -623,6 +639,22 @@ export default function InstalledSitesPanel() {
                 ) : null}
 
                 <div className={styles.siteActionsStack}>
+                  {allCurrent ? (
+                    <div className={styles.siteUpdateCurrent} role="status">
+                      <Activity size={15} aria-hidden />
+                      <span>آخرین بروزرسانی فعال است</span>
+                    </div>
+                  ) : null}
+                  {!allCurrent && !needsFront ? (
+                    <div className={styles.siteUpdateCurrentMuted} role="status">
+                      فرانت: آخرین بروزرسانی فعال است
+                    </div>
+                  ) : null}
+                  {!allCurrent && !needsAdmin ? (
+                    <div className={styles.siteUpdateCurrentMuted} role="status">
+                      بک‌اند: آخرین بروزرسانی فعال است
+                    </div>
+                  ) : null}
                   {actions.map((action) => {
                     const meta = ACTION_META[action.kind]
                     const Icon = meta.Icon
