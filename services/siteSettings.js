@@ -81,15 +81,15 @@ import {
 } from '@/config/chromeThemeSync'
 
 export const DEFAULT_SITE_SETTINGS = {
-  site_name: 'سلنیرو',
-  site_name_en: 'Sellniroo',
+  site_name: '',
+  site_name_en: '',
   logo_display: '',
   logo_url: '',
   logo_alt: '',
   logo_title: '',
-  search_placeholder: 'عنوان شغل، مهارت یا شرکت...',
-  header_cta_label: 'ثبت آگهی',
-  header_cta_href: '/post-job',
+  search_placeholder: '',
+  header_cta_label: '',
+  header_cta_href: '/',
   contact_phone: '',
   contact_mobile: '',
   contact_email: '',

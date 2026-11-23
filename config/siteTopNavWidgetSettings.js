@@ -164,10 +164,10 @@ export const DEFAULT_SITE_TOP_NAV_WIDGET_SETTINGS = {
   show_on_desktop: true,
   use_site_logo: true,
   logo_href: '/',
-  site_name_fa: 'سلنیرو',
-  site_name_en: 'Sellniroo',
-  cta_label: 'ثبت آگهی',
-  cta_href: '/post-job',
+  site_name_fa: '',
+  site_name_en: '',
+  cta_label: '',
+  cta_href: '/',
   filter_by_modules: true,
   mobile_bottom_nav: true,
   mobile_show_top: true,
@@ -366,10 +366,22 @@ function coerceSiteTopNavSettings(merged, rawRoot = {}) {
       ? true
       : !!rawRoot.use_site_logo
   s.logo_href = String((rawRoot.logo_href ?? s.logo_href) || '/').trim() || '/'
-  s.site_name_fa = String((rawRoot.site_name_fa ?? s.site_name_fa) || '').trim()
+  s.site_name_fa = String((rawRoot.site_name_fa ?? s.site_name_fa) || '')
+    .trim()
+  // برند فیک قدیمی که در چیدمان‌های ذخیره‌شده مانده
+  if (/^(سلنیرو|sellniroo)$/i.test(s.site_name_fa)) s.site_name_fa = ''
   s.site_name_en = String((rawRoot.site_name_en ?? s.site_name_en) || '').trim()
+  if (/^(سلنیرو|sellniroo)$/i.test(s.site_name_en)) s.site_name_en = ''
   s.cta_label = String((rawRoot.cta_label ?? s.cta_label) || '').trim()
   s.cta_href = String((rawRoot.cta_href ?? s.cta_href) || '/').trim() || '/'
+  if (
+    !rawRoot.show_cta &&
+    /^ثبت آگهی$/.test(s.cta_label) &&
+    s.cta_href.includes('post-job')
+  ) {
+    s.cta_label = ''
+    s.cta_href = '/'
+  }
   s.filter_by_modules =
     rawRoot.filter_by_modules === undefined
       ? true
@@ -590,10 +602,10 @@ export function createDefaultSiteTopNavSettings() {
     show_on_desktop: true,
     use_site_logo: true,
     logo_href: '/',
-    site_name_fa: 'سلنیرو',
-    site_name_en: 'Sellniroo',
-    cta_label: 'ثبت آگهی',
-    cta_href: '/post-job',
+    site_name_fa: '',
+    site_name_en: '',
+    cta_label: '',
+    cta_href: '/',
     filter_by_modules: true,
     mobile_bottom_nav: true,
     mobile_show_top: true,

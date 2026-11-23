@@ -56,10 +56,7 @@ import {
   buildGymProfileMenuLinks,
   gymRoleLabel,
 } from "@/components/Gym/gymRoleNav";
-import {
-  DEFAULT_SITE_SETTINGS,
-  fetchSiteSettings,
-} from "@/services/siteSettings";
+import { fetchSiteSettings } from "@/services/siteSettings";
 import {
   DEFAULT_CORPORATE_APPEARANCE,
   fetchCorporateAppearance,
@@ -92,8 +89,15 @@ function resolveBarLogoSrc(url) {
 }
 
 /** همان منطق LogoMark ویجت منو */
+function isJunkBrandLabel(name) {
+  const t = String(name || "").trim();
+  if (!t) return true;
+  return /^(سلنیرو|sellniroo|لوگو|logo)$/i.test(t);
+}
+
 function BarLogoMark({ src, name, height }) {
   if (!src) {
+    if (isJunkBrandLabel(name)) return null;
     return <span className={styles.barLogoFallback}>{name}</span>;
   }
   if (typeof src === "string" && src.startsWith("/images/")) {
@@ -581,7 +585,8 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
   const [gymMe, setGymMe] = useState(null);
   const [profileSystemId, setProfileSystemId] = useState(null);
   const [appearance, setAppearance] = useState(DEFAULT_CORPORATE_APPEARANCE);
-  const [siteSettingsLogo, setSiteSettingsLogo] = useState(DEFAULT_SITE_SETTINGS);
+  const [siteSettingsLogo, setSiteSettingsLogo] = useState(null);
+  const [brandReady, setBrandReady] = useState(false);
   const authCloseTimer = useRef(null);
 
   const profileDropdownRef = useRef(null);
@@ -637,16 +642,29 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
   }, [configured, settings?.menu_slug]);
 
   useEffect(() => {
-    if (!configured || !settings?.show_logo) return undefined;
+    if (!configured || !settings?.show_logo) {
+      setBrandReady(true);
+      return undefined;
+    }
     let cancelled = false;
-    const loadLogos = () => {
-      fetchSiteSettings({ force: true }).then((data) => {
-        if (!cancelled && data) setSiteSettingsLogo(data);
+    const loadLogos = () =>
+      Promise.all([
+        fetchSiteSettings({ force: true })
+          .then((data) => {
+            if (!cancelled && data) setSiteSettingsLogo(data);
+          })
+          .catch(() => {
+            if (!cancelled) setSiteSettingsLogo({});
+          }),
+        fetchCorporateAppearance({ force: true })
+          .then((data) => {
+            if (!cancelled) setAppearance(data || DEFAULT_CORPORATE_APPEARANCE);
+          })
+          .catch(() => {}),
+      ]).finally(() => {
+        if (!cancelled) setBrandReady(true);
       });
-      fetchCorporateAppearance({ force: true }).then((data) => {
-        if (!cancelled) setAppearance(data || DEFAULT_CORPORATE_APPEARANCE);
-      });
-    };
+    setBrandReady(false);
     loadLogos();
     const onAppear = () => {
       fetchCorporateAppearance({ force: true }).then((data) => {
@@ -1170,27 +1188,36 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
   const logoHref = (settings?.logo_href || "/").trim() || "/";
   const logoHeight = Math.max(16, Number(settings?.logo_height) || 40);
   /* اولویت لوگوی /site-settings — بعد ظاهر شرکتی — بعد آپلود ویجت */
-  const logoSrc = showLogo
-    ? resolveBarLogoSrc(
-        settings?.use_site_logo !== false
-          ? siteSettingsLogo.logo_display ||
-              siteSettingsLogo.logo_url ||
-              appearance.logo_display ||
-              appearance.logo_url ||
-              ""
-          : settings?.logo_url || "",
-      )
-    : "";
+  const ssLogo = siteSettingsLogo || {};
+  const rawLogoSrc =
+    showLogo && brandReady
+      ? resolveBarLogoSrc(
+          settings?.use_site_logo !== false
+            ? ssLogo.logo_display ||
+                ssLogo.logo_url ||
+                appearance.logo_display ||
+                appearance.logo_url ||
+                ""
+            : settings?.logo_url || "",
+        )
+      : "";
+  const logoSrc =
+    rawLogoSrc &&
+    rawLogoSrc !== "/images/logo.png" &&
+    !String(rawLogoSrc).endsWith("/images/logo.png")
+      ? rawLogoSrc
+      : "";
   const logoBeforeHamburger = settings?.logo_place === "before_hamburger";
-  const logoName = "لوگو";
+  const logoName =
+    ssLogo.site_name || ssLogo.logo_alt || ssLogo.logo_title || "";
 
   const logoEl =
-    showLogo && logoSrc ? (
+    showLogo && brandReady && logoSrc ? (
       <Link
         href={logoHref}
         className={styles.barLogo}
-        title={logoName}
-        aria-label={logoName}
+        title={logoName || undefined}
+        aria-label={logoName || "خانه"}
       >
         <BarLogoMark src={logoSrc} name={logoName} height={logoHeight} />
       </Link>

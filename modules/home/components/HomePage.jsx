@@ -37,16 +37,22 @@ const HomePage = ({ seoSubtitle = '', siteName = '' }) => {
         ),
       )
       setAppShell(isSadraAppShell(settings, siteName))
-      setBrandName(
+      const nextName = String(
         settings?.site_name ||
           settings?.logo_title ||
           siteName ||
-          DEFAULT_SITE_SETTINGS.site_name
+          '',
+      ).trim()
+      setBrandName(
+        /^(سلنیرو|sellniroo)$/i.test(nextName) ? '' : nextName,
       )
     } catch {
       setHomeLayout(normalizeHomeLayout(DEFAULT_SITE_SETTINGS.home_layout))
       setAppShell(isSadraAppShell(null, siteName))
-      setBrandName(siteName || DEFAULT_SITE_SETTINGS.site_name)
+      const fallback = String(siteName || '').trim()
+      setBrandName(
+        /^(سلنیرو|sellniroo)$/i.test(fallback) ? '' : fallback,
+      )
     } finally {
       setDataReady(true)
     }

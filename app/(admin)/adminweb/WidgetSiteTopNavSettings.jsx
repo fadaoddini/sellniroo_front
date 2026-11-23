@@ -177,7 +177,7 @@ export default function WidgetSiteTopNavSettings({
 }) {
   const rawSettings = raw || DEFAULT_SITE_TOP_NAV_WIDGET_SETTINGS
   const [device, setDevice] = useState('desktop')
-  const [openId, setOpenId] = useState('mobileNav')
+  const [openId, setOpenId] = useState('essentials')
   const [headerItems, setHeaderItems] = useState([])
   const visibility = getSiteTopNavVisibilityFlags(rawSettings)
   const settings = normalizeSiteTopNavSettings(rawSettings, {
@@ -281,26 +281,10 @@ export default function WidgetSiteTopNavSettings({
         }}
       />
 
-      <p className={styles.wsMiniLabel}>نمایش در دستگاه</p>
-      <div className={styles.wsStack}>
-        <Toggle
-          checked={!!visibility.show_on_desktop}
-          onChange={(v) => patch('show_on_desktop', v)}
-          label="نمایش در دسکتاپ"
-          hint="بالای ۷۶۸px"
-        />
-        <Toggle
-          checked={!!visibility.show_on_mobile}
-          onChange={(v) => patch('show_on_mobile', v)}
-          label="نمایش در موبایل / اپ"
-          hint="زیر ۷۶۸px"
-        />
-      </div>
-
-      <p className={`${styles.wsMiniLabel} ${styles.wsMiniLabelSpaced}`}>
-        ویرایش تنظیمات برای
-      </p>
-      <div className={styles.wsSeg} style={{ gridTemplateColumns: '1fr 1fr' }}>
+      <div
+        className={styles.wsSeg}
+        style={{ gridTemplateColumns: '1fr 1fr', marginBottom: 8 }}
+      >
         {SITE_TOP_NAV_DEVICES.map((d) => {
           const on = device === d.id
           return (
@@ -320,11 +304,6 @@ export default function WidgetSiteTopNavSettings({
           )
         })}
       </div>
-      <p className={styles.wsHint}>
-        {device === 'desktop'
-          ? 'فقط ظاهر و رفتار دسکتاپ'
-          : 'فقط ظاهر و رفتار موبایل — از دسکتاپ جدا است'}
-      </p>
       {device === 'mobile' ? (
         <button
           type="button"
@@ -334,17 +313,83 @@ export default function WidgetSiteTopNavSettings({
             background: 'none',
             cursor: 'pointer',
             padding: 0,
-            marginBottom: '0.5rem',
+            marginBottom: '0.45rem',
           }}
           onClick={copyDesktopToMobile}
         >
-          کپی تنظیمات دسکتاپ روی موبایل
+          کپی از دسکتاپ روی موبایل
         </button>
       ) : null}
 
       <Accordion
+        id="essentials"
+        title="عرض و رفتار"
+        openId={openId}
+        setOpenId={setOpenId}
+      >
+        <p className={styles.wsMiniLabel}>عرض نوار منو</p>
+        <Seg
+          options={[
+            { id: 'container', label: 'Container' },
+            { id: 'full', label: 'تمام‌عرض' },
+          ]}
+          value={settings.full_bleed ? 'full' : 'container'}
+          onChange={(id) => patch('full_bleed', id === 'full')}
+        />
+        <p className={styles.wsHint}>
+          {settings.full_bleed
+            ? 'نوار لبه به لبه صفحه؛ لینک‌ها داخل عرض محتوا می‌مانند.'
+            : 'کل نوار داخل عرض Container می‌ماند — با «عرض سکشن = Container» هماهنگ است.'}
+        </p>
+        <div className={styles.wsStack}>
+          <Toggle
+            checked={!!settings.sticky}
+            onChange={(v) => patch('sticky', v)}
+            label="چسبان هنگام اسکرول"
+          />
+          <Toggle
+            checked={!!settings.show_logo}
+            onChange={(v) => patch('show_logo', v)}
+            label="نمایش لوگو"
+          />
+          <Toggle
+            checked={!!settings.use_site_logo}
+            onChange={(v) => patch('use_site_logo', v)}
+            label="لوگو از تنظیمات سایت"
+            hint="/site-settings"
+          />
+          <Toggle
+            checked={!!settings.show_nav}
+            onChange={(v) => patch('show_nav', v)}
+            label="نمایش لینک‌های منو"
+          />
+          <Toggle
+            checked={!!settings.show_cta}
+            onChange={(v) => patch('show_cta', v)}
+            label="دکمه CTA"
+          />
+          <Toggle
+            checked={!!visibility.show_on_desktop}
+            onChange={(v) => patch('show_on_desktop', v)}
+            label="نمایش در دسکتاپ"
+          />
+          <Toggle
+            checked={!!visibility.show_on_mobile}
+            onChange={(v) => patch('show_on_mobile', v)}
+            label="نمایش در موبایل"
+          />
+        </div>
+        <div className={styles.wsLabelRow}>
+          <p className={styles.wsMiniLabel}>لینک‌ها</p>
+          <Link href="/header-menu?tab=links" className={styles.wsGhostLink}>
+            مدیریت
+          </Link>
+        </div>
+      </Accordion>
+
+      <Accordion
         id="mobileNav"
-        title="نمایش موبایل"
+        title="موبایل"
         openId={openId}
         setOpenId={setOpenId}
       >
@@ -353,19 +398,13 @@ export default function WidgetSiteTopNavSettings({
             checked={!!settings.mobile_bottom_nav}
             onChange={(v) => patch('mobile_bottom_nav', v)}
             label="منوی پایین موبایل"
-            hint="ظاهر از داشبورد /header-menu?tab=mobile"
+            hint="/header-menu?tab=mobile"
           />
           <Toggle
             checked={!!settings.mobile_show_top}
             onChange={(v) => patch('mobile_show_top', v)}
-            label="نوار منوی بالا در موبایل"
-            hint="اگر خاموش باشد فقط منوی پایین دیده می‌شود"
-          />
-          <Toggle
-            checked={!!settings.show_logo}
-            onChange={(v) => patch('show_logo', v)}
-            label="نمایش لوگو در بالا"
-            hint="برای ویوپورت فعلی (دسکتاپ یا موبایل)"
+            label="نوار بالا در موبایل"
+            hint="خاموش = فقط منوی پایین"
           />
         </div>
 

@@ -50,7 +50,9 @@ export default function HomeSplash({
 
   if (gone) return null
 
-  const title = (siteName || brandHint || 'در حال بارگذاری').trim()
+  const rawTitle = (siteName || brandHint || '').trim()
+  const junk = /^(سلنیرو|sellniroo|لوگو|logo)$/i.test(rawTitle)
+  const title = !rawTitle || junk ? 'در حال بارگذاری' : rawTitle
 
   return (
     <div

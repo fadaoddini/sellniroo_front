@@ -1348,12 +1348,72 @@ export default function SiteSkeletonStudio({
                 <span className={styles.lbFieldLabel}>عرض سکشن</span>
                 <select
                   value={selectedSection.width}
-                  onChange={(e) =>
-                    updateRow(selectedSection.id, (sec) => ({
-                      ...sec,
-                      width: e.target.value,
-                    }))
-                  }
+                  onChange={(e) => {
+                    const nextWidth = e.target.value
+                    updateRow(selectedSection.id, (sec) => {
+                      const boxed = nextWidth === 'boxed'
+                      return {
+                        ...sec,
+                        width: nextWidth,
+                        /* Container: منو را لبه به لبه نگذار */
+                        columns: boxed
+                          ? (sec.columns || []).map((col) => ({
+                              ...col,
+                              widgets: (col.widgets || []).map((w) => {
+                                if (
+                                  w?.type !== 'site_top_nav' &&
+                                  w?.type !== 'site_menu' &&
+                                  w?.type !== 'corporate_header' &&
+                                  w?.type !== 'breaking_news' &&
+                                  w?.type !== 'nav_bar' &&
+                                  w?.type !== 'header_menu'
+                                ) {
+                                  return w
+                                }
+                                const s =
+                                  w.settings && typeof w.settings === 'object'
+                                    ? { ...w.settings }
+                                    : {}
+                                if (
+                                  w.type === 'breaking_news' ||
+                                  w.type === 'nav_bar' ||
+                                  w.type === 'header_menu'
+                                ) {
+                                  s.bar_full_bleed = false
+                                  if (s.desktop && typeof s.desktop === 'object') {
+                                    s.desktop = {
+                                      ...s.desktop,
+                                      bar_full_bleed: false,
+                                    }
+                                  }
+                                  if (s.mobile && typeof s.mobile === 'object') {
+                                    s.mobile = {
+                                      ...s.mobile,
+                                      bar_full_bleed: false,
+                                    }
+                                  }
+                                } else {
+                                  s.full_bleed = false
+                                  if (s.desktop && typeof s.desktop === 'object') {
+                                    s.desktop = {
+                                      ...s.desktop,
+                                      full_bleed: false,
+                                    }
+                                  }
+                                  if (s.mobile && typeof s.mobile === 'object') {
+                                    s.mobile = {
+                                      ...s.mobile,
+                                      full_bleed: false,
+                                    }
+                                  }
+                                }
+                                return { ...w, settings: s }
+                              }),
+                            }))
+                          : sec.columns,
+                      }
+                    })
+                  }}
                 >
                   {SECTION_WIDTH_OPTIONS.map((o) => (
                     <option key={o.id} value={o.id}>

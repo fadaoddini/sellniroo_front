@@ -196,20 +196,24 @@ function TextWidget({ settings }) {
 }
 
 /**
- * در سکشن چندستونه، breakout با 100vw از وسط ستون اشتباه می‌شود.
- * پس full-bleed را موقتاً خاموش می‌کنیم تا ویجت عرض ستون خودش را پر کند.
+ * در سکشن چندستونه یا Container، breakout لبه به لبه را خاموش می‌کنیم
+ * تا عرض سکشن واقعاً اعمال شود (مخصوصاً ویجت منو).
  */
-function settingsForColumn(instance, constrainBleed) {
+function settingsForColumn(instance, constrainBleed, sectionWidth = 'full') {
   const raw =
     instance?.settings && typeof instance.settings === 'object'
       ? { ...instance.settings }
       : {}
-  if (!constrainBleed) return raw
+  const boxedSection = sectionWidth === 'boxed'
+  if (!constrainBleed && !boxedSection) return raw
 
-  if (isNavWidgetType(instance.type)) {
+  if (isNavWidgetType(instance.type) || instance?.type === 'breaking_news') {
     raw.bar_full_bleed = false
     if (raw.mobile && typeof raw.mobile === 'object') {
       raw.mobile = { ...raw.mobile, bar_full_bleed: false }
+    }
+    if (raw.desktop && typeof raw.desktop === 'object') {
+      raw.desktop = { ...raw.desktop, bar_full_bleed: false }
     }
   }
   if (isSiteTopNavWidgetType(instance.type)) {
@@ -217,27 +221,30 @@ function settingsForColumn(instance, constrainBleed) {
     if (raw.mobile && typeof raw.mobile === 'object') {
       raw.mobile = { ...raw.mobile, full_bleed: false }
     }
+    if (raw.desktop && typeof raw.desktop === 'object') {
+      raw.desktop = { ...raw.desktop, full_bleed: false }
+    }
   }
-  if (isSliderWidgetType(instance.type)) {
+  if (constrainBleed && isSliderWidgetType(instance.type)) {
     raw.full_bleed = false
     if (raw.mobile && typeof raw.mobile === 'object') {
       raw.mobile = { ...raw.mobile, full_bleed: false }
     }
   }
-  if (instance.type === 'latest_news_recycler') {
+  if (constrainBleed && instance.type === 'latest_news_recycler') {
     raw.recycler_section_full = false
   }
-  if (instance.type === 'cta_contact') {
+  if (constrainBleed && instance.type === 'cta_contact') {
     raw.section_full = false
   }
-  if (isJobBoardWidgetType(instance.type)) {
+  if (constrainBleed && isJobBoardWidgetType(instance.type)) {
     raw.section_full = false
   }
-  if (isShopWidgetType(instance.type)) {
+  if (constrainBleed && isShopWidgetType(instance.type)) {
     raw.section_full = false
     raw.surface_span = 'container'
   }
-  if (isBookingServicesWidgetType(instance.type)) {
+  if (constrainBleed && isBookingServicesWidgetType(instance.type)) {
     raw.section_full = false
     raw.surface_span = 'container'
   }
@@ -319,7 +326,10 @@ function isSelfSpacedWidgetType(type) {
 }
 
 function widgetBleedClass(instance, sectionWidth, constrainBleed) {
-  if (constrainBleed || sectionWidth === 'full') return false
+  /* Container: منو/کروم نباید از عرض سکشن بیرون بزند */
+  if (constrainBleed || sectionWidth === 'full' || sectionWidth === 'boxed') {
+    return false
+  }
   const raw = instance?.settings || {}
   const type = instance?.type
 
@@ -1009,7 +1019,11 @@ export default function PageBuilderRenderer({
                             renderWidget(uw, {
                               articleSlot,
                               settings: {
-                                ...settingsForColumn(uw, constrainBleed),
+                                ...settingsForColumn(
+                                  uw,
+                                  constrainBleed,
+                                  width,
+                                ),
                                 deep_reveal_pinned: true,
                                 scene_full_page: true,
                               },
@@ -1021,7 +1035,7 @@ export default function PageBuilderRenderer({
                     )
                   }
                   const w = item.widget
-                  const settings = settingsForColumn(w, constrainBleed)
+                  const settings = settingsForColumn(w, constrainBleed, width)
                   const bleed = widgetBleedClass(w, width, constrainBleed)
                   const chrome = isChromeWidgetType(w.type)
                   return (

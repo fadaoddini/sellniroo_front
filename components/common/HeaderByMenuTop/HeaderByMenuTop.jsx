@@ -69,24 +69,41 @@ export default function HeaderByMenuTop() {
   const [moduleMap, setModuleMap] = useState({})
   const [appearance, setAppearance] = useState(DEFAULT_CORPORATE_APPEARANCE)
   const [siteSettings, setSiteSettings] = useState(null)
+  const [chromeReady, setChromeReady] = useState(false)
 
   useEffect(() => {
     let cancelled = false
-    fetchHeaderMenu({ force: true, activeOnly: true }).then((list) => {
-      if (!cancelled && Array.isArray(list)) setItems(list)
-    })
-    fetchSiteModules({ force: true }).then(({ map }) => {
-      if (!cancelled) setModuleMap(map || {})
-    }).catch(() => {})
-    const loadLogos = () => {
-      fetchSiteSettings({ force: true }).then((data) => {
-        if (!cancelled && data) setSiteSettings(data)
+    const load = () =>
+      Promise.all([
+        fetchHeaderMenu({ force: true, activeOnly: true })
+          .then((list) => {
+            if (!cancelled && Array.isArray(list)) setItems(list)
+          })
+          .catch(() => {
+            if (!cancelled) setItems([])
+          }),
+        fetchSiteModules({ force: true })
+          .then(({ map }) => {
+            if (!cancelled) setModuleMap(map || {})
+          })
+          .catch(() => {}),
+        fetchSiteSettings({ force: true })
+          .then((data) => {
+            if (!cancelled && data) setSiteSettings(data)
+          })
+          .catch(() => {
+            if (!cancelled) setSiteSettings({})
+          }),
+        fetchCorporateAppearance({ force: true })
+          .then((data) => {
+            if (!cancelled) setAppearance(data || DEFAULT_CORPORATE_APPEARANCE)
+          })
+          .catch(() => {}),
+      ]).finally(() => {
+        if (!cancelled) setChromeReady(true)
       })
-      fetchCorporateAppearance({ force: true }).then((data) => {
-        if (!cancelled) setAppearance(data)
-      })
-    }
-    loadLogos()
+
+    load()
     const onModules = () => {
       fetchSiteModules({ force: true })
         .then(({ map }) => setModuleMap(map || {}))
@@ -94,11 +111,15 @@ export default function HeaderByMenuTop() {
     }
     const onSite = (ev) => {
       if (ev?.detail) setSiteSettings(ev.detail)
-      else loadLogos()
+      else {
+        fetchSiteSettings({ force: true }).then((data) => {
+          if (!cancelled && data) setSiteSettings(data)
+        })
+      }
     }
     const onAppear = () => {
       fetchCorporateAppearance({ force: true }).then((data) => {
-        if (!cancelled) setAppearance(data)
+        if (!cancelled) setAppearance(data || DEFAULT_CORPORATE_APPEARANCE)
       })
     }
     window.addEventListener('site-modules-changed', onModules)
@@ -125,17 +146,41 @@ export default function HeaderByMenuTop() {
     }))
   }, [items, language, moduleMap])
 
-  const logoSrc =
+  const rawLogo =
     siteSettings?.logo_display ||
     siteSettings?.logo_url ||
     appearance.logo_display ||
     appearance.logo_url ||
     ''
-  const siteName =
+  const logoSrc =
+    rawLogo &&
+    rawLogo !== '/images/logo.png' &&
+    !String(rawLogo).endsWith('/images/logo.png')
+      ? rawLogo
+      : ''
+  const rawName =
     language === 'en'
       ? siteSettings?.site_name_en || siteSettings?.site_name || ''
       : siteSettings?.site_name || siteSettings?.site_name_en || ''
+  const trimmedName = String(rawName || '').trim()
+  const siteName = !trimmedName ||
+    /^(سلنیرو|sellniroo|لوگو|logo)$/i.test(trimmedName)
+      ? ''
+      : trimmedName
   const styleVars = corporateHeaderStyle(appearance)
+
+  if (!chromeReady) {
+    return (
+      <header
+        className={styles.header}
+        dir={dir}
+        style={styleVars}
+        aria-busy="true"
+      >
+        <div className={`container ${styles.headerContainer}`} />
+      </header>
+    )
+  }
 
   return (
     <header className={styles.header} dir={dir} style={styleVars}>

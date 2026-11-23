@@ -25,10 +25,7 @@ import {
   fetchCorporateAppearance,
   DEFAULT_CORPORATE_APPEARANCE,
 } from '@/services/corporateAppearance'
-import {
-  fetchSiteSettings,
-  DEFAULT_SITE_SETTINGS,
-} from '@/services/siteSettings'
+import { fetchSiteSettings } from '@/services/siteSettings'
 import {
   DEFAULT_SITE_TOP_NAV_WIDGET_SETTINGS,
   getSiteTopNavVisibilityFlags,
@@ -202,8 +199,15 @@ function resolveNavCta(settings, moduleMap = {}) {
   return settings
 }
 
+function isJunkBrandLabel(name) {
+  const t = String(name || '').trim()
+  if (!t) return true
+  return /^(سلنیرو|sellniroo|لوگو|logo)$/i.test(t)
+}
+
 function LogoMark({ src, name, height }) {
   if (!src) {
+    if (isJunkBrandLabel(name)) return null
     return <span className={styles.logoFallback}>{name}</span>
   }
   if (typeof src === 'string' && src.startsWith('/images/')) {
@@ -245,7 +249,8 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
   const [items, setItems] = useState([])
   const [moduleMap, setModuleMap] = useState({})
   const [appearance, setAppearance] = useState(DEFAULT_CORPORATE_APPEARANCE)
-  const [siteSettings, setSiteSettings] = useState(DEFAULT_SITE_SETTINGS)
+  const [siteSettings, setSiteSettings] = useState(null)
+  const [chromeReady, setChromeReady] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const settings = useMemo(
     () => resolveNavCta(baseSettings, moduleMap),
@@ -269,23 +274,38 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
 
   useEffect(() => {
     let cancelled = false
-    fetchHeaderMenu({ force: true, activeOnly: true }).then((list) => {
-      if (!cancelled && Array.isArray(list)) setItems(list)
-    })
-    fetchSiteModules({ force: true })
-      .then(({ map }) => {
-        if (!cancelled) setModuleMap(map || {})
-      })
-      .catch(() => {})
-    const loadLogos = () => {
-      fetchSiteSettings({ force: true }).then((data) => {
-        if (!cancelled && data) setSiteSettings(data)
-      })
-      fetchCorporateAppearance({ force: true }).then((data) => {
-        if (!cancelled) setAppearance(data)
-      })
+    const markReady = () => {
+      if (!cancelled) setChromeReady(true)
     }
-    loadLogos()
+    const loadChrome = () =>
+      Promise.all([
+        fetchHeaderMenu({ force: true, activeOnly: true })
+          .then((list) => {
+            if (!cancelled && Array.isArray(list)) setItems(list)
+          })
+          .catch(() => {
+            if (!cancelled) setItems([])
+          }),
+        fetchSiteSettings({ force: true })
+          .then((data) => {
+            if (!cancelled && data) setSiteSettings(data)
+          })
+          .catch(() => {
+            if (!cancelled) setSiteSettings({})
+          }),
+        fetchCorporateAppearance({ force: true })
+          .then((data) => {
+            if (!cancelled) setAppearance(data || DEFAULT_CORPORATE_APPEARANCE)
+          })
+          .catch(() => {}),
+        fetchSiteModules({ force: true })
+          .then(({ map }) => {
+            if (!cancelled) setModuleMap(map || {})
+          })
+          .catch(() => {}),
+      ]).finally(markReady)
+
+    loadChrome()
     const onModules = () => {
       fetchSiteModules({ force: true })
         .then(({ map }) => setModuleMap(map || {}))
@@ -293,23 +313,30 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
     }
     const onAppear = () => {
       fetchCorporateAppearance({ force: true }).then((data) => {
-        if (!cancelled) setAppearance(data)
+        if (!cancelled) setAppearance(data || DEFAULT_CORPORATE_APPEARANCE)
       })
     }
     const onSiteSettings = (ev) => {
       if (ev?.detail) setSiteSettings(ev.detail)
-      else loadLogos()
+      else {
+        fetchSiteSettings({ force: true }).then((data) => {
+          if (!cancelled && data) setSiteSettings(data)
+        })
+      }
+    }
+    const onBust = () => {
+      loadChrome()
     }
     window.addEventListener('site-modules-changed', onModules)
     window.addEventListener('corporate-appearance-changed', onAppear)
     window.addEventListener('site-settings-changed', onSiteSettings)
-    window.addEventListener('site-data-bust', loadLogos)
+    window.addEventListener('site-data-bust', onBust)
     return () => {
       cancelled = true
       window.removeEventListener('site-modules-changed', onModules)
       window.removeEventListener('corporate-appearance-changed', onAppear)
       window.removeEventListener('site-settings-changed', onSiteSettings)
-      window.removeEventListener('site-data-bust', loadLogos)
+      window.removeEventListener('site-data-bust', onBust)
     }
   }, [])
 
@@ -346,25 +373,31 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
     }))
   }, [items, language, moduleMap, pathname, settings.filter_by_modules])
 
-  const siteName =
-    language === 'en'
-      ? settings.site_name_en ||
-        siteSettings.site_name_en ||
-        siteSettings.site_name ||
-        ''
-      : settings.site_name_fa ||
-        siteSettings.site_name ||
-        siteSettings.site_name_en ||
-        ''
+  const ss = siteSettings || {}
+  /* وقتی use_site_logo روشن است نام/لوگو از تنظیمات سایت؛ نه پیش‌فرض ویجت */
+  const rawSiteName = settings.use_site_logo
+    ? language === 'en'
+      ? ss.site_name_en || ss.site_name || ''
+      : ss.site_name || ss.site_name_en || ''
+    : language === 'en'
+      ? settings.site_name_en || ''
+      : settings.site_name_fa || ''
+  const siteName = isJunkBrandLabel(rawSiteName) ? '' : rawSiteName
 
   /* اولویت: لوگوی /site-settings — بعد ظاهر شرکتی؛ بدون لوگوی فیک پیش‌فرض */
-  const logoSrc = settings.use_site_logo
-    ? siteSettings.logo_display ||
-      siteSettings.logo_url ||
+  const rawLogoSrc = settings.use_site_logo
+    ? ss.logo_display ||
+      ss.logo_url ||
       appearance.logo_display ||
       appearance.logo_url ||
       ''
     : ''
+  const logoSrc =
+    rawLogoSrc &&
+    rawLogoSrc !== '/images/logo.png' &&
+    !String(rawLogoSrc).endsWith('/images/logo.png')
+      ? rawLogoSrc
+      : ''
 
   const closeDrawer = useCallback(() => setDrawerOpen(false), [])
   const openDrawer = useCallback(() => setDrawerOpen(true), [])
@@ -539,7 +572,9 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
             role="banner"
           >
             <div className={styles.inner}>
-              {settings.show_logo && (logoSrc || siteName) ? (
+              {chromeReady &&
+              settings.show_logo &&
+              (logoSrc || siteName) ? (
                 <Link
                   href={settings.logo_href || '/'}
                   className={styles.logo}
@@ -554,7 +589,7 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
                 </Link>
               ) : null}
 
-              {settings.show_nav && !useDrawer ? (
+              {chromeReady && settings.show_nav && !useDrawer ? (
                 <nav
                   className={[
                     styles.nav,
@@ -573,7 +608,7 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
               )}
 
               <div className={styles.actions}>
-                {showAdminDashboard ? (
+                {chromeReady && showAdminDashboard ? (
                   <Link
                     href="/dashboard"
                     className={`${styles.dashboardBtn}${
@@ -586,7 +621,7 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
                   </Link>
                 ) : null}
 
-                {showCta ? (
+                {chromeReady && showCta ? (
                   <Link
                     href={settings.cta_href || '/'}
                     className={`${styles.cta}${
@@ -598,13 +633,13 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
                   </Link>
                 ) : null}
 
-                {profileChrome ? (
+                {chromeReady && profileChrome ? (
                   <div className={styles.profileChrome} data-stn-profile="1">
                     <BreakingNews settings={profileChrome} />
                   </div>
                 ) : null}
 
-                {useDrawer ? (
+                {chromeReady && useDrawer ? (
                   <button
                     type="button"
                     className={`${styles.burger} ${styles.mobileOnly}`}
@@ -636,7 +671,7 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
                 aria-label="منوی موبایل"
               >
                 <div className={styles.drawerHead}>
-                  {settings.show_logo && (logoSrc || siteName) ? (
+                  {chromeReady && settings.show_logo && (logoSrc || siteName) ? (
                     <Link
                       href={settings.logo_href || '/'}
                       className={styles.logo}
@@ -694,7 +729,9 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
         </>
       ) : null}
 
-      {showBottomNav ? <AppBottomNavWidget settings={raw} /> : null}
+      {chromeReady && showBottomNav ? (
+        <AppBottomNavWidget settings={raw} />
+      ) : null}
     </>
   )
 })
