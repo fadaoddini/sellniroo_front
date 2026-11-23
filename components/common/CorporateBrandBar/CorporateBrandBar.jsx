@@ -58,9 +58,9 @@ export default function CorporateBrandBar() {
   const logoSrc =
     getFullImageUrl(settings?.logo_display || settings?.logo_url) ||
     getFullImageUrl(appearance?.logo_display || appearance?.logo_url) ||
-    '/images/logo.png'
+    ''
 
-  const name = settings.site_name || 'شرکت'
+  const name = settings.site_name || ''
   const subtitle = settings.seo_category || settings.site_name_en || ''
   const phone = settings.contact_phone || ''
   const email = settings.contact_email || ''
@@ -76,20 +76,28 @@ export default function CorporateBrandBar() {
   return (
     <div className={styles.bar} style={barStyle} dir="rtl">
       <div className={styles.inner}>
-        <Link href="/" className={styles.brand} title={settings.logo_title || name}>
-          <span className={styles.logoWrap}>
-            <Image
-              src={logoSrc}
-              alt={settings.logo_alt || name}
-              width={36}
-              height={36}
-              unoptimized
-            />
-          </span>
-          <span className={styles.brandText}>
-            <strong>{name}</strong>
-            {subtitle ? <span>{subtitle}</span> : null}
-          </span>
+        <Link
+          href="/"
+          className={styles.brand}
+          title={settings.logo_title || name || undefined}
+        >
+          {logoSrc ? (
+            <span className={styles.logoWrap}>
+              <Image
+                src={logoSrc}
+                alt={settings.logo_alt || name || 'لوگو'}
+                width={36}
+                height={36}
+                unoptimized
+              />
+            </span>
+          ) : null}
+          {name || subtitle ? (
+            <span className={styles.brandText}>
+              {name ? <strong>{name}</strong> : null}
+              {subtitle ? <span>{subtitle}</span> : null}
+            </span>
+          ) : null}
         </Link>
 
         <div className={styles.meta}>

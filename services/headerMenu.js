@@ -169,12 +169,13 @@ export async function fetchHeaderMenu({ force = false, activeOnly = true } = {})
       if (!res.ok) throw new Error(`header-menu ${res.status}`)
       const json = await res.json()
       const list = Array.isArray(json?.data) ? json.data : []
-      cache = list.length ? list : DEFAULT_HEADER_MENU
+      // خالی = بدون منو؛ دیگر منوی فیک سلنیرو/کاریابی نشان داده نمی‌شود
+      cache = list
       cacheAt = Date.now()
       return cache
     } catch (err) {
       console.error('fetchHeaderMenu:', err)
-      return cache || DEFAULT_HEADER_MENU
+      return cache || []
     } finally {
       inflight = null
     }

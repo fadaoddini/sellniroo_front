@@ -17,7 +17,6 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { useAuth } from '@/contexts/AuthContext'
 import {
   fetchHeaderMenu,
-  DEFAULT_HEADER_MENU,
   filterHeaderMenuByModules,
   sortHeaderMenuItems,
 } from '@/services/headerMenu'
@@ -243,7 +242,7 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
   const { language, dir } = useLanguage()
   const { user, isAuthenticated } = useAuth()
   const pathname = usePathname() || '/'
-  const [items, setItems] = useState(DEFAULT_HEADER_MENU)
+  const [items, setItems] = useState([])
   const [moduleMap, setModuleMap] = useState({})
   const [appearance, setAppearance] = useState(DEFAULT_CORPORATE_APPEARANCE)
   const [siteSettings, setSiteSettings] = useState(DEFAULT_SITE_SETTINGS)
@@ -349,17 +348,23 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
 
   const siteName =
     language === 'en'
-      ? settings.site_name_en || 'Sellniroo'
-      : settings.site_name_fa || 'سلنیرو'
+      ? settings.site_name_en ||
+        siteSettings.site_name_en ||
+        siteSettings.site_name ||
+        ''
+      : settings.site_name_fa ||
+        siteSettings.site_name ||
+        siteSettings.site_name_en ||
+        ''
 
-  /* اولویت: لوگوی /site-settings — بعد ظاهر شرکتی */
+  /* اولویت: لوگوی /site-settings — بعد ظاهر شرکتی؛ بدون لوگوی فیک پیش‌فرض */
   const logoSrc = settings.use_site_logo
     ? siteSettings.logo_display ||
       siteSettings.logo_url ||
       appearance.logo_display ||
       appearance.logo_url ||
-      '/images/logo.png'
-    : '/images/logo.png'
+      ''
+    : ''
 
   const closeDrawer = useCallback(() => setDrawerOpen(false), [])
   const openDrawer = useCallback(() => setDrawerOpen(true), [])
@@ -534,12 +539,12 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
             role="banner"
           >
             <div className={styles.inner}>
-              {settings.show_logo ? (
+              {settings.show_logo && (logoSrc || siteName) ? (
                 <Link
                   href={settings.logo_href || '/'}
                   className={styles.logo}
-                  title={siteName}
-                  aria-label={siteName}
+                  title={siteName || undefined}
+                  aria-label={siteName || 'خانه'}
                 >
                   <LogoMark
                     src={logoSrc}
@@ -631,7 +636,7 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
                 aria-label="منوی موبایل"
               >
                 <div className={styles.drawerHead}>
-                  {settings.show_logo ? (
+                  {settings.show_logo && (logoSrc || siteName) ? (
                     <Link
                       href={settings.logo_href || '/'}
                       className={styles.logo}

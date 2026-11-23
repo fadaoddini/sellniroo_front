@@ -34,8 +34,8 @@ export const MOBILE_STYLES = [
 ]
 
 export const DEFAULT_CORPORATE_APPEARANCE = {
-  logo_display: '/images/logo.png',
-  logo_url: '/images/logo.png',
+  logo_display: '',
+  logo_url: '',
   header_bg: '#000000',
   header_text: '#c8c8c8',
   header_icon: '#ffffff',
@@ -66,8 +66,13 @@ const resolveAsset = (src) => {
 export const normalizeCorporateAppearance = (raw = {}) => {
   const data = { ...DEFAULT_CORPORATE_APPEARANCE, ...raw }
   data.logo_display =
-    resolveAsset(raw.logo_display || raw.logo_url || raw.logo) ||
-    DEFAULT_CORPORATE_APPEARANCE.logo_display
+    resolveAsset(raw.logo_display || raw.logo_url || raw.logo) || ''
+  data.logo_url =
+    typeof raw.logo_url === 'string'
+      ? raw.logo_url
+      : typeof raw.logo_display === 'string'
+        ? raw.logo_display
+        : ''
   const valid = new Set(MOBILE_STYLES.map((s) => s.key))
   if (!valid.has(data.mobile_style)) {
     data.mobile_style = DEFAULT_CORPORATE_APPEARANCE.mobile_style

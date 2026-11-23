@@ -116,14 +116,6 @@ function BarLogoMark({ src, name, height }) {
 
 moment.loadPersian({ dialect: "persian-modern", usePersianDigits: false });
 
-const FALLBACK_NEWS = [
-  { id: 1, text: "بهترین فرصت‌های شغلی فروش و بازاریابی را با ما پیدا کنید" },
-  { id: 2, text: "رزومه خود را ارسال کنید و به تیم حرفه‌ای ما بپیوندید" },
-  { id: 3, text: "استخدام بازاریاب و فروشنده حرفه‌ای - شرایط عالی" },
-  { id: 4, text: "برای مشاوره شغلی رایگان با ما تماس بگیرید" },
-  { id: 5, text: "بیش از ۵۰۰ فرصت شغلی در سراسر کشور" },
-];
-
 const WEEK_DAYS = {
   Saturday: "شنبه",
   Sunday: "یکشنبه",
@@ -576,7 +568,7 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
   const visibility = configured ? getNavVisibilityFlags(rawSettings) : null;
   const currentDate = usePersianDate(isMobile);
 
-  const [newsItems, setNewsItems] = useState(FALLBACK_NEWS);
+  const [newsItems, setNewsItems] = useState([]);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [profileClosing, setProfileClosing] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -611,16 +603,16 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
           : Array.isArray(res.data)
             ? res.data
             : [];
-        if (cancelled || !list.length) return;
+        if (cancelled) return;
         const mapped = list
           .map((item, i) => ({
             id: item.id ?? i,
             text: String(item.text || "").trim(),
           }))
           .filter((item) => item.text);
-        if (mapped.length) setNewsItems(mapped);
+        setNewsItems(mapped);
       } catch {
-        // fallback already set
+        if (!cancelled) setNewsItems([]);
       }
     })();
 
@@ -1185,23 +1177,24 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
               siteSettingsLogo.logo_url ||
               appearance.logo_display ||
               appearance.logo_url ||
-              "/images/logo.png"
-          : settings?.logo_url || "/images/logo.png",
+              ""
+          : settings?.logo_url || "",
       )
     : "";
   const logoBeforeHamburger = settings?.logo_place === "before_hamburger";
   const logoName = "لوگو";
 
-  const logoEl = showLogo ? (
-    <Link
-      href={logoHref}
-      className={styles.barLogo}
-      title={logoName}
-      aria-label={logoName}
-    >
-      <BarLogoMark src={logoSrc} name={logoName} height={logoHeight} />
-    </Link>
-  ) : null;
+  const logoEl =
+    showLogo && logoSrc ? (
+      <Link
+        href={logoHref}
+        className={styles.barLogo}
+        title={logoName}
+        aria-label={logoName}
+      >
+        <BarLogoMark src={logoSrc} name={logoName} height={logoHeight} />
+      </Link>
+    ) : null;
 
   const hamburgerEl =
     configured && settings.show_hamburger ? (

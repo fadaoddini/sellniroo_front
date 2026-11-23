@@ -158,11 +158,19 @@ function VideoInstaWidget({ type, settings }) {
   return <VideoInstaSlot variant={variant} settings={settings} />
 }
 
-function LogoWidget() {
+function LogoWidget({ settings }) {
+  const src =
+    settings?.logo_url ||
+    settings?.logo_display ||
+    settings?.src ||
+    ''
+  if (!src) {
+    return <div className={styles.simpleWidget} aria-hidden />
+  }
   return (
     <div className={styles.simpleWidget}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/logo.png" alt="لوگو" className={styles.logoImg} />
+      <img src={src} alt={settings?.alt || 'لوگو'} className={styles.logoImg} />
     </div>
   )
 }
@@ -723,7 +731,7 @@ function renderWidget(instance, { articleSlot, settings, productContext } = {}) 
     case 'profile':
       return <NavBarWidget type={instance.type} settings={s} />
     case 'logo':
-      return <LogoWidget />
+      return <LogoWidget settings={settings} />
     case 'spacer':
       return <SpacerWidget />
     case 'html_block':

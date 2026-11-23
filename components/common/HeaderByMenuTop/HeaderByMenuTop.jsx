@@ -15,7 +15,6 @@ import {
 import { useLanguage } from '@/contexts/LanguageContext'
 import {
   fetchHeaderMenu,
-  DEFAULT_HEADER_MENU,
   filterHeaderMenuByModules,
   sortHeaderMenuItems,
 } from '@/services/headerMenu'
@@ -66,7 +65,7 @@ function resolveIcon(name) {
 
 export default function HeaderByMenuTop() {
   const { language, dir } = useLanguage()
-  const [items, setItems] = useState(DEFAULT_HEADER_MENU)
+  const [items, setItems] = useState([])
   const [moduleMap, setModuleMap] = useState({})
   const [appearance, setAppearance] = useState(DEFAULT_CORPORATE_APPEARANCE)
   const [siteSettings, setSiteSettings] = useState(null)
@@ -131,36 +130,47 @@ export default function HeaderByMenuTop() {
     siteSettings?.logo_url ||
     appearance.logo_display ||
     appearance.logo_url ||
-    '/images/logo.png'
-  const siteName = language === 'en' ? 'Sellniroo' : 'سلنیرو'
+    ''
+  const siteName =
+    language === 'en'
+      ? siteSettings?.site_name_en || siteSettings?.site_name || ''
+      : siteSettings?.site_name || siteSettings?.site_name_en || ''
   const styleVars = corporateHeaderStyle(appearance)
 
   return (
     <header className={styles.header} dir={dir} style={styleVars}>
       <div className={`container ${styles.headerContainer}`}>
-        <div className={styles.logo}>
-          <Link href="/" title={siteName} aria-label={siteName}>
-            {typeof logoSrc === 'string' && logoSrc.startsWith('/images/') ? (
-              <Image
-                src={logoSrc}
-                alt={siteName}
-                width={180}
-                height={50}
-                priority
-                className={styles.logoImage}
-              />
-            ) : (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={logoSrc}
-                alt={siteName}
-                width={180}
-                height={50}
-                className={styles.logoImage}
-              />
-            )}
-          </Link>
-        </div>
+        {logoSrc || siteName ? (
+          <div className={styles.logo}>
+            <Link href="/" title={siteName || undefined} aria-label={siteName || 'خانه'}>
+              {logoSrc ? (
+                typeof logoSrc === 'string' && logoSrc.startsWith('/images/') ? (
+                  <Image
+                    src={logoSrc}
+                    alt={siteName || 'لوگو'}
+                    width={180}
+                    height={50}
+                    priority
+                    className={styles.logoImage}
+                  />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={logoSrc}
+                    alt={siteName || 'لوگو'}
+                    width={180}
+                    height={50}
+                    className={styles.logoImage}
+                  />
+                )
+              ) : (
+                <span>{siteName}</span>
+              )}
+            </Link>
+          </div>
+        ) : (
+          <div className={styles.logo} aria-hidden />
+        )}
 
         <nav className={styles.desktopNav} aria-label="main">
           <ul className={styles.navList}>

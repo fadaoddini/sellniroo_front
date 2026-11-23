@@ -8,7 +8,6 @@ import { usePathname } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
 import {
   fetchHeaderMenu,
-  DEFAULT_HEADER_MENU,
   filterHeaderMenuByModules,
   sortHeaderMenuItems,
   arrangeMobileNavItems,
@@ -47,7 +46,7 @@ function matchPath(pathname, href) {
 export default function CorporateMobileNav() {
   const pathname = usePathname() || '/'
   const { language } = useLanguage()
-  const [items, setItems] = useState(DEFAULT_HEADER_MENU)
+  const [items, setItems] = useState([])
   const [moduleMap, setModuleMap] = useState({})
   const [appearance, setAppearance] = useState(DEFAULT_CORPORATE_APPEARANCE)
 

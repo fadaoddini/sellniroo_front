@@ -170,7 +170,7 @@ const Header = memo(function Header() {
     [router, searchQuery, selectedCity]
   );
 
-  const logoSrc = settings.logo_display || "/images/logo.png";
+  const logoSrc = settings.logo_display || settings.logo_url || "";
   const logoAlt = settings.logo_alt || settings.site_name || "لوگو";
   const logoTitle = settings.logo_title || settings.site_name || "";
   const searchPlaceholder =
@@ -293,13 +293,13 @@ const Header = memo(function Header() {
     </form>
   );
 
-  const logoBlock = (
+  const logoBlock = logoSrc ? (
     <div className={styles.logo}>
-      <Link href="/" title={logoTitle}>
+      <Link href="/" title={logoTitle || logoAlt}>
         <LogoImage src={logoSrc} alt={logoAlt} className={styles.logoImage} />
       </Link>
     </div>
-  );
+  ) : null;
 
   return (
     <>

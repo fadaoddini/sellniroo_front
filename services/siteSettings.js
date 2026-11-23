@@ -83,10 +83,10 @@ import {
 export const DEFAULT_SITE_SETTINGS = {
   site_name: 'سلنیرو',
   site_name_en: 'Sellniroo',
-  logo_display: '/images/logo.png',
-  logo_url: '/images/logo.png',
-  logo_alt: 'سلنیرو',
-  logo_title: 'سلنیرو | کاریابی تخصصی فروش و بازاریابی',
+  logo_display: '',
+  logo_url: '',
+  logo_alt: '',
+  logo_title: '',
   search_placeholder: 'عنوان شغل، مهارت یا شرکت...',
   header_cta_label: 'ثبت آگهی',
   header_cta_href: '/post-job',
@@ -165,11 +165,17 @@ const resolveAsset = (src) => {
 export const normalizeSiteSettings = (raw = {}) => {
   const data = { ...DEFAULT_SITE_SETTINGS, ...raw }
   data.logo_display =
-    resolveAsset(raw.logo_display || raw.logo_url || raw.logo) ||
-    DEFAULT_SITE_SETTINGS.logo_display
+    resolveAsset(raw.logo_display || raw.logo_url || raw.logo) || ''
+  data.logo_url =
+    typeof raw.logo_url === 'string'
+      ? raw.logo_url
+      : typeof raw.logo_display === 'string'
+        ? raw.logo_display
+        : ''
   data.og_image_display =
     resolveAsset(raw.og_image_display || raw.og_image_url || raw.og_image) ||
-    data.logo_display
+    data.logo_display ||
+    ''
   if (!Array.isArray(data.keywords) || !data.keywords.length) {
     const fromText = String(data.seo_keywords || '')
       .replace(/,/g, '\n')
