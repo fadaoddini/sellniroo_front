@@ -8,6 +8,8 @@ import {
   DEFAULT_JOB_SINGLE_LAYOUT,
   DEFAULT_PRODUCT_SINGLE_LAYOUT,
   DEFAULT_SHOP_LIST_LAYOUT,
+  createWidgetInstance,
+  findFirstWidgetByType,
   normalizeHomeLayout,
   normalizeNewsSingleLayout,
   normalizeNewsListLayout,
@@ -20,13 +22,18 @@ import {
   SHARED_INTERNAL_LAYOUT_KEY,
   SHARED_INTERNAL_LAYOUT_KEY_LEGACY,
   SHARED_INTERNAL_LAYOUT_EVENT,
+  createDefaultSharedInternalLayout,
   isSharedInternalLayoutKey,
   normalizeModulePageLayout,
   normalizeModulePageLayoutsMap,
   normalizeSharedInternalLayout,
   getModulePageDef,
   getSharedInternalLayoutRaw,
+  pageKeepsOwnChrome,
+  sharedInternalLayoutHasContent,
 } from '@/config/modulePageLayouts'
+import { fetchSiteModules } from '@/services/siteModules'
+import { DEFAULT_NAV_WIDGET_SETTINGS } from '@/config/navWidgetSettings'
 import {
   DEFAULT_REBO_PRICING,
   normalizeReboPricing,
@@ -43,6 +50,8 @@ import {
   DEFAULT_HOME_HERO_SLIDER,
   normalizeHomeHeroSlider,
 } from '@/config/homeHeroSlider'
+import { normalizeCustomBreakingNewsThemes } from '@/config/breakingNewsThemes'
+import { normalizeCustomSiteMenuThemes } from '@/config/siteMenuThemes'
 import {
   normalizeProductSingleLayoutsMap,
   normalizeShopListLayoutsMap,
@@ -63,9 +72,11 @@ import {
   normalizeProductSinglePageSettings,
 } from '@/config/productSinglePageSettings'
 import {
+  buildChromeRow,
   buildSyncedLayoutsFromHome,
   describeChromeFromHome,
   deriveJobSinglePageColorsFromHome,
+  resolveSiteChromeLayout,
   stripChromeWidgets,
 } from '@/config/chromeThemeSync'
 
@@ -134,6 +145,7 @@ export const DEFAULT_SITE_SETTINGS = {
   profile_layout: { ...DEFAULT_PROFILE_LAYOUT, sections: { ...DEFAULT_PROFILE_LAYOUT.sections } },
   checkout_pipelines: normalizeCheckoutPipelines(DEFAULT_CHECKOUT_PIPELINES),
   home_hero_slider: { ...DEFAULT_HOME_HERO_SLIDER },
+  widget_presets: { breaking_news: [], site_menu: [] },
 }
 
 const resolveAsset = (src) => {
@@ -225,6 +237,16 @@ export const normalizeSiteSettings = (raw = {}) => {
   data.home_hero_slider = normalizeHomeHeroSlider(
     raw.home_hero_slider || data.home_hero_slider
   )
+  const presetsRaw =
+    raw.widget_presets && typeof raw.widget_presets === 'object'
+      ? raw.widget_presets
+      : data.widget_presets || {}
+  data.widget_presets = {
+    breaking_news: normalizeCustomBreakingNewsThemes(
+      presetsRaw.breaking_news || [],
+    ),
+    site_menu: normalizeCustomSiteMenuThemes(presetsRaw.site_menu || []),
+  }
   return data
 }
 
@@ -844,11 +866,46 @@ export async function saveModulePageLayout(pageKey, layout, authHeaders = {}) {
   const key = String(pageKey || '').trim()
   if (!key) throw new Error('کلید صفحه نامعتبر است')
   const savingShared = isSharedInternalLayoutKey(key)
+  const chromeKind =
+    key === 'chrome_header'
+      ? 'header'
+      : key === 'chrome_menu'
+        ? 'menu'
+        : key === 'chrome_footer'
+          ? 'footer'
+          : null
+  const savingChrome = !!chromeKind
   const storageKey = savingShared ? SHARED_INTERNAL_LAYOUT_KEY : key
-  // صفحات تکی: کروم را ذخیره نکن — مال چیدمان مشترک است
-  const normalized = savingShared
-    ? normalizeSharedInternalLayout(layout)
-    : stripChromeWidgets(normalizeModulePageLayout(layout, key))
+  const def = savingShared || savingChrome ? null : getModulePageDef(key)
+  let keepOwnChrome = savingShared || savingChrome || !!def?.keepOwnChrome
+  if (!keepOwnChrome && def?.ownChromeWhenSchool) {
+    try {
+      const { map } = await fetchSiteModules({ force: false })
+      keepOwnChrome = pageKeepsOwnChrome(def, map || {})
+    } catch {
+      keepOwnChrome = false
+    }
+  }
+  // صفحات تکی معمولاً کروم را ذخیره نمی‌کنند (مال چیدمان مشترک / تب هدر-منو است).
+  // قالب مدرسه: news/profile کروم اختصاصی دارند — نباید strip شود وگرنه ذخیره عملاً پاک می‌شود.
+  // هدر/منو/فوتر سراسری: کل ویجت‌ها همان کروم‌اند — هرگز strip نکن.
+  let normalized
+  if (savingChrome) {
+    const { normalizeChromeLayout } = await import('@/config/siteChrome')
+    normalized = normalizeChromeLayout(layout, chromeKind)
+  } else if (savingShared) {
+    normalized = normalizeSharedInternalLayout(layout)
+  } else if (keepOwnChrome) {
+    normalized = normalizeModulePageLayout(layout, key)
+  } else {
+    // پرچم chrome (سوییچ هدر/منو) را نگه دار؛ فقط ویجت‌های کروم داخل محتوا را ببر
+    const base = normalizeModulePageLayout(layout, key)
+    const stripped = stripChromeWidgets(base)
+    normalized =
+      base?.chrome && typeof base.chrome === 'object'
+        ? { ...stripped, chrome: base.chrome }
+        : stripped
+  }
   const current = await fetchSiteSettings({ force: true })
   const nextMap = {
     ...(current.module_page_layouts || {}),
@@ -872,7 +929,9 @@ export async function saveModulePageLayout(pageKey, layout, authHeaders = {}) {
   if (!res.ok) {
     let msg = savingShared
       ? `ذخیره چیدمان مشترک ناموفق (${res.status})`
-      : `ذخیره چیدمان صفحه ${key} ناموفق (${res.status})`
+      : savingChrome
+        ? `ذخیره ${chromeKind} ناموفق (${res.status})`
+        : `ذخیره چیدمان صفحه ${key} ناموفق (${res.status})`
     try {
       const j = await res.json()
       msg = j?.message || j?.detail || msg
@@ -884,11 +943,17 @@ export async function saveModulePageLayout(pageKey, layout, authHeaders = {}) {
   const json = await res.json()
   const data = normalizeSiteSettings(json?.data || json)
   rememberSettingsCache(data, { broadcast: true })
-  const saved = savingShared
-    ? normalizeSharedInternalLayout(
-        getSharedInternalLayoutRaw(data.module_page_layouts),
-      )
-    : normalizeModulePageLayout(data.module_page_layouts?.[key], key)
+  let saved
+  if (savingChrome) {
+    const { normalizeChromeLayout } = await import('@/config/siteChrome')
+    saved = normalizeChromeLayout(data.module_page_layouts?.[key], chromeKind)
+  } else if (savingShared) {
+    saved = normalizeSharedInternalLayout(
+      getSharedInternalLayoutRaw(data.module_page_layouts),
+    )
+  } else {
+    saved = normalizeModulePageLayout(data.module_page_layouts?.[key], key)
+  }
   if (typeof window !== 'undefined') {
     if (savingShared) {
       window.dispatchEvent(
@@ -905,8 +970,9 @@ export async function saveModulePageLayout(pageKey, layout, authHeaders = {}) {
         )
       })
     } else {
-      const def = getModulePageDef(key)
-      const eventName = def?.event || `module-page-layout-changed:${key}`
+      const eventName = savingChrome
+        ? `module-page-layout-changed:${key}`
+        : getModulePageDef(key)?.event || `module-page-layout-changed:${key}`
       window.dispatchEvent(new CustomEvent(eventName, { detail: saved }))
     }
     window.dispatchEvent(
@@ -990,6 +1056,86 @@ export async function saveProfileLayout(layout, authHeaders = {}) {
   return data.profile_layout
 }
 
+const WIDGET_PRESET_NORMALIZERS = {
+  breaking_news: normalizeCustomBreakingNewsThemes,
+  site_menu: normalizeCustomSiteMenuThemes,
+}
+
+/** ذخیره تم‌های سفارشی یک ویجت در SiteSettings.widget_presets */
+export async function saveWidgetCustomThemes(
+  presetKey,
+  themes,
+  authHeaders = {},
+) {
+  const key = String(presetKey || '').trim()
+  const normalize = WIDGET_PRESET_NORMALIZERS[key]
+  if (!normalize) {
+    throw new Error(`کلید تم ناشناخته: ${key}`)
+  }
+  const list = normalize(themes)
+  const current = await fetchSiteSettings({ force: true })
+  const nextPresets = {
+    ...(current.widget_presets && typeof current.widget_presets === 'object'
+      ? current.widget_presets
+      : {}),
+    [key]: list,
+  }
+  const body = { widget_presets: nextPresets }
+  const url = Config.endpoints.news.siteSettings.update()
+  const storageKey = `${key}_custom_themes`
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `ذخیره تم‌ها ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    if (res.status === 400 || res.status === 404) {
+      try {
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem(storageKey, JSON.stringify(list))
+        }
+      } catch {
+        /* ignore */
+      }
+      return list
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeSiteSettings(json?.data || json)
+  rememberSettingsCache(data, { broadcast: true })
+  const saved = data.widget_presets?.[key] || list
+  try {
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(storageKey, JSON.stringify(saved))
+      window.dispatchEvent(
+        new CustomEvent('widget-presets-changed', {
+          detail: { key, themes: saved },
+        }),
+      )
+    }
+  } catch {
+    /* ignore */
+  }
+  return saved
+}
+
+/** @deprecated استفاده از saveWidgetCustomThemes('breaking_news', …) */
+export async function saveBreakingNewsCustomThemes(themes, authHeaders = {}) {
+  return saveWidgetCustomThemes('breaking_news', themes, authHeaders)
+}
+
 /** ذخیره محتوای اسلایدر / هیرو صفحه اصلی */
 export async function saveHomeHeroSlider(payload, authHeaders = {}) {
   const body = { home_hero_slider: normalizeHomeHeroSlider(payload) }
@@ -1024,6 +1170,230 @@ export async function saveHomeHeroSlider(payload, authHeaders = {}) {
     )
   }
   return data.home_hero_slider
+}
+
+/** ادغام پچ تنظیمات نوار خبر (desktop/mobile تو در تو) */
+export function mergeBreakingNewsSettingsPatch(prev, patch) {
+  const base = prev && typeof prev === 'object' ? { ...prev } : {}
+  const p = patch && typeof patch === 'object' ? patch : {}
+  const next = { ...base, ...p }
+  ;['desktop', 'mobile'].forEach((vp) => {
+    if (p[vp] && typeof p[vp] === 'object') {
+      next[vp] = {
+        ...(base[vp] && typeof base[vp] === 'object' ? base[vp] : {}),
+        ...p[vp],
+      }
+    }
+  })
+  return next
+}
+
+function mapLayoutBreakingNewsSettings(layout, settings) {
+  const L = normalizeHomeLayout(layout || {})
+  let touched = false
+  const rows = (L.rows || []).map((row) => ({
+    ...row,
+    columns: (row.columns || []).map((col) => ({
+      ...col,
+      widgets: (col.widgets || []).map((w) => {
+        const type = String(w?.type || '')
+        if (type === 'breaking_news') {
+          touched = true
+          return { ...w, settings: { ...settings } }
+        }
+        if (type === 'school_landing') {
+          const prev =
+            w.settings && typeof w.settings === 'object' ? w.settings : {}
+          touched = true
+          return {
+            ...w,
+            settings: {
+              ...prev,
+              breaking: { ...settings },
+              breaking_news: { ...settings },
+            },
+          }
+        }
+        return w
+      }),
+    })),
+  }))
+  return { layout: { ...L, rows }, touched }
+}
+
+function ensureSharedBreakingNews(layout, settings) {
+  const mapped = mapLayoutBreakingNewsSettings(layout, settings)
+  if (findFirstWidgetByType(mapped.layout, ['breaking_news'])) {
+    return normalizeSharedInternalLayout(mapped.layout)
+  }
+  const base = sharedInternalLayoutHasContent(layout)
+    ? normalizeSharedInternalLayout(layout)
+    : createDefaultSharedInternalLayout()
+  const rows = [...(base.rows || [])]
+  if (!rows.length) {
+    return normalizeSharedInternalLayout({
+      ...createDefaultSharedInternalLayout(),
+      rows: [
+        {
+          id: 'sec_shared_chrome_default',
+          template: '1',
+          width: 'full',
+          padding_y: 'none',
+          columns: [
+            {
+              id: 'col_shared_chrome_default',
+              span: 100,
+              widgets: [createWidgetInstance('breaking_news', settings)],
+            },
+          ],
+        },
+      ],
+    })
+  }
+  const first = { ...rows[0] }
+  const cols = [...(first.columns || [])]
+  if (!cols.length) {
+    cols.push({
+      id: 'col_shared_chrome_default',
+      span: 100,
+      widgets: [],
+    })
+  }
+  const col0 = { ...cols[0], widgets: [...(cols[0].widgets || [])] }
+  col0.widgets = [
+    createWidgetInstance('breaking_news', settings),
+    ...col0.widgets,
+  ]
+  cols[0] = col0
+  first.columns = cols
+  rows[0] = first
+  return normalizeSharedInternalLayout({ ...base, rows })
+}
+
+/** خواندن تنظیمات ظاهر نوار خبر فوری از چیدمان کروم */
+export async function loadBreakingNewsChromeSettings() {
+  const data = await fetchSiteSettings({ force: true })
+  const chrome = resolveSiteChromeLayout(data)
+  const widget = findFirstWidgetByType(chrome, ['breaking_news'])
+  const settings =
+    widget?.settings && typeof widget.settings === 'object'
+      ? { ...widget.settings }
+      : { ...DEFAULT_NAV_WIDGET_SETTINGS }
+  return { settings, siteSettings: data }
+}
+
+/** به‌روزرسانی / درج ویجت خبر فوری در یک چیدمان صفحه‌ساز (مثل /news) */
+function upsertBreakingNewsInBuilderLayout(layout, settings, normalizer) {
+  const normalized = normalizer(layout || {})
+  const mapped = mapLayoutBreakingNewsSettings(normalized, settings)
+  if (findFirstWidgetByType(mapped.layout, ['breaking_news'])) {
+    return normalizer(mapped.layout)
+  }
+  const stripped = stripChromeWidgets(mapped.layout)
+  const chromeRow = buildChromeRow(
+    [{ type: 'breaking_news', settings }],
+    'ticker_bn',
+  )
+  return normalizer({
+    ...stripped,
+    rows: [chromeRow, ...(stripped.rows || [])],
+  })
+}
+
+/**
+ * ذخیره ظاهر نوار خبر فوری در چیدمان مشترک + خانه + لیست/سینگل خبر
+ * (همان تنظیماتی که در ویجت adminweb ویرایش می‌شود)
+ */
+export async function saveBreakingNewsChromeSettings(
+  settings,
+  authHeaders = {},
+) {
+  const payload =
+    settings && typeof settings === 'object'
+      ? settings
+      : { ...DEFAULT_NAV_WIDGET_SETTINGS }
+  const current = await fetchSiteSettings({ force: true })
+  const homeMapped = mapLayoutBreakingNewsSettings(
+    current.home_layout,
+    payload,
+  )
+  const sharedNext = ensureSharedBreakingNews(
+    getSharedInternalLayoutRaw(current.module_page_layouts),
+    payload,
+  )
+  const nextMap = {
+    ...(current.module_page_layouts || {}),
+    [SHARED_INTERNAL_LAYOUT_KEY]: sharedNext,
+  }
+  delete nextMap[SHARED_INTERNAL_LAYOUT_KEY_LEGACY]
+
+  const body = {
+    module_page_layouts: nextMap,
+    home_layout: homeMapped.layout,
+    news_list_layout: upsertBreakingNewsInBuilderLayout(
+      current.news_list_layout,
+      payload,
+      normalizeNewsListLayout,
+    ),
+    news_single_layout: upsertBreakingNewsInBuilderLayout(
+      current.news_single_layout,
+      payload,
+      normalizeNewsSingleLayout,
+    ),
+  }
+  const url = Config.endpoints.news.siteSettings.update()
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(authHeaders || {}),
+    },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let msg = `ذخیره تنظیمات نوار خبر ناموفق (${res.status})`
+    try {
+      const j = await res.json()
+      msg = j?.message || j?.detail || msg
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
+  const json = await res.json()
+  const data = normalizeSiteSettings(json?.data || json)
+  rememberSettingsCache(data, { broadcast: true })
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('home-layout-changed', { detail: data.home_layout }),
+    )
+    window.dispatchEvent(
+      new CustomEvent('module-page-layouts-changed', {
+        detail: data.module_page_layouts,
+      }),
+    )
+    window.dispatchEvent(
+      new CustomEvent('news-list-layout-changed', {
+        detail: data.news_list_layout,
+      }),
+    )
+    window.dispatchEvent(
+      new CustomEvent('news-single-layout-changed', {
+        detail: data.news_single_layout,
+      }),
+    )
+    const sharedSaved = normalizeSharedInternalLayout(
+      getSharedInternalLayoutRaw(data.module_page_layouts),
+    )
+    window.dispatchEvent(
+      new CustomEvent(SHARED_INTERNAL_LAYOUT_EVENT, { detail: sharedSaved }),
+    )
+  }
+  const sharedWidget = findFirstWidgetByType(sharedNext, ['breaking_news'])
+  return sharedWidget?.settings && typeof sharedWidget.settings === 'object'
+    ? { ...sharedWidget.settings }
+    : { ...payload }
 }
 
 /** ذخیره پایپ‌لاین سفارش / سبد سیستم‌ها */

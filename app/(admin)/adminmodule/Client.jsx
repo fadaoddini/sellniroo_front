@@ -41,20 +41,32 @@ export default function AdminModuleClient() {
     groups: 0,
   })
   const [selectedModuleKey, setSelectedModuleKey] = useState(null)
+  const reboHub = !!gate.isReboHub
 
   useEffect(() => {
-    setTab(resolveTab(searchParams?.get('tab')))
-  }, [searchParams])
+    const next = resolveTab(searchParams?.get('tab'))
+    // سایت‌های غیرربو: تب سرور/گیت/قیمت‌گذاری ربو ممنوع
+    if (!reboHub && (SERVER_TABS.has(next) || next === 'pricing')) {
+      setTab('modules')
+      router.replace('/adminmodule?tab=modules')
+      return
+    }
+    setTab(next)
+  }, [searchParams, reboHub, router])
 
   const onStatsChange = useCallback((s) => {
     if (s && typeof s === 'object') setModuleStats(s)
   }, [])
 
   const pageNav = useMemo(() => {
-    if (SERVER_TABS.has(tab)) {
+    if (SERVER_TABS.has(tab) && reboHub) {
       return getServerSystemPageNav(`/adminmodule?tab=${tab}`)
     }
-    return TABS.filter((t) => !SERVER_TABS.has(t.id)).map((t) => ({
+    return TABS.filter((t) => {
+      if (!reboHub && (SERVER_TABS.has(t.id) || t.id === 'pricing')) return false
+      if (SERVER_TABS.has(t.id)) return false
+      return true
+    }).map((t) => ({
       id: t.id,
       label: t.label,
       icon: t.icon,
@@ -67,7 +79,7 @@ export default function AdminModuleClient() {
             router.replace(`/adminmodule?tab=${t.id}`)
           },
     }))
-  }, [tab, router])
+  }, [tab, router, reboHub])
 
   const shellTitle = SERVER_TABS.has(tab)
     ? tab === 'git'

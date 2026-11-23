@@ -66,6 +66,7 @@ import {
 } from "@/services/corporateAppearance";
 import { resolveProfileSystemId } from "@/services/profileSystem";
 import NavCartIcon from "./NavCartIcon";
+import NavBarSearch from "./NavBarSearch";
 import styles from "./BreakingNews.module.css";
 
 function resolveMenuIcon(name) {
@@ -1391,6 +1392,9 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
           {configured && settings?.job_cta_place !== 'after_profile'
             ? renderJobCtas()
             : null}
+          {configured && settings?.show_search ? (
+            <NavBarSearch settings={settings} />
+          ) : null}
           {renderProfileBlock()}
           {configured && settings?.job_cta_place === 'after_profile'
             ? renderJobCtas()

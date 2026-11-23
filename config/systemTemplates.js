@@ -457,7 +457,14 @@ export function getActiveExclusiveTemplate(
   const on = SYSTEM_TEMPLATES.filter((t) => !!moduleMap?.[t.moduleKey])
   if (on.length === 1) return on[0]
   if (on.length > 1) {
-    return on.find((t) => t.key === currentPack) || on[0]
+    // اگر چند بسته روشن مانده، ربو را به‌عنوان سایت مشتری انتخاب نکن
+    const nonRebo = on.filter((t) => t.key !== 'rebo_theme_one')
+    return (
+      on.find((t) => t.key === currentPack) ||
+      (nonRebo.length === 1 ? nonRebo[0] : null) ||
+      nonRebo[0] ||
+      on[0]
+    )
   }
   return extras.find((t) => t.key === currentPack) || null
 }

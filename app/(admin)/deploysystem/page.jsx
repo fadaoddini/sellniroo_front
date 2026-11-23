@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { Rocket } from 'lucide-react'
 import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
@@ -10,7 +11,7 @@ import {
 import useOwnerGate from '@/components/Admin/useOwnerGate'
 import styles from '../adminweb/AdminWeb.module.css'
 
-export default function DeploySystemPage() {
+function DeploySystemInner() {
   const gate = useOwnerGate('/deploysystem')
 
   return (
@@ -54,5 +55,13 @@ export default function DeploySystemPage() {
         </div>
       </section>
     </OwnerPortalShell>
+  )
+}
+
+export default function DeploySystemPage() {
+  return (
+    <Suspense fallback={null}>
+      <DeploySystemInner />
+    </Suspense>
   )
 }

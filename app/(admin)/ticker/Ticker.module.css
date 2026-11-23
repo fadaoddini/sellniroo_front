@@ -143,6 +143,61 @@
   line-height: 1.6;
 }
 
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.tabBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.45rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.tabBtnOn {
+  background: #3a2a00;
+  border-color: #3a2a00;
+  color: #fff8e7;
+}
+
+.settingsPanel {
+  margin-top: 0.25rem;
+}
+
+.settingsCard {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(80, 50, 0, 0.05);
+  padding: 1rem 1.05rem 1.25rem;
+}
+
+.toastOk {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #e8f5e9;
+  color: #1b5e20;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .toolbar {
   display: flex;
   justify-content: flex-end;

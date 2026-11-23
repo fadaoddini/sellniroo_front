@@ -97,6 +97,27 @@
   width: min(1140px, calc(100% - 2rem));
 }
 
+/* هدر/منوی سراسری روی هیرو — فاصلهٔ محتوا برابر ارتفاع کروم */
+.rootChromeUnderlay {
+  background: var(--sc-hero-top);
+  overflow: visible;
+}
+
+.heroChromeUnderlay {
+  justify-content: flex-start;
+  overflow: visible;
+}
+
+.heroStageChromePad {
+  padding-top: calc(
+    var(--sc-chrome-overlay-pad, var(--pb-chrome-overlay-h, 0px)) +
+      clamp(1.25rem, 3vh, 2.25rem)
+  );
+  flex: 1 1 auto;
+  width: min(1140px, calc(100% - 2rem));
+  box-sizing: border-box;
+}
+
 .heroBg {
   position: absolute;
   inset: 0;

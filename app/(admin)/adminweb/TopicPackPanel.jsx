@@ -85,7 +85,7 @@ export default function TopicPackPanel({
     const pack = packs.find((p) => p.key === target)
     if (
       !window.confirm(
-        `اطلاعات سئو، درباره ما، نوار خبر، اسلایدر، منو و تماس با بسته «${pack?.name || target}» جایگزین شود؟\n\nاین کار داده‌های فعلی این بخش‌ها را بازنویسی می‌کند.`
+        `بسته «${pack?.name || target}» فعال شود؟\n\nپیش‌فرض: چیدمان و ویرایش‌های فعلی حفظ می‌شود و فقط ماژول‌ها روشن می‌شوند.\nاگر می‌خواهید داده از بسته بازنویسی شود، از «اعمال مجدد» در موتور و بسته‌ها استفاده کنید.`,
       )
     ) {
       return
@@ -98,9 +98,11 @@ export default function TopicPackPanel({
         Config.endpoints.news.topicPacks.apply(),
         {
           pack: target,
-          replace_menu: true,
-          replace_tickers: true,
-          replace_heroes: true,
+          preserve_customizations: true,
+          reset_content: false,
+          replace_menu: false,
+          replace_tickers: false,
+          replace_heroes: false,
         },
         { headers: getAuthHeaders() }
       )

@@ -1,0 +1,176 @@
+/* محتوای داخل کارت کلاس — قاب از SchoolTeacherIntroRecycler.module.css */
+
+.trophyBadge {
+  width: var(--sti-qr, 44px);
+  height: var(--sti-qr, 44px);
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  color: #8e0413;
+}
+
+.cardHead {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-bottom: 0.35rem;
+  padding-inline-end: calc(var(--sti-qr, 44px) * 0.35);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.cardTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.classIcon {
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: rgba(142, 4, 19, 0.08);
+  color: #8e0413;
+}
+
+.className {
+  margin: 0;
+  min-width: 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--sts-text, #111827);
+  font-family: var(--font-iran-bold, 'iran_bold', var(--font-iran), Tahoma, sans-serif);
+}
+
+.classMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+  font-size: 0.6rem;
+  font-weight: 650;
+  color: var(--sts-muted, #6b7280);
+  padding-inline-start: 0.1rem;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1.2rem minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.28rem;
+  min-height: 26px;
+  padding: 0.18rem 0.35rem 0.18rem 0.28rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+  text-decoration: none;
+  color: inherit;
+}
+
+.rowGold {
+  background: color-mix(in srgb, var(--sts-gold, #c9a227) 38%, #fff);
+  border-color: color-mix(in srgb, var(--sts-gold, #c9a227) 50%, transparent);
+}
+
+.rowSilver {
+  background: color-mix(in srgb, var(--sts-silver, #c0c7d1) 42%, #fff);
+  border-color: color-mix(in srgb, var(--sts-silver, #c0c7d1) 55%, transparent);
+}
+
+.rowBronze {
+  background: color-mix(in srgb, var(--sts-bronze, #c88a4a) 34%, #fff);
+  border-color: color-mix(in srgb, var(--sts-bronze, #c88a4a) 48%, transparent);
+}
+
+.rowPlain {
+  background: var(--sts-plain, #ffffff);
+}
+
+.place {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--sts-text, #111827);
+  flex-shrink: 0;
+}
+
+.rowGold .place {
+  background: var(--sts-gold, #c9a227);
+  color: #4a1010;
+}
+
+.rowSilver .place {
+  background: #9aa3b2;
+  color: #fff;
+}
+
+.rowBronze .place {
+  background: var(--sts-bronze, #c88a4a);
+  color: #fff;
+}
+
+.rowPlain .place {
+  color: var(--sts-muted, #6b5a5a);
+}
+
+.name {
+  margin: 0;
+  min-width: 0;
+  font-size: 0.7rem;
+  font-weight: 750;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-iran-bold, 'iran_bold', var(--font-iran), Tahoma, sans-serif);
+  color: var(--sts-text, #111827);
+}
+
+.score,
+.points {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.12rem;
+  font-size: 0.6rem;
+  font-weight: 650;
+  color: var(--sts-muted, #6b7280);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.score {
+  color: #374151;
+  font-weight: 700;
+}
+
+.cardEmpty {
+  margin: 0;
+  padding: 0.45rem 0.3rem;
+  font-size: 0.66rem;
+  color: var(--sts-muted, #6b7280);
+  text-align: center;
+}

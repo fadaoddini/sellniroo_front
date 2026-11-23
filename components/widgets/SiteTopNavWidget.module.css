@@ -58,7 +58,10 @@
   background: var(--stn-bg, #0a0b0d);
   color: var(--stn-text, #b8bcc6);
   border-bottom: var(--stn-bw, 1px) solid var(--stn-border, rgba(255, 255, 255, 0.08));
-  border-radius: var(--stn-radius, 0);
+  border-radius: var(--stn-rtl, var(--stn-radius, 0))
+    var(--stn-rtr, var(--stn-radius, 0))
+    var(--stn-rbr, var(--stn-radius, 0))
+    var(--stn-rbl, var(--stn-radius, 0));
   backdrop-filter: blur(var(--stn-blur, 16px));
   -webkit-backdrop-filter: blur(var(--stn-blur, 16px));
   box-shadow: var(--stn-shadow, none);

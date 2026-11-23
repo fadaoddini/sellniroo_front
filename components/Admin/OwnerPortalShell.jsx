@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo, useState } from 'react'
+import React, { Suspense, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import {
@@ -25,6 +25,8 @@ import {
   Rocket,
 } from 'lucide-react'
 import {
+  isOwnerNavItemVisible,
+  isReboControlSite,
   normalizeIranMobile,
   OWNER_PHONES,
   OWNER_PROFILE,
@@ -172,7 +174,7 @@ function isSectionPath(pathname, searchParams, section) {
  *
  * pageNav?: [{ id, label, icon?, href?, onClick?, active? }]
  */
-export default function OwnerPortalShell({
+function OwnerPortalShellInner({
   brand = 'web',
   brandAccent = 'admin',
   tagline = '',
@@ -184,6 +186,8 @@ export default function OwnerPortalShell({
   isAuthenticated = false,
   user = null,
   displayName = '',
+  moduleMap = {},
+  isReboHub: isReboHubProp,
   deniedTitle = 'دسترسی مجاز نیست',
   deniedMessage = 'این بخش فقط برای مالک و طراح پلتفرم است.\nشمارهٔ حساب فعلی شما در لیست دسترسی قرار ندارد.',
   deniedHomeHref = '/dashboard',
@@ -194,7 +198,36 @@ export default function OwnerPortalShell({
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
-  const sections = NAV_SECTIONS
+  const reboHub =
+    typeof isReboHubProp === 'boolean'
+      ? isReboHubProp
+      : isReboControlSite(moduleMap)
+
+  const sections = useMemo(() => {
+    return NAV_SECTIONS.map((section) => {
+      const href = section.href || (section.items || [])[0]?.href
+      if (href && !isOwnerNavItemVisible(href, moduleMap)) {
+        return null
+      }
+      // سیستم ربو / سرور فقط هاب ربو
+      if (
+        (section.id === 'rebosystem' || section.id === 'serversystem') &&
+        !reboHub
+      ) {
+        return null
+      }
+      if (section.id === 'shopdesign' && !isOwnerNavItemVisible('/shopdesign', moduleMap)) {
+        return null
+      }
+      const children = (section.children || []).filter((item) =>
+        isOwnerNavItemVisible(item.href, moduleMap),
+      )
+      const items = (section.items || []).filter((item) =>
+        isOwnerNavItemVisible(item.href, moduleMap),
+      )
+      return { ...section, children, items }
+    }).filter(Boolean)
+  }, [moduleMap, reboHub])
 
   const flatNav = useMemo(() => {
     const rows = []
@@ -470,5 +503,23 @@ export default function OwnerPortalShell({
         </div>
       </div>
     </div>
+  )
+}
+
+/** useSearchParams داخل Suspense — بدون این، nextoo build روی صفحات پورتال می‌ترکد */
+export default function OwnerPortalShell(props) {
+  return (
+    <Suspense
+      fallback={
+        <div className={styles.page}>
+          <div className={styles.stateBox}>
+            <RefreshCw size={28} className={styles.spin} />
+            <p>در حال بارگذاری...</p>
+          </div>
+        </div>
+      }
+    >
+      <OwnerPortalShellInner {...props} />
+    </Suspense>
   )
 }

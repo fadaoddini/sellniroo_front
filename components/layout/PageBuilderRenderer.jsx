@@ -2,6 +2,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import ChromeHeroOverlayStack from '@/components/layout/ChromeHeroOverlayStack'
 import {
   isJobBoardWidgetType,
   normalizeJobBoardWidgetSettings,
@@ -98,7 +99,11 @@ import {
   SchoolRoleBar,
   SchoolPortals,
   SchoolReportPreview,
-  SCHOOL_WIDGET_TYPES,
+  SchoolTools,
+  SchoolTopStudentsRecycler,
+  SchoolClassLeaders,
+  SchoolTeacherIntroRecycler,
+  SchoolCounselorIntroRecycler,
 } from '@/components/widgets/school'
 import { renderNobatWidget } from '@/components/widgets/nobat'
 import { NOBAT_WIDGET_TYPES } from '@/config/nobatWidgetSettings'
@@ -256,11 +261,22 @@ function isChromeWidgetType(type) {
   )
 }
 
+/**
+ * ویجت‌هایی که خودشان پدینگ عمودی کامل دارند —
+ * فقط این‌ها پدینگ سکشن را صفر می‌کنند (نه همهٔ ویجت‌های مدرسه).
+ */
+const SCHOOL_SELF_SPACED_TYPES = new Set([
+  'school_landing',
+  'school_hero_breaking',
+  'school_hero',
+  'school_animation',
+])
+
 /** ویجت‌هایی که خودشان پدینگ عمودی دارند — پدینگ ردیف صفحه‌ساز فاصلهٔ دوبل می‌سازد */
 function isSelfSpacedWidgetType(type) {
   return (
     isChromeWidgetType(type) ||
-    type === 'school_hero_breaking' ||
+    SCHOOL_SELF_SPACED_TYPES.has(type) ||
     type === 'cta_contact' ||
     type === 'video_gallery' ||
     type === 'video_archive_grid' ||
@@ -278,7 +294,6 @@ function isSelfSpacedWidgetType(type) {
     GYM_WIDGET_TYPES.includes(type) ||
     isGymWidgetType(type) ||
     isHeroWithMenuWidgetType(type) ||
-    SCHOOL_WIDGET_TYPES.includes(type) ||
     NOBAT_WIDGET_TYPES.includes(type) ||
     INVENTORY_WIDGET_TYPES.includes(type) ||
     type === 'booking_cta' ||
@@ -558,8 +573,18 @@ function renderWidget(instance, { articleSlot, settings, productContext } = {}) 
       return <SchoolReportPreview settings={s} />
     case 'school_counseling':
       return <SchoolCounseling settings={s} />
+    case 'school_tools':
+      return <SchoolTools settings={s} />
     case 'school_closing':
       return <SchoolClosing settings={s} />
+    case 'school_top_students':
+      return <SchoolTopStudentsRecycler settings={s} />
+    case 'school_class_leaders':
+      return <SchoolClassLeaders settings={s} />
+    case 'school_teacher_intro':
+      return <SchoolTeacherIntroRecycler settings={s} />
+    case 'school_counselor_intro':
+      return <SchoolCounselorIntroRecycler settings={s} />
     case 'booking_form':
       return (
         <ModuleGate moduleKey={SITE_MODULE_KEYS.BOOKING_WIDGET}>
@@ -757,13 +782,53 @@ function getDesktopStickyChromeMeta(row) {
   return null
 }
 
-/** اسلایدر عمیق + انیمیشن انتخاب‌شده را جفت می‌کند */
-function groupRowsForDeepReveal(rows) {
+/** هدر/منوی overlay + هیرو زیرش را در یک استک جمع می‌کند */
+function groupRowsForChromeHeroOverlay(rows) {
   const list = Array.isArray(rows) ? rows : []
   const out = []
-  for (let i = 0; i < list.length; i += 1) {
+  let i = 0
+  while (i < list.length) {
     const row = list[i]
-    const next = list[i + 1]
+    if (row?.chrome_overlay_hero) {
+      const chromeRows = []
+      while (i < list.length && list[i]?.chrome_overlay_hero) {
+        chromeRows.push(list[i])
+        i += 1
+      }
+      const heroRow =
+        i < list.length && list[i]?.chrome_underlay_hero ? list[i] : null
+      if (heroRow) {
+        out.push({
+          kind: 'chrome_hero_overlay',
+          id: `chrome_hero_${chromeRows[0]?.id || 'c'}_${heroRow.id}`,
+          chromeRows,
+          heroRow,
+        })
+        i += 1
+        continue
+      }
+      chromeRows.forEach((r) => out.push({ kind: 'row', id: r.id, row: r }))
+      continue
+    }
+    out.push({ kind: 'row', id: row.id, row })
+    i += 1
+  }
+  return out
+}
+
+/** اسلایدر عمیق + انیمیشن انتخاب‌شده را جفت می‌کند */
+function groupRowsForDeepReveal(rows) {
+  const list = groupRowsForChromeHeroOverlay(rows)
+  const out = []
+  for (let i = 0; i < list.length; i += 1) {
+    const entry = list[i]
+    if (entry.kind !== 'row') {
+      out.push(entry)
+      continue
+    }
+    const row = entry.row
+    const nextEntry = list[i + 1]
+    const next = nextEntry?.kind === 'row' ? nextEntry.row : null
     const a = getSoloWidget(row)
     const b = next ? getSoloWidget(next) : null
     if (
@@ -782,7 +847,7 @@ function groupRowsForDeepReveal(rows) {
       })
       i += 1
     } else {
-      out.push({ kind: 'row', id: row.id, row })
+      out.push(entry)
     }
   }
   return out
@@ -852,6 +917,127 @@ export default function PageBuilderRenderer({
     )
   )
 
+  const renderRowSection = (row, { skipSticky = false } = {}) => {
+    if (!row) return null
+    const width =
+      row.width === 'inherit' ? L.page_width : row.width || L.page_width
+    const columns = row.columns || []
+    const multiCol = columns.length > 1 && !isMobile
+    const onlySelfSpaced =
+      columns.length > 0 &&
+      columns.every(
+        (col) =>
+          (col.widgets || []).length > 0 &&
+          (col.widgets || []).every((w) => isSelfSpacedWidgetType(w.type))
+      )
+    const padY = onlySelfSpaced ? 'none' : row.padding_y
+    const stickyChrome = skipSticky ? null : getDesktopStickyChromeMeta(row)
+    const overlayChrome = !!row.chrome_overlay_hero
+    const underlayHero = !!row.chrome_underlay_hero
+
+    const sectionBg = String(row.background || '').trim()
+    const sectionStyle = {
+      ...(stickyChrome
+        ? { '--pb-sticky-nav-top': `${stickyChrome.offset}px` }
+        : {}),
+      ...(sectionBg ? { background: sectionBg } : {}),
+    }
+
+    return (
+      <section
+        key={row.id}
+        className={`${styles.section} ${styles[`pad_${padY}`] || ''} ${
+          width === 'full' ? styles.sectionFull : styles.sectionBoxed
+        }${stickyChrome ? ` ${styles.sectionStickyNav}` : ''}`}
+        style={Object.keys(sectionStyle).length ? sectionStyle : undefined}
+        data-layout-section={row.id}
+        data-pb-chrome-section={onlySelfSpaced || overlayChrome ? '1' : undefined}
+        data-sticky-top-nav={stickyChrome ? '1' : undefined}
+        data-chrome-overlay-hero={overlayChrome ? '1' : undefined}
+        data-chrome-underlay-hero={underlayHero ? '1' : undefined}
+      >
+        <div
+          className={styles.columns}
+          style={{
+            gridTemplateColumns: multiCol
+              ? columns
+                  .map((c) => `minmax(0, ${Number(c.span) || 1}fr)`)
+                  .join(' ')
+              : 'minmax(0, 1fr)',
+          }}
+        >
+          {columns.map((col, colIdx) => {
+            const widgets = col.widgets || []
+            if (!widgets.length) return null
+            const stackedFromSide =
+              isMobile && columns.length > 1 && colIdx > 0
+            const grouped = groupWidgetsForDeepReveal(widgets)
+            return (
+              <div
+                key={col.id || `col_${colIdx}`}
+                className={styles.column}
+                style={
+                  multiCol
+                    ? { gridColumn: colIdx + 1 }
+                    : stackedFromSide
+                      ? { marginTop: '0.85rem' }
+                      : undefined
+                }
+                data-pb-col={columns.length > 1 ? colIdx + 1 : undefined}
+              >
+                {grouped.map((item) => {
+                  const constrainBleed = multiCol
+                  if (item.kind === 'deep_reveal') {
+                    return (
+                      <div
+                        key={`${item.deepWidget.id}_${item.underWidget.id}`}
+                        className={`${styles.widget} ${styles.widgetBleed}`}
+                        data-pb-chrome="1"
+                      >
+                        <DeepRevealPin
+                          deepWidget={item.deepWidget}
+                          underWidget={item.underWidget}
+                          renderUnder={(uw) =>
+                            renderWidget(uw, {
+                              articleSlot,
+                              settings: {
+                                ...settingsForColumn(uw, constrainBleed),
+                                deep_reveal_pinned: true,
+                                scene_full_page: true,
+                              },
+                              productContext,
+                            })
+                          }
+                        />
+                      </div>
+                    )
+                  }
+                  const w = item.widget
+                  const settings = settingsForColumn(w, constrainBleed)
+                  const bleed = widgetBleedClass(w, width, constrainBleed)
+                  const chrome = isChromeWidgetType(w.type)
+                  return (
+                    <div
+                      key={w.id}
+                      className={`${styles.widget} ${bleed ? styles.widgetBleed : ''}`}
+                      data-pb-chrome={chrome ? '1' : undefined}
+                    >
+                      {renderWidget(w, {
+                        articleSlot,
+                        settings,
+                        productContext,
+                      })}
+                    </div>
+                  )
+                })}
+              </div>
+            )
+          })}
+        </div>
+      </section>
+    )
+  }
+
   return (
     <div
       className={`${styles.page} ${L.page_width === 'full' ? styles.pageFluid : styles.pageBoxed}`}
@@ -863,6 +1049,18 @@ export default function PageBuilderRenderer({
       data-pb-mobile={isMobile ? '1' : '0'}
     >
       {groupRowsForDeepReveal(L.rows).map((entry) => {
+        if (entry.kind === 'chrome_hero_overlay') {
+          return (
+            <ChromeHeroOverlayStack
+              key={entry.id}
+              chrome={entry.chromeRows.map((row) =>
+                renderRowSection(row, { skipSticky: true }),
+              )}
+              hero={renderRowSection(entry.heroRow, { skipSticky: true })}
+            />
+          )
+        }
+
         if (entry.kind === 'deep_reveal') {
           const width =
             entry.deepRow.width === 'inherit'
@@ -909,118 +1107,7 @@ export default function PageBuilderRenderer({
           )
         }
 
-        const row = entry.row
-        const width =
-          row.width === 'inherit' ? L.page_width : row.width || L.page_width
-        const columns = row.columns || []
-        /* روی موبایل همیشه تک‌ستونه — بدون gridColumn ضمنی و بدون خاموش‌کردن bleed */
-        const multiCol = columns.length > 1 && !isMobile
-        /* کروم یا سکشن‌های خودپدینگ‌دار: پدینگ ردیف را صفر کن تا فاصلهٔ دوبل نیاید */
-        const onlySelfSpaced =
-          columns.length > 0 &&
-          columns.every(
-            (col) =>
-              (col.widgets || []).length > 0 &&
-              (col.widgets || []).every((w) => isSelfSpacedWidgetType(w.type))
-          )
-        const padY = onlySelfSpaced ? 'none' : row.padding_y
-        const stickyChrome = getDesktopStickyChromeMeta(row)
-
-        return (
-          <section
-            key={row.id}
-            className={`${styles.section} ${styles[`pad_${padY}`] || ''} ${
-              width === 'full' ? styles.sectionFull : styles.sectionBoxed
-            }${stickyChrome ? ` ${styles.sectionStickyNav}` : ''}`}
-            style={
-              stickyChrome
-                ? { '--pb-sticky-nav-top': `${stickyChrome.offset}px` }
-                : undefined
-            }
-            data-layout-section={row.id}
-            data-pb-chrome-section={onlySelfSpaced ? '1' : undefined}
-            data-sticky-top-nav={stickyChrome ? '1' : undefined}
-          >
-            <div
-              className={styles.columns}
-              style={{
-                gridTemplateColumns: multiCol
-                  ? columns
-                      .map((c) => `minmax(0, ${Number(c.span) || 1}fr)`)
-                      .join(' ')
-                  : 'minmax(0, 1fr)',
-              }}
-            >
-              {columns.map((col, colIdx) => {
-                const widgets = col.widgets || []
-                if (!widgets.length) return null
-                const stackedFromSide =
-                  isMobile && columns.length > 1 && colIdx > 0
-                const grouped = groupWidgetsForDeepReveal(widgets)
-                return (
-                  <div
-                    key={col.id || `col_${colIdx}`}
-                    className={styles.column}
-                    style={
-                      multiCol
-                        ? { gridColumn: colIdx + 1 }
-                        : stackedFromSide
-                          ? { marginTop: '0.85rem' }
-                          : undefined
-                    }
-                    data-pb-col={columns.length > 1 ? colIdx + 1 : undefined}
-                  >
-                    {grouped.map((item) => {
-                      const constrainBleed = multiCol
-                      if (item.kind === 'deep_reveal') {
-                        return (
-                          <div
-                            key={`${item.deepWidget.id}_${item.underWidget.id}`}
-                            className={`${styles.widget} ${styles.widgetBleed}`}
-                            data-pb-chrome="1"
-                          >
-                            <DeepRevealPin
-                              deepWidget={item.deepWidget}
-                              underWidget={item.underWidget}
-                              renderUnder={(uw) =>
-                                renderWidget(uw, {
-                                  articleSlot,
-                                  settings: {
-                                    ...settingsForColumn(uw, constrainBleed),
-                                    deep_reveal_pinned: true,
-                                    scene_full_page: true,
-                                  },
-                                  productContext,
-                                })
-                              }
-                            />
-                          </div>
-                        )
-                      }
-                      const w = item.widget
-                      const settings = settingsForColumn(w, constrainBleed)
-                      const bleed = widgetBleedClass(w, width, constrainBleed)
-                      const chrome = isChromeWidgetType(w.type)
-                      return (
-                        <div
-                          key={w.id}
-                          className={`${styles.widget} ${bleed ? styles.widgetBleed : ''}`}
-                          data-pb-chrome={chrome ? '1' : undefined}
-                        >
-                          {renderWidget(w, {
-                            articleSlot,
-                            settings,
-                            productContext,
-                          })}
-                        </div>
-                      )
-                    })}
-                  </div>
-                )
-              })}
-            </div>
-          </section>
-        )
+        return renderRowSection(entry.row)
       })}
       {!hasArticleWidget && articleSlot ? (
         <section className={`${styles.section} ${styles.pad_md} ${styles.sectionBoxed}`}>

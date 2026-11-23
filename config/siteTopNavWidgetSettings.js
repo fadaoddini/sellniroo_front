@@ -44,6 +44,13 @@ export const SITE_TOP_NAV_COLOR_FIELDS = [
   { key: 'color_hamburger', label: 'همبرگری' },
 ]
 
+export const SITE_TOP_NAV_RADIUS_CORNERS = [
+  { key: 'radius_tl', label: 'بالا چپ' },
+  { key: 'radius_tr', label: 'بالا راست' },
+  { key: 'radius_br', label: 'پایین راست' },
+  { key: 'radius_bl', label: 'پایین چپ' },
+]
+
 export const SITE_TOP_NAV_VIEWPORT_KEYS = [
   'sticky',
   'sticky_offset',
@@ -53,6 +60,10 @@ export const SITE_TOP_NAV_VIEWPORT_KEYS = [
   'shadow',
   'border_width',
   'radius',
+  'radius_tl',
+  'radius_tr',
+  'radius_br',
+  'radius_bl',
   'show_logo',
   'logo_height',
   'show_nav',
@@ -115,6 +126,8 @@ export const SITE_TOP_NAV_SHARED_ROOT_KEYS = new Set([
   'color_avatar_border',
   'color_btn_bg',
   'color_btn_text',
+  /** شناسه تم اعمال‌شده از کتابخانه تم منو */
+  'theme_id',
 ])
 
 export const SITE_TOP_NAV_MOBILE_STYLE_OPTIONS = [
@@ -146,6 +159,7 @@ export const SITE_TOP_NAV_MOBILE_STYLE_OPTIONS = [
 ]
 
 export const DEFAULT_SITE_TOP_NAV_WIDGET_SETTINGS = {
+  theme_id: '',
   show_on_mobile: true,
   show_on_desktop: true,
   use_site_logo: true,
@@ -170,6 +184,10 @@ export const DEFAULT_SITE_TOP_NAV_WIDGET_SETTINGS = {
   shadow: true,
   border_width: 1,
   radius: 0,
+  radius_tl: 0,
+  radius_tr: 0,
+  radius_br: 0,
+  radius_bl: 0,
   show_logo: true,
   logo_height: 40,
   show_nav: true,
@@ -215,6 +233,10 @@ export const DEFAULT_SITE_TOP_NAV_MOBILE = {
   shadow: true,
   border_width: 1,
   radius: 16,
+  radius_tl: 16,
+  radius_tr: 16,
+  radius_br: 16,
+  radius_bl: 16,
   show_logo: true,
   logo_height: 34,
   show_nav: true,
@@ -427,9 +449,19 @@ function coerceSiteTopNavSettings(merged, rawRoot = {}) {
     pxNum(s.border_width, DEFAULT_SITE_TOP_NAV_WIDGET_SETTINGS.border_width, 4)
   )
   s.radius = Math.min(
-    40,
-    pxNum(s.radius, DEFAULT_SITE_TOP_NAV_WIDGET_SETTINGS.radius, 40)
+    48,
+    pxNum(s.radius, DEFAULT_SITE_TOP_NAV_WIDGET_SETTINGS.radius, 48)
   )
+  ;['radius_tl', 'radius_tr', 'radius_br', 'radius_bl'].forEach((k) => {
+    const hasOwn =
+      Object.prototype.hasOwnProperty.call(merged, k) &&
+      merged[k] !== null &&
+      merged[k] !== ''
+    s[k] = Math.min(
+      48,
+      pxNum(hasOwn ? merged[k] : s.radius, s.radius, 48),
+    )
+  })
   s.logo_height = Math.min(
     72,
     Math.max(
@@ -514,6 +546,10 @@ export function siteTopNavCssVars(settings, opts = {}) {
     '--stn-blur': `${s.blur}px`,
     '--stn-bw': `${s.border_width}px`,
     '--stn-radius': `${s.radius}px`,
+    '--stn-rtl': `${s.radius_tl || 0}px`,
+    '--stn-rtr': `${s.radius_tr || 0}px`,
+    '--stn-rbr': `${s.radius_br || 0}px`,
+    '--stn-rbl': `${s.radius_bl || 0}px`,
     '--stn-logo-h': `${s.logo_height}px`,
     '--stn-gap': `${s.nav_gap}px`,
     '--stn-link-radius': `${s.link_radius}px`,

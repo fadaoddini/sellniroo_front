@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { Store } from 'lucide-react'
 import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
@@ -10,7 +11,7 @@ import {
 import useOwnerGate from '@/components/Admin/useOwnerGate'
 import styles from '../adminweb/AdminWeb.module.css'
 
-export default function ShopDesignPage() {
+function ShopDesignInner() {
   const gate = useOwnerGate('/shopdesign')
 
   return (
@@ -54,5 +55,13 @@ export default function ShopDesignPage() {
         </div>
       </section>
     </OwnerPortalShell>
+  )
+}
+
+export default function ShopDesignPage() {
+  return (
+    <Suspense fallback={null}>
+      <ShopDesignInner />
+    </Suspense>
   )
 }

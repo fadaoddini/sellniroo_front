@@ -13,6 +13,7 @@ import {
   MODULE_PAGE_DEFS,
   SHARED_INTERNAL_LAYOUT_KEY,
   SHARED_INTERNAL_LAYOUT_KEY_LEGACY,
+  getSharedInternalLayoutRaw,
   normalizeModulePageLayout,
   normalizeSharedInternalLayout,
   createDefaultSharedInternalLayout,
@@ -101,7 +102,7 @@ function synthesizeEmbeddedChrome(homeLayout) {
         ]
       }
       if (
-        (type === 'school_landing' || type === 'school_hero_breaking') &&
+        type === 'school_landing' &&
         (s.embed_breaking === true || s.show_breaking_in_hero === true)
       ) {
         return [
@@ -141,7 +142,24 @@ export function applyHomeChromeSettingsToShared(sharedLayout, homeLayout) {
       ...col,
       widgets: (col.widgets || []).map((w) => {
         const t = String(w?.type || '')
-        if (t === 'breaking_news') sawBreaking = true
+        if (t === 'breaking_news') {
+          sawBreaking = true
+          // تنظیمات ذخیره‌شدهٔ چیدمان مشترک (/ticker) اولویت دارد
+          if (
+            w.settings &&
+            typeof w.settings === 'object' &&
+            Object.keys(w.settings).length > 0
+          ) {
+            return w
+          }
+          if (settingsByType.breaking_news) {
+            return {
+              ...w,
+              settings: cloneSettings(settingsByType.breaking_news),
+            }
+          }
+          return w
+        }
         if (t && settingsByType[t]) {
           return { ...w, settings: cloneSettings(settingsByType[t]) }
         }
@@ -197,6 +215,13 @@ export function extractChromeWidgets(homeLayout) {
         settings: cloneSettings(w.settings),
       })
     }
+  }
+  // اگر خبر فوری فقط داخل هیرو/لندینگ مدرسه embed شده، برای صفحات داخلی
+  // یک ویجت breaking_news هم‌تم هم استخراج کن (حتی وقتی ویجت‌های دیگر در سکشن ۱ هستند)
+  const hasBreaking = out.some((w) => w?.type === 'breaking_news')
+  if (!hasBreaking) {
+    const syn = synthesizeEmbeddedChrome(homeLayout)
+    if (syn.length) out.push(...syn)
   }
   if (out.length) return out
   return synthesizeEmbeddedChrome(homeLayout)
@@ -523,7 +548,8 @@ export function buildSyncedLayoutsFromHome(settings) {
 
   MODULE_PAGE_DEFS.forEach((def) => {
     const prev = normalizeModulePageLayout(moduleMap[def.key], def.key)
-    if (def.keepOwnChrome) {
+    // keepOwnChrome یا صفحات مدرسه (ownChromeWhenSchool): کروم صفحه حفظ شود
+    if (def.keepOwnChrome || def.ownChromeWhenSchool) {
       moduleMap[def.key] = stripSyncedHeroWidgets(prev)
     } else {
       // فقط محتوا؛ کروم از shared در زمان اجرا می‌آید

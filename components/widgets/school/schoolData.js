@@ -7,7 +7,21 @@ export const SCHOOL_WIDGET_TYPES = [
   'school_portals',
   'school_report_preview',
   'school_counseling',
+  'school_tools',
   'school_closing',
+  'school_top_students',
+  'school_class_leaders',
+  'school_teacher_intro',
+  'school_counselor_intro',
+]
+
+/** ویجت‌های سکشن‌های معرفی مدرسه (برای چیدمان زیرهم) */
+export const SCHOOL_INTRO_SECTION_WIDGETS = [
+  { type: 'school_portals', idPrefix: 'w_sc_portals' },
+  { type: 'school_report_preview', idPrefix: 'w_sc_report' },
+  { type: 'school_counseling', idPrefix: 'w_sc_counsel' },
+  { type: 'school_tools', idPrefix: 'w_sc_tools' },
+  { type: 'school_closing', idPrefix: 'w_sc_closing' },
 ]
 
 /** تنظیمات خبر فوری شفاف روی گرادیان هیرو */
@@ -108,6 +122,8 @@ export const DEFAULT_SCHOOL_LANDING = {
   hide_hero: false,
   hide_mobile_dock: false,
   hide_portals: false,
+  /** هدر/منوی سراسری روی بک‌گراند این ویجت بنشینند */
+  chrome_over_hero: false,
   show_on_mobile: true,
   show_on_desktop: true,
 }
@@ -189,6 +205,8 @@ export function normalizeSchoolSettings(raw = {}, fallback = DEFAULT_SCHOOL_LAND
     hide_hero: s.hide_hero === true,
     hide_mobile_dock: s.hide_mobile_dock === true || s.hide_hero === true,
     hide_portals: s.hide_portals === true,
+    chrome_over_hero:
+      s.chrome_over_hero === true || s.overlay_site_chrome === true,
     show_on_mobile: s.show_on_mobile !== false,
     show_on_desktop: s.show_on_desktop !== false,
   }

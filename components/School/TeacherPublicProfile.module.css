@@ -1,0 +1,449 @@
+/* پروفایل عمومی معلم — بدون بک‌گراند صفحه؛ لایهٔ زیرین سایت می‌ماند */
+
+.root {
+  --tpp-ink: #0f241c;
+  --tpp-muted: rgba(15, 36, 28, 0.62);
+  --tpp-line: rgba(15, 36, 28, 0.1);
+  --tpp-forest: #004733;
+  --tpp-sea: #568d66;
+  --tpp-teal: #a5c1ae;
+  --tpp-gold: #c9a227;
+  --tpp-gold-soft: rgba(201, 162, 39, 0.16);
+  --tpp-glass: rgba(255, 255, 255, 0.72);
+  --tpp-glass-strong: rgba(255, 255, 255, 0.88);
+  --font-r: var(--font-iran, 'iran', Tahoma, sans-serif);
+  --font-b: var(--font-iran-bold, 'iran_bold', Tahoma, sans-serif);
+  --font-x: var(--font-iran-extra, 'iran_extra', Tahoma, sans-serif);
+
+  direction: rtl;
+  /* هم‌عرض modulePageContent / منو — بدون max-width و margin افقی اضافه */
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  box-sizing: border-box;
+  padding: 1.25rem 0 2.75rem;
+  background: transparent;
+  color: var(--tpp-ink);
+  font-family: var(--font-r);
+}
+
+.inner {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  animation: tppIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes tppIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* —— هیرو —— */
+.hero {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1.35rem 1.5rem;
+  align-items: center;
+  padding: 0.15rem 0 0.35rem;
+}
+
+.avatarWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatarRing {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  padding: 4px;
+  background: linear-gradient(
+    145deg,
+    var(--tpp-gold) 0%,
+    #e8d48a 42%,
+    var(--tpp-sea) 100%
+  );
+  box-shadow: 0 12px 32px rgba(0, 71, 51, 0.18);
+}
+
+.avatar,
+.avatarFallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: block;
+  object-fit: cover;
+  background: var(--tpp-glass-strong);
+  border: 3px solid rgba(255, 255, 255, 0.92);
+}
+
+.avatarFallback {
+  display: grid;
+  place-items: center;
+  color: var(--tpp-forest);
+  font-family: var(--font-x);
+  font-size: 2.1rem;
+  font-weight: 400;
+}
+
+.identity {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.kicker {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-b);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--tpp-sea);
+}
+
+.name {
+  margin: 0;
+  font-family: var(--font-x);
+  font-weight: 400;
+  font-size: clamp(1.65rem, 4vw, 2.35rem);
+  line-height: 1.2;
+  color: var(--tpp-forest);
+  letter-spacing: -0.01em;
+}
+
+.specialty {
+  margin: 0;
+  font-family: var(--font-b);
+  font-weight: 400;
+  font-size: 0.98rem;
+  color: var(--tpp-gold);
+}
+
+.bio {
+  margin: 0.25rem 0 0;
+  max-width: 34rem;
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: var(--tpp-muted);
+}
+
+.qrCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.7rem 0.75rem 0.65rem;
+  border-radius: 18px;
+  background: var(--tpp-glass-strong);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 14px 36px rgba(15, 36, 28, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.qrCard:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 18px 40px rgba(15, 36, 28, 0.14);
+}
+
+.qrImg {
+  width: 108px;
+  height: 108px;
+  display: block;
+  border-radius: 8px;
+}
+
+.qrLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-b);
+  font-size: 0.68rem;
+  font-weight: 400;
+  color: var(--tpp-forest);
+}
+
+/* —— سکشن‌ها —— */
+.section {
+  padding: 1.15rem 1.2rem 1.2rem;
+  border-radius: 20px;
+  background: var(--tpp-glass);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.65) inset,
+    0 10px 28px rgba(15, 36, 28, 0.06);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  animation: tppIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.section:nth-of-type(2) {
+  animation-delay: 0.05s;
+}
+.section:nth-of-type(3) {
+  animation-delay: 0.1s;
+}
+.section:nth-of-type(4) {
+  animation-delay: 0.14s;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.9rem;
+  font-family: var(--font-x);
+  font-weight: 400;
+  font-size: 1.05rem;
+  color: var(--tpp-forest);
+}
+
+.sectionTitleIcon {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 10px;
+  background: var(--tpp-gold-soft);
+  color: var(--tpp-gold);
+  flex-shrink: 0;
+}
+
+.html {
+  font-size: 0.92rem;
+  line-height: 1.9;
+  color: var(--tpp-ink);
+}
+
+.html img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+.html p {
+  margin: 0 0 0.75rem;
+}
+
+.video {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(15, 36, 28, 0.12);
+}
+
+.video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.videoFile {
+  width: 100%;
+  max-height: 440px;
+  border-radius: 14px;
+  background: rgba(15, 36, 28, 0.12);
+  display: block;
+}
+
+/* —— لیست‌ها —— */
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.listItem {
+  position: relative;
+  padding: 0.85rem 1rem 0.85rem 0.95rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--tpp-line);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.listItem::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0.7rem;
+  bottom: 0.7rem;
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--tpp-gold), var(--tpp-sea));
+}
+
+.listItem:hover {
+  background: rgba(255, 255, 255, 0.78);
+  border-color: rgba(0, 71, 51, 0.16);
+}
+
+.listItem strong {
+  font-family: var(--font-b);
+  font-weight: 400;
+  color: var(--tpp-forest);
+  font-size: 0.92rem;
+}
+
+.listItem p {
+  margin: 0.4rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: var(--tpp-muted);
+}
+
+.meta {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--tpp-muted);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-end: 0.35rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-family: var(--font-b);
+  font-size: 0.68rem;
+  font-weight: 400;
+  background: var(--tpp-gold-soft);
+  color: #8a6d12;
+  vertical-align: middle;
+}
+
+/* —— دروس —— */
+.subjects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.subject {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.42rem 0.85rem;
+  border-radius: 999px;
+  font-family: var(--font-b);
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--tpp-forest);
+  background: rgba(165, 193, 174, 0.28);
+  border: 1px solid rgba(86, 141, 102, 0.28);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.subject:hover {
+  transform: translateY(-1px);
+  background: rgba(165, 193, 174, 0.42);
+}
+
+/* —— فوتر —— */
+.footer {
+  display: flex;
+  justify-content: flex-start;
+  padding: 0.35rem 0.15rem 0;
+}
+
+.footerLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-b);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--tpp-forest);
+  text-decoration: none;
+  opacity: 0.78;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.footerLink:hover {
+  opacity: 1;
+  color: var(--tpp-gold);
+}
+
+/* —— حالت خالی / لود —— */
+.stateBox {
+  width: 100%;
+  max-width: 420px;
+  margin: 2.5rem auto;
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+  border-radius: 18px;
+  background: var(--tpp-glass);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.stateText {
+  margin: 0 0 0.85rem;
+  font-size: 0.92rem;
+  color: var(--tpp-muted);
+}
+
+.stateLink {
+  display: inline-flex;
+  font-family: var(--font-b);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--tpp-forest);
+  text-decoration: none;
+}
+
+.stateLink:hover {
+  color: var(--tpp-gold);
+}
+
+@media (max-width: 720px) {
+  .hero {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .identity {
+    align-items: center;
+  }
+
+  .bio {
+    max-width: none;
+  }
+
+  .qrCard {
+    width: min(100%, 200px);
+  }
+
+  .section {
+    padding: 1rem;
+    border-radius: 16px;
+  }
+}

@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { Layers } from 'lucide-react'
 import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
@@ -10,7 +11,7 @@ import {
 import useOwnerGate from '@/components/Admin/useOwnerGate'
 import styles from '../adminweb/AdminWeb.module.css'
 
-export default function ReboSystemPage() {
+function ReboSystemInner() {
   const gate = useOwnerGate('/rebosystem')
 
   return (
@@ -54,5 +55,13 @@ export default function ReboSystemPage() {
         </div>
       </section>
     </OwnerPortalShell>
+  )
+}
+
+export default function ReboSystemPage() {
+  return (
+    <Suspense fallback={null}>
+      <ReboSystemInner />
+    </Suspense>
   )
 }

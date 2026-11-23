@@ -105,21 +105,17 @@ export default function ReboPricingClient() {
       const rawPkgs = Array.isArray(data?.rebo_pricing?.packages)
         ? data.rebo_pricing.packages
         : []
-      const needsCore = CORE_REBO_PACKAGES.some((core) => {
-        const found = rawPkgs.find(
+      // فقط اگر موضوع اصلی کلاً غایب باشد اضافه کن — قیمت ذخیره‌شده را به ثابت کد برنگردان
+      const missingCore = CORE_REBO_PACKAGES.some((core) => {
+        return !rawPkgs.find(
           (p) =>
             p?.id === core.id ||
             String(p?.name || '').trim() === core.name,
         )
-        if (!found) return true
-        return (
-          Math.max(0, Math.round(Number(found.price) || 0)) !== core.price ||
-          String(found.name || '').trim() !== core.name
-        )
       })
       const next = normalizeReboPricing(data?.rebo_pricing)
       setPricing(next)
-      if (needsCore) {
+      if (missingCore) {
         try {
           const saved = await saveReboPricing(next, getAuthHeaders())
           setPricing(normalizeReboPricing(saved))

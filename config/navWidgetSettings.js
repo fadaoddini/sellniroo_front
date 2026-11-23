@@ -66,6 +66,20 @@ export const CART_PLACES = [
 
 export const JOB_CTA_PLACES = CART_PLACES
 
+/** حالت‌های جستجو در نوار خبر فوری */
+export const NAV_SEARCH_MODES = [
+  {
+    id: 'bar',
+    label: 'نوار کامل',
+    hint: 'فیلد + دکمه + متن راهنما',
+  },
+  {
+    id: 'icon',
+    label: 'آیکن بازشو',
+    hint: 'کنار پروفایل؛ با کلیک آرام باز می‌شود',
+  },
+]
+
 /** رنگ‌های دکمه‌های ساخت رزومه / شرکت */
 export const NAV_JOB_CTA_COLORS = [
   { key: 'color_resume_cta_bg', label: 'رزومه — پس‌زمینه' },
@@ -132,6 +146,11 @@ export const NAV_VIEWPORT_KEYS = [
   'cart_btn_size',
   'cart_btn_radius',
   'cart_badge_size',
+  'show_search',
+  'search_mode',
+  'search_placeholder',
+  'search_button_label',
+  'search_href',
   'show_resume_cta',
   'show_company_cta',
   'resume_cta_label',
@@ -227,6 +246,11 @@ export const DEFAULT_NAV_WIDGET_SETTINGS = {
   cart_btn_size: 32,
   cart_btn_radius: 8,
   cart_badge_size: 16,
+  show_search: false,
+  search_mode: 'icon',
+  search_placeholder: 'جستجو در سایت…',
+  search_button_label: 'جستجو',
+  search_href: '/search',
   show_resume_cta: false,
   show_company_cta: false,
   resume_cta_label: 'ساخت رزومه',
@@ -423,6 +447,19 @@ function coerceNavSettings(merged, rawRoot = {}) {
   if (!CART_PLACES.some((p) => p.id === s.cart_place)) {
     s.cart_place = 'before_profile'
   }
+  s.show_search = !!merged.show_search
+  s.search_mode = merged.search_mode === 'bar' ? 'bar' : 'icon'
+  s.search_placeholder =
+    String(
+      s.search_placeholder || DEFAULT_NAV_WIDGET_SETTINGS.search_placeholder,
+    ).trim() || DEFAULT_NAV_WIDGET_SETTINGS.search_placeholder
+  s.search_button_label =
+    String(
+      s.search_button_label || DEFAULT_NAV_WIDGET_SETTINGS.search_button_label,
+    ).trim() || DEFAULT_NAV_WIDGET_SETTINGS.search_button_label
+  s.search_href =
+    String(s.search_href || DEFAULT_NAV_WIDGET_SETTINGS.search_href).trim() ||
+    DEFAULT_NAV_WIDGET_SETTINGS.search_href
   s.cart_icon = String(s.cart_icon || 'ShoppingCart').trim() || 'ShoppingCart'
   s.cart_href = String(s.cart_href || '').trim()
   s.cart_icon_size = Math.min(

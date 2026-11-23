@@ -75,6 +75,9 @@ const Dashboard = () => {
     featured_news: false,
     featured_news_slider: false,
     news_by_category: false,
+    school_hero_breaking: false,
+    school_landing: false,
+    school_hero: false,
   })
 
   const texts = {
@@ -99,7 +102,7 @@ const Dashboard = () => {
       schoolStudent: 'پنل دانش‌آموز',
       schoolCounselor: 'پنل مشاور',
       schoolAccount: 'حساب کاربری مدرسه',
-      homeHeroManage: 'تنظیمات صفحه اصلی',
+      homeHeroManage: 'محتوای هیرو مدرسه',
       softappsManage: 'نرم‌افزارهای کاربردی',
       todoService: 'میزکار سرویس (Todo)',
       repairsManage: 'داشبورد کامل تعمیرات',
@@ -196,7 +199,7 @@ const Dashboard = () => {
       schoolStudent: 'Student panel',
       schoolCounselor: 'Counselor panel',
       schoolAccount: 'School account',
-      homeHeroManage: 'Home page settings',
+      homeHeroManage: 'School hero content',
       softappsManage: 'Utility software',
       todoService: 'Service desk (Todo)',
       repairsManage: 'Full repairs dashboard',
@@ -291,6 +294,11 @@ const Dashboard = () => {
           findAllWidgetsByType(layout, 'featured_news_slider').length > 0,
         news_by_category:
           findAllWidgetsByType(layout, 'news_by_category').length > 0,
+        school_hero_breaking:
+          findAllWidgetsByType(layout, 'school_hero_breaking').length > 0,
+        school_landing:
+          findAllWidgetsByType(layout, 'school_landing').length > 0,
+        school_hero: findAllWidgetsByType(layout, 'school_hero').length > 0,
       })
     } catch {
       setLayoutWidgetTypes({
@@ -300,6 +308,9 @@ const Dashboard = () => {
         featured_news: false,
         featured_news_slider: false,
         news_by_category: false,
+        school_hero_breaking: false,
+        school_landing: false,
+        school_hero: false,
       })
     }
   }, [])
@@ -769,7 +780,12 @@ const Dashboard = () => {
         bgColor: '#e3f2fd',
         group: 'content',
       })
-      if (schoolOn) {
+      // محتوای هیرو مدرسه — فقط وقتی ویجت مربوط در چیدمان خانه باشد
+      if (
+        layoutWidgetTypes.school_hero_breaking ||
+        layoutWidgetTypes.school_landing ||
+        layoutWidgetTypes.school_hero
+      ) {
         pushAction({
           id: 'home-hero-manage',
           icon: <Images />,
@@ -818,15 +834,6 @@ const Dashboard = () => {
         group: 'content',
       })
       pushAction({
-        id: 'catalog-manage',
-        icon: <BookOpen />,
-        label: t.catalogManage,
-        href: '/catalog-manage',
-        color: '#800020',
-        bgColor: '#fce7f3',
-        group: 'content',
-      })
-      pushAction({
         id: 'quiz-manage',
         icon: <Brain />,
         label: t.quizManage,
@@ -834,6 +841,17 @@ const Dashboard = () => {
         color: '#800020',
         bgColor: '#fce7f3',
         group: 'content',
+      })
+      // فقط با ماژول فعال در داشبورد دیده می‌شوند
+      pushAction({
+        id: 'catalog-manage',
+        icon: <BookOpen />,
+        label: t.catalogManage,
+        href: '/catalog-manage',
+        color: '#800020',
+        bgColor: '#fce7f3',
+        group: 'content',
+        sectionCode: 'catalog-manage',
       })
       pushAction({
         id: 'faq-manage',
@@ -843,6 +861,7 @@ const Dashboard = () => {
         color: '#2d5a45',
         bgColor: '#e8f2ec',
         group: 'content',
+        sectionCode: 'faq-manage',
       })
       pushAction({
         id: 'curved-timeline-manage',
@@ -852,6 +871,7 @@ const Dashboard = () => {
         color: '#023c2c',
         bgColor: '#e8f5ef',
         group: 'site',
+        sectionCode: 'curved-timeline-manage',
       })
       pushAction({
         id: 'apps-manage',
@@ -861,6 +881,7 @@ const Dashboard = () => {
         color: '#0e7490',
         bgColor: '#e0f2fe',
         group: 'content',
+        sectionCode: 'apps-manage',
       })
       pushAction({
         id: 'todoservice',

@@ -116,17 +116,19 @@ export default function ProfileLayoutPanel() {
           <h2>چیدمان و دسترسی‌های /profile</h2>
           <p className={styles.sub}>
             وقتی چند ماژول با هم روشن‌اند، اینجا مشخص کنید سیستم اصلی پروفایل
-            کدام است و کدام بخش‌ها در پروفایل دیده شوند. هدر و رنگ نوار بالا از
-            صفحه اصلی می‌آید — در «چیدمان صفحه اصلی» دکمه «اعمال هدر و رنگ به
-            همه» را بزنید.
+            کدام است و کدام بخش‌ها دیده شوند. هدر و منوی صفحه پروفایل را جدا در{' '}
+            <Link href="/adminsettings?tab=pages&page=profile">
+              صفحات داخلی → پروفایل
+            </Link>{' '}
+            با سوییچ روشن/خاموش کنید.
           </p>
         </div>
         <div className={styles.headActions}>
           <Link
-            href="/adminsettings?tab=home"
+            href="/adminsettings?tab=pages&page=profile"
             className={styles.previewLink}
           >
-            همگام‌سازی هدر
+            هدر و منوی پروفایل
           </Link>
           <Link href="/profile" target="_blank" className={styles.previewLink}>
             مشاهده پروفایل
@@ -247,11 +249,11 @@ export default function ProfileLayoutPanel() {
       </div>
 
       <p className={styles.footNote}>
-        برای چیدمان ویجتی اطراف صفحه پروفایل از{' '}
+        چیدمان ویجتی، هدر و منوی /profile را از{' '}
         <Link href="/adminsettings?tab=pages&page=profile">
           صفحات داخلی → صفحه پروفایل
         </Link>{' '}
-        استفاده کنید.
+        تنظیم کنید — هدر و منو جدا قابل انتخاب‌اند.
       </p>
     </div>
   )

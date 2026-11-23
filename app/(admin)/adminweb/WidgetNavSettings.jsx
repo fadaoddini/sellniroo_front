@@ -26,12 +26,14 @@ import {
   PROFILE_MODES,
   PROFILE_SHAPES,
   SHEET_SPEEDS,
+  NAV_SEARCH_MODES,
   buildNavViewportPatch,
   getNavVisibilityFlags,
   normalizeNavWidgetSettings,
   snapshotNavViewportSettings,
 } from '@/config/navWidgetSettings'
 import LucideIconPicker from '@/components/common/LucideIconPicker'
+import WidgetBreakingNewsThemes from './WidgetBreakingNewsThemes'
 import styles from './AdminWeb.module.css'
 
 function resolveLogoPreview(url) {
@@ -354,6 +356,12 @@ export default function WidgetNavSettings({ type, settings: raw, onChange }) {
     <div className={styles.wsMinimal}>
       {isTickerBar ? (
         <>
+          <WidgetBreakingNewsThemes
+            settings={rawSettings}
+            onChange={(next) => {
+              if (typeof onChange === 'function') onChange(next)
+            }}
+          />
           <p className={styles.wsMiniLabel}>نمایش در دستگاه</p>
           <div className={styles.wsStack}>
             <Toggle
@@ -1090,6 +1098,91 @@ export default function WidgetNavSettings({ type, settings: raw, onChange }) {
                   />
                 ))}
               </div>
+            </>
+          ) : null}
+        </Accordion>
+      ) : null}
+
+      {isTickerBar ? (
+        <Accordion
+          id="search"
+          title="جستجو"
+          openId={openId}
+          setOpenId={setOpenId}
+        >
+          <div className={styles.wsStack}>
+            <Toggle
+              checked={!!settings.show_search}
+              onChange={(v) => patch('show_search', v)}
+              label="نمایش جستجو"
+              hint="کنار تصویر پروفایل"
+            />
+          </div>
+          {settings.show_search ? (
+            <>
+              <p className={`${styles.wsMiniLabel} ${styles.wsMiniLabelSpaced}`}>
+                حالت جستجو
+              </p>
+              <div
+                className={styles.wsSeg}
+                style={{ gridTemplateColumns: '1fr 1fr' }}
+              >
+                {NAV_SEARCH_MODES.map((m) => {
+                  const on = (settings.search_mode || 'icon') === m.id
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      className={`${styles.wsSegBtn} ${on ? styles.wsSegBtnActive : ''}`}
+                      onClick={() => patch('search_mode', m.id)}
+                      title={m.hint}
+                    >
+                      {m.label}
+                    </button>
+                  )
+                })}
+              </div>
+              <p className={styles.paletteHint} style={{ marginTop: 6 }}>
+                {(settings.search_mode || 'icon') === 'bar'
+                  ? 'نوار کامل: فیلد جستجو + دکمه + متن راهنما داخل فیلد.'
+                  : 'آیکن کنار پروفایل؛ با کلیک فضای جستجو به‌آرامی باز می‌شود.'}
+              </p>
+              <label className={styles.wsField}>
+                <span>متن داخل فیلد</span>
+                <input
+                  type="text"
+                  value={settings.search_placeholder || ''}
+                  onChange={(e) => patch('search_placeholder', e.target.value)}
+                  placeholder="جستجو در سایت…"
+                />
+              </label>
+              {(settings.search_mode || 'icon') === 'bar' ? (
+                <label className={styles.wsField}>
+                  <span>متن دکمه جستجو</span>
+                  <input
+                    type="text"
+                    value={settings.search_button_label || ''}
+                    onChange={(e) =>
+                      patch('search_button_label', e.target.value)
+                    }
+                    placeholder="جستجو"
+                  />
+                </label>
+              ) : null}
+              <label className={styles.wsField}>
+                <span>مسیر صفحه نتایج</span>
+                <input
+                  type="text"
+                  dir="ltr"
+                  value={settings.search_href || ''}
+                  onChange={(e) => patch('search_href', e.target.value)}
+                  placeholder="/search"
+                />
+              </label>
+              <p className={styles.paletteHint}>
+                پیش‌فرض /search (صفحه داخلی قابل‌چیدمان). برای پرش مستقیم به
+                لیست اخبار /news یا آگهی‌ها /jobs هم می‌توانید بگذارید.
+              </p>
             </>
           ) : null}
         </Accordion>

@@ -20,10 +20,43 @@ export const SHARED_INTERNAL_LAYOUT_EVENT =
  *   label: string,
  *   desc?: string,
  *   moduleKey: string,
+ *   altModuleKeys?: string[],
  *   contentWidget: string,
  *   event: string,
+ *   keepOwnChrome?: boolean,
+ *   ownChromeWhenSchool?: boolean,
+ *   relatedPaths?: string[],
  * }} ModulePageDef
  */
+
+/**
+ * آیا ماژول این صفحه (یا یکی از جایگزین‌ها) روشن است؟
+ * مثلاً پروفایل: job_profile یا school_profile.
+ */
+export function isModulePageModuleOn(def, moduleMap = {}) {
+  if (!def) return false
+  const map = moduleMap && typeof moduleMap === 'object' ? moduleMap : {}
+  if (map[def.moduleKey]) return true
+  const alts = Array.isArray(def.altModuleKeys) ? def.altModuleKeys : []
+  return alts.some((k) => !!map[k])
+}
+
+/**
+ * قالب مدرسه (بدون کاریابی) کروم اختصاصی news/profile دارد
+ * تا در adminsettings?tab=pages جدا از چیدمان مشترک / قالب شغلی تنظیم شود.
+ */
+export function pageKeepsOwnChrome(def, moduleMap = {}) {
+  if (!def) return false
+  if (def.keepOwnChrome === true) return true
+  if (!def.ownChromeWhenSchool) return false
+  const map = moduleMap && typeof moduleMap === 'object' ? moduleMap : {}
+  const schoolOn =
+    !!map[SITE_MODULE_KEYS.SCHOOL] ||
+    !!map[SITE_MODULE_KEYS.SCHOOL_PROFILE] ||
+    !!map[SITE_MODULE_KEYS.DATA_PACK_SCHOOL_THEME_ONE]
+  const jobOn = !!map[SITE_MODULE_KEYS.JOB_BOARD]
+  return schoolOn && !jobOn
+}
 
 /** @type {ModulePageDef[]} */
 export const MODULE_PAGE_DEFS = [
@@ -69,10 +102,64 @@ export const MODULE_PAGE_DEFS = [
     key: 'profile',
     path: '/profile',
     label: 'صفحه پروفایل',
-    desc: 'پروفایل اختصاصی سیستم فعال (کاریابی، فروشگاه، نوبت، …)',
+    desc: 'پروفایل اختصاصی سیستم فعال (مدرسه، کاریابی، فروشگاه، نوبت، …)',
     moduleKey: SITE_MODULE_KEYS.JOB_PROFILE,
+    altModuleKeys: [
+      SITE_MODULE_KEYS.SCHOOL_PROFILE,
+      SITE_MODULE_KEYS.SCHOOL,
+      SITE_MODULE_KEYS.SHOP_PROFILE,
+      SITE_MODULE_KEYS.BOOKING_PROFILE,
+      SITE_MODULE_KEYS.REPAIRS_PROFILE,
+      SITE_MODULE_KEYS.GYM_PROFILE,
+    ],
     contentWidget: 'profile_page',
     event: 'module-page-layout-changed:profile',
+    /** مدرسه: خبر فوری و منو روی خود صفحه؛ کاریابی: چیدمان مشترک */
+    ownChromeWhenSchool: true,
+  },
+  {
+    key: 'news',
+    path: '/news',
+    label: 'صفحه اخبار',
+    desc: 'لیست اخبار — در قالب مدرسه جای خبر فوری و منو روی همین صفحه تنظیم می‌شود',
+    moduleKey: SITE_MODULE_KEYS.NEWS,
+    contentWidget: 'news_list_content',
+    event: 'module-page-layout-changed:news',
+    ownChromeWhenSchool: true,
+  },
+  {
+    key: 'search',
+    path: '/search',
+    label: 'صفحه جستجو',
+    desc: 'نتایج جستجوی سایت به‌صورت لیست با فیلتر — از نوار خبر فوری',
+    moduleKey: SITE_MODULE_KEYS.BREAKING_NEWS,
+    altModuleKeys: [SITE_MODULE_KEYS.NEWS, SITE_MODULE_KEYS.JOB_BOARD],
+    contentWidget: 'search_page',
+    event: 'module-page-layout-changed:search',
+  },
+  {
+    key: 'teacher',
+    path: '/teachers',
+    label: 'معرفی معلم',
+    desc:
+      'پروفایل عمومی معلم با QR — مسیرهایی مثل /teachers/خانم-محمدی؛ هدر و منو با سوییچ صفحه',
+    moduleKey: SITE_MODULE_KEYS.SCHOOL,
+    altModuleKeys: [SITE_MODULE_KEYS.SCHOOL_PROFILE],
+    contentWidget: 'teacher_page',
+    event: 'module-page-layout-changed:teacher',
+    ownChromeWhenSchool: true,
+  },
+  {
+    key: 'counselor',
+    path: '/counselors',
+    label: 'معرفی مشاور',
+    desc:
+      'پروفایل عمومی مشاور با QR — مسیرهایی مثل /counselors/:slug؛ هدر و منو با سوییچ صفحه',
+    moduleKey: SITE_MODULE_KEYS.SCHOOL,
+    altModuleKeys: [SITE_MODULE_KEYS.SCHOOL_PROFILE],
+    contentWidget: 'counselor_page',
+    event: 'module-page-layout-changed:counselor',
+    ownChromeWhenSchool: true,
   },
   {
     key: 'contact',
@@ -318,6 +405,38 @@ export function createDefaultModulePageLayout(pageKey) {
 export function normalizeModulePageLayout(raw, pageKey) {
   if (isSharedInternalLayoutKey(pageKey)) {
     return normalizeSharedInternalLayout(raw)
+  }
+  // هدر/منو/فوتر سراسری — نباید به layout صفحه ماژول تبدیل شوند
+  if (
+    pageKey === 'chrome_header' ||
+    pageKey === 'chrome_menu' ||
+    pageKey === 'chrome_footer'
+  ) {
+    const kind =
+      pageKey === 'chrome_header'
+        ? 'header'
+        : pageKey === 'chrome_menu'
+          ? 'menu'
+          : 'footer'
+    const L = normalizeHomeLayout(raw || {})
+    if (!L.rows?.length) {
+      return normalizeHomeLayout({
+        version: 2,
+        page_width: 'full',
+        max_width: 1200,
+        gutter: 16,
+        rows: [
+          {
+            id: `sec_${kind}_default`,
+            template: '1',
+            width: 'full',
+            padding_y: 'none',
+            columns: [{ id: `col_${kind}_default`, span: 100, widgets: [] }],
+          },
+        ],
+      })
+    }
+    return L
   }
   const L = normalizeHomeLayout(raw)
   if (!L.rows?.length) {

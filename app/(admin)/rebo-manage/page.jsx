@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
@@ -18,10 +18,10 @@ import {
 } from 'lucide-react'
 import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
 import { getReboSystemPageNav } from '@/components/Admin/reboSystemNav'
+import useOwnerGate from '@/components/Admin/useOwnerGate'
 import { useAuth } from '@/contexts/AuthContext'
 import Config from '@/config/config'
 import { formatRial } from '@/config/reboPricing'
-import { isPlatformOwner, OWNER_PROFILE } from '@/utils/ownerAccess'
 import aw from '../adminweb/AdminWeb.module.css'
 import styles from './ReboManage.module.css'
 
@@ -156,15 +156,11 @@ function OrderCard({ order, busyId, onApprove, onReject }) {
   )
 }
 
-export default function ReboManagePage() {
+function ReboManageInner() {
   const router = useRouter()
-  const { isAuthenticated, loading, user, canManageEmployees, getAuthHeaders } =
-    useAuth()
-  const canManage =
-    user?.is_superuser ||
-    user?.is_staff ||
-    canManageEmployees ||
-    isPlatformOwner(user)
+  const gate = useOwnerGate('/rebo-manage')
+  const { getAuthHeaders } = useAuth()
+  const { isAuthenticated, loading, user, allowed: canManage } = gate
 
   const [tab, setTab] = useState('overview')
   const [stats, setStats] = useState(null)
@@ -270,11 +266,6 @@ export default function ReboManagePage() {
     setSettings((s) => ({ ...(s || {}), [key]: value }))
   }
 
-  const displayName =
-    user?.display_name ||
-    [user?.first_name, user?.last_name].filter(Boolean).join(' ') ||
-    OWNER_PROFILE.name
-
   return (
     <OwnerPortalShell
       brand="وب"
@@ -283,14 +274,7 @@ export default function ReboManagePage() {
       title="مدیریت ربو"
       wide
       pageNav={getReboSystemPageNav('/rebo-manage')}
-      loading={loading}
-      isAuthenticated={isAuthenticated}
-      allowed={canManage}
-      user={user}
-      displayName={displayName}
-      deniedTitle="دسترسی ندارید"
-      deniedMessage="این بخش فقط برای مدیر سایت و کارکنان مجاز است."
-      deniedHomeHref="/dashboard"
+      {...gate}
     >
       <div className={styles.embed} dir="rtl" lang="fa">
         <div className={styles.toolbar}>
@@ -590,5 +574,13 @@ export default function ReboManagePage() {
         ) : null}
       </div>
     </OwnerPortalShell>
+  )
+}
+
+export default function ReboManagePage() {
+  return (
+    <Suspense fallback={null}>
+      <ReboManageInner />
+    </Suspense>
   )
 }

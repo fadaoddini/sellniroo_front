@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import axios from 'axios'
@@ -102,7 +102,7 @@ async function turnOffModules(keys, moduleMap, headers) {
   return moduleMap
 }
 
-export default function TemplateImportPanel() {
+function TemplateImportPanelInner() {
   const { getAuthHeaders } = useAuth()
   const searchParams = useSearchParams()
   const presetDomain = (searchParams?.get('domain') || '').trim()
@@ -114,8 +114,11 @@ export default function TemplateImportPanel() {
   const [err, setErr] = useState('')
   const [msg, setMsg] = useState('')
   const [confirmTpl, setConfirmTpl] = useState(null)
+  /** activate = فقط ماژول‌ها (حفظ چیدمان) | reset = بازنویسی از بسته */
+  const [confirmMode, setConfirmMode] = useState('activate')
   const [detailTpl, setDetailTpl] = useState(null)
   const [ack, setAck] = useState(false)
+  const [wantFactoryReset, setWantFactoryReset] = useState(false)
   const [wantDedicatedBackend, setWantDedicatedBackend] = useState(true)
   const [dedicatedKeys, setDedicatedKeys] = useState([])
   const [installTpl, setInstallTpl] = useState(null)
@@ -488,7 +491,7 @@ export default function TemplateImportPanel() {
     return bits.join(' ')
   }
 
-  const applyTemplate = async (tpl) => {
+  const applyTemplate = async (tpl, { resetContent = false } = {}) => {
     const headers = getAuthHeaders()
     if (!headers?.Authorization) {
       setErr('برای اعمال قالب دوباره وارد شوید')
@@ -497,14 +500,21 @@ export default function TemplateImportPanel() {
     setBusyKey(tpl.key)
     setErr('')
     setMsg('')
+    // تعویض سیستم (مثلاً ربو → مدرسه): باید چیدمان بستهٔ مقصد بیاید
+    // فقط وقتی همان بسته دوباره فعال می‌شود، ویرایش‌های دستی حفظ می‌شود
+    const switching =
+      !!activeTpl && activeTpl.key !== tpl.key
+    const doReset = !!resetContent || switching
     try {
       const res = await axios.post(
         Config.endpoints.news.topicPacks.apply(),
         {
           pack: tpl.key,
-          replace_menu: true,
-          replace_tickers: true,
-          replace_heroes: true,
+          preserve_customizations: !doReset,
+          reset_content: doReset,
+          replace_menu: doReset,
+          replace_tickers: doReset,
+          replace_heroes: doReset,
         },
         { headers },
       )
@@ -531,7 +541,7 @@ export default function TemplateImportPanel() {
       if (wantDedicatedBackend && hasDedicatedBackend(tpl.key)) {
         extra = await buildDedicatedBackend(tpl, headers)
       }
-      if (tpl.custom) {
+      if (tpl.custom && doReset) {
         try {
           window.localStorage.removeItem(
             `rebo_design_wizard_v1:${tpl.key}`,
@@ -542,9 +552,13 @@ export default function TemplateImportPanel() {
       }
       setMsg(
         [
-          `فقط «${tpl.name}» فعال است — قالب قبلی و ماژول‌های اختصاصی‌اش خاموش شدند.`,
-          tpl.custom
-            ? 'چیدمان خانه، صفحات داخلی، پروفایل، سبد و منو خالی شد. از «طراحی قالب» مرحله‌به‌مرحله بسازید.'
+          switching
+            ? `سیستم «${tpl.name}» جایگزین شد — چیدمان و داده از بستهٔ همین سیستم اعمال شد (نه سیستم قبلی).`
+            : doReset
+              ? `بسته «${tpl.name}» از روی دادهٔ بسته دوباره اعمال شد.`
+              : `فقط «${tpl.name}» فعال است — چیدمان و ویرایش‌های قبلی همین سیستم حفظ شد.`,
+          doReset && tpl.custom
+            ? 'چیدمان خانه، صفحات داخلی، پروفایل، سبد و منو از بسته بازنویسی شد.'
             : '',
           extra,
         ]
@@ -552,6 +566,7 @@ export default function TemplateImportPanel() {
           .join(' '),
       )
       setConfirmTpl(null)
+      setWantFactoryReset(false)
     } catch (e) {
       setErr(
         e.response?.data?.detail ||
@@ -602,12 +617,28 @@ export default function TemplateImportPanel() {
     }
   }
 
+  const openActivateConfirm = (tpl) => {
+    setConfirmMode('activate')
+    // تعویض سیستم → به‌صورت پیش‌فرض چیدمان بستهٔ جدید؛ فعال‌سازی مجدد همان بسته → حفظ
+    const switching = !!(activeTpl && activeTpl.key !== tpl.key)
+    setWantFactoryReset(switching)
+    setAck(false)
+    setConfirmTpl(tpl)
+  }
+
+  const openResetConfirm = (tpl) => {
+    setConfirmMode('reset')
+    setWantFactoryReset(true)
+    setAck(false)
+    setConfirmTpl(tpl)
+  }
+
   const onToggleClick = (tpl, isActive) => {
     if (isActive) {
       deactivateTemplate(tpl)
       return
     }
-    setConfirmTpl(tpl)
+    openActivateConfirm(tpl)
   }
 
   const publishPackToGit = async () => {
@@ -661,6 +692,7 @@ export default function TemplateImportPanel() {
           ? `الان قالب فعال «${activeTpl.name}» است؛ همان چیدمان زنده روی «${tpl.name}» نوشته می‌شود.`
           : 'خانه، صفحات داخلی، پروفایل، فروشگاه، اخبار، منو و ظاهر فعلی داخل همین بسته می‌روند.',
         'بعد از این، با دکمه اعمال، نسخهٔ به‌روز نصب می‌شود.',
+        'نکته: صفحه /dashboard جزو هستهٔ همهٔ سایت‌هاست و با نصب/بروزرسانی فرانت روی سرور همیشه همراه می‌آید.',
       ].join('\n\n'),
     )
     if (!ok) return
@@ -719,8 +751,9 @@ export default function TemplateImportPanel() {
 
       <p className={styles.moduleIntro}>
         در هر لحظه <strong>فقط یک</strong> قالب اختصاصی می‌تواند فعال باشد.
-        هر قالب تم و نیازمندی‌های خودش را دارد؛ با فعال‌سازی، سیستم قبلی کاملاً
-        کنار گذاشته می‌شود.
+        فعال‌سازی فقط ماژول‌ها را عوض می‌کند و{' '}
+        <strong>چیدمان سفارشی شما را پاک نمی‌کند</strong>. برای برگشت به دادهٔ
+        کارخانه از «اعمال مجدد» استفاده کنید.
       </p>
 
       <div className={styles.tplExclusiveBanner} role="status">
@@ -820,8 +853,8 @@ export default function TemplateImportPanel() {
                     type="button"
                     className={styles.tplBtnOn}
                     disabled={busy || loading}
-                    title="چیدمان، رنگ‌ها و دادهٔ اولیه را از بستهٔ قالب دوباره اعمال می‌کند"
-                    onClick={() => setConfirmTpl(tpl)}
+                    title="چیدمان و داده را از بستهٔ کارخانه دوباره می‌نویسد (ویرایش‌های دستی پاک می‌شود)"
+                    onClick={() => openResetConfirm(tpl)}
                   >
                     {busy ? (
                       <Loader2 size={13} className={styles.spin} />
@@ -1095,7 +1128,7 @@ export default function TemplateImportPanel() {
                     onClick={() => {
                       const tpl = detailTpl
                       setDetailTpl(null)
-                      setConfirmTpl(tpl)
+                      openResetConfirm(tpl)
                     }}
                   >
                     <RefreshCw size={15} />
@@ -1161,39 +1194,62 @@ export default function TemplateImportPanel() {
             </div>
 
             <h3 id="tpl-warn-title">
-              {activeTpl?.key === confirmTpl.key
-                ? 'اعمال مجدد همین قالب'
-                : 'فقط یک قالب اختصاصی'}
+              {confirmMode === 'reset'
+                ? 'اعمال مجدد از بسته (بازنویسی)'
+                : activeTpl && activeTpl.key !== confirmTpl.key
+                  ? 'تعویض سیستم'
+                  : 'فعال‌سازی قالب'}
             </h3>
             <p className={styles.tplWarnLead}>
-              {activeTpl?.key === confirmTpl.key ? (
+              {confirmMode === 'reset' ? (
                 <>
                   چیدمان صفحه اصلی، رنگ‌ها، منو و دادهٔ اولیهٔ «
                   <strong>{confirmTpl.name}</strong>» دوباره از بستهٔ قالب اعمال
-                  می‌شود. ویرایش‌های دستی روی چیدمان خانه ممکن است بازنویسی شوند.
+                  می‌شود. ویرایش‌های دستی شما بازنویسی می‌شوند.
                 </>
-              ) : (
+              ) : activeTpl && activeTpl.key !== confirmTpl.key ? (
                 <>
-                  با فعال کردن «<strong>{confirmTpl.name}</strong>»، قالب و محتوای
-                  فعلی سایت از بین می‌رود و این تم جایگزین می‌شود.
+                  با رفتن از «<strong>{activeTpl.name}</strong>» به «
+                  <strong>{confirmTpl.name}</strong>»، چیدمان و داده از{' '}
+                  <strong>بستهٔ سیستم جدید</strong> اعمال می‌شود — نه چیدمان
+                  سیستم قبلی (مثلاً ربو روی مدرسه نمی‌ماند).
                   {rivalName ? (
                     <>
                       {' '}
-                      سیستم «<strong>{rivalName}</strong>» و ماژول‌های اختصاصی‌اش
-                      کاملاً خاموش می‌شوند.
+                      سیستم «<strong>{rivalName}</strong>» خاموش می‌شود.
                     </>
                   ) : null}
+                </>
+              ) : (
+                <>
+                  با فعال کردن مجدد «<strong>{confirmTpl.name}</strong>»، فقط
+                  ماژول‌ها روشن می‌شوند و{' '}
+                  <strong>چیدمان و ویرایش‌های قبلی همین سیستم حفظ می‌ماند</strong>.
                 </>
               )}
             </p>
 
             <div className={styles.tplWarnBox}>
-              <p>بازنویسی می‌شود:</p>
-              <ul>
-                {confirmTpl.replaces.map((line) => (
-                  <li key={line}>{line}</li>
-                ))}
-              </ul>
+              {confirmMode === 'reset' ||
+              (activeTpl && activeTpl.key !== confirmTpl.key) ? (
+                <>
+                  <p>اعمال / بازنویسی می‌شود:</p>
+                  <ul>
+                    {confirmTpl.replaces.map((line) => (
+                      <li key={line}>{line}</li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <>
+                  <p>انجام می‌شود:</p>
+                  <ul>
+                    <li>روشن شدن ماژول‌های اختصاصی این سیستم</li>
+                    <li>خاموش شدن قالب رقیب (در صورت وجود)</li>
+                    <li>حفظ چیدمان خانه، صفحات داخلی، منو و محتوای سفارشی</li>
+                  </ul>
+                </>
+              )}
               <p style={{ marginTop: '0.55rem' }}>نیازمندی‌های این تم:</p>
               <ul>
                 {(confirmTpl.requires || []).map((line) => (
@@ -1212,6 +1268,22 @@ export default function TemplateImportPanel() {
               )}
             </div>
 
+            {confirmMode === 'activate' &&
+            !(activeTpl && activeTpl.key !== confirmTpl.key) ? (
+              <label className={styles.tplAck}>
+                <input
+                  type="checkbox"
+                  checked={wantFactoryReset}
+                  onChange={(e) => setWantFactoryReset(e.target.checked)}
+                  disabled={!!busyKey}
+                />
+                <span>
+                  چیدمان را هم از بسته بازنویسی کن (اختیاری — ویرایش‌های دستی
+                  همین سیستم پاک می‌شود)
+                </span>
+              </label>
+            ) : null}
+
             <label className={styles.tplAck}>
               <input
                 type="checkbox"
@@ -1220,9 +1292,11 @@ export default function TemplateImportPanel() {
                 disabled={!!busyKey}
               />
               <span>
-                {activeTpl?.key === confirmTpl.key
-                  ? 'متوجه شدم: چیدمان و رنگ‌های فعلی خانه ممکن است با بستهٔ قالب جایگزین شوند.'
-                  : 'متوجه شدم: محتوای فعلی پاک می‌شود و فقط این سیستم فعال می‌ماند.'}
+                {confirmMode === 'reset' ||
+                wantFactoryReset ||
+                (activeTpl && activeTpl.key !== confirmTpl.key)
+                  ? 'متوجه شدم: چیدمان از بستهٔ سیستم انتخاب‌شده اعمال می‌شود.'
+                  : 'متوجه شدم: فقط سیستم فعال می‌شود و ویرایش‌های من حفظ می‌ماند.'}
               </span>
             </label>
 
@@ -1255,18 +1329,23 @@ export default function TemplateImportPanel() {
                 type="button"
                 className={styles.tplConfirmBtn}
                 disabled={!ack || !!busyKey}
-                onClick={() => applyTemplate(confirmTpl)}
+                onClick={() =>
+                  applyTemplate(confirmTpl, {
+                    resetContent:
+                      confirmMode === 'reset' || wantFactoryReset,
+                  })
+                }
               >
                 {busyKey === confirmTpl.key ? (
                   <Loader2 size={15} className={styles.spin} />
-                ) : activeTpl?.key === confirmTpl.key ? (
+                ) : confirmMode === 'reset' || wantFactoryReset ? (
                   <RefreshCw size={15} />
                 ) : (
                   <Download size={15} />
                 )}
-                {activeTpl?.key === confirmTpl.key
-                  ? 'تأیید و اعمال مجدد'
-                  : 'تأیید و اعمال انحصاری'}
+                {confirmMode === 'reset' || wantFactoryReset
+                  ? 'تأیید و بازنویسی از بسته'
+                  : 'تأیید و فعال‌سازی (حفظ چیدمان)'}
               </button>
             </div>
           </div>
@@ -1906,5 +1985,13 @@ export default function TemplateImportPanel() {
         </div>
       ) : null}
     </section>
+  )
+}
+
+export default function TemplateImportPanel() {
+  return (
+    <Suspense fallback={null}>
+      <TemplateImportPanelInner />
+    </Suspense>
   )
 }

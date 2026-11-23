@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { CreditCard, Settings2 } from 'lucide-react'
 import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
@@ -16,7 +17,7 @@ const PAYMENT_TOOLS = [
   },
 ]
 
-export default function PaymentSystemPage() {
+function PaymentSystemInner() {
   const gate = useOwnerGate('/paymentsystem')
 
   return (
@@ -38,7 +39,7 @@ export default function PaymentSystemPage() {
           <span>{PAYMENT_TOOLS.length.toLocaleString('fa-IR')} ابزار</span>
         </div>
         <p className={styles.dashLead}>
-          مدیریت درگاه سراسری، اهداف پرداخت و وضعیت ماژول در یک محل.
+          درگاه سراسری و تنظیمات پرداخت سایت در یک محل.
         </p>
         <div className={`${styles.dashTiles} ${styles.dashTilesCols3}`}>
           {PAYMENT_TOOLS.map((item) => {
@@ -58,5 +59,13 @@ export default function PaymentSystemPage() {
         </div>
       </section>
     </OwnerPortalShell>
+  )
+}
+
+export default function PaymentSystemPage() {
+  return (
+    <Suspense fallback={null}>
+      <PaymentSystemInner />
+    </Suspense>
   )
 }

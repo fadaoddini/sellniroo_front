@@ -1,7 +1,7 @@
 // app/(admin)/payment-manage — تنظیمات ماژول پرداخت سراسری
 'use client'
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
@@ -21,9 +21,9 @@ import {
 } from 'lucide-react'
 import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
 import { getPaymentSystemPageNav } from '@/components/Admin/paymentSystemNav'
+import useOwnerGate from '@/components/Admin/useOwnerGate'
 import { useAuth } from '@/contexts/AuthContext'
 import Config from '@/config/config'
-import { isPlatformOwner, OWNER_PROFILE } from '@/utils/ownerAccess'
 import aw from '../adminweb/AdminWeb.module.css'
 import styles from './PaymentManage.module.css'
 
@@ -252,15 +252,11 @@ function GatewayCredentialFields({ gateway, onSave, busy }) {
   )
 }
 
-export default function PaymentManagePage() {
+function PaymentManageInner() {
   const router = useRouter()
-  const { isAuthenticated, loading, user, canManageEmployees, getAuthHeaders } =
-    useAuth()
-  const canManage =
-    user?.is_superuser ||
-    user?.is_staff ||
-    canManageEmployees ||
-    isPlatformOwner(user)
+  const gate = useOwnerGate('/payment-manage')
+  const { getAuthHeaders } = useAuth()
+  const { isAuthenticated, loading, user, allowed: canManage } = gate
 
   const [tab, setTab] = useState('settings')
   const [bundle, setBundle] = useState(null)
@@ -383,11 +379,6 @@ export default function PaymentManagePage() {
     return { activeGw, activePurpose, paid, unpaid, totalPayments: payments.length }
   }, [gateways, purposes, payments])
 
-  const displayName =
-    user?.display_name ||
-    [user?.first_name, user?.last_name].filter(Boolean).join(' ') ||
-    OWNER_PROFILE.name
-
   return (
     <OwnerPortalShell
       brand="وب"
@@ -396,14 +387,7 @@ export default function PaymentManagePage() {
       title="ماژول پرداخت"
       wide
       pageNav={getPaymentSystemPageNav('/payment-manage')}
-      loading={loading}
-      isAuthenticated={isAuthenticated}
-      allowed={canManage}
-      user={user}
-      displayName={displayName}
-      deniedTitle="دسترسی محدود"
-      deniedMessage="فقط مدیر می‌تواند تنظیمات پرداخت را مدیریت کند."
-      deniedHomeHref="/dashboard"
+      {...gate}
     >
       <div className={styles.embed} dir="rtl">
         <div className={styles.toolbar}>
@@ -896,5 +880,13 @@ export default function PaymentManagePage() {
         ) : null}
       </div>
     </OwnerPortalShell>
+  )
+}
+
+export default function PaymentManagePage() {
+  return (
+    <Suspense fallback={null}>
+      <PaymentManageInner />
+    </Suspense>
   )
 }

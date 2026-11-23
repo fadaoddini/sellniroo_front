@@ -36,6 +36,7 @@ import {
   normalizeSiteTopNavSettings,
   siteTopNavCssVars,
 } from '@/config/siteTopNavWidgetSettings'
+import { SITE_MODULE_KEYS } from '@/config/siteModules'
 import { resolveHeaderMenuIcon } from '@/config/headerMenuIcons'
 import AppBottomNavWidget from '@/components/widgets/AppBottomNavWidget'
 import BreakingNews from '@/components/common/breakingnews/BreakingNews'
@@ -176,6 +177,32 @@ function isLoginCtaHref(href) {
   return path === '/login' || path.endsWith('/login')
 }
 
+/** لینک ثبت آگهی — فقط وقتی ماژول کاریابی روشن است معنا دارد */
+function isPostJobCtaHref(href) {
+  const path = String(href || '').trim().split('?')[0].split('#')[0]
+  return path === '/post-job' || path.endsWith('/post-job')
+}
+
+function resolveNavCta(settings, moduleMap = {}) {
+  const jobOn = !!moduleMap[SITE_MODULE_KEYS.JOB_BOARD]
+  const schoolOn =
+    !!moduleMap[SITE_MODULE_KEYS.SCHOOL] ||
+    !!moduleMap[SITE_MODULE_KEYS.SCHOOL_PROFILE] ||
+    !!moduleMap[SITE_MODULE_KEYS.DATA_PACK_SCHOOL_THEME_ONE]
+  if (isPostJobCtaHref(settings?.cta_href) && !jobOn) {
+    if (schoolOn) {
+      return {
+        ...settings,
+        cta_href: '/login?next=/profile',
+        cta_label: 'ورود به سامانه',
+        show_cta: true,
+      }
+    }
+    return { ...settings, show_cta: false }
+  }
+  return settings
+}
+
 function LogoMark({ src, name, height }) {
   if (!src) {
     return <span className={styles.logoFallback}>{name}</span>
@@ -209,7 +236,7 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
   const raw = rawSettings || DEFAULT_SITE_TOP_NAV_WIDGET_SETTINGS
   const isMobile = useIsMobile(768)
   const viewport = isMobile ? 'mobile' : 'desktop'
-  const settings = normalizeSiteTopNavSettings(raw, { viewport })
+  const baseSettings = normalizeSiteTopNavSettings(raw, { viewport })
   const visibility = getSiteTopNavVisibilityFlags(raw)
   const baseCssVars = siteTopNavCssVars(raw, { viewport })
 
@@ -221,6 +248,10 @@ const SiteTopNavWidget = memo(function SiteTopNavWidget({
   const [appearance, setAppearance] = useState(DEFAULT_CORPORATE_APPEARANCE)
   const [siteSettings, setSiteSettings] = useState(DEFAULT_SITE_SETTINGS)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const settings = useMemo(
+    () => resolveNavCta(baseSettings, moduleMap),
+    [baseSettings, moduleMap],
+  )
   const showAdminDashboard =
     !!isAuthenticated && (!!user?.is_superuser || !!user?.is_staff)
   const showCta =

@@ -184,10 +184,11 @@ export default function HomeHeroManagePage() {
         <header className={styles.header}>
           <div>
             <h1 className={styles.title}>
-              <LayoutTemplate size={16} /> تنظیمات صفحه اصلی
+              <LayoutTemplate size={16} /> محتوای هیرو مدرسه
             </h1>
             <p className={styles.subtitle}>
-              متن، بخش‌ها، رنگ و فونت خانه — جمع‌وجور و قابل ذخیره در دیتابیس
+              متن، دکمه‌ها، بخش‌ها و رنگ — جدا از چیدمان قالب؛ وقتی ویجت هیرو
+              خبر فوری در صفحه اصلی باشد از داشبورد در دسترس است
             </p>
           </div>
           <div className={styles.actions}>

@@ -1137,8 +1137,48 @@ export function sortHomepageModuleKeys(list) {
 }
 
 /**
+ * مسیرهایی که همیشه در داشبورد دیده می‌شوند و در همهٔ قالب‌ها نصب می‌شوند؛
+ * مستقل از روشن/خاموش بودن ماژول متناظر.
+ */
+export const ALWAYS_ON_DASHBOARD_ROUTES = new Set([
+  '/site-settings',
+  '/header-menu',
+  '/request-types',
+  '/employees',
+  '/platform-connections',
+  '/ticker',
+  '/hero-slider',
+  '/home-hero-manage',
+  '/about-manage',
+  '/videoinsta-manage',
+  '/quiz-manage',
+])
+
+export const ALWAYS_ON_DASHBOARD_SECTIONS = new Set([
+  'site-settings',
+  'seo',
+  'header-menu',
+  'advanced-menu',
+  'request-types',
+  'employees',
+  'platform-connections',
+  'ticker',
+  'hero-slider',
+  'hero',
+  'home-hero-manage',
+  'about-manage',
+  'about',
+  'about-us',
+  'videoinsta-manage',
+  'videoinsta',
+  'quiz-manage',
+  'quiz',
+])
+
+/**
  * مسیرهای داشبورد / ادمین که به ماژول سایت وابسته‌اند.
  * اگر ماژول خاموش باشد، آیتم مربوطه در داشبورد هم غیرفعال می‌شود.
+ * (به‌جز ALWAYS_ON_DASHBOARD_ROUTES)
  */
 export const DASHBOARD_ROUTE_MODULES = {
   '/ticker': SITE_MODULE_KEYS.BREAKING_NEWS,
@@ -1162,9 +1202,11 @@ export const DASHBOARD_ROUTE_MODULES = {
   '/news-list': SITE_MODULE_KEYS.NEWS_SECTION,
   '/news-single': SITE_MODULE_KEYS.NEWS,
   '/news': SITE_MODULE_KEYS.NEWS,
+  '/search': SITE_MODULE_KEYS.BREAKING_NEWS,
   // چیدمان /news از AdminWeb tab news_list_layout
   '/platform-connections': SITE_MODULE_KEYS.NEWS,
   '/sale': SITE_MODULE_KEYS.SALES_MARKETING,
+  '/rasad': SITE_MODULE_KEYS.SALES_MARKETING,
   '/request-types': SITE_MODULE_KEYS.SALES_MARKETING,
   '/inventory': SITE_MODULE_KEYS.ADVANCED_INVENTORY,
   '/inventory/warehouses': SITE_MODULE_KEYS.INVENTORY_WAREHOUSES,
@@ -1273,6 +1315,7 @@ export const DASHBOARD_SECTION_MODULES = {
   sale: SITE_MODULE_KEYS.SALES_MARKETING,
   sales: SITE_MODULE_KEYS.SALES_MARKETING,
   marketing: SITE_MODULE_KEYS.SALES_MARKETING,
+  rasad: SITE_MODULE_KEYS.SALES_MARKETING,
   'request-types': SITE_MODULE_KEYS.SALES_MARKETING,
   inventory: SITE_MODULE_KEYS.ADVANCED_INVENTORY,
   warehouse: SITE_MODULE_KEYS.ADVANCED_INVENTORY,
@@ -1427,6 +1470,17 @@ export function isEffectiveSingleStore(moduleMap) {
 
 /** آیا لینک داشبورد با توجه به map ماژول‌ها مجاز است؟ */
 export function isDashboardItemModuleActive(href, moduleMap, sectionCode) {
+  const path = String(href || '').split('?')[0].replace(/\/$/, '') || '/'
+  const sectionNorm = String(sectionCode || '')
+    .toLowerCase()
+    .replace(/_/g, '-')
+  if (
+    ALWAYS_ON_DASHBOARD_ROUTES.has(path) ||
+    ALWAYS_ON_DASHBOARD_SECTIONS.has(sectionNorm)
+  ) {
+    return true
+  }
+
   // sectionCode اولویت دارد تا اکشن‌های هم‌مسیر (مثل اسلایدر ویژه زیر اخبار) جدا گیت شوند
   const key =
     getModuleKeyForSectionCode(sectionCode) ||

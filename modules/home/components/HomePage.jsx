@@ -6,6 +6,7 @@ import {
   DEFAULT_SITE_SETTINGS,
 } from '@/services/siteSettings'
 import { normalizeHomeLayout } from '@/config/homeLayout'
+import { composeHomeWithSiteChrome } from '@/config/siteChrome'
 import { isSadraAppShell } from '@/config/sadraTheme'
 import PageBuilderRenderer from '@/components/layout/PageBuilderRenderer'
 import HomeSplash from './HomeSplash'
@@ -29,7 +30,12 @@ const HomePage = ({ seoSubtitle = '', siteName = '' }) => {
   const refresh = useCallback(async ({ force = true } = {}) => {
     try {
       const settings = await fetchSiteSettings({ force })
-      setHomeLayout(normalizeHomeLayout(settings?.home_layout))
+      setHomeLayout(
+        composeHomeWithSiteChrome(
+          normalizeHomeLayout(settings?.home_layout),
+          settings,
+        ),
+      )
       setAppShell(isSadraAppShell(settings, siteName))
       setBrandName(
         settings?.site_name ||
@@ -51,17 +57,45 @@ const HomePage = ({ seoSubtitle = '', siteName = '' }) => {
     refresh({ force: true })
     const onLayout = (ev) => {
       if (ev?.detail) {
-        setHomeLayout(normalizeHomeLayout(ev.detail))
-        setDataReady(true)
+        fetchSiteSettings({ force: true })
+          .then((settings) => {
+            setHomeLayout(
+              composeHomeWithSiteChrome(
+                normalizeHomeLayout(ev.detail),
+                settings,
+              ),
+            )
+            setDataReady(true)
+          })
+          .catch(() => {
+            setHomeLayout(normalizeHomeLayout(ev.detail))
+            setDataReady(true)
+          })
       } else {
         refresh({ force: true })
       }
     }
+    const onChrome = () => refresh({ force: true })
     window.addEventListener('home-layout-changed', onLayout)
     window.addEventListener('site-data-bust', onLayout)
+    window.addEventListener('module-page-layout-changed:chrome_header', onChrome)
+    window.addEventListener('module-page-layout-changed:chrome_menu', onChrome)
+    window.addEventListener('module-page-layout-changed:chrome_footer', onChrome)
     return () => {
       window.removeEventListener('home-layout-changed', onLayout)
       window.removeEventListener('site-data-bust', onLayout)
+      window.removeEventListener(
+        'module-page-layout-changed:chrome_header',
+        onChrome,
+      )
+      window.removeEventListener(
+        'module-page-layout-changed:chrome_menu',
+        onChrome,
+      )
+      window.removeEventListener(
+        'module-page-layout-changed:chrome_footer',
+        onChrome,
+      )
     }
   }, [refresh, siteName])
 

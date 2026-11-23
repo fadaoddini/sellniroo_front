@@ -14,7 +14,6 @@ import {
   ChevronDown,
   Settings2,
   Layers,
-  Paintbrush,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { fetchSiteModules } from '@/services/siteModules'
@@ -29,9 +28,18 @@ import {
   saveShopListLayoutVariant,
   saveProductSingleLayoutVariant,
   saveModulePageLayout,
-  syncHomeChromeTheme,
   clearSiteSettingsCache,
 } from '@/services/siteSettings'
+import {
+  CHROME_LAYOUT_KEYS,
+  CHROME_LAYOUT_EVENT,
+  createDefaultChromeLayout,
+  getPageChrome,
+  normalizeChromeLayout,
+  normalizePageChrome,
+  withPageChrome,
+} from '@/config/siteChrome'
+import PageChromeOptIn from './PageChromeOptIn'
 import { getShopLayoutModeDef } from '@/config/shopLayoutModes'
 import {
   createDefaultModulePageLayout,
@@ -41,6 +49,7 @@ import {
   isSharedInternalLayoutKey,
   normalizeModulePageLayout,
   normalizeSharedInternalLayout,
+  pageKeepsOwnChrome,
   SHARED_INTERNAL_LAYOUT_EVENT,
   SHARED_INTERNAL_LAYOUT_KEY,
 } from '@/config/modulePageLayouts'
@@ -118,6 +127,14 @@ import WidgetVideoArchiveSettings from './WidgetVideoArchiveSettings'
 import WidgetSchoolHeroBreakingSettings, {
   isSchoolHeroBreakingWidgetType,
 } from './WidgetSchoolHeroBreakingSettings'
+import WidgetSchoolTopStudentsSettings from './WidgetSchoolTopStudentsSettings'
+import { isSchoolTopStudentsWidgetType } from '@/config/schoolTopStudentsWidgetSettings'
+import WidgetSchoolClassLeadersSettings from './WidgetSchoolClassLeadersSettings'
+import { isSchoolClassLeadersWidgetType } from '@/config/schoolClassLeadersWidgetSettings'
+import WidgetSchoolTeacherIntroSettings from './WidgetSchoolTeacherIntroSettings'
+import { isSchoolTeacherIntroWidgetType } from '@/config/schoolTeacherIntroWidgetSettings'
+import WidgetSchoolCounselorIntroSettings from './WidgetSchoolCounselorIntroSettings'
+import { isSchoolCounselorIntroWidgetType } from '@/config/schoolCounselorIntroWidgetSettings'
 import { isFeatureCardsWidgetType } from '@/config/featureCardsWidgetSettings'
 import { isVideoArchiveWidgetType } from '@/config/videoArchiveWidgetSettings'
 import { isNobatWidgetType } from '@/config/nobatWidgetSettings'
@@ -135,8 +152,9 @@ const LAYOUT_MODE_META = {
     save: saveHomeLayout,
     event: 'home-layout-changed',
     title: 'طراحی صفحه اصلی',
-    hint: 'سکشن و ویجت‌های صفحه اصلی را بچینید و ذخیره کنید.',
+    hint: 'محتوای خانه را اینجا بچینید. هدر، منو و فوتر را با سوییچ بالا از طراحی سراسری روشن کنید.',
     savedMsg: 'چیدمان صفحه ذخیره شد',
+    showChromeOptIn: true,
   },
   news_single: {
     empty: DEFAULT_NEWS_SINGLE_LAYOUT,
@@ -192,6 +210,39 @@ const LAYOUT_MODE_META = {
 
 function resolveLayoutModeMeta(layoutMode, moduleMap = {}) {
   const mode = String(layoutMode || 'home')
+  if (mode.startsWith('chrome:')) {
+    const kind = mode.slice('chrome:'.length)
+    const key = CHROME_LAYOUT_KEYS[kind]
+    if (key) {
+      const titles = {
+        header: 'هدر بالا',
+        menu: 'منوی بالا',
+        footer: 'فوتر سایت',
+      }
+      const hints = {
+        header:
+          'فقط ظاهر هدر را اینجا بچینید. روی هر صفحه با سوییچ «هدر بالا» در بالاترین قسمت نشان داده می‌شود.',
+        menu:
+          'فقط نوار منو را اینجا بچینید. روی صفحاتی که «منوی بالا» را روشن کرده‌اید، دقیقاً زیر هدر می‌آید.',
+        footer:
+          'فقط فوتر را اینجا بچینید. روی صفحاتی که فوتر را روشن کرده‌اید، در پایین‌ترین قسمت سایت می‌آید.',
+      }
+      return {
+        empty: createDefaultChromeLayout(kind),
+        normalize: (raw) => normalizeChromeLayout(raw, kind),
+        settingsKey: 'module_page_layouts',
+        getRaw: (settings) => settings?.module_page_layouts?.[key],
+        save: (layout, headers) => saveModulePageLayout(key, layout, headers),
+        event: CHROME_LAYOUT_EVENT[kind],
+        title: titles[kind] || 'کروم سایت',
+        hint: hints[kind] || 'طراحی قطعه سراسری سایت',
+        savedMsg: `${titles[kind] || 'چیدمان'} ذخیره شد`,
+        chromeKind: kind,
+        isChromeStudio: true,
+        contentWidget: null,
+      }
+    }
+  }
   if (mode.startsWith('module:')) {
     const pageKey = mode.slice('module:'.length)
     if (isSharedInternalLayoutKey(pageKey)) {
@@ -204,9 +255,9 @@ function resolveLayoutModeMeta(layoutMode, moduleMap = {}) {
         save: (layout, headers) =>
           saveModulePageLayout(SHARED_INTERNAL_LAYOUT_KEY, layout, headers),
         event: SHARED_INTERNAL_LAYOUT_EVENT,
-        title: 'چیدمان مشترک صفحات داخلی',
+        title: 'چیدمان مشترک صفحات داخلی (قدیمی)',
         hint:
-          'خبر فوری، منو و ویجت‌های مشترک را اینجا بگذارید و ذخیره کنید. همه صفحات داخلی از همین چیدمان می‌گیرند — نه از صفحه اصلی و نه از چیدمان تک‌تک صفحات. صفحه اصلی جداست.',
+          'این حالت برای سایت‌های قدیمی نگه داشته شده. ترجیحاً هدر و منو را از تب‌های جدا طراحی کنید و روی هر صفحه سوییچ روشن کنید.',
         savedMsg: 'چیدمان مشترک صفحات داخلی ذخیره شد',
         modulePageKey: SHARED_INTERNAL_LAYOUT_KEY,
         contentWidget: null,
@@ -214,6 +265,8 @@ function resolveLayoutModeMeta(layoutMode, moduleMap = {}) {
       }
     }
     const def = getModulePageDef(pageKey)
+    const ownChrome = pageKeepsOwnChrome(def, moduleMap)
+    const isProfile = pageKey === 'profile'
     return {
       empty: createDefaultModulePageLayout(pageKey),
       normalize: (raw) => normalizeModulePageLayout(raw, pageKey),
@@ -223,13 +276,19 @@ function resolveLayoutModeMeta(layoutMode, moduleMap = {}) {
       event: def?.event || `module-page-layout-changed:${pageKey}`,
       title: def ? `طراحی ${def.label}` : `طراحی صفحه ${pageKey}`,
       hint: def
-        ? `فقط محتوای اختصاصی ${def.path} را اینجا بچینید. هدر و ظاهر مشترک از «چیدمان مشترک» می‌آید؛ ویجت «محتوای کامل» را نگه دارید.`
+        ? isProfile
+          ? `محتوای ${def.path} را اینجا بچینید. هدر و منو را جدا با سوییچ‌های بالا روشن/خاموش کنید.`
+          : ownChrome
+            ? `محتوای ${def.path} را اینجا بچینید. با سوییچ‌های هدر/منو/فوتر مشخص کنید از طراحی سراسری استفاده شود یا نه.`
+            : `فقط محتوای اختصاصی ${def.path} را بچینید. هدر، منو و فوتر را با سوییچ بالای بوم روشن کنید.`
         : 'چیدمان صفحه داخلی ماژول',
       savedMsg: def
         ? `چیدمان ${def.label} ذخیره شد`
         : 'چیدمان صفحه داخلی ذخیره شد',
       modulePageKey: pageKey,
       contentWidget: def?.contentWidget || null,
+      showChromeOptIn: true,
+      separateHeaderMenu: isProfile,
     }
   }
   if (mode === 'shop_list' || mode.startsWith('shop_list:')) {
@@ -320,13 +379,14 @@ export default function SiteSkeletonStudio({
   const [showTemplates, setShowTemplates] = useState(false)
   const [msg, setMsg] = useState(null)
   const [err, setErr] = useState(null)
-  const [syncingChrome, setSyncingChrome] = useState(false)
   const layoutRef = useRef(layout)
   const savingRef = useRef(false)
   const layoutEvent = modeMeta.event
   const studioTitle = modeMeta.title
   const studioHint = modeMeta.hint
   const isHomeStudio = String(layoutMode || 'home') === 'home'
+  const showChromeOptIn = !!modeMeta.showChromeOptIn
+  const isChromeStudio = !!modeMeta.isChromeStudio
 
   useEffect(() => {
     layoutRef.current = layout
@@ -486,29 +546,11 @@ export default function SiteSkeletonStudio({
     }
   }
 
-  const syncChromeToAllPages = async () => {
-    if (!isHomeStudio) return
-    setSyncingChrome(true)
-    setErr(null)
+  const onChromeChange = (nextChrome) => {
+    const next = withPageChrome(layoutRef.current, nextChrome)
+    layoutRef.current = next
+    setLayout(next)
     setMsg(null)
-    try {
-      // اول چیدمان خانه را اگر dirty است ذخیره کن
-      if (dirty) {
-        await persistLayout(layoutRef.current, 'چیدمان صفحه اصلی ذخیره شد')
-      }
-      const result = await syncHomeChromeTheme(getAuthHeaders())
-      const n = result?.summary?.targets?.length || 0
-      const types = (result?.chrome?.types || []).join('، ')
-      setMsg(
-        `سکشن ۱ صفحه اصلی روی ${n.toLocaleString('fa-IR')} چیدمان اعمال شد` +
-          (types ? ` (${types})` : '') +
-          '. فقط ویجت‌های سکشن اول منتقل شدند؛ سکشن‌های بعدی دست‌نخورده ماندند.',
-      )
-    } catch (e) {
-      setErr(e?.message || 'همگام‌سازی هدر ناموفق بود')
-    } finally {
-      setSyncingChrome(false)
-    }
   }
 
   const onPickWidget = (type) => {
@@ -566,27 +608,11 @@ export default function SiteSkeletonStudio({
           <p>{studioHint}</p>
         </div>
         <div className={styles.studioRightActions}>
-          {isHomeStudio ? (
-            <button
-              type="button"
-              className={styles.extBtnGhost}
-              onClick={syncChromeToAllPages}
-              disabled={loading || saving || syncingChrome}
-              title="فقط ویجت‌های سکشن ۱ صفحه اصلی را به چیدمان مشترک و بقیه صفحات منتقل می‌کند (سکشن‌های بعدی نه)"
-            >
-              {syncingChrome ? (
-                <RefreshCw size={14} className={styles.spin} />
-              ) : (
-                <Paintbrush size={14} />
-              )}
-              اعمال هدر و رنگ به همه
-            </button>
-          ) : null}
           <button
             type="button"
             className={styles.extBtnGhost}
             onClick={refresh}
-            disabled={loading || saving || syncingChrome}
+            disabled={loading || saving}
           >
             <RefreshCw size={14} className={loading ? styles.spin : undefined} />
           </button>
@@ -594,13 +620,28 @@ export default function SiteSkeletonStudio({
             type="button"
             className={styles.primaryBtn}
             onClick={saveAll}
-            disabled={loading || saving || syncingChrome || !dirty}
+            disabled={loading || saving || !dirty}
           >
             {saving ? <RefreshCw size={14} className={styles.spin} /> : <Save size={14} />}
             ذخیره
           </button>
         </div>
       </div>
+
+      {showChromeOptIn && !isChromeStudio ? (
+        <PageChromeOptIn
+          chrome={getPageChrome(layout) || normalizePageChrome({})}
+          onChange={onChromeChange}
+          separateHeaderMenu={!!modeMeta.separateHeaderMenu || isHomeStudio}
+          title={
+            modeMeta.modulePageKey === 'profile'
+              ? 'هدر و منوی پروفایل'
+              : isHomeStudio
+                ? 'هدر، منو و فوتر صفحه اصلی'
+                : 'هدر، منو و فوتر این صفحه'
+          }
+        />
+      ) : null}
 
       {err ? <div className={styles.lsAlert}>{err}</div> : null}
       {msg ? <div className={styles.lsOk}>{msg}</div> : null}
@@ -674,6 +715,11 @@ export default function SiteSkeletonStudio({
                     <div
                       key={row.id}
                       className={`${styles.pbSection} ${selected && !selectedWidgetRef ? styles.pbSectionOn : ''}`}
+                      style={
+                        row.background
+                          ? { background: row.background }
+                          : undefined
+                      }
                       onClick={() => {
                         setSelectedSectionId(row.id)
                         setSelectedWidgetRef(null)
@@ -1171,6 +1217,74 @@ export default function SiteSkeletonStudio({
                     )
                   }}
                 />
+              ) : isSchoolTopStudentsWidgetType(
+                  selectedWidgetInfo.widget.type,
+                ) ? (
+                <WidgetSchoolTopStudentsSettings
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : isSchoolClassLeadersWidgetType(
+                  selectedWidgetInfo.widget.type,
+                ) ? (
+                <WidgetSchoolClassLeadersSettings
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : isSchoolTeacherIntroWidgetType(
+                  selectedWidgetInfo.widget.type,
+                ) ? (
+                <WidgetSchoolTeacherIntroSettings
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
+              ) : isSchoolCounselorIntroWidgetType(
+                  selectedWidgetInfo.widget.type,
+                ) ? (
+                <WidgetSchoolCounselorIntroSettings
+                  settings={selectedWidgetInfo.widget.settings}
+                  onChange={(patch) => {
+                    if (!selectedWidgetRef) return
+                    updateRow(selectedWidgetRef.sectionId, (sec) =>
+                      updateWidgetSettings(
+                        sec,
+                        selectedWidgetRef.columnId,
+                        selectedWidgetRef.widgetId,
+                        patch
+                      )
+                    )
+                  }}
+                />
               ) : (
                 <p className={styles.paletteHint}>
                   این ویجت فعلاً تنظیمات اختصاصی ندارد.
@@ -1266,6 +1380,79 @@ export default function SiteSkeletonStudio({
                     </option>
                   ))}
                 </select>
+              </label>
+
+              <label className={styles.lbStackField}>
+                <span className={styles.lbFieldLabel}>پس‌زمینه سکشن</span>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <input
+                    type="color"
+                    value={
+                      /^#[0-9a-fA-F]{6}$/.test(
+                        String(selectedSection.background || ''),
+                      )
+                        ? selectedSection.background
+                        : '#ffffff'
+                    }
+                    onChange={(e) =>
+                      updateRow(selectedSection.id, (sec) => ({
+                        ...sec,
+                        background: e.target.value,
+                      }))
+                    }
+                    title="انتخاب رنگ پس‌زمینه"
+                    style={{
+                      width: 42,
+                      height: 32,
+                      padding: 0,
+                      border: '1px solid rgba(0,0,0,0.15)',
+                      borderRadius: 8,
+                      cursor: 'pointer',
+                      background: 'transparent',
+                    }}
+                  />
+                  <input
+                    type="text"
+                    dir="ltr"
+                    placeholder="#ffffff یا خالی"
+                    value={selectedSection.background || ''}
+                    onChange={(e) =>
+                      updateRow(selectedSection.id, (sec) => {
+                        const next = { ...sec }
+                        const v = e.target.value.trim()
+                        if (v) next.background = v.slice(0, 80)
+                        else delete next.background
+                        return next
+                      })
+                    }
+                    style={{ flex: 1, minWidth: 120 }}
+                  />
+                  {selectedSection.background ? (
+                    <button
+                      type="button"
+                      className={styles.wsTinyBtn}
+                      onClick={() =>
+                        updateRow(selectedSection.id, (sec) => {
+                          const next = { ...sec }
+                          delete next.background
+                          return next
+                        })
+                      }
+                    >
+                      حذف رنگ
+                    </button>
+                  ) : null}
+                </div>
+                <small className={styles.paletteHint} style={{ margin: 0 }}>
+                  رنگ کل سکشن (مثلاً سکشن ۲) — خالی = بدون پس‌زمینهٔ اختصاصی
+                </small>
               </label>
 
               <div className={styles.pbTplLabel}>اندازه ستون‌ها (%)</div>

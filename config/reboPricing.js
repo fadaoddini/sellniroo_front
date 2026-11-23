@@ -839,8 +839,9 @@ export function packageFromPreset(preset) {
 
 /**
  * موضوعات اصلی ربو را تضمین می‌کند:
- * - اگر نبود → اضافه
- * - اگر با همان id/نام بود → قیمت و نام رسمی به‌روز می‌شود
+ * - اگر نبود → با قیمت پیش‌فرض اضافه
+ * - اگر بود → هویت/ویجت‌ها را پایدار نگه می‌دارد؛ قیمت ذخیره‌شده را بازنویسی نمی‌کند
+ *   (قیمت نهایی فقط از /rebo-pricing توسط مدیر تنظیم می‌شود)
  */
 export function ensureCoreReboPackages(packages = []) {
   const list = Array.isArray(packages) ? [...packages] : []
@@ -870,14 +871,15 @@ export function ensureCoreReboPackages(packages = []) {
       return
     }
     const current = list[idx]
+    const savedPrice = Math.max(0, Math.round(Number(current.price) || 0))
     list[idx] = normalizePackage(
       {
         ...current,
         id: core.id,
-        name: core.name,
+        name: String(current.name || '').trim() || core.name,
         desc: current.desc?.trim() ? current.desc : core.desc,
         icon: current.icon || core.icon,
-        price: core.price,
+        price: savedPrice > 0 ? savedPrice : core.price,
         enabled: current.enabled !== false,
         widget_types:
           Array.isArray(current.widget_types) && current.widget_types.length

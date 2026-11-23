@@ -1895,3 +1895,173 @@
     transform: translateY(100%);
   }
 }
+/* ─── جستجوی نوار خبر فوری ─── */
+.navSearchBar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: min(220px, 42vw);
+  max-width: 280px;
+  height: 30px;
+  padding: 0 0.2rem 0 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bn-text, #fff) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--bn-text, #fff) 18%, transparent);
+  box-sizing: border-box;
+}
+
+.navSearchGlyph {
+  flex-shrink: 0;
+  opacity: 0.75;
+  color: var(--bn-text, inherit);
+}
+
+.navSearchInput {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--bn-text, inherit);
+  font-size: 0.72rem;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+}
+
+.navSearchInput::placeholder {
+  color: color-mix(in srgb, var(--bn-text, #fff) 55%, transparent);
+}
+
+.navSearchSubmit {
+  flex-shrink: 0;
+  height: 24px;
+  padding: 0 0.65rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bn-accent, var(--bn-btn-bg, #26a680));
+  color: var(--bn-btn-text, #fff);
+  font-size: 0.68rem;
+  font-weight: 750;
+  font-family: 'iran', Tahoma, Arial, sans-serif;
+  cursor: pointer;
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+.navSearchSubmit:hover {
+  filter: brightness(1.06);
+  transform: translateY(-0.5px);
+}
+
+.navSearchIconWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  z-index: 1090;
+}
+
+.navSearchIconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--bn-text, #fff) 16%, transparent);
+  background: color-mix(in srgb, var(--bn-text, #fff) 8%, transparent);
+  color: var(--bn-text, inherit);
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.navSearchIconBtn:hover {
+  transform: scale(1.06);
+  background: color-mix(in srgb, var(--bn-text, #fff) 14%, transparent);
+}
+
+.navSearchExpand {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  height: 30px;
+  width: min(240px, 58vw);
+  padding: 0 0.25rem 0 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bn-bg, #111) 92%, #000);
+  border: 1px solid color-mix(in srgb, var(--bn-accent, #26a680) 55%, transparent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  box-sizing: border-box;
+  animation: bnSearchExpand 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: inline-end center;
+}
+
+.navSearchSubmitIcon,
+.navSearchClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--bn-text, inherit);
+  background: transparent;
+}
+
+.navSearchSubmitIcon {
+  background: var(--bn-accent, var(--bn-btn-bg, #26a680));
+  color: var(--bn-btn-text, #fff);
+}
+
+.navSearchClose:hover {
+  background: color-mix(in srgb, var(--bn-text, #fff) 12%, transparent);
+}
+
+@keyframes bnSearchExpand {
+  from {
+    opacity: 0;
+    width: 30px;
+    transform: scaleX(0.35);
+  }
+  to {
+    opacity: 1;
+    width: min(240px, 58vw);
+    transform: scaleX(1);
+  }
+}
+
+@media (max-width: 767px) {
+  .navSearchBar {
+    min-width: 0;
+    max-width: 150px;
+    height: 28px;
+  }
+
+  .navSearchBar .navSearchSubmit {
+    padding: 0 0.45rem;
+    font-size: 0.62rem;
+  }
+
+  .navSearchExpand {
+    width: min(190px, 62vw);
+    position: absolute;
+    inset-inline-end: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  @keyframes bnSearchExpand {
+    from {
+      opacity: 0;
+      width: 28px;
+      transform: translateY(-50%) scaleX(0.35);
+    }
+    to {
+      opacity: 1;
+      width: min(190px, 62vw);
+      transform: translateY(-50%) scaleX(1);
+    }
+  }
+}

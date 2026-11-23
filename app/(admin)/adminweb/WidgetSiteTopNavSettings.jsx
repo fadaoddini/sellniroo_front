@@ -15,6 +15,7 @@ import {
   SITE_TOP_NAV_MOBILE_MODES,
   SITE_TOP_NAV_ALIGNS,
   SITE_TOP_NAV_SPACE_FIELDS,
+  SITE_TOP_NAV_RADIUS_CORNERS,
   DEFAULT_SITE_TOP_NAV_WIDGET_SETTINGS,
   SITE_TOP_NAV_MOBILE_STYLE_OPTIONS,
   buildSiteTopNavViewportPatch,
@@ -29,6 +30,7 @@ import {
   fetchHeaderMenu,
   sortHeaderMenuItems,
 } from '@/services/headerMenu'
+import WidgetSiteMenuThemes from './WidgetSiteMenuThemes'
 import styles from './AdminWeb.module.css'
 
 function Toggle({ checked, onChange, label, hint }) {
@@ -272,6 +274,13 @@ export default function WidgetSiteTopNavSettings({
 
   return (
     <div className={styles.wsMinimal}>
+      <WidgetSiteMenuThemes
+        settings={rawSettings}
+        onChange={(next) => {
+          if (typeof onChange === 'function') onChange(next)
+        }}
+      />
+
       <p className={styles.wsMiniLabel}>نمایش در دستگاه</p>
       <div className={styles.wsStack}>
         <Toggle
@@ -628,18 +637,48 @@ export default function WidgetSiteTopNavSettings({
             max={4}
           />
           <PxField
-            label="گردی"
-            value={settings.radius}
-            onChange={(v) => patch('radius', v)}
-            max={40}
-          />
-          <PxField
             label="ارتفاع لوگو"
             value={settings.logo_height}
             onChange={(v) => patch('logo_height', v)}
             min={20}
             max={72}
           />
+        </div>
+        <p className={`${styles.wsMiniLabel} ${styles.wsMiniLabelSpaced}`}>
+          گردی گوشه‌ها
+        </p>
+        <div className={styles.wsPxGrid}>
+          <PxField
+            label="همه"
+            value={settings.radius}
+            onChange={(v) => {
+              const vp = device === 'mobile' ? 'mobile' : 'desktop'
+              const current = snapshotSiteTopNavViewportSettings(
+                rawSettings,
+                vp,
+              )
+              onChange({
+                [vp]: {
+                  ...current,
+                  radius: v,
+                  radius_tl: v,
+                  radius_tr: v,
+                  radius_br: v,
+                  radius_bl: v,
+                },
+              })
+            }}
+            max={48}
+          />
+          {SITE_TOP_NAV_RADIUS_CORNERS.map((f) => (
+            <PxField
+              key={f.key}
+              label={f.label}
+              value={settings[f.key]}
+              onChange={(v) => patch(f.key, v)}
+              max={48}
+            />
+          ))}
         </div>
         <p className={`${styles.wsMiniLabel} ${styles.wsMiniLabelSpaced}`}>
           Padding

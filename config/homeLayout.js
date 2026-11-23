@@ -3,6 +3,10 @@ import { templateById } from './sectionTemplates'
 import { createDefaultSiteTopNavSettings } from './siteTopNavWidgetSettings'
 import { createDefaultPostJobButtonSettings } from './postJobButtonWidgetSettings'
 import { createDefaultHeroWithMenuSettings } from './heroWithMenuSettings'
+import { createDefaultSchoolTopStudentsSettings } from './schoolTopStudentsWidgetSettings'
+import { createDefaultSchoolClassLeadersSettings } from './schoolClassLeadersWidgetSettings'
+import { createDefaultSchoolTeacherIntroSettings } from './schoolTeacherIntroWidgetSettings'
+import { createDefaultSchoolCounselorIntroSettings } from './schoolCounselorIntroWidgetSettings'
 import { createDefaultJobBoardWidgetSettings } from './jobBoardWidgetSettings'
 import {
   getSoftAppsWidgetDefaults,
@@ -126,6 +130,18 @@ export function createWidgetInstance(type, settings = {}) {
     Object.keys(base).length === 0
   ) {
     base = createDefaultHeroWithMenuSettings()
+  }
+  if (type === 'school_top_students' && Object.keys(base).length === 0) {
+    base = createDefaultSchoolTopStudentsSettings()
+  }
+  if (type === 'school_class_leaders' && Object.keys(base).length === 0) {
+    base = createDefaultSchoolClassLeadersSettings()
+  }
+  if (type === 'school_teacher_intro' && Object.keys(base).length === 0) {
+    base = createDefaultSchoolTeacherIntroSettings()
+  }
+  if (type === 'school_counselor_intro' && Object.keys(base).length === 0) {
+    base = createDefaultSchoolCounselorIntroSettings()
   }
   if (
     (type === 'post_job_button' || type === 'post_job_cta') &&
@@ -571,6 +587,7 @@ export function createSection(templateId = '1') {
     width: 'inherit',
     /* پیش‌فرض بدون پدینگ — فاصله فقط اگر در استودیو تنظیم شود */
     padding_y: 'none',
+    background: '',
     columns: tpl.spans.map((span) => createColumn(span)),
   }
 }
@@ -910,6 +927,9 @@ function normalizeRow(raw) {
   if (!columns.length) {
     columns = tpl.spans.map((span) => createColumn(span))
   }
+  const background = String(row.background || row.bg_color || row.bg || '')
+    .trim()
+    .slice(0, 80)
   return {
     id: row.id || uid('sec'),
     template: tpl.id,
@@ -920,7 +940,10 @@ function normalizeRow(raw) {
     padding_y: ['none', 'sm', 'md', 'lg'].includes(row.padding_y)
       ? row.padding_y
       : 'none',
+    ...(background ? { background } : {}),
     columns,
+    ...(row.chrome_overlay_hero ? { chrome_overlay_hero: true } : {}),
+    ...(row.chrome_underlay_hero ? { chrome_underlay_hero: true } : {}),
   }
 }
 
@@ -942,12 +965,24 @@ export function normalizeHomeLayout(raw) {
     .trim()
     .slice(0, 80)
 
+  const chromeRaw = base.chrome
+  const chrome =
+    chromeRaw && typeof chromeRaw === 'object'
+      ? {
+          header: chromeRaw.header === true,
+          menu: chromeRaw.menu === true,
+          footer: chromeRaw.footer === true,
+        }
+      : undefined
+
   return {
     version: 2,
     page_width,
     max_width,
     gutter,
     ...(page_background ? { page_background } : {}),
+    ...(chrome ? { chrome } : {}),
+    ...(base.chrome_over_hero ? { chrome_over_hero: true } : {}),
     rows,
   }
 }
@@ -1027,14 +1062,20 @@ export function updateWidgetSettings(section, columnId, widgetId, settingsPatch)
               ? settingsPatch
               : {}
           const next = { ...prev, ...patch }
+          const replaceViewports = !!patch.__replace_viewports
           ;['desktop', 'mobile'].forEach((vp) => {
             if (patch[vp] && typeof patch[vp] === 'object') {
-              next[vp] = {
-                ...(prev[vp] && typeof prev[vp] === 'object' ? prev[vp] : {}),
-                ...patch[vp],
-              }
+              next[vp] = replaceViewports
+                ? { ...patch[vp] }
+                : {
+                    ...(prev[vp] && typeof prev[vp] === 'object'
+                      ? prev[vp]
+                      : {}),
+                    ...patch[vp],
+                  }
             }
           })
+          if ('__replace_viewports' in next) delete next.__replace_viewports
           return { ...w, settings: next }
         }),
       }

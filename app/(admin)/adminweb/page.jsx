@@ -1,7 +1,7 @@
 // app/(admin)/adminweb — داشبورد ادمین کل (مالک پلتفرم)
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { Suspense, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import {
   Boxes,
@@ -41,7 +41,10 @@ import {
   fetchSiteModules,
   clearSiteModulesCache,
 } from '@/services/siteModules'
+import { SITE_MODULE_KEYS, isShopModuleOn } from '@/config/siteModules'
 import {
+  isOwnerNavItemVisible,
+  isReboControlSite,
   normalizeIranMobile,
   OWNER_PHONES,
   OWNER_PROFILE,
@@ -52,64 +55,73 @@ import axios from 'axios'
 import styles from './AdminWeb.module.css'
 import portalStyles from '@/components/Admin/OwnerPortal.module.css'
 
+/**
+ * هاب ربو: همهٔ ابزارها.
+ * سایت‌های دیگر: فقط داشبورد / ماژول / طراحی قالب / طراحی فروشگاه (اگر shop) /
+ * دیپلوی / پرداخت — بقیه فقط روی ربو.
+ * reboOnly: فقط هاب ربو
+ */
 const GROUPS = [
   {
     id: 'design',
     title: 'طراحی',
     items: [
-      { href: '/templatesystem', title: 'طراحی قالب', desc: 'خانه، صفحات، پروفایل', icon: LayoutTemplate, color: '#2c481e' },
-      { href: '/shopdesign', title: 'طراحی فروشگاه', desc: 'لیست، سینگل، سبد', icon: ShoppingBag, color: '#2c481e' },
-      { href: '/product-single', title: 'سینگل محصول', desc: 'اجزای PDP', icon: ShoppingBag, color: '#2c481e' },
-      { href: '/deploysystem', title: 'دیپلوی', desc: 'local_settings', icon: Rocket, color: '#2c481e' },
-      { href: '/adminsettings?tab=jobs', title: 'طراحی کاریابی', desc: 'آگهی و برد', icon: Briefcase, color: '#2c481e' },
-      { href: '/adminsettings?tab=news', title: 'طراحی اخبار', desc: 'لیست و سینگل', icon: Newspaper, color: '#2c481e' },
-      { href: '/site-settings', title: 'برند و SEO', desc: 'تنظیمات سایت', icon: Settings2, color: '#2c481e' },
+      { href: '/templatesystem', title: 'طراحی قالب', desc: 'خانه، صفحات، پروفایل', icon: LayoutTemplate, color: '#2c481e', tenant: true },
+      { href: '/adminsettings?tab=pages', title: 'صفحات داخلی', desc: 'خبر فوری و منو', icon: Layers, color: '#2c481e', tenant: true },
+      { href: '/shopdesign', title: 'طراحی فروشگاه', desc: 'لیست، سینگل، سبد', icon: ShoppingBag, color: '#2c481e', tenant: true, requireShop: true },
+      { href: '/deploysystem', title: 'دیپلوی', desc: 'local_settings', icon: Rocket, color: '#2c481e', tenant: true },
+      { href: '/adminsettings?tab=jobs', title: 'طراحی کاریابی', desc: 'آگهی و برد', icon: Briefcase, color: '#2c481e', reboOnly: true, moduleKey: SITE_MODULE_KEYS.JOB_BOARD },
+      { href: '/adminsettings?tab=news', title: 'طراحی اخبار', desc: 'لیست و سینگل', icon: Newspaper, color: '#2c481e', reboOnly: true, moduleKey: SITE_MODULE_KEYS.NEWS },
+      { href: '/site-settings', title: 'برند و SEO', desc: 'تنظیمات سایت', icon: Settings2, color: '#2c481e', reboOnly: true },
+      { href: '/product-single', title: 'سینگل محصول', desc: 'اجزای PDP', icon: ShoppingBag, color: '#2c481e', reboOnly: true, moduleKey: SITE_MODULE_KEYS.SHOP },
     ],
   },
   {
     id: 'shop',
-    title: 'فروشگاه',
+    title: 'فروشگاه و پرداخت',
     items: [
-      { href: '/paymentsystem', title: 'تنظیمات پرداخت', desc: 'درگاه و اهداف', icon: CreditCard, color: '#2c481e' },
-      { href: '/product-single', title: 'سینگل محصول', desc: 'اجزای PDP', icon: ShoppingBag, color: '#2c481e' },
-      { href: '/adminsettings?tab=checkout', title: 'سفارش و سبد', desc: 'مراحل خرید', icon: ShoppingCart, color: '#2c481e' },
+      { href: '/paymentsystem', title: 'تنظیمات پرداخت', desc: 'درگاه و اهداف', icon: CreditCard, color: '#2c481e', tenant: true },
+      { href: '/adminsettings?tab=checkout', title: 'سفارش و سبد', desc: 'مراحل خرید', icon: ShoppingCart, color: '#2c481e', tenant: true, requireShop: true },
+      { href: '/product-single', title: 'سینگل محصول', desc: 'اجزای PDP', icon: ShoppingBag, color: '#2c481e', reboOnly: true, moduleKey: SITE_MODULE_KEYS.SHOP },
     ],
   },
   {
     id: 'systems',
     title: 'سیستم‌ها',
     items: [
-      { href: '/adminmodule', title: 'ماژول‌ها', desc: 'روشن و خاموش', icon: Boxes, color: '#2c481e' },
-      { href: '/rebosystem', title: 'سیستم ربو', desc: 'آموزش، قیمت، مدیریت', icon: Layers, color: '#2c481e' },
-      { href: '/serversystem', title: 'سرور', desc: 'سایت، گیت، ابری', icon: Cloud, color: '#2c481e' },
+      { href: '/adminmodule', title: 'ماژول‌ها', desc: 'روشن و خاموش', icon: Boxes, color: '#2c481e', tenant: true },
+      { href: '/dashboard', title: 'داشبورد کارمندی', desc: 'خلاصه', icon: LayoutDashboard, color: '#2c481e', tenant: true },
+      { href: '/rebosystem', title: 'سیستم ربو', desc: 'آموزش، قیمت، مدیریت', icon: Layers, color: '#2c481e', reboOnly: true },
+      { href: '/serversystem', title: 'سرور', desc: 'سایت، گیت، ابری', icon: Cloud, color: '#2c481e', reboOnly: true },
     ],
   },
   {
     id: 'content',
     title: 'محتوا و ابزار',
+    reboOnly: true,
     items: [
-      { href: '/news-management', title: 'مدیریت اخبار', desc: 'محتوا', icon: Newspaper, color: '#2c481e' },
-      { href: '/news-single', title: 'سینگل خبر', desc: 'اجزای خبر', icon: FileText, color: '#2c481e' },
-      { href: '/jobs-manage', title: 'آگهی‌ها', desc: 'کاریابی', icon: Briefcase, color: '#2c481e' },
-      { href: '/job-single', title: 'سینگل آگهی', desc: 'اجزای آگهی', icon: Briefcase, color: '#2c481e' },
+      { href: '/news-management', title: 'مدیریت اخبار', desc: 'محتوا', icon: Newspaper, color: '#2c481e', moduleKey: SITE_MODULE_KEYS.NEWS },
+      { href: '/news-single', title: 'سینگل خبر', desc: 'اجزای خبر', icon: FileText, color: '#2c481e', moduleKey: SITE_MODULE_KEYS.NEWS },
+      { href: '/jobs-manage', title: 'آگهی‌ها', desc: 'کاریابی', icon: Briefcase, color: '#2c481e', moduleKey: SITE_MODULE_KEYS.JOB_BOARD },
+      { href: '/job-single', title: 'سینگل آگهی', desc: 'اجزای آگهی', icon: Briefcase, color: '#2c481e', moduleKey: SITE_MODULE_KEYS.JOB_BOARD },
       { href: '/menu-lists', title: 'فهرست‌های منو', desc: 'منوها', icon: List, color: '#2c481e' },
       { href: '/header-menu', title: 'منوی سایت', desc: 'ظاهر', icon: PanelTop, color: '#2c481e' },
-      { href: '/hero-slider', title: 'هیرو', desc: 'اسلایدر', icon: Images, color: '#2c481e' },
+      { href: '/hero-slider', title: 'هیرو', desc: 'اسلایدر', icon: Images, color: '#2c481e', moduleKey: SITE_MODULE_KEYS.HERO_SLIDER },
+      { href: '/home-hero-manage', title: 'هیرو مدرسه', desc: 'اسلایدر مدرسه', icon: Images, color: '#2c481e', moduleKey: SITE_MODULE_KEYS.SCHOOL },
       { href: '/ticker', title: 'نوار خبر', desc: 'تیتر', icon: Megaphone, color: '#2c481e' },
-      { href: '/about-manage', title: 'درباره ما', desc: 'محتوا', icon: Info, color: '#2c481e' },
-      { href: '/catalog-manage', title: 'کاتالوگ', desc: 'فلیپ‌بوک', icon: BookOpen, color: '#2c481e' },
-      { href: '/videoinsta-manage', title: 'ویدیو', desc: 'استوری', icon: Images, color: '#2c481e' },
-      { href: '/quiz-manage', title: 'آزمون', desc: 'سوالات', icon: Brain, color: '#2c481e' },
-      { href: '/faq-manage', title: 'FAQ', desc: 'سوالات', icon: HelpCircle, color: '#2c481e' },
-      { href: '/school-manage', title: 'مدرسه', desc: 'آموزش', icon: GraduationCap, color: '#2c481e' },
-      { href: '/apps-manage', title: 'نرم‌افزارها', desc: 'دانلود', icon: AppWindow, color: '#2c481e' },
-      { href: '/todoservice', title: 'میزکار سرویس', desc: 'مدیر / سرویسکار / مشتری', icon: Wrench, color: '#2c481e' },
+      { href: '/about-manage', title: 'درباره ما', desc: 'محتوا', icon: Info, color: '#2c481e', moduleKey: SITE_MODULE_KEYS.ABOUT_US },
+      { href: '/catalog-manage', title: 'کاتالوگ', desc: 'فلیپ‌بوک', icon: BookOpen, color: '#2c481e', moduleKey: SITE_MODULE_KEYS.CATALOG },
+      { href: '/videoinsta-manage', title: 'ویدیو', desc: 'استوری', icon: Images, color: '#2c481e', moduleKey: SITE_MODULE_KEYS.VIDEOINSTA },
+      { href: '/quiz-manage', title: 'آزمون', desc: 'سوالات', icon: Brain, color: '#2c481e', moduleKey: SITE_MODULE_KEYS.QUIZ },
+      { href: '/faq-manage', title: 'FAQ', desc: 'سوالات', icon: HelpCircle, color: '#2c481e', moduleKey: SITE_MODULE_KEYS.FAQ },
+      { href: '/school-manage', title: 'مدرسه', desc: 'آموزش', icon: GraduationCap, color: '#2c481e', moduleKey: SITE_MODULE_KEYS.SCHOOL },
+      { href: '/apps-manage', title: 'نرم‌افزارها', desc: 'دانلود', icon: AppWindow, color: '#2c481e', moduleKey: SITE_MODULE_KEYS.SOFTAPPS },
+      { href: '/todoservice', title: 'میزکار سرویس', desc: 'مدیر / سرویسکار / مشتری', icon: Wrench, color: '#2c481e', moduleKey: SITE_MODULE_KEYS.REPAIRS },
       { href: '/platform-connections', title: 'پیام‌رسان', desc: 'اتصالات', icon: Radio, color: '#2c481e' },
-      { href: '/request-types', title: 'درخواست‌ها', desc: 'انواع', icon: Tags, color: '#2c481e' },
+      { href: '/request-types', title: 'درخواست‌ها', desc: 'انواع', icon: Tags, color: '#2c481e', moduleKey: SITE_MODULE_KEYS.SALES_MARKETING },
       { href: '/employees', title: 'کارمندان', desc: 'دسترسی', icon: Users, color: '#2c481e' },
-      { href: '/sale', title: 'فروش', desc: 'لید', icon: ShoppingCart, color: '#2c481e' },
-      { href: '/rasad', title: 'رصد', desc: 'روند استانی', icon: Radar, color: '#2c481e' },
-      { href: '/dashboard', title: 'داشبورد کارمندی', desc: 'خلاصه', icon: LayoutDashboard, color: '#2c481e' },
+      { href: '/sale', title: 'فروش', desc: 'لید', icon: ShoppingCart, color: '#2c481e', moduleKey: SITE_MODULE_KEYS.SALES_MARKETING },
+      { href: '/rasad', title: 'رصد', desc: 'روند استانی', icon: Radar, color: '#2c481e', moduleKey: SITE_MODULE_KEYS.SALES_MARKETING },
     ],
   },
 ]
@@ -120,10 +132,42 @@ function matchesQuery(item, q) {
   return hay.includes(q)
 }
 
-export default function AdminWebDashboardPage() {
+/** کاشی‌های adminweb با توجه به هاب ربو / فروشگاه */
+function isAdminWebItemForSite(item, moduleMap) {
+  if (!item) return false
+  const map = moduleMap && typeof moduleMap === 'object' ? moduleMap : {}
+  const reboHub = isReboControlSite(map)
+
+  if (item.reboOnly && !reboHub) return false
+  if (!reboHub && !item.tenant && !item.reboOnly) {
+    // گروه محتوا فقط ربو
+    return false
+  }
+  if (!reboHub && item.requireShop && !isShopModuleOn(map)) return false
+  if (!reboHub && item.href && !isOwnerNavItemVisible(item.href, map)) {
+    return false
+  }
+
+  if (reboHub) {
+    const keys = []
+    if (item.moduleKey) keys.push(item.moduleKey)
+    if (Array.isArray(item.moduleKeys)) keys.push(...item.moduleKeys)
+    if (!keys.length) return true
+    if (!Object.keys(map).length) return false
+    return keys.some((k) => {
+      if (k === SITE_MODULE_KEYS.SHOP) return isShopModuleOn(map)
+      return !!map[k]
+    })
+  }
+
+  return true
+}
+
+function AdminWebDashboardInner() {
   const gate = useOwnerGate('/adminweb')
   const { getAuthHeaders } = useAuth()
   const [query, setQuery] = useState('')
+  const [moduleMap, setModuleMap] = useState({})
   const [moduleStats, setModuleStats] = useState({
     total: 0,
     active: 0,
@@ -133,11 +177,17 @@ export default function AdminWebDashboardPage() {
 
   const groups = useMemo(() => {
     const q = query.trim().toLowerCase()
-    return GROUPS.map((group) => ({
-      ...group,
-      items: group.items.filter((item) => matchesQuery(item, q)),
-    })).filter((group) => group.items.length)
-  }, [query])
+    const reboHub = isReboControlSite(moduleMap)
+    return GROUPS.filter((group) => !group.reboOnly || reboHub)
+      .map((group) => ({
+        ...group,
+        items: group.items.filter(
+          (item) =>
+            isAdminWebItemForSite(item, moduleMap) && matchesQuery(item, q),
+        ),
+      }))
+      .filter((group) => group.items.length)
+  }, [query, moduleMap])
 
   useEffect(() => {
     if (!gate.allowed) return undefined
@@ -147,6 +197,7 @@ export default function AdminWebDashboardPage() {
         clearSiteModulesCache()
         const { list, map } = await fetchSiteModules({ force: true })
         if (cancelled) return
+        setModuleMap(map || {})
         const total = list?.length || 0
         const active = Object.values(map || {}).filter(Boolean).length
         const groupsCount = (list || []).filter(
@@ -157,7 +208,10 @@ export default function AdminWebDashboardPage() {
         ).length
         setModuleStats({ total, active, groups: groupsCount })
       } catch {
-        if (!cancelled) setModuleStats({ total: 0, active: 0, groups: 0 })
+        if (!cancelled) {
+          setModuleMap({})
+          setModuleStats({ total: 0, active: 0, groups: 0 })
+        }
       }
     })()
     return () => {
@@ -492,5 +546,13 @@ export default function AdminWebDashboardPage() {
         </section>
       </div>
     </OwnerPortalShell>
+  )
+}
+
+export default function AdminWebDashboardPage() {
+  return (
+    <Suspense fallback={null}>
+      <AdminWebDashboardInner />
+    </Suspense>
   )
 }

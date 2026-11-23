@@ -15,6 +15,33 @@ import { getFullImageUrl } from "@/utils/imageUrl";
 
 const AuthContext = createContext();
 
+/** مسیر بعد از ورود — /school قدیمی → /profile */
+function resolveSafeNext(raw) {
+  if (!raw || typeof raw !== "string") return "/";
+  const next = raw.trim();
+  if (!next.startsWith("/") || next.startsWith("//")) return "/";
+
+  if (next === "/school" || next.startsWith("/school?")) {
+    const q = next.includes("?") ? next.slice(next.indexOf("?")) : "";
+    return `/profile${q}`;
+  }
+  if (next.startsWith("/school/teacher")) return "/profile?tab=teacher";
+  if (next.startsWith("/school/student")) return "/profile?tab=students";
+  if (next.startsWith("/school/counselor")) return "/profile?tab=counselor";
+  if (next.startsWith("/school/teachers/")) {
+    const slug = next.slice("/school/teachers/".length).split(/[?#]/)[0];
+    return slug ? `/teachers/${slug}` : "/teachers";
+  }
+  if (next.startsWith("/school/counselors/")) {
+    const slug = next.slice("/school/counselors/".length).split(/[?#]/)[0];
+    return slug ? `/counselors/${slug}` : "/counselors";
+  }
+  if (next.startsWith("/school/") || next.startsWith("/school#")) {
+    return "/profile";
+  }
+  return next;
+}
+
 // ✅ لیست کامل مسیرهای عمومی
 const PUBLIC_PATHS = [
   "/",
@@ -403,9 +430,7 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
             {
               const next = new URLSearchParams(window.location.search).get("next");
-              const safeNext =
-                next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
-              router.push(safeNext);
+              router.push(resolveSafeNext(next));
             }
             return { success: true, user: userProfile };
           } catch (profileError) {
@@ -427,9 +452,7 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
             {
               const next = new URLSearchParams(window.location.search).get("next");
-              const safeNext =
-                next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
-              router.push(safeNext);
+              router.push(resolveSafeNext(next));
             }
             return { success: true };
           }
@@ -633,9 +656,7 @@ export const AuthProvider = ({ children }) => {
 
     if (isAuthenticated && pathname === "/login") {
       const next = new URLSearchParams(window.location.search).get("next");
-      const safeNext =
-        next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
-      router.replace(safeNext);
+      router.replace(resolveSafeNext(next));
     }
   }, [isAuthenticated, loading, router]);
 
@@ -649,12 +670,15 @@ export const AuthProvider = ({ children }) => {
     const requestInterceptor = axios.interceptors.request.use(
       (config) => {
         try {
+          const url = String(config.url || "");
+          const isNewsUpload =
+            url.includes("/news/upload") || url.includes("/news/upload-");
           const isPublicEndpoint =
-            config.url?.includes("/news") ||
-            config.url?.includes("/about") ||
-            config.url?.includes("/contact") ||
-            config.url?.includes("/services") ||
-            config.url?.includes("/projects");
+            (!isNewsUpload && url.includes("/news")) ||
+            url.includes("/about") ||
+            url.includes("/contact") ||
+            url.includes("/services") ||
+            url.includes("/projects");
 
           if (isPublicEndpoint && !config._isAuthRequest) {
             return config;

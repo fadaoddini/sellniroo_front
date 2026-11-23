@@ -85,6 +85,40 @@
   overflow: visible;
 }
 
+/*
+ * هدر/منو روی هیرو معرفی مدرسه:
+ * - بک‌گراند خود منو/هدر دست‌نخورده می‌ماند
+ * - فقط لایهٔ زیر (هیرو/سکشن) شفاف و زیر کروم کشیده می‌شود
+ * - کروم sticky است تا با اسکرول همیشه بالا بماند
+ */
+.chromeHeroStack {
+  position: relative;
+  width: 100%;
+}
+
+.chromeHeroOverlay {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+}
+
+/* لایهٔ زیرین: بدون بک‌گراند اضافه تا هیرو زیر کروم دیده شود */
+.chromeHeroUnderlay {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  background: transparent;
+}
+
+.chromeHeroUnderlay :global(section[data-chrome-underlay-hero='1']) {
+  background: transparent !important;
+}
+
+.chromeHeroUnderlay :global([data-school-chrome-underlay='1']) {
+  --sc-chrome-overlay-pad: var(--pb-chrome-overlay-h, 0px);
+}
+
 /* نوار خبر / منوی بالا: sticky روی سکشن تا بعد از رسیدن به لبه تا پایین بماند (دسکتاپ) */
 @media (min-width: 768px) {
   .sectionStickyNav {

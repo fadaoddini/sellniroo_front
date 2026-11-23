@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { LayoutTemplate } from 'lucide-react'
 import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
@@ -10,14 +11,14 @@ import {
 import useOwnerGate from '@/components/Admin/useOwnerGate'
 import styles from '../adminweb/AdminWeb.module.css'
 
-export default function TemplateSystemPage() {
+function TemplateSystemInner() {
   const gate = useOwnerGate('/templatesystem')
 
   return (
     <OwnerPortalShell
       brand="وب"
       brandAccent="ادمین "
-      tagline="خانه، صفحات داخلی و پروفایل"
+      tagline="هدر، منو، خانه، صفحات داخلی و فوتر"
       title="طراحی قالب"
       wide
       pageNav={getTemplateSystemPageNav('/templatesystem')}
@@ -38,8 +39,8 @@ export default function TemplateSystemPage() {
           </span>
         </div>
         <p className={styles.dashLead}>
-          صفحه اصلی، چیدمان صفحات داخلی، و طراحی پروفایل — جدا از فروشگاه و
-          دیپلوی.
+          هدر و منو را جدا طراحی کنید؛ روی هر صفحه انتخاب کنید نمایش داده شوند
+          یا نه. فوتر در پایین سایت.
         </p>
         <div className={`${styles.dashTiles} ${styles.dashTilesCols3}`}>
           {TEMPLATE_SYSTEM_LINKS.map((item) => {
@@ -59,5 +60,13 @@ export default function TemplateSystemPage() {
         </div>
       </section>
     </OwnerPortalShell>
+  )
+}
+
+export default function TemplateSystemPage() {
+  return (
+    <Suspense fallback={null}>
+      <TemplateSystemInner />
+    </Suspense>
   )
 }

@@ -7,21 +7,39 @@ import styles from './AdminWeb.module.css'
 
 const STEPS = [
   {
+    id: 'header',
+    label: 'هدر بالا',
+    hint: 'بالاترین نوار سایت را طراحی کنید',
+    href: '/adminsettings?tab=header&wizard=1',
+  },
+  {
+    id: 'menu',
+    label: 'منوی بالا',
+    hint: 'نوار منو زیر هدر',
+    href: '/adminsettings?tab=menu&wizard=1',
+  },
+  {
     id: 'home',
-    label: 'طراحی قالب',
-    hint: 'خانه را از صفر بچینید',
+    label: 'صفحه اصلی',
+    hint: 'محتوا + روشن کردن هدر/منو',
     href: '/adminsettings?tab=home&wizard=1',
   },
   {
     id: 'pages',
     label: 'صفحات داخلی',
-    hint: 'اول چیدمان مشترک، بعد محتوای هر صفحه',
-    href: '/adminsettings?tab=pages&page=shared&wizard=1',
+    hint: 'هر صفحه: محتوا + انتخاب هدر/منو',
+    href: '/adminsettings?tab=pages&wizard=1',
+  },
+  {
+    id: 'footer',
+    label: 'فوتر',
+    hint: 'پایین‌ترین قسمت سایت',
+    href: '/adminsettings?tab=footer&wizard=1',
   },
   {
     id: 'profile',
     label: 'چیدمان پروفایل',
-    hint: 'بخش‌های پروفایل همین سیستم',
+    hint: 'بخش‌ها + هدر/منو جدا',
     href: '/adminsettings?tab=profile&wizard=1',
   },
   {

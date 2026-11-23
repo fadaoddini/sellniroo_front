@@ -15,7 +15,12 @@ import LayoutSection from '@/components/layout/LayoutSection'
 import { fetchSiteSettings } from '@/services/siteSettings'
 import { isSadraAppShell, SADRA_APP_BG } from '@/config/sadraTheme'
 import ModulePageShell from '@/components/layout/ModulePageShell'
-import { getModulePageDefForPath } from '@/config/modulePageLayouts'
+import {
+  getModulePageDef,
+  getModulePageDefForPath,
+  pageKeepsOwnChrome,
+} from '@/config/modulePageLayouts'
+import { fetchSiteModules } from '@/services/siteModules'
 
 function isHomepagePath(pathname) {
   if (!pathname) return false
@@ -71,12 +76,26 @@ function isCartPath(pathname) {
   return p === '/cart'
 }
 
-/** صفحات داخلی ماژول — هدر از چیدمان خودشان، نه اسلات سراسری سایت */
-function isModuleBuilderPath(pathname) {
-  if (!pathname) return false
+/**
+ * صفحات داخلی ماژول — هدر از چیدمان خودشان، نه اسلات سراسری سایت.
+ * /news فقط وقتی کروم اختصاصی مدرسه روشن است ماژول‌شِل می‌شود؛
+ * وگرنه از news_list_layout (کاریابی و بقیه) استفاده می‌کند.
+ * /gym/* بدون def جدا: فقط حالت builder (شل داخل layout خود صفحه است).
+ */
+function resolveModuleBuilderDef(pathname, schoolNewsOwnChrome) {
+  if (!pathname) return { def: null, builder: false }
   const p = pathname.replace(/\/+$/, '') || ''
-  if (getModulePageDefForPath(p)) return true
-  return p === '/gym' || p.startsWith('/gym/')
+  const def = getModulePageDefForPath(p)
+  if (def) {
+    if (def.key === 'news' && !schoolNewsOwnChrome) {
+      return { def: null, builder: false }
+    }
+    return { def, builder: true }
+  }
+  if (p === '/gym' || p.startsWith('/gym/')) {
+    return { def: null, builder: true }
+  }
+  return { def: null, builder: false }
 }
 
 /**
@@ -94,6 +113,8 @@ export default function SiteChrome({ siteName = '', children }) {
   const barePresentation = isBarePresentationPath(pathname)
   const cartPath = isCartPath(pathname)
   const [appShell, setAppShell] = useState(() => isSadraAppShell(null, siteName))
+  /** قالب مدرسه: /news از ModulePageShell با کروم اختصاصی */
+  const [schoolNewsOwnChrome, setSchoolNewsOwnChrome] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -109,6 +130,28 @@ export default function SiteChrome({ siteName = '', children }) {
       cancelled = true
     }
   }, [siteName])
+
+  useEffect(() => {
+    let cancelled = false
+    const refresh = () => {
+      fetchSiteModules({ force: false })
+        .then(({ map }) => {
+          if (cancelled) return
+          setSchoolNewsOwnChrome(
+            pageKeepsOwnChrome(getModulePageDef('news'), map || {}),
+          )
+        })
+        .catch(() => {
+          if (!cancelled) setSchoolNewsOwnChrome(false)
+        })
+    }
+    refresh()
+    window.addEventListener('site-modules-changed', refresh)
+    return () => {
+      cancelled = true
+      window.removeEventListener('site-modules-changed', refresh)
+    }
+  }, [])
 
   useEffect(() => {
     if (typeof document === 'undefined') return undefined
@@ -134,8 +177,10 @@ export default function SiteChrome({ siteName = '', children }) {
     )
   }
 
-  const moduleBuilder = isModuleBuilderPath(pathname)
-  const moduleDef = getModulePageDefForPath(pathname)
+  const { def: moduleDef, builder: moduleBuilder } = resolveModuleBuilderDef(
+    pathname,
+    schoolNewsOwnChrome,
+  )
 
   const withModuleChrome = (node) => {
     if (!moduleDef) return node
@@ -160,7 +205,8 @@ export default function SiteChrome({ siteName = '', children }) {
     )
   }
 
-  /* صفحه اصلی، لیست/سینگل، فروشگاه، صفحات داخلی ماژول: صفحه‌ساز + فوتر ربو */
+  /* صفحه اصلی، لیست/سینگل، فروشگاه، صفحات داخلی ماژول: صفحه‌ساز + فوتر ربو
+   * /news در قالب مدرسه → ModulePageShell؛ در کاریابی → news_list_layout مستقیم */
   if (
     home ||
     newsPath ||

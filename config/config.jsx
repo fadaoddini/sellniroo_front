@@ -1219,6 +1219,21 @@ news: {
       endpoint: `site-factory/sites/${encodeURIComponent(siteId || '')}/update/`,
       noVersion: true,
     }),
+    siteDbDump: (siteId) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `site-factory/sites/${encodeURIComponent(siteId || '')}/db-dump/`,
+      noVersion: true,
+    }),
+    siteSmsSettings: (siteId) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `site-factory/sites/${encodeURIComponent(siteId || '')}/sms-settings/`,
+      noVersion: true,
+    }),
+    siteCreateSuperuser: (siteId) => Config.getApiUrl({
+      segment: 'api',
+      endpoint: `site-factory/sites/${encodeURIComponent(siteId || '')}/create-superuser/`,
+      noVersion: true,
+    }),
     updateStatus: (id) => Config.getApiUrl({
       segment: 'api',
       endpoint: `site-factory/update/${id}/`,

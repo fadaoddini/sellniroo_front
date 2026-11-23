@@ -1,0 +1,548 @@
+.root {
+  width: 100%;
+  direction: rtl;
+  font-family: var(--font-iran, 'iran', Tahoma, sans-serif);
+  padding-block: var(--sti-pad-y, 24px);
+  box-sizing: border-box;
+  background: transparent;
+}
+
+.rootBoxed {
+  padding-inline: max(1rem, calc((100% - var(--home-max-width, 1200px)) / 2));
+}
+
+.rootFull {
+  padding-inline: 0;
+}
+
+.inner {
+  width: min(1140px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.rootFull .inner {
+  width: min(1200px, calc(100% - 2rem));
+}
+
+/* قاب — رنگ از --sti-frame (hex / rgba / transparent) */
+.frame {
+  position: relative;
+  border-radius: 30px 14px 28px 16px;
+  background:
+    radial-gradient(ellipse 80% 50% at 85% -10%, rgba(255, 255, 255, 0.12), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 10% 110%, rgba(0, 0, 0, 0.28), transparent 60%),
+    linear-gradient(155deg, rgba(255, 255, 255, 0.08), transparent 42%),
+    var(--sti-frame, #8e0413);
+  color: var(--sti-frame-text, #f8f0f0);
+  padding: 0.75rem 0.8rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -3px 10px rgba(0, 0, 0, 0.28),
+    inset 12px 0 24px rgba(0, 0, 0, 0.08),
+    0 16px 40px rgba(80, 0, 12, 0.34);
+  overflow: hidden;
+}
+
+/* حالت شفاف / بدون افکت تزئینی */
+.framePlain {
+  background: var(--sti-frame, transparent);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.framePlain::before,
+.framePlain::after {
+  display: none !important;
+}
+
+.frame::before {
+  content: '';
+  position: absolute;
+  inset: 10px 12px auto 12px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.22) 20%,
+    rgba(255, 255, 255, 0.08) 55%,
+    transparent
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.frame::after {
+  content: '';
+  position: absolute;
+  inset: auto -18% -48% 30%;
+  height: 72%;
+  background: radial-gradient(
+    circle,
+    rgba(201, 162, 39, 0.16),
+    transparent 68%
+  );
+  pointer-events: none;
+}
+
+.frameTop {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0;
+  padding-inline: 0;
+  padding-bottom: 0;
+}
+
+.frameTopStart {
+  flex-direction: row;
+}
+
+.frameTopEnd {
+  flex-direction: row;
+}
+
+.frameTopCopy {
+  min-width: 0;
+  flex: 1;
+  padding-bottom: 0.65rem;
+  padding-inline: 0.2rem;
+}
+
+.kicker {
+  margin: 0 0 0.15rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--sti-frame-muted, rgba(248, 240, 240, 0.72));
+  font-family: var(--font-iran-bold, 'iran_bold', var(--font-iran), Tahoma, sans-serif);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 800;
+  color: var(--sti-frame-text, #f8f0f0);
+  font-family: var(--font-iran-bold, 'iran_bold', var(--font-iran), Tahoma, sans-serif);
+}
+
+.subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--sti-frame-muted, rgba(248, 240, 240, 0.72));
+}
+
+/* نوار فلش — پهن، چسبیده به بدنه، با انحنای جوین */
+.navGroup {
+  --sti-nav-join: 18px;
+  --sti-nav-bg: var(--sti-frame-body, var(--sti-frame, #8e0413));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  min-width: 168px;
+  padding: 0.55rem 1.25rem 0.62rem;
+  margin: 0;
+  position: relative;
+  z-index: 4;
+  background: var(--sti-nav-bg);
+  color: var(--sti-arrow-text, #ffffff);
+  box-shadow: none;
+  border-radius: var(--sti-nav-join) var(--sti-nav-join) 0 0;
+}
+
+/* فیلِت مقعر — جوین نرم به لبهٔ بالای frameBody */
+.navGroup::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: var(--sti-nav-join);
+  height: var(--sti-nav-join);
+  pointer-events: none;
+  background: radial-gradient(
+    circle at var(--sti-fillet-at, 100% 0%),
+    transparent 67%,
+    var(--sti-nav-bg) 68%
+  );
+}
+
+/* ناو در انتهای ردیف (معمولاً چپ در RTL) */
+.navDockEnd .navGroup {
+  border-start-end-radius: max(var(--sti-body-r-tl, 18px), 16px);
+  border-start-start-radius: var(--sti-nav-join);
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+
+.navDockEnd .navGroup::before {
+  inset-inline-start: calc(var(--sti-nav-join) * -1);
+  --sti-fillet-at: 100% 0%;
+}
+
+/* ناو در شروع ردیف */
+.navDockStart .navGroup {
+  border-start-start-radius: max(var(--sti-body-r-tr, 10px), 16px);
+  border-start-end-radius: var(--sti-nav-join);
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+
+.navDockStart .navGroup::before {
+  inset-inline-end: calc(var(--sti-nav-join) * -1);
+  inset-inline-start: auto;
+  --sti-fillet-at: 0% 0%;
+}
+
+.navBtn {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: var(--sti-arrow-bg, rgba(255, 255, 255, 0.16));
+  color: var(--sti-arrow-text, #ffffff);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.navBtn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.32rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 0;
+  color: var(--sti-frame-text, #f8f0f0);
+  text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: var(--font-iran-bold, 'iran_bold', var(--font-iran), Tahoma, sans-serif);
+}
+
+.more:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.frameBody {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: stretch;
+  gap: var(--sti-gap, 12px);
+  min-height: 240px;
+  padding: 0.65rem;
+  padding-top: calc(0.35rem + var(--sti-qr, 56px) * 0.38);
+  border-radius:
+    var(--sti-body-r-tl, 18px)
+    var(--sti-body-r-tr, 10px)
+    var(--sti-body-r-br, 20px)
+    var(--sti-body-r-bl, 12px);
+  background: var(--sti-frame-body, var(--sti-frame, #8e0413));
+  box-shadow: none;
+  overflow: visible;
+}
+
+/* گوشهٔ زیر ناو صاف می‌شود تا بدون درز بچسبد؛ فیلِت انحنا را می‌سازد */
+.navDockEnd + .frameBody {
+  border-start-end-radius: 0;
+}
+
+.navDockStart + .frameBody {
+  border-start-start-radius: 0;
+}
+
+.frameBodySideLeft {
+  flex-direction: row-reverse;
+}
+
+.frameBodySideRight {
+  flex-direction: row;
+}
+
+/* پنل تصویر — بدون کادر و بک‌گراند */
+.sidePanel {
+  flex: 0 0 var(--sti-side-w, 200px);
+  width: var(--sti-side-w, 200px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+}
+
+.sideTitle {
+  margin: 0;
+  width: 100%;
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--sti-frame-text, #f8f0f0);
+  font-family: var(--font-iran-bold, 'iran_bold', var(--font-iran), Tahoma, sans-serif);
+  white-space: pre-wrap;
+}
+
+.sideImageWrap {
+  width: 100%;
+  min-height: 0;
+  border-radius: var(--sti-side-radius, 14px);
+  overflow: hidden;
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.sideImageWrap img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 260px;
+  min-height: 120px;
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+.sideCaption {
+  margin: 0;
+  width: 100%;
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: var(--sti-frame-muted, rgba(248, 240, 240, 0.72));
+  white-space: pre-wrap;
+}
+
+.track {
+  display: flex;
+  gap: var(--sti-gap, 12px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: calc(var(--sti-qr, 56px) * 0.38) 0.1rem 0.25rem;
+  scrollbar-width: none;
+  min-width: 0;
+  flex: 1 1 auto;
+  align-items: stretch;
+  border-radius: 14px 8px 12px 10px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.trackHideBar::-webkit-scrollbar {
+  display: none;
+}
+
+.trackShowBar {
+  scrollbar-width: thin;
+}
+
+.card {
+  --sti-qr-pop: calc(var(--sti-qr, 56px) * 0.38);
+  flex: 0 0 var(--sti-card-w, 168px);
+  width: var(--sti-card-w, 168px);
+  scroll-snap-align: start;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.7rem 0.55rem 0.65rem;
+  padding-inline-end: calc(0.45rem + var(--sti-qr, 56px) * 0.15);
+  border-radius: var(--sti-radius, 14px);
+  background: var(--sti-card, #ffffff);
+  border: 0;
+  box-shadow: none;
+  text-decoration: none;
+  color: var(--sti-text, #1a1414);
+  box-sizing: border-box;
+  overflow: visible;
+  transition: transform 0.18s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: none;
+}
+
+.cardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding-inline-end: calc(var(--sti-qr, 56px) * 0.55);
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: linear-gradient(145deg, #c9a227, #df8080);
+  color: #4a1010;
+  font-size: 0.9rem;
+  font-weight: 800;
+  font-family: var(--font-iran-bold, 'iran_bold', var(--font-iran), Tahoma, sans-serif);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* بخشی از QR از لبهٔ بالای کارت سفید بیرون می‌زند */
+.qrBox {
+  position: absolute;
+  top: calc(-1 * var(--sti-qr-pop));
+  inset-inline-end: 0.35rem;
+  z-index: 3;
+  width: var(--sti-qr, 56px);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.12rem;
+  pointer-events: none;
+}
+
+.qrBox img {
+  width: var(--sti-qr, 56px);
+  height: var(--sti-qr, 56px);
+  border-radius: 8px;
+  background: #fff;
+  padding: 2px;
+  box-sizing: border-box;
+  display: block;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.qrLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.12rem;
+  font-size: 0.52rem;
+  font-weight: 700;
+  color: var(--sti-muted, #6b7280);
+}
+
+.name {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--sti-text, #111827);
+  font-family: var(--font-iran-bold, 'iran_bold', var(--font-iran), Tahoma, sans-serif);
+}
+
+.specialty {
+  margin: 0.2rem 0 0;
+  font-size: 0.68rem;
+  font-weight: 650;
+  color: var(--sti-muted, #4b5563);
+  line-height: 1.4;
+}
+
+.bio {
+  margin: 0.35rem 0 0;
+  font-size: 0.68rem;
+  line-height: 1.55;
+  color: var(--sti-muted, #6b7280);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cta {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.68rem;
+  font-weight: 750;
+  color: var(--sti-frame, #8e0413);
+  font-family: var(--font-iran-bold, 'iran_bold', var(--font-iran), Tahoma, sans-serif);
+}
+
+.card:hover .cta {
+  color: #6b030e;
+}
+
+.empty,
+.emptyInline {
+  padding: 1rem;
+  text-align: center;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--sti-frame-muted, rgba(248, 240, 240, 0.72));
+  font-size: 0.8rem;
+}
+
+.emptyInline {
+  flex: 0 0 auto;
+  align-self: center;
+  white-space: nowrap;
+}
+
+.hiddenMobile {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  .hiddenDesktop {
+    display: none !important;
+  }
+
+  .hiddenMobile {
+    display: block !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .frameBody,
+  .frameBodySideLeft,
+  .frameBodySideRight {
+    flex-direction: column;
+  }
+
+  .sidePanel {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .sideImageWrap img {
+    max-height: 160px;
+  }
+
+  .frameTop {
+    flex-wrap: wrap;
+  }
+}

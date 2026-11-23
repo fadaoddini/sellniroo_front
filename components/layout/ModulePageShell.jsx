@@ -7,6 +7,7 @@ import {
   getModulePageDef,
   getSharedInternalLayoutRaw,
   normalizeModulePageLayout,
+  pageKeepsOwnChrome,
   SHARED_INTERNAL_LAYOUT_EVENT,
   sharedInternalLayoutHasContent,
   normalizeSharedInternalLayout,
@@ -16,13 +17,50 @@ import {
   composeInternalPageLayout,
   stripSyncedHeroWidgets,
 } from '@/config/chromeThemeSync'
+import {
+  composeWithSiteChrome,
+  layoutHasChromeOpts,
+} from '@/config/siteChrome'
 import { fetchSiteSettings } from '@/services/siteSettings'
+import { fetchSiteModules } from '@/services/siteModules'
+import { normalizeNewsListLayout } from '@/config/homeLayout'
 
 const ModulePageShellContext = createContext(false)
 
+/** آیا این درخت داخل پوستهٔ صفحهٔ ماژول است (برای جلوگیری از کروم دوبل) */
+export function useModulePageShell() {
+  return useContext(ModulePageShellContext)
+}
+
+function layoutHasAnyWidget(layout) {
+  return (layout?.rows || []).some((row) =>
+    (row.columns || []).some((col) => (col.widgets || []).length > 0),
+  )
+}
+
+/** لیست اخبار قدیمی → چیدمان ماژول news (محتوای کامل = news_list_content) */
+function newsListLayoutAsModulePage(raw) {
+  const L = normalizeNewsListLayout(raw)
+  const rows = (L.rows || []).map((row) => ({
+    ...row,
+    columns: (row.columns || []).map((col) => ({
+      ...col,
+      widgets: (col.widgets || []).map((w) => {
+        const t = String(w?.type || '')
+        if (t === 'news_page' || t === 'news_list_page') {
+          return { ...w, type: 'news_list_content' }
+        }
+        return w
+      }),
+    })),
+  }))
+  return normalizeModulePageLayout({ ...L, rows }, 'news')
+}
+
 /**
  * پوسته چیدمان صفحات داخلی ماژول.
- * هدر/منو از «چیدمان مشترک» (سکشن ۱ صفحه اصلی) می‌آید.
+ * هدر/منو از «چیدمان مشترک» (سکشن ۱ صفحه اصلی) می‌آید —
+ * مگر صفحه keepOwnChrome / ownChromeWhenSchool (مثل news و profile در قالب مدرسه).
  * اگر داخل یک ModulePageShell دیگر باشیم، فقط children را رد می‌کند
  * تا شاخه‌های تو در تو (مثل /repairs/track) دوبار کروم نگیرند.
  */
@@ -39,15 +77,42 @@ export default function ModulePageShell({
   useEffect(() => {
     if (nested) return undefined
     let cancelled = false
-    const resolve = (settings, pageOverride = null) => {
-      const pageLayout = stripSyncedHeroWidgets(
+    const resolve = (settings, moduleMap, pageOverride = null) => {
+      let pageLayout = stripSyncedHeroWidgets(
         normalizeModulePageLayout(
           pageOverride ?? settings?.module_page_layouts?.[pageKey],
           pageKey,
         ),
       )
-      if (def?.keepOwnChrome) {
+      const keepOwn = pageKeepsOwnChrome(def, moduleMap)
+
+      if (keepOwn) {
+        // مدرسه: اگر چیدمان ماژول news خالی بود، از news_list_layout بساز
+        if (
+          pageKey === 'news' &&
+          !layoutHasAnyWidget(pageLayout) &&
+          settings?.news_list_layout
+        ) {
+          pageLayout = stripSyncedHeroWidgets(
+            newsListLayoutAsModulePage(settings.news_list_layout),
+          )
+        }
+        // مدل جدید: هدر/منو/فوتر اختیاری حتی روی صفحات keepOwnChrome
+        if (layoutHasChromeOpts(pageLayout)) {
+          return composeWithSiteChrome(pageLayout, settings, {
+            pageKey,
+            contentWidget: def?.contentWidget,
+          })
+        }
         return pageLayout
+      }
+
+      // مدل جدید: انتخاب اختیاری هدر/منو/فوتر به‌جای کپی اجباری از shared
+      if (layoutHasChromeOpts(pageLayout)) {
+        return composeWithSiteChrome(pageLayout, settings, {
+          pageKey,
+          contentWidget: def?.contentWidget,
+        })
       }
 
       const shared = applyHomeChromeSettingsToShared(
@@ -70,9 +135,12 @@ export default function ModulePageShell({
     }
     ;(async () => {
       try {
-        const s = await fetchSiteSettings({ force: true })
+        const [s, mods] = await Promise.all([
+          fetchSiteSettings({ force: true }),
+          fetchSiteModules({ force: true }).catch(() => ({ map: {} })),
+        ])
         if (cancelled) return
-        setLayout(resolve(s))
+        setLayout(resolve(s, mods?.map || {}))
       } catch {
         if (!cancelled) setLayout(empty)
       }
@@ -81,9 +149,12 @@ export default function ModulePageShell({
       def?.event || `module-page-layout-changed:${pageKey}`
     const onLayout = (ev) => {
       if (!ev?.detail) return
-      fetchSiteSettings({ force: true })
-        .then((s) => {
-          if (!cancelled) setLayout(resolve(s, ev.detail))
+      Promise.all([
+        fetchSiteSettings({ force: true }),
+        fetchSiteModules({ force: true }).catch(() => ({ map: {} })),
+      ])
+        .then(([s, mods]) => {
+          if (!cancelled) setLayout(resolve(s, mods?.map || {}, ev.detail))
         })
         .catch(() => {
           if (!cancelled) {
@@ -92,9 +163,12 @@ export default function ModulePageShell({
         })
     }
     const onSharedOrHome = () => {
-      fetchSiteSettings({ force: true })
-        .then((s) => {
-          if (!cancelled) setLayout(resolve(s))
+      Promise.all([
+        fetchSiteSettings({ force: true }),
+        fetchSiteModules({ force: true }).catch(() => ({ map: {} })),
+      ])
+        .then(([s, mods]) => {
+          if (!cancelled) setLayout(resolve(s, mods?.map || {}))
         })
         .catch(() => {})
     }
@@ -102,12 +176,38 @@ export default function ModulePageShell({
     window.addEventListener(SHARED_INTERNAL_LAYOUT_EVENT, onSharedOrHome)
     window.addEventListener('home-layout-changed', onSharedOrHome)
     window.addEventListener('module-page-layouts-changed', onSharedOrHome)
+    window.addEventListener('site-modules-changed', onSharedOrHome)
+    window.addEventListener(
+      'module-page-layout-changed:chrome_header',
+      onSharedOrHome,
+    )
+    window.addEventListener(
+      'module-page-layout-changed:chrome_menu',
+      onSharedOrHome,
+    )
+    window.addEventListener(
+      'module-page-layout-changed:chrome_footer',
+      onSharedOrHome,
+    )
     return () => {
       cancelled = true
       window.removeEventListener(eventName, onLayout)
       window.removeEventListener(SHARED_INTERNAL_LAYOUT_EVENT, onSharedOrHome)
       window.removeEventListener('home-layout-changed', onSharedOrHome)
       window.removeEventListener('module-page-layouts-changed', onSharedOrHome)
+      window.removeEventListener('site-modules-changed', onSharedOrHome)
+      window.removeEventListener(
+        'module-page-layout-changed:chrome_header',
+        onSharedOrHome,
+      )
+      window.removeEventListener(
+        'module-page-layout-changed:chrome_menu',
+        onSharedOrHome,
+      )
+      window.removeEventListener(
+        'module-page-layout-changed:chrome_footer',
+        onSharedOrHome,
+      )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageKey, nested])

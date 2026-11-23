@@ -13,6 +13,9 @@ import {
   Store,
   Briefcase,
   Newspaper,
+  PanelTop,
+  Menu,
+  PanelBottom,
 } from 'lucide-react'
 import OwnerPortalShell from '@/components/Admin/OwnerPortalShell'
 import useOwnerGate from '@/components/Admin/useOwnerGate'
@@ -43,18 +46,22 @@ import {
 import { SITE_MODULE_KEYS } from '@/config/siteModules'
 import {
   MODULE_PAGE_DEFS,
-  SHARED_INTERNAL_LAYOUT_KEY,
+  isModulePageModuleOn,
   SHARED_INTERNAL_LAYOUT_KEY_LEGACY,
   isSharedInternalLayoutKey,
 } from '@/config/modulePageLayouts'
+import { isReboControlSite } from '@/utils/ownerAccess'
 import ShopDesignEmbed from './ShopDesignEmbed'
 import JobDesignEmbed from './JobDesignEmbed'
 import NewsDesignEmbed from './NewsDesignEmbed'
 import styles from '../adminweb/AdminWeb.module.css'
 
 const BASE_TABS = [
-  { id: 'home', label: 'طراحی قالب', icon: LayoutTemplate },
+  { id: 'header', label: 'هدر بالا', icon: PanelTop },
+  { id: 'menu', label: 'منوی بالا', icon: Menu },
+  { id: 'home', label: 'صفحه اصلی', icon: LayoutTemplate },
   { id: 'pages', label: 'صفحات داخلی', icon: Layers },
+  { id: 'footer', label: 'فوتر', icon: PanelBottom },
   {
     id: 'shop',
     label: 'طراحی فروشگاه',
@@ -74,12 +81,23 @@ const BASE_TABS = [
     moduleKey: SITE_MODULE_KEYS.NEWS,
   },
   { id: 'profile', label: 'چیدمان پروفایل', icon: UserRound },
-  { id: 'checkout', label: 'سفارش و سبد', icon: ShoppingCart },
+  {
+    id: 'checkout',
+    label: 'سفارش و سبد',
+    icon: ShoppingCart,
+    moduleKey: SITE_MODULE_KEYS.SHOP,
+  },
   { id: 'local', label: 'local_settings', icon: FileCode2 },
 ]
 
 function visibleTabs(moduleMap) {
-  return BASE_TABS.filter((t) => !t.moduleKey || !!moduleMap[t.moduleKey])
+  const reboHub = isReboControlSite(moduleMap)
+  return BASE_TABS.filter((t) => {
+    if (t.moduleKey && !moduleMap[t.moduleKey]) return false
+    // طراحی کاریابی/اخبار فقط روی هاب ربو در پورتال مالک
+    if (!reboHub && (t.id === 'jobs' || t.id === 'news')) return false
+    return true
+  })
 }
 
 function resolveTab(raw, moduleMap) {
@@ -119,12 +137,18 @@ function shellMeta(tab) {
   const navActive =
     tab === 'pages'
       ? '/adminsettings?tab=pages'
-      : tab === 'profile'
-        ? '/adminsettings?tab=profile'
-        : '/adminsettings'
+      : tab === 'header'
+        ? '/adminsettings?tab=header'
+        : tab === 'menu'
+          ? '/adminsettings?tab=menu'
+          : tab === 'footer'
+            ? '/adminsettings?tab=footer'
+            : tab === 'profile'
+              ? '/adminsettings?tab=profile'
+              : '/adminsettings'
   return {
     title: 'طراحی قالب',
-    tagline: 'خانه، صفحات داخلی و پروفایل',
+    tagline: 'هدر، منو، خانه، صفحات داخلی و فوتر',
     nav: getTemplateSystemPageNav(navActive),
   }
 }
@@ -141,26 +165,23 @@ export default function AdminSettingsPage() {
   )
   const pageFromQuery = searchParams?.get('page') || ''
   const [pageKey, setPageKey] = useState(() => {
-    if (
-      isSharedInternalLayoutKey(pageFromQuery) ||
-      pageFromQuery === SHARED_INTERNAL_LAYOUT_KEY_LEGACY
-    ) {
-      return SHARED_INTERNAL_LAYOUT_KEY
-    }
     if (MODULE_PAGE_DEFS.some((d) => d.key === pageFromQuery)) {
       return pageFromQuery
     }
-    return SHARED_INTERNAL_LAYOUT_KEY
+    return MODULE_PAGE_DEFS[0]?.key || 'profile'
   })
 
   useEffect(() => {
     const next = resolveTab(searchParams?.get('tab'), moduleMap)
     setTab(next)
     const p = searchParams?.get('page') || ''
-    if (isSharedInternalLayoutKey(p) || p === SHARED_INTERNAL_LAYOUT_KEY_LEGACY) {
-      setPageKey(SHARED_INTERNAL_LAYOUT_KEY)
-    } else if (MODULE_PAGE_DEFS.some((d) => d.key === p)) {
+    if (MODULE_PAGE_DEFS.some((d) => d.key === p)) {
       setPageKey(p)
+    } else if (
+      isSharedInternalLayoutKey(p) ||
+      p === SHARED_INTERNAL_LAYOUT_KEY_LEGACY
+    ) {
+      setPageKey(MODULE_PAGE_DEFS[0]?.key || 'profile')
     }
   }, [searchParams, moduleMap])
 
@@ -207,24 +228,17 @@ export default function AdminSettingsPage() {
     }
   }, [gate.allowed, getAuthHeaders])
 
-  const isSharedPage = isSharedInternalLayoutKey(pageKey)
-  const activePage = useMemo(() => {
-    if (isSharedInternalLayoutKey(pageKey)) {
-      return {
-        key: SHARED_INTERNAL_LAYOUT_KEY,
-        path: 'همه صفحات داخلی',
-        label: 'چیدمان مشترک',
-        desc:
-          'هدر، منو و ویجت‌های مشترک — همه صفحات داخلی از این چیدمان پیروی می‌کنند (صفحه اصلی جداست)',
-      }
-    }
-    return (
-      MODULE_PAGE_DEFS.find((d) => d.key === pageKey) || MODULE_PAGE_DEFS[0]
-    )
-  }, [pageKey])
+  const isSharedPage = false
+  const activePage = useMemo(
+    () => MODULE_PAGE_DEFS.find((d) => d.key === pageKey) || MODULE_PAGE_DEFS[0],
+    [pageKey],
+  )
 
   const wide =
     tab === 'home' ||
+    tab === 'header' ||
+    tab === 'menu' ||
+    tab === 'footer' ||
     tab === 'pages' ||
     tab === 'shop' ||
     tab === 'jobs' ||
@@ -257,6 +271,30 @@ export default function AdminSettingsPage() {
             />
           ) : null}
 
+          {tab === 'header' ? (
+            <SiteSkeletonStudio
+              moduleMap={moduleMap}
+              standalone
+              layoutMode="chrome:header"
+            />
+          ) : null}
+
+          {tab === 'menu' ? (
+            <SiteSkeletonStudio
+              moduleMap={moduleMap}
+              standalone
+              layoutMode="chrome:menu"
+            />
+          ) : null}
+
+          {tab === 'footer' ? (
+            <SiteSkeletonStudio
+              moduleMap={moduleMap}
+              standalone
+              layoutMode="chrome:footer"
+            />
+          ) : null}
+
           {tab === 'home' ? (
             <>
               {moduleMap?.data_pack_gym_bodybuilding_theme_one ? (
@@ -283,19 +321,9 @@ export default function AdminSettingsPage() {
               <aside className={styles.modulePagesAside} aria-label="صفحات داخلی">
                 <p className={styles.modulePagesAsideTitle}>صفحه را انتخاب کنید</p>
                 <div className={styles.modulePagesList}>
-                  <button
-                    type="button"
-                    className={`${styles.modulePagesItem} ${
-                      isSharedPage ? styles.modulePagesItemOn : ''
-                    }`}
-                    onClick={() => setPageKey(SHARED_INTERNAL_LAYOUT_KEY)}
-                  >
-                    <strong>چیدمان مشترک</strong>
-                    <small>همه صفحات داخلی</small>
-                  </button>
                   {MODULE_PAGE_DEFS.map((p) => {
-                    const on = !isSharedPage && p.key === activePage?.key
-                    const moduleOn = !!moduleMap[p.moduleKey]
+                    const on = p.key === activePage?.key && !isSharedPage
+                    const moduleOn = isModulePageModuleOn(p, moduleMap)
                     return (
                       <button
                         key={p.key}
@@ -314,64 +342,56 @@ export default function AdminSettingsPage() {
                     )
                   })}
                 </div>
-                {activePage ? (
+                {activePage && !isSharedPage ? (
                   <p className={styles.modulePagesHint}>
-                    {isSharedPage ? (
+                    {activePage.desc || ''} — هدر و منو را با سوییچ بالای بوم
+                    روشن کنید تا از تب‌های «هدر بالا» و «منوی بالا» بیایند. بعد
+                    از ذخیره روی{' '}
+                    <Link href={activePage.path} target="_blank">
+                      {activePage.path}
+                    </Link>{' '}
+                    اعمال می‌شود.
+                    {activePage.key === 'profile' ? (
                       <>
-                        {activePage.desc}. از «طراحی قالب» هم می‌توانید با «اعمال
-                        هدر و رنگ به همه» همین چیدمان را از صفحه اصلی پر کنید.
+                        {' '}
+                        برای بخش‌های پروفایل به{' '}
+                        <button
+                          type="button"
+                          className={styles.modulePagesHint}
+                          style={{
+                            display: 'inline',
+                            padding: 0,
+                            border: 0,
+                            background: 'none',
+                            cursor: 'pointer',
+                            fontWeight: 800,
+                          }}
+                          onClick={goProfile}
+                        >
+                          چیدمان پروفایل
+                        </button>{' '}
+                        بروید.
                       </>
-                    ) : (
-                      <>
-                        {activePage.desc || ''} — بعد از ذخیره، چیدمان روی{' '}
-                        <Link href={activePage.path} target="_blank">
-                          {activePage.path}
-                        </Link>{' '}
-                        اعمال می‌شود. هدر مشترک از «چیدمان مشترک» می‌آید.
-                        {activePage.key === 'reboserver' ? (
-                          <>
-                            {' '}
-                            خبر فوری این صفحه از «چیدمان مشترک» می‌آید — همان
-                            ویجتی که آنجا گذاشته‌اید روی /reboserver هم دیده
-                            می‌شود.
-                          </>
-                        ) : null}
-                        {activePage.key === 'profile' ? (
-                          <>
-                            {' '}
-                            برای بخش‌ها به{' '}
-                            <button
-                              type="button"
-                              className={styles.modulePagesHint}
-                              style={{
-                                display: 'inline',
-                                padding: 0,
-                                border: 0,
-                                background: 'none',
-                                cursor: 'pointer',
-                                fontWeight: 800,
-                              }}
-                              onClick={goProfile}
-                            >
-                              چیدمان پروفایل
-                            </button>{' '}
-                            بروید.
-                          </>
-                        ) : null}
-                      </>
-                    )}
+                    ) : null}
                   </p>
                 ) : null}
               </aside>
               <div className={styles.modulePagesStudio}>
-                {activePage ? (
+                {activePage && !isSharedPage ? (
                   <SiteSkeletonStudio
                     key={activePage.key}
                     moduleMap={moduleMap}
                     standalone
                     layoutMode={`module:${activePage.key}`}
                   />
-                ) : null}
+                ) : (
+                  <SiteSkeletonStudio
+                    key={MODULE_PAGE_DEFS[0]?.key || 'profile'}
+                    moduleMap={moduleMap}
+                    standalone
+                    layoutMode={`module:${MODULE_PAGE_DEFS[0]?.key || 'profile'}`}
+                  />
+                )}
               </div>
             </div>
           ) : null}

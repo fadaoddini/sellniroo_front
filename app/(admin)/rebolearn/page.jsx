@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import axios from 'axios'
 import {
   AlertTriangle,
@@ -157,7 +157,7 @@ function SectionBlock({ section, index }) {
   return null
 }
 
-export default function ReboLearnPage() {
+function ReboLearnInner() {
   const gate = useOwnerGate('/rebolearn')
   const { getAuthHeaders } = useAuth()
   const [loading, setLoading] = useState(true)
@@ -415,5 +415,13 @@ export default function ReboLearnPage() {
         </div>
       </div>
     </OwnerPortalShell>
+  )
+}
+
+export default function ReboLearnPage() {
+  return (
+    <Suspense fallback={null}>
+      <ReboLearnInner />
+    </Suspense>
   )
 }

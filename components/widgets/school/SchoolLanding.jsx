@@ -73,10 +73,12 @@ function HeroSection({
   s,
   content,
   breakingSettings = null,
+  chromeOverHero = false,
   ctaHref,
   ctaLabel,
 }) {
   const withBreaking = !!breakingSettings
+  const withTopChrome = withBreaking || chromeOverHero
   const c = content || DEFAULT_HOME_HERO_SLIDER
   const subjects = c.report?.subjects || []
   const months = c.chart?.months || []
@@ -86,7 +88,7 @@ function HeroSection({
 
   return (
     <section
-      className={`${styles.hero} ${withBreaking ? styles.heroWithBreaking : ''}`}
+      className={`${styles.hero} ${withTopChrome ? styles.heroWithBreaking : ''} ${chromeOverHero ? styles.heroChromeUnderlay : ''}`}
       aria-label="معرفی سامانه مدرسه"
     >
       <div className={styles.heroBg} aria-hidden />
@@ -100,7 +102,9 @@ function HeroSection({
         </div>
       ) : null}
 
-      <div className={`${styles.heroStage} ${withBreaking ? styles.heroStageWithBreaking : ''}`}>
+      <div
+        className={`${styles.heroStage} ${withTopChrome ? styles.heroStageWithBreaking : ''} ${chromeOverHero ? styles.heroStageChromePad : ''}`}
+      >
         <div className={styles.heroCopy}>
           <p className={styles.heroEyebrow}>
             <Sparkles size={14} />
@@ -599,16 +603,20 @@ export default function SchoolLanding({
     [mergedContent.theme],
   )
 
+  const chromeOverHero = !!s.chrome_over_hero
+
   return (
     <div
-      className={`${styles.root} ${breakingSettings ? styles.rootHeroBreaking : ''} ${showDock ? styles.appShell : ''} ${visibilityClass(visibilitySource) || ''}`}
+      className={`${styles.root} ${breakingSettings || chromeOverHero ? styles.rootHeroBreaking : ''} ${chromeOverHero ? styles.rootChromeUnderlay : ''} ${showDock ? styles.appShell : ''} ${visibilityClass(visibilitySource) || ''}`}
       style={themeStyle}
+      data-school-chrome-underlay={chromeOverHero ? '1' : undefined}
     >
       {show.hero ? (
         <HeroSection
           s={s}
           content={mergedContent}
           breakingSettings={breakingSettings}
+          chromeOverHero={chromeOverHero}
           ctaHref={cta.href}
           ctaLabel={cta.label}
         />
@@ -667,12 +675,17 @@ export function SchoolHero({ settings } = {}) {
   return <SchoolLanding settings={settings} sections={{ hero: true }} />
 }
 
-/** هیرو خبر فوری — خبر فوری شفاف روی گرادیان هیرو، یک تکه */
+/** ویجت معرفی مدرسه — فقط هیرو (+ داک موبایل) */
 export function SchoolHeroBreaking({ settings: raw = {} } = {}) {
   return (
     <SchoolLanding
-      settings={{ ...raw, embed_breaking: true, hide_hero: false }}
-      breakingSettings={raw?.breaking || raw?.breaking_news || null}
+      settings={{
+        ...raw,
+        embed_breaking: false,
+        show_breaking_in_hero: false,
+        hide_hero: false,
+      }}
+      sections={{ hero: true, mobile_dock: true }}
     />
   )
 }
@@ -687,6 +700,10 @@ export function SchoolReportPreview({ settings } = {}) {
 
 export function SchoolCounseling({ settings } = {}) {
   return <SchoolLanding settings={settings} sections={{ counseling: true }} />
+}
+
+export function SchoolTools({ settings } = {}) {
+  return <SchoolLanding settings={settings} sections={{ tools: true }} />
 }
 
 export function SchoolClosing({ settings } = {}) {
