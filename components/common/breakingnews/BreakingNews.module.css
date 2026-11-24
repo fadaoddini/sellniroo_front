@@ -553,6 +553,8 @@
   color: var(--bn-menu-icon, currentColor);
 }
 
+/* سطح منوی پروفایل — روی خود دراپ‌داون/شیت (حتی وقتی portal به body می‌رود) */
+.profileMenuSurface,
 .breakingNewsConfigured .profileDropdown,
 .breakingNewsConfigured .dialogBox {
   background: var(
@@ -563,10 +565,14 @@
   color: var(--bn-profile-menu-text, inherit);
 }
 
+.profileMenuSurface .profileMenuItem,
 .breakingNewsConfigured .profileMenuItem {
   color: var(--bn-profile-menu-text, #555);
 }
 
+.profileMenuSurface .profileMenuItem:hover,
+.profileMenuSurface .profileMenuItem.activeMenuItem,
+.profileMenuSurface .activeMenuItem,
 .breakingNewsConfigured .profileMenuItem:hover,
 .breakingNewsConfigured .profileMenuItem.activeMenuItem,
 .breakingNewsConfigured .activeMenuItem {
@@ -580,6 +586,7 @@
   );
 }
 
+.profileMenuSurface .profileMenuItem svg,
 .breakingNewsConfigured .profileMenuItem svg {
   color: var(
     --bn-profile-menu-icon,
@@ -587,24 +594,31 @@
   );
 }
 
+.profileMenuSurface .profileInfo h4,
 .breakingNewsConfigured .profileInfo h4 {
   color: var(--bn-profile-menu-text, var(--black));
 }
 
+.profileMenuSurface .profileInfo p,
+.profileMenuSurface .profileEmpty,
 .breakingNewsConfigured .profileInfo p,
 .breakingNewsConfigured .profileEmpty {
   color: var(--bn-profile-menu-muted, #666);
 }
 
+.profileMenuSurface .profileDivider,
+.profileMenuSurface .profileDividerStrong,
 .breakingNewsConfigured .profileDivider,
 .breakingNewsConfigured .profileDividerStrong {
   background: var(--bn-profile-menu-divider, rgba(0, 0, 0, 0.08));
 }
 
+.profileMenuSurface .closeDialogBtn,
 .breakingNewsConfigured .closeDialogBtn {
   color: var(--bn-profile-menu-text, #666);
 }
 
+.profileMenuSurface .logoutItem,
 .breakingNewsConfigured .dialogBox .logoutItem {
   background: var(
     --bn-profile-menu-bg,

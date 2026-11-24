@@ -395,7 +395,15 @@ export function mergeNavViewportRaw(raw = {}, viewport = 'desktop') {
   const desktop = { ...flat, ...desktopOv }
   if (viewport === 'mobile') {
     if (Object.keys(mobileOv).length > 0) {
-      return { ...flat, ...mobileOv }
+      // موبایل override می‌کند؛ رنگ خالی = «تنظیم نشده» تا رنگ دسکتاپ نپرد
+      const merged = { ...desktop, ...mobileOv }
+      NAV_COLOR_FIELDS.forEach(({ key }) => {
+        const mob = mobileOv[key]
+        if (mob === '' || mob == null) {
+          if (desktop[key]) merged[key] = desktop[key]
+        }
+      })
+      return merged
     }
     return desktop
   }

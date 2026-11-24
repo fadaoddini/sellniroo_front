@@ -570,6 +570,9 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
     ? normalizeNavWidgetSettings(rawSettings, { viewport })
     : null;
   const visibility = configured ? getNavVisibilityFlags(rawSettings) : null;
+  const themedStyle = configured
+    ? navWidgetCssVars(rawSettings, { viewport })
+    : undefined;
   const currentDate = usePersianDate(isMobile);
 
   const [newsItems, setNewsItems] = useState([]);
@@ -1079,7 +1082,11 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
             </button>
 
             {!isMobile && isProfileOpen && (
-              <div className={styles.profileDropdown} role="menu">
+              <div
+                className={`${styles.profileDropdown} ${styles.profileMenuSurface}`}
+                style={themedStyle || undefined}
+                role="menu"
+              >
                 <ProfileMenu
                   user={user}
                   imageError={imageError}
@@ -1109,15 +1116,20 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
                       ? styles.dialogOverlayOut
                       : styles.dialogOverlayIn,
                   ].join(" ")}
-                  style={{ "--bn-sheet-ms": `${sheetMs}ms` }}
+                  style={{
+                    ...(themedStyle || {}),
+                    "--bn-sheet-ms": `${sheetMs}ms`,
+                  }}
                   onClick={closeProfile}
                   role="presentation"
                 >
                   <div
                     className={[
                       styles.dialogBox,
+                      styles.profileMenuSurface,
                       profileClosing ? styles.dialogBoxOut : styles.dialogBoxIn,
                     ].join(" ")}
+                    style={themedStyle || undefined}
                     onClick={(e) => e.stopPropagation()}
                     role="dialog"
                     aria-modal="true"
@@ -1172,9 +1184,6 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
 
   const hideOnMobile = configured && visibility?.show_on_mobile === false;
   const hideOnDesktop = configured && visibility?.show_on_desktop === false;
-  const themedStyle = configured
-    ? navWidgetCssVars(rawSettings, { viewport })
-    : undefined;
   const barFullBleed = configured && settings?.bar_full_bleed !== false;
   const barSticky = configured
     ? settings?.sticky !== false
@@ -1447,14 +1456,19 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
 
       {configured && settings.show_hamburger && menuSheetOpen && portalReady
         ? createPortal(
-            <>
+            <div
+              className={styles.breakingNewsConfigured}
+              style={{
+                ...(themedStyle || {}),
+                "--bn-sheet-ms": `${sheetMs}ms`,
+              }}
+            >
               <button
                 type="button"
                 className={[
                   styles.menuBackdrop,
                   menuClosing ? styles.menuBackdropOut : styles.menuBackdropIn,
                 ].join(" ")}
-                style={{ "--bn-sheet-ms": `${sheetMs}ms` }}
                 aria-label="بستن منو"
                 onClick={closeMenu}
               />
@@ -1463,7 +1477,6 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
                   styles.menuDrawer,
                   menuClosing ? styles.menuDrawerOut : styles.menuDrawerIn,
                 ].join(" ")}
-                style={{ "--bn-sheet-ms": `${sheetMs}ms` }}
                 aria-label="فهرست منو"
               >
                 <div className={styles.menuDrawerHead}>
@@ -1496,7 +1509,7 @@ const BreakingNews = ({ settings: rawSettings = null } = {}) => {
                   )}
                 </ul>
               </aside>
-            </>,
+            </div>,
             document.body
           )
         : null}
