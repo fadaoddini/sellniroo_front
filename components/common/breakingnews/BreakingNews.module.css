@@ -544,20 +544,72 @@
   color: var(--bn-link, var(--black));
 }
 
-.breakingNewsConfigured .menuDrawerLink:hover,
-.breakingNewsConfigured .profileMenuItem:hover {
+.breakingNewsConfigured .menuDrawerLink:hover {
   background: var(--bn-menu-hover-bg, rgba(0, 0, 0, 0.05));
   color: var(--bn-menu-hover-text, inherit);
 }
 
-.breakingNewsConfigured .menuDrawerLink svg,
-.breakingNewsConfigured .profileMenuItem svg {
+.breakingNewsConfigured .menuDrawerLink svg {
   color: var(--bn-menu-icon, currentColor);
 }
 
 .breakingNewsConfigured .profileDropdown,
 .breakingNewsConfigured .dialogBox {
-  background: var(--bn-drawer-bg, var(--white));
+  background: var(
+    --bn-profile-menu-bg,
+    var(--bn-drawer-bg, var(--white))
+  );
+  border-color: var(--bn-profile-menu-border, rgba(0, 0, 0, 0.08));
+  color: var(--bn-profile-menu-text, inherit);
+}
+
+.breakingNewsConfigured .profileMenuItem {
+  color: var(--bn-profile-menu-text, #555);
+}
+
+.breakingNewsConfigured .profileMenuItem:hover,
+.breakingNewsConfigured .profileMenuItem.activeMenuItem,
+.breakingNewsConfigured .activeMenuItem {
+  background: var(
+    --bn-profile-menu-hover-bg,
+    var(--bn-menu-hover-bg, rgba(0, 0, 0, 0.05))
+  );
+  color: var(
+    --bn-profile-menu-hover-text,
+    var(--bn-menu-hover-text, inherit)
+  );
+}
+
+.breakingNewsConfigured .profileMenuItem svg {
+  color: var(
+    --bn-profile-menu-icon,
+    var(--bn-menu-icon, currentColor)
+  );
+}
+
+.breakingNewsConfigured .profileInfo h4 {
+  color: var(--bn-profile-menu-text, var(--black));
+}
+
+.breakingNewsConfigured .profileInfo p,
+.breakingNewsConfigured .profileEmpty {
+  color: var(--bn-profile-menu-muted, #666);
+}
+
+.breakingNewsConfigured .profileDivider,
+.breakingNewsConfigured .profileDividerStrong {
+  background: var(--bn-profile-menu-divider, rgba(0, 0, 0, 0.08));
+}
+
+.breakingNewsConfigured .closeDialogBtn {
+  color: var(--bn-profile-menu-text, #666);
+}
+
+.breakingNewsConfigured .dialogBox .logoutItem {
+  background: var(
+    --bn-profile-menu-bg,
+    var(--bn-drawer-bg, var(--white, #fff))
+  );
 }
 
 @media (max-width: 767px) {
@@ -1483,7 +1535,10 @@
     position: sticky;
     bottom: 0;
     z-index: 2;
-    background: var(--white, #fff);
+    background: var(
+      --bn-profile-menu-bg,
+      var(--bn-drawer-bg, var(--white, #fff))
+    );
     margin-top: 0.15rem;
   }
 
@@ -1528,7 +1583,10 @@
   .profileMenuItem svg {
     width: 20px;
     height: 20px;
-    color: var(--bn-menu-icon, currentColor);
+    color: var(
+      --bn-profile-menu-icon,
+      var(--bn-menu-icon, currentColor)
+    );
   }
 
   .profileHeader {

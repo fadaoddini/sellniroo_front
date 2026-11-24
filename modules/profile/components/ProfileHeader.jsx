@@ -179,7 +179,7 @@ const ProfileHeader = memo(function ProfileHeader({
   const canShowShortcuts =
     showShortcuts !== undefined ? showShortcuts : showJobShortcuts;
   const shortcutItems = shortcuts ?? meta.shortcuts;
-  const { getAuthHeaders, refreshTokens } = useAuth();
+  const { getAuthHeaders, refreshUser, patchUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -294,9 +294,18 @@ const ProfileHeader = memo(function ProfileHeader({
       );
 
       if (res.data?.status === "ok") {
+        const d = res.data?.data;
+        if (d && patchUser) {
+          patchUser({
+            first_name: d.first_name ?? formData.first_name.trim(),
+            last_name: d.last_name ?? formData.last_name.trim(),
+            email: d.email ?? formData.email.trim(),
+            display_name: d.display_name,
+          });
+        }
         showMessage("success", "اطلاعات ذخیره شد");
         setIsEditing(false);
-        if (refreshTokens) await refreshTokens();
+        if (refreshUser) await refreshUser();
       } else {
         showMessage("error", "خطا در ذخیره اطلاعات");
       }
@@ -335,9 +344,19 @@ const ProfileHeader = memo(function ProfileHeader({
       );
 
       if (res.data?.status === "ok") {
+        const d = res.data?.data;
+        if (d && patchUser) {
+          patchUser({
+            first_name: d.first_name,
+            last_name: d.last_name,
+            email: d.email,
+            display_name: d.display_name,
+            image: d.image,
+          });
+        }
         showMessage("success", "تصویر بروزرسانی شد");
         setImageError(false);
-        if (refreshTokens) await refreshTokens();
+        if (refreshUser) await refreshUser({ bustImageCache: true });
       } else {
         showMessage("error", "خطا در آپلود تصویر");
       }
@@ -466,6 +485,7 @@ const ProfileHeader = memo(function ProfileHeader({
                     <span className={styles.avatar}>
                       {showImage ? (
                         <Image
+                          key={profileImageUrl}
                           src={profileImageUrl}
                           alt={displayName}
                           width={72}
@@ -687,6 +707,7 @@ const ProfileHeader = memo(function ProfileHeader({
                   <span className={styles.avatar}>
                     {showImage ? (
                       <Image
+                        key={profileImageUrl}
                         src={profileImageUrl}
                         alt={displayName}
                         width={72}

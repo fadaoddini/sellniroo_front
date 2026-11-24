@@ -805,6 +805,48 @@ export const AuthProvider = ({ children }) => {
     };
   }, [router, validateAndRefreshTokens, processQueue, checkEmployeeStatus]);
 
+  // Merge local profile fields into auth user (instant UI after save/upload).
+  const patchUser = useCallback((partial = {}) => {
+    setUser((prev) => {
+      if (!prev || !partial || typeof partial !== "object") return prev;
+      const next = { ...prev, ...partial };
+      if (Object.prototype.hasOwnProperty.call(partial, "image")) {
+        const raw = partial.image;
+        if (!raw) {
+          next.image = null;
+        } else {
+          const full = getFullImageUrl(raw) || String(raw);
+          const base = String(full).split("?")[0];
+          next.image = `${base}?t=${Date.now()}`;
+        }
+      }
+      return next;
+    });
+  }, []);
+
+  // Re-fetch profile and apply to React state (needed after profile/image edits).
+  const refreshUser = useCallback(
+    async ({ bustImageCache = false } = {}) => {
+      const authData = await validateAndRefreshTokens();
+      if (!authData?.user) return null;
+
+      let next = buildUserObject(authData.user, {
+        accessToken: authData.accessToken,
+        refreshToken: authData.refreshToken,
+      });
+
+      if (bustImageCache && next?.image) {
+        const base = String(next.image).split("?")[0];
+        next = { ...next, image: `${base}?t=${Date.now()}` };
+      }
+
+      setUser(next);
+      setIsAuthenticated(true);
+      return next;
+    },
+    [validateAndRefreshTokens]
+  );
+
   const value = {
     user,
     isAuthenticated,
@@ -813,7 +855,9 @@ export const AuthProvider = ({ children }) => {
     logout,
     sendOtp,
     getAuthHeaders,
-    refreshTokens: validateAndRefreshTokens,
+    refreshTokens: refreshUser,
+    refreshUser,
+    patchUser,
     isEmployee,
     employeeData,
     checkingEmployee,

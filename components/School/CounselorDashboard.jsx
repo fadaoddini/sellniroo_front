@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   ClipboardList, HeartHandshake, Home, ArrowUpLeft,
-  RefreshCw, UserRound, AlertTriangle, Users,
+  RefreshCw, UserRound, AlertTriangle, Users, Sparkles,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import schoolService from '@/components/School/services/schoolService'
@@ -16,6 +16,11 @@ import CounselorOverviewPanel from '@/components/School/CounselorOverviewPanel'
 import CounselorFollowUpPanel from '@/components/School/CounselorFollowUpPanel'
 import CounselingAttemptsPanel from '@/components/School/CounselingAttemptsPanel'
 import CounselorPeoplePanel from '@/components/School/CounselorPeoplePanel'
+import GuidedTour, { useGuidedTour } from '@/components/Admin/GuidedTour'
+import {
+  SCHOOL_COUNSELOR_TOUR,
+  SCHOOL_COUNSELOR_TOUR_STORAGE_KEY,
+} from '@/components/School/schoolCounselorTour'
 import styles from './School.module.css'
 
 function faNum(n) {
@@ -58,6 +63,8 @@ export default function CounselorDashboard({
     if (previewControlled) onPreviewCounselorIdChange?.(String(id || ''))
     else setPreviewIdLocal(String(id || ''))
   }
+  const tour = useGuidedTour(SCHOOL_COUNSELOR_TOUR)
+  const tourAutoRef = useRef(false)
 
   const notify = useCallback((m, isErr) => {
     if (isErr) setErr(m)
@@ -78,6 +85,45 @@ export default function CounselorDashboard({
   useEffect(() => {
     if (initialTab) setTab(initialTab)
   }, [initialTab])
+
+  useEffect(() => {
+    if (!tour.open) return
+    const step = tour.steps[tour.stepIndex]
+    if (step?.tab && step.tab !== tab) setTab(step.tab)
+    const tabKey = step?.tab
+    if (!tabKey || typeof document === 'undefined') return
+    const btn = document.querySelector(`[data-tour="sc-tab-${tabKey}"]`)
+    btn?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })
+  }, [tour.open, tour.stepIndex, tour.steps, tab])
+
+  const startTourFn = tour.start
+  useEffect(() => {
+    if (loading || !isAuthenticated || !data) return undefined
+    if (tourAutoRef.current) return undefined
+    if (typeof window === 'undefined') return undefined
+    try {
+      if (window.localStorage.getItem(SCHOOL_COUNSELOR_TOUR_STORAGE_KEY)) return undefined
+    } catch {
+      return undefined
+    }
+    const t = window.setTimeout(() => {
+      if (tourAutoRef.current) return
+      tourAutoRef.current = true
+      setTab('info')
+      startTourFn(SCHOOL_COUNSELOR_TOUR)
+      try {
+        window.localStorage.setItem(SCHOOL_COUNSELOR_TOUR_STORAGE_KEY, '1')
+      } catch {
+        /* ignore */
+      }
+    }, 650)
+    return () => window.clearTimeout(t)
+  }, [loading, isAuthenticated, data, startTourFn])
+
+  const startCounselorTour = () => {
+    setTab('info')
+    window.setTimeout(() => startTourFn(SCHOOL_COUNSELOR_TOUR), 60)
+  }
 
   const load = useCallback(async () => {
     setErr(null)
@@ -201,7 +247,20 @@ export default function CounselorDashboard({
         {msg ? <div className={styles.msg}>{msg}</div> : null}
         {err ? <div className={styles.err}>{err}</div> : null}
 
-        <div className={styles.tabs}>
+        <div className={styles.smTourBar}>
+          <button
+            type="button"
+            className={styles.smTourBtn}
+            data-tour="sc-tour-btn"
+            onClick={startCounselorTour}
+          >
+            <Sparkles size={14} />
+            راهنمای تور
+          </button>
+          <p className={styles.smTourHint}>آشنایی مرحله‌به‌مرحله با پنل مشاور</p>
+        </div>
+
+        <div className={styles.tabs} data-tour="sc-tabs">
           {TABS.map(([k, l, badgeKey]) => {
             const badge = badgeKey === 'high_risk' && highRisk > 0 ? highRisk : null
             return (
@@ -209,6 +268,7 @@ export default function CounselorDashboard({
                 key={k}
                 type="button"
                 className={`${styles.tab} ${tab === k ? styles.tabOn : ''}`}
+                data-tour={`sc-tab-${k}`}
                 onClick={() => setTab(k)}
               >
                 {l}
@@ -219,7 +279,7 @@ export default function CounselorDashboard({
         </div>
 
         {tab === 'info' ? (
-          <div className={styles.infoPanel}>
+          <div className={styles.infoPanel} data-tour="sc-info">
             <section className={styles.infoIdentity} aria-label="پروفایل مشاور">
               <div className={styles.infoAvatar} aria-hidden>
                 <UserRound size={22} />
@@ -284,15 +344,17 @@ export default function CounselorDashboard({
         ) : null}
 
         {tab === 'overview' ? (
-          <CounselorOverviewPanel
-            data={data}
-            onNavigate={setTab}
-            onOpenFile={openFile}
-          />
+          <div data-tour="sc-overview">
+            <CounselorOverviewPanel
+              data={data}
+              onNavigate={setTab}
+              onOpenFile={openFile}
+            />
+          </div>
         ) : null}
 
         {tab === 'followup' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="sc-followup">
             <CounselorFollowUpPanel
               onNotify={notify}
               onOpenFile={openFile}
@@ -301,7 +363,7 @@ export default function CounselorDashboard({
         ) : null}
 
         {tab === 'people' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="sc-people">
             <CounselorPeoplePanel
               students={students}
               teachers={teachers}
@@ -312,7 +374,7 @@ export default function CounselorDashboard({
         ) : null}
 
         {tab === 'profile' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="sc-profile">
             <CounselorProfilePanel
               mode="self"
               previewCounselorId={previewId || null}
@@ -322,13 +384,13 @@ export default function CounselorDashboard({
         ) : null}
 
         {tab === 'tests' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="sc-tests">
             <CounselingTestsPanel onNotify={notify} />
           </div>
         ) : null}
 
         {tab === 'files' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="sc-files">
             <CounselingFilesPanel
               students={students}
               teachers={teachers}
@@ -340,7 +402,7 @@ export default function CounselorDashboard({
         ) : null}
 
         {tab === 'attempts' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="sc-attempts">
             <CounselingAttemptsPanel
               onNotify={notify}
               onOpenStudentFile={openStudentAttemptFile}
@@ -348,6 +410,15 @@ export default function CounselorDashboard({
           </div>
         ) : null}
       </div>
+
+      <GuidedTour
+        open={tour.open}
+        steps={tour.steps}
+        stepIndex={tour.stepIndex}
+        onStepChange={tour.setStepIndex}
+        onClose={tour.close}
+        theme="school"
+      />
     </div>
   )
 }

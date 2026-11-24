@@ -17,6 +17,7 @@ import {
   NAV_CART_COLORS,
   NAV_JOB_CTA_COLORS,
   NAV_PROFILE_COLORS,
+  NAV_PROFILE_MENU_COLORS,
   NAV_RADIUS_CORNERS,
   NAV_SHARED_ROOT_KEYS,
   NAV_SPACE_FIELDS,
@@ -1246,6 +1247,28 @@ export default function WidgetNavSettings({ type, settings: raw, onChange }) {
                     allowTransparent={
                       f.key === 'color_profile_bg' ||
                       f.key === 'color_avatar_border'
+                    }
+                  />
+                ))}
+              </div>
+
+              <p className={`${styles.wsMiniLabel} ${styles.wsMiniLabelSpaced}`}>
+                منوی بازشونده پروفایل
+              </p>
+              <p className={styles.wsHint}>
+                پس‌زمینه، لینک‌ها و متن‌های دراپ‌داون دسکتاپ و شیت موبایل
+              </p>
+              <div className={styles.wsColorList}>
+                {NAV_PROFILE_MENU_COLORS.map((f) => (
+                  <ColorRow
+                    key={f.key}
+                    label={f.label}
+                    value={settings[f.key]}
+                    onChange={(v) => patch(f.key, v)}
+                    allowTransparent={
+                      f.key === 'color_profile_menu_bg' ||
+                      f.key === 'color_profile_menu_hover_bg' ||
+                      f.key === 'color_profile_menu_border'
                     }
                   />
                 ))}

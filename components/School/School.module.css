@@ -22227,3 +22227,60 @@ button.ttSlotEmpty.ttSlotClick:hover .ttEmptyMark {
     grid-column: 2;
   }
 }
+
+/* —— School manage guided tour —— */
+.smTourBar {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  margin: 0 0 0.65rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 71, 51, 0.12);
+  background: linear-gradient(135deg, #f3f8f5, #fff);
+}
+
+.smTourBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 10px;
+  border: 0;
+  background: linear-gradient(135deg, #2b6a4d, #004733);
+  color: #fff;
+  font-family: var(--font-iran-bold), var(--font-iran);
+  font-weight: 400;
+  font-size: 0.8rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 71, 51, 0.18);
+}
+
+.smTourBtn:hover {
+  filter: brightness(1.05);
+}
+
+.smTourHint {
+  margin: 0;
+  font-family: var(--font-iran);
+  font-size: 0.74rem;
+  color: #568d66;
+  line-height: 1.45;
+}
+
+@media (max-width: 560px) {
+  .smTourBar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .smTourBtn {
+    justify-content: center;
+    min-height: 2.5rem;
+  }
+
+  .smTourHint {
+    text-align: center;
+  }
+}

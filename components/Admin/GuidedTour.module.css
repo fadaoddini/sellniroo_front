@@ -258,3 +258,83 @@
   color: #2a1a0e;
   border-color: rgba(42, 26, 14, 0.12);
 }
+
+/* تم تور مدیریت مدرسه */
+.tipSchool {
+  font-family: var(--font-iran, Tahoma, sans-serif);
+  background: linear-gradient(165deg, #fff 0%, #f3f8f5 100%);
+  border-color: rgba(0, 71, 51, 0.18);
+  max-width: min(380px, calc(100vw - 20px));
+}
+
+.tipSchool .tipTitle {
+  font-family: var(--font-iran-extra), var(--font-iran);
+  font-weight: 400;
+  color: #004733;
+}
+
+.tipSchool .tipText,
+.tipSchool .tipHint,
+.tipSchool .tipHowTo,
+.tipSchool .nextBtn,
+.tipSchool .skipBtn,
+.tipSchool .endBtn,
+.tipSchool .stepBadge {
+  font-family: var(--font-iran, Tahoma, sans-serif);
+}
+
+.tipSchool .stepBadge {
+  background: linear-gradient(135deg, #e8f2ec, #fff);
+  border-color: rgba(0, 71, 51, 0.18);
+  color: #2b6a4d;
+  font-family: var(--font-iran-bold), var(--font-iran);
+  font-weight: 400;
+}
+
+.tipSchool .tipHowTo {
+  background: rgba(43, 106, 77, 0.08);
+  border-color: rgba(0, 71, 51, 0.12);
+  color: #004733;
+}
+
+.tipSchool .tipHowTo li::marker {
+  color: #2b6a4d;
+}
+
+.tipSchool .tipHint {
+  color: #2b6a4d;
+}
+
+.tipSchool .nextBtn {
+  background: linear-gradient(135deg, #2b6a4d, #004733);
+  border-color: transparent;
+  color: #fff;
+}
+
+.tipSchool .endBtn {
+  background: rgba(0, 71, 51, 0.06);
+  color: #004733;
+  border-color: rgba(0, 71, 51, 0.14);
+}
+
+.tipMobile {
+  max-height: min(46vh, 360px);
+  border-radius: 16px 16px 14px 14px;
+  box-shadow:
+    0 -8px 28px rgba(0, 0, 0, 0.12),
+    0 12px 36px rgba(0, 0, 0, 0.16);
+}
+
+.tipMobile .tipActions {
+  position: sticky;
+  bottom: 0;
+  padding-top: 0.45rem;
+  background: linear-gradient(180deg, transparent, #fff 28%);
+}
+
+.tipMobile .nextBtn,
+.tipMobile .skipBtn,
+.tipMobile .endBtn {
+  min-height: 2.45rem;
+  flex: 1 1 auto;
+}

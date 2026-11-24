@@ -47,6 +47,18 @@ export const NAV_PROFILE_COLORS = [
   { key: 'color_btn_text', label: 'دکمه مهمان — متن' },
 ]
 
+/** رنگ‌های منوی بازشونده پروفایل (دسکتاپ + شیت موبایل) */
+export const NAV_PROFILE_MENU_COLORS = [
+  { key: 'color_profile_menu_bg', label: 'پس‌زمینه منو' },
+  { key: 'color_profile_menu_border', label: 'حاشیه منو' },
+  { key: 'color_profile_menu_text', label: 'متن و لینک‌ها' },
+  { key: 'color_profile_menu_muted', label: 'متن فرعی (موبایل)' },
+  { key: 'color_profile_menu_icon', label: 'آیکن‌ها' },
+  { key: 'color_profile_menu_hover_bg', label: 'هاور — پس‌زمینه' },
+  { key: 'color_profile_menu_hover_text', label: 'هاور — متن' },
+  { key: 'color_profile_menu_divider', label: 'خط جداکننده' },
+]
+
 /** رنگ‌های سبد خرید در نوار خبر فوری */
 export const NAV_CART_COLORS = [
   { key: 'color_cart_icon', label: 'آیکن' },
@@ -96,6 +108,7 @@ export const NAV_COLOR_FIELDS = [
   ...NAV_BAR_COLORS,
   ...NAV_MENU_COLORS,
   ...NAV_PROFILE_COLORS,
+  ...NAV_PROFILE_MENU_COLORS,
   ...NAV_CART_COLORS,
   ...NAV_JOB_CTA_COLORS,
 ]
@@ -317,6 +330,14 @@ export const DEFAULT_NAV_WIDGET_SETTINGS = {
   sheet_ms: 350,
   color_btn_bg: '',
   color_btn_text: '',
+  color_profile_menu_bg: '',
+  color_profile_menu_border: '',
+  color_profile_menu_text: '',
+  color_profile_menu_muted: '',
+  color_profile_menu_icon: '',
+  color_profile_menu_hover_bg: '',
+  color_profile_menu_hover_text: '',
+  color_profile_menu_divider: '',
 }
 
 export const SHEET_SPEEDS = [
@@ -677,6 +698,14 @@ export function navWidgetCssVars(settings, opts = {}) {
     color_avatar_border: '--bn-avatar-border',
     color_btn_bg: '--bn-btn-bg',
     color_btn_text: '--bn-btn-text',
+    color_profile_menu_bg: '--bn-profile-menu-bg',
+    color_profile_menu_border: '--bn-profile-menu-border',
+    color_profile_menu_text: '--bn-profile-menu-text',
+    color_profile_menu_muted: '--bn-profile-menu-muted',
+    color_profile_menu_icon: '--bn-profile-menu-icon',
+    color_profile_menu_hover_bg: '--bn-profile-menu-hover-bg',
+    color_profile_menu_hover_text: '--bn-profile-menu-hover-text',
+    color_profile_menu_divider: '--bn-profile-menu-divider',
     color_cart_icon: '--bn-cart-icon',
     color_cart_bg: '--bn-cart-bg',
     color_cart_border: '--bn-cart-border',

@@ -1,0 +1,123 @@
+/** تور راهنمای پنل دانش‌آموز (profile?tab=students) */
+
+export const SCHOOL_STUDENT_TOUR_STORAGE_KEY = 'sellniroo-school-student-tour-seen'
+
+export const SCHOOL_STUDENT_TOUR = [
+  {
+    id: 'welcome',
+    tab: 'info',
+    target: '[data-tour="ss-tour-btn"]',
+    title: 'راهنمای پنل دانش‌آموز',
+    text: 'اینجا همه کارهای درسی شماست: درس، تکلیف، آزمون، مشاوره و کارنامه. تور کوتاه مسیر را نشان می‌دهد.',
+    howTo: [
+      'با «مرحله بعد» پیش بروید.',
+      'هر وقت خواستید «پایان آموزش» را بزنید.',
+      'بعداً دوباره از «راهنمای تور» شروع کنید.',
+    ],
+    hint: 'روی موبایل کارت راهنما پایین صفحه می‌آید.',
+  },
+  {
+    id: 'tabs',
+    tab: 'info',
+    target: '[data-tour="ss-tabs"]',
+    title: 'زبانه‌های شما',
+    text: 'هر زبانه یک کار مشخص دارد. در موبایل نوار زبانه‌ها را افقی بکشید تا بقیه را ببینید.',
+  },
+  {
+    id: 'info',
+    tab: 'info',
+    target: '[data-tour="ss-info"]',
+    title: 'اطلاعات پایه',
+    text: 'نام، پایه، رتبه و آمار پیشرفت اینجا دیده می‌شود — نقطه شروع روزانه شما.',
+  },
+  {
+    id: 'home',
+    tab: 'home',
+    target: '[data-tour="ss-home"]',
+    title: 'خانه',
+    text: 'اقدامات سریع مثل آزمون‌های باز، تکالیف و درس‌های اخیر از خانه در دسترس است.',
+  },
+  {
+    id: 'schedule',
+    tab: 'schedule',
+    target: '[data-tour="ss-schedule"]',
+    title: 'برنامه هفتگی',
+    text: 'ساعت کلاس‌ها و برنامه هفته را اینجا ببینید تا چیزی از قلم نیفتد.',
+  },
+  {
+    id: 'lessons',
+    tab: 'lessons',
+    target: '[data-tour="ss-lessons"]',
+    title: 'دروس',
+    text: 'درس را باز کنید، ویدیو ببینید و متن را بخوانید. درس در صفحه اختصاصی تمام‌صفحه باز می‌شود تا تمرکز بماند.',
+    hint: 'با «بازگشت به دروس» به فهرست برمی‌گردید.',
+  },
+  {
+    id: 'homework',
+    tab: 'homework',
+    target: '[data-tour="ss-homework"]',
+    title: 'تکالیف',
+    text: 'تکالیف باز را انجام‌شده علامت بزنید یا مدرک تصویری بفرستید.',
+  },
+  {
+    id: 'quiz',
+    tab: 'quiz',
+    target: '[data-tour="ss-quiz"]',
+    title: 'آزمون',
+    text: 'آزمون‌های باز را شروع کنید. با شروع، صفحه تمام‌صفحه باز می‌شود؛ خروج یا انصراف حکم پایان با نمره تا همان‌جاست.',
+    howTo: [
+      'قبل از شروع شرایط آزمون را بخوانید.',
+      'تا پایان در صفحه بمانید.',
+    ],
+  },
+  {
+    id: 'counseling',
+    tab: 'counseling',
+    target: '[data-tour="ss-counseling"]',
+    title: 'مشاوره',
+    text: 'آزمون‌های هوش و شخصیت، پرونده مشاوره و پیشنهادهای رشد اینجاست.',
+  },
+  {
+    id: 'attendance',
+    tab: 'attendance',
+    target: '[data-tour="ss-attendance"]',
+    title: 'حضور',
+    text: 'وضعیت حضور و غیاب خود را در کلاس‌ها ببینید.',
+  },
+  {
+    id: 'reportcard',
+    tab: 'reportcard',
+    target: '[data-tour="ss-reportcard"]',
+    title: 'کارنامه',
+    text: 'نمرات ماهانه و کارنامه درسی اینجا نمایش داده می‌شود.',
+  },
+  {
+    id: 'reportcharts',
+    tab: 'reportcharts',
+    target: '[data-tour="ss-reportcharts"]',
+    title: 'نمودار',
+    text: 'روند نمرات و مقایسه عملکرد را روی نمودار ببینید.',
+  },
+  {
+    id: 'results',
+    tab: 'results',
+    target: '[data-tour="ss-results"]',
+    title: 'نتایج آزمون',
+    text: 'نتیجه آزمون‌هایی که داده‌اید اینجا ثبت می‌شود.',
+  },
+  {
+    id: 'tips',
+    tab: 'tips',
+    target: '[data-tour="ss-tips"]',
+    title: 'پیشنهادها',
+    text: 'پیشنهادهای رشد بر اساس عملکردتان برای ادامه مسیر یادگیری.',
+  },
+  {
+    id: 'done',
+    tab: 'info',
+    target: '[data-tour="ss-tour-btn"]',
+    title: 'آماده یادگیری هستید',
+    text: 'تور تمام شد. پیشنهاد مسیر: دروس → تکالیف → آزمون → کارنامه.',
+    hint: 'هر وقت لازم شد دوباره «راهنمای تور» را بزنید.',
+  },
+]

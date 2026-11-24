@@ -1,9 +1,12 @@
 'use client'
 
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { LayoutDashboard, Plus, RefreshCw, GraduationCap, HeartHandshake, ExternalLink, Pencil, Trash2, UserRound } from 'lucide-react'
+import {
+  LayoutDashboard, Plus, RefreshCw, GraduationCap, HeartHandshake,
+  ExternalLink, Pencil, Trash2, UserRound, Sparkles,
+} from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import schoolService from '@/components/School/services/schoolService'
 import AdminAttendancePanel from '@/components/School/AdminAttendancePanel'
@@ -13,6 +16,11 @@ import ClassesPanel from '@/components/School/ClassesPanel'
 import TeacherProfilePanel from '@/components/School/TeacherProfilePanel'
 import CounselorProfilePanel from '@/components/School/CounselorProfilePanel'
 import StaffRemoveModal from '@/components/School/StaffRemoveModal'
+import GuidedTour, { useGuidedTour } from '@/components/Admin/GuidedTour'
+import {
+  SCHOOL_MANAGE_TOUR,
+  SCHOOL_MANAGE_TOUR_STORAGE_KEY,
+} from '@/components/School/schoolManageTour'
 import styles from './School.module.css'
 
 const RANK_FA = {
@@ -39,6 +47,8 @@ export default function SchoolManage({ embedded = false } = {}) {
   const [editCounselorId, setEditCounselorId] = useState(null)
   const [removeTarget, setRemoveTarget] = useState(null) // { kind: 'teacher'|'counselor', id, name }
   const [removeBusy, setRemoveBusy] = useState(false)
+  const tour = useGuidedTour(SCHOOL_MANAGE_TOUR)
+  const tourAutoRef = useRef(false)
 
   const notifyPanel = useCallback((m, isErr) => {
     if (isErr) setErr(m)
@@ -73,6 +83,46 @@ export default function SchoolManage({ embedded = false } = {}) {
   useEffect(() => {
     if (isAuthenticated && canManage) load()
   }, [isAuthenticated, canManage, load])
+
+  // همگام‌سازی زبانه با مرحله تور + اسکرول زبانه در موبایل
+  useEffect(() => {
+    if (!tour.open) return
+    const step = tour.steps[tour.stepIndex]
+    if (step?.tab && step.tab !== tab) setTab(step.tab)
+    const tabKey = step?.tab
+    if (!tabKey || typeof document === 'undefined') return
+    const btn = document.querySelector(`[data-tour="sm-tab-${tabKey}"]`)
+    btn?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })
+  }, [tour.open, tour.stepIndex, tour.steps, tab])
+
+  const startTourFn = tour.start
+  useEffect(() => {
+    if (loading || !isAuthenticated || !canManage || !data) return undefined
+    if (tourAutoRef.current) return undefined
+    if (typeof window === 'undefined') return undefined
+    try {
+      if (window.localStorage.getItem(SCHOOL_MANAGE_TOUR_STORAGE_KEY)) return undefined
+    } catch {
+      return undefined
+    }
+    const t = window.setTimeout(() => {
+      if (tourAutoRef.current) return
+      tourAutoRef.current = true
+      setTab('info')
+      startTourFn(SCHOOL_MANAGE_TOUR)
+      try {
+        window.localStorage.setItem(SCHOOL_MANAGE_TOUR_STORAGE_KEY, '1')
+      } catch {
+        /* ignore */
+      }
+    }, 650)
+    return () => window.clearTimeout(t)
+  }, [loading, isAuthenticated, canManage, data, startTourFn])
+
+  const startManageTour = () => {
+    setTab('info')
+    window.setTimeout(() => startTourFn(SCHOOL_MANAGE_TOUR), 60)
+  }
 
   const saveSettings = async () => {
     const res = await schoolService.updateSettings(settings)
@@ -208,7 +258,20 @@ export default function SchoolManage({ embedded = false } = {}) {
         {msg ? <div className={styles.msg}>{msg}</div> : null}
         {err ? <div className={styles.err}>{err}</div> : null}
 
-        <div className={styles.tabs}>
+        <div className={styles.smTourBar}>
+          <button
+            type="button"
+            className={styles.smTourBtn}
+            data-tour="sm-tour-btn"
+            onClick={startManageTour}
+          >
+            <Sparkles size={14} />
+            راهنمای تور
+          </button>
+          <p className={styles.smTourHint}>آشنایی مرحله‌به‌مرحله با پنل مدیریت</p>
+        </div>
+
+        <div className={styles.tabs} data-tour="sm-tabs">
           {[
             ['info', 'اطلاعات پایه'],
             ['overview', 'نمای کلی'],
@@ -221,12 +284,20 @@ export default function SchoolManage({ embedded = false } = {}) {
             ['activity', 'فعالیت‌ها'],
             ['settings', 'تنظیمات'],
           ].map(([k, l]) => (
-            <button key={k} type="button" className={`${styles.tab} ${tab === k ? styles.tabOn : ''}`} onClick={() => setTab(k)}>{l}</button>
+            <button
+              key={k}
+              type="button"
+              className={`${styles.tab} ${tab === k ? styles.tabOn : ''}`}
+              data-tour={`sm-tab-${k}`}
+              onClick={() => setTab(k)}
+            >
+              {l}
+            </button>
           ))}
         </div>
 
         {tab === 'info' ? (
-          <div className={styles.infoPanel}>
+          <div className={styles.infoPanel} data-tour="sm-info">
             <section className={styles.infoIdentity} aria-label="مدیریت مدرسه">
               <div className={styles.infoAvatar} aria-hidden>
                 <UserRound size={22} />
@@ -280,7 +351,7 @@ export default function SchoolManage({ embedded = false } = {}) {
         ) : null}
 
         {tab === 'classes' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="sm-classes">
             <ClassesPanel
               teachers={data?.teachers || []}
               students={data?.students || []}
@@ -290,7 +361,7 @@ export default function SchoolManage({ embedded = false } = {}) {
         ) : null}
 
         {tab === 'subjects' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="sm-subjects">
             <AdminSubjectsPanel
               teachers={data?.teachers || []}
               onNotify={notifyPanel}
@@ -299,7 +370,7 @@ export default function SchoolManage({ embedded = false } = {}) {
         ) : null}
 
         {tab === 'overview' && data ? (
-          <div className={styles.teacherOverviewPage}>
+          <div className={styles.teacherOverviewPage} data-tour="sm-overview">
             <AdminOverviewCharts
               charts={data.charts || {}}
               overview={data.overview || {}}
@@ -310,7 +381,7 @@ export default function SchoolManage({ embedded = false } = {}) {
         ) : null}
 
         {tab === 'attendance' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="sm-attendance">
             <AdminAttendancePanel
               onNotify={notifyPanel}
             />
@@ -318,7 +389,7 @@ export default function SchoolManage({ embedded = false } = {}) {
         ) : null}
 
         {tab === 'counselors' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="sm-counselors">
             {editCounselorId ? (
               <>
                 <div className={styles.panelHead}>
@@ -413,7 +484,7 @@ export default function SchoolManage({ embedded = false } = {}) {
         ) : null}
 
         {tab === 'teachers' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="sm-teachers">
             {editTeacherId ? (
               <>
                 <div className={styles.panelHead}>
@@ -489,7 +560,7 @@ export default function SchoolManage({ embedded = false } = {}) {
         ) : null}
 
         {tab === 'students' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="sm-students">
             <h2 className={styles.panelTitle}>افزودن دانش‌آموز</h2>
             <div className={styles.formRow}>
               <div className={styles.field}><label>موبایل</label><input dir="ltr" value={studentForm.mobile} onChange={(e) => setStudentForm((p) => ({ ...p, mobile: e.target.value }))} /></div>
@@ -532,7 +603,7 @@ export default function SchoolManage({ embedded = false } = {}) {
         ) : null}
 
         {tab === 'activity' && data ? (
-          <div className={styles.grid2}>
+          <div className={styles.grid2} data-tour="sm-activity">
             <div className={styles.panel}>
               <h2 className={styles.panelTitle}>آزمون‌های اخیر</h2>
               <div className={styles.tableWrap}>
@@ -570,7 +641,7 @@ export default function SchoolManage({ embedded = false } = {}) {
         ) : null}
 
         {tab === 'settings' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="sm-settings">
             <h2 className={styles.panelTitle}>تنظیمات مدرسه</h2>
             <div className={styles.formGrid}>
               <div className={styles.formRow}>
@@ -602,6 +673,15 @@ export default function SchoolManage({ embedded = false } = {}) {
           onHardDelete={() => runRemoveAction('hard')}
         />
       ) : null}
+
+      <GuidedTour
+        open={tour.open}
+        steps={tour.steps}
+        stepIndex={tour.stepIndex}
+        onStepChange={tour.setStepIndex}
+        onClose={tour.close}
+        theme="school"
+      />
     </div>
   )
 }

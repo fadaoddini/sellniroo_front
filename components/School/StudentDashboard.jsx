@@ -22,6 +22,11 @@ import MySchedulePanel from '@/components/School/MySchedulePanel'
 import StudentCounselingPanel from '@/components/School/StudentCounselingPanel'
 import StudentReportCardPanel from '@/components/School/StudentReportCardPanel'
 import StudentReportChartsPanel from '@/components/School/StudentReportChartsPanel'
+import GuidedTour, { useGuidedTour } from '@/components/Admin/GuidedTour'
+import {
+  SCHOOL_STUDENT_TOUR,
+  SCHOOL_STUDENT_TOUR_STORAGE_KEY,
+} from '@/components/School/schoolStudentTour'
 import styles from './School.module.css'
 
 const RANK_FA = {
@@ -161,6 +166,8 @@ export default function StudentDashboard({
   const examAutoSubmittedRef = useRef(false)
   const examTimerStartedAtRef = useRef(0)
   const examSubmittingRef = useRef(false)
+  const tour = useGuidedTour(SCHOOL_STUDENT_TOUR)
+  const tourAutoRef = useRef(false)
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -191,6 +198,51 @@ export default function StudentDashboard({
   useEffect(() => {
     if (isAuthenticated) load()
   }, [isAuthenticated, load])
+
+  useEffect(() => {
+    if (!tour.open) return
+    // حین آزمون/درس تمام‌صفحه تور را ببند
+    if (quizSession || lesson) {
+      tour.close()
+      return
+    }
+    const step = tour.steps[tour.stepIndex]
+    if (step?.tab && step.tab !== tab) setTab(step.tab)
+    const tabKey = step?.tab
+    if (!tabKey || typeof document === 'undefined') return
+    const btn = document.querySelector(`[data-tour="ss-tab-${tabKey}"]`)
+    btn?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })
+  }, [tour.open, tour.stepIndex, tour.steps, tab, quizSession, lesson, tour.close])
+
+  const startTourFn = tour.start
+  useEffect(() => {
+    if (loading || !isAuthenticated || !data || quizSession || lesson) return undefined
+    if (tourAutoRef.current) return undefined
+    if (typeof window === 'undefined') return undefined
+    try {
+      if (window.localStorage.getItem(SCHOOL_STUDENT_TOUR_STORAGE_KEY)) return undefined
+    } catch {
+      return undefined
+    }
+    const t = window.setTimeout(() => {
+      if (tourAutoRef.current || quizSessionRef.current) return
+      tourAutoRef.current = true
+      setTab('info')
+      startTourFn(SCHOOL_STUDENT_TOUR)
+      try {
+        window.localStorage.setItem(SCHOOL_STUDENT_TOUR_STORAGE_KEY, '1')
+      } catch {
+        /* ignore */
+      }
+    }, 650)
+    return () => window.clearTimeout(t)
+  }, [loading, isAuthenticated, data, quizSession, lesson, startTourFn])
+
+  const startStudentTour = () => {
+    if (quizSession || lesson) return
+    setTab('info')
+    window.setTimeout(() => startTourFn(SCHOOL_STUDENT_TOUR), 60)
+  }
 
   const closeLessonFocus = () => {
     setLesson(null)
@@ -992,12 +1044,27 @@ export default function StudentDashboard({
         {msg ? <div className={styles.msg}>{msg}</div> : null}
         {err ? <div className={styles.err}>{err}</div> : null}
 
-        <div className={styles.tabs}>
+        <div className={styles.smTourBar}>
+          <button
+            type="button"
+            className={styles.smTourBtn}
+            data-tour="ss-tour-btn"
+            onClick={startStudentTour}
+            disabled={!!quizSession || !!lesson}
+          >
+            <Sparkles size={14} />
+            راهنمای تور
+          </button>
+          <p className={styles.smTourHint}>آشنایی مرحله‌به‌مرحله با پنل دانش‌آموز</p>
+        </div>
+
+        <div className={styles.tabs} data-tour="ss-tabs">
           {tabs.map(([k, l, badge]) => (
             <button
               key={k}
               type="button"
               className={`${styles.tab} ${tab === k ? styles.tabOn : ''}`}
+              data-tour={`ss-tab-${k}`}
               onClick={() => setTab(k)}
             >
               {l}
@@ -1007,7 +1074,7 @@ export default function StudentDashboard({
         </div>
 
         {tab === 'info' ? (
-          <div className={styles.infoPanel}>
+          <div className={styles.infoPanel} data-tour="ss-info">
             <section className={styles.infoIdentity} aria-label="پروفایل دانش‌آموز">
               <div className={styles.infoAvatar} aria-hidden>
                 <UserRound size={22} />
@@ -1079,7 +1146,7 @@ export default function StudentDashboard({
         ) : null}
 
         {tab === 'home' ? (
-          <div className={styles.homeLayout}>
+          <div className={styles.homeLayout} data-tour="ss-home">
             <section className={styles.homeCol}>
               <div className={styles.homeColHead}>
                 <h2 className={styles.homeColTitle}>اقدامات سریع</h2>
@@ -1188,7 +1255,7 @@ export default function StudentDashboard({
         ) : null}
 
         {tab === 'lessons' ? (
-          <div className={styles.hwPanel}>
+          <div className={styles.hwPanel} data-tour="ss-lessons">
             <div className={styles.hwBar}>
               <div>
                 <h2 className={styles.hwBarTitle}>دروس</h2>
@@ -1298,7 +1365,7 @@ export default function StudentDashboard({
         ) : null}
 
         {tab === 'homework' ? (
-          <div className={styles.hwPanel}>
+          <div className={styles.hwPanel} data-tour="ss-homework">
             <div className={styles.hwBar}>
               <div>
                 <h2 className={styles.hwBarTitle}>تکالیف</h2>
@@ -1440,7 +1507,7 @@ export default function StudentDashboard({
         ) : null}
 
         {tab === 'quiz' ? (
-          <div className={styles.hwPanel}>
+          <div className={styles.hwPanel} data-tour="ss-quiz">
             <div className={styles.hwBar}>
               <div>
                 <h2 className={styles.hwBarTitle}>آزمون‌ها</h2>
@@ -1546,7 +1613,7 @@ export default function StudentDashboard({
         ) : null}
 
         {tab === 'schedule' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="ss-schedule">
             <MySchedulePanel
               role="student"
               params={studentScopeParams}
@@ -1556,7 +1623,7 @@ export default function StudentDashboard({
         ) : null}
 
         {tab === 'counseling' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="ss-counseling">
             <StudentCounselingPanel
               studentId={previewStudentId || profile?.id || null}
               onNotify={notifyPanel}
@@ -1565,7 +1632,7 @@ export default function StudentDashboard({
         ) : null}
 
         {tab === 'attendance' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="ss-attendance">
             <StudentAttendancePanel
               studentParams={studentScopeParams}
               onNotify={notifyPanel}
@@ -1574,7 +1641,7 @@ export default function StudentDashboard({
         ) : null}
 
         {tab === 'reportcard' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="ss-reportcard">
             <StudentReportCardPanel
               studentParams={studentScopeParams}
               onNotify={notifyPanel}
@@ -1583,7 +1650,7 @@ export default function StudentDashboard({
         ) : null}
 
         {tab === 'reportcharts' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="ss-reportcharts">
             <StudentReportChartsPanel
               studentParams={studentScopeParams}
               onNotify={notifyPanel}
@@ -1592,7 +1659,7 @@ export default function StudentDashboard({
         ) : null}
 
         {tab === 'results' ? (
-          <div>
+          <div data-tour="ss-results">
             {(charts.score_trend || []).length || (charts.subject_averages || []).length ? (
               <div className={styles.panel} style={{ marginBottom: 12 }}>
                 <h2 className={styles.panelTitle}>نمودار پیشرفت</h2>
@@ -1608,7 +1675,7 @@ export default function StudentDashboard({
         ) : null}
 
         {tab === 'tips' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="ss-tips">
             <h2 className={styles.panelTitle}>پیشنهادهای رشد</h2>
             {(data.recommendations || []).map((t, i) => (
               <div key={i} className={styles.tip}>
@@ -2072,6 +2139,14 @@ export default function StudentDashboard({
     {examFocusLayer && typeof document !== 'undefined'
       ? createPortal(examFocusLayer, document.body)
       : null}
+    <GuidedTour
+      open={tour.open && !quizSession && !lesson}
+      steps={tour.steps}
+      stepIndex={tour.stepIndex}
+      onStepChange={tour.setStepIndex}
+      onClose={tour.close}
+      theme="school"
+    />
     </>
   )
 }

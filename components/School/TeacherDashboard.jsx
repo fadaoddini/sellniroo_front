@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { RefreshCw, UserRound } from 'lucide-react'
+import { RefreshCw, Sparkles, UserRound } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import schoolService from '@/components/School/services/schoolService'
 import QuestionBankPanel from '@/components/School/QuestionBankPanel'
@@ -17,6 +17,11 @@ import AttendancePanel from '@/components/School/AttendancePanel'
 import MySchedulePanel from '@/components/School/MySchedulePanel'
 import TeacherProfilePanel from '@/components/School/TeacherProfilePanel'
 import TeacherReportCardPanel from '@/components/School/TeacherReportCardPanel'
+import GuidedTour, { useGuidedTour } from '@/components/Admin/GuidedTour'
+import {
+  SCHOOL_TEACHER_TOUR,
+  SCHOOL_TEACHER_TOUR_STORAGE_KEY,
+} from '@/components/School/schoolTeacherTour'
 import styles from './School.module.css'
 
 /** پنل معلم — در پروفایل با embedded بدون هیرو صفحهٔ جدا */
@@ -48,6 +53,8 @@ export default function TeacherDashboard({
     if (previewControlled) onPreviewTeacherIdChange?.(String(id || ''))
     else setPreviewTeacherIdLocal(String(id || ''))
   }
+  const tour = useGuidedTour(SCHOOL_TEACHER_TOUR)
+  const tourAutoRef = useRef(false)
 
   const notifyPanel = useCallback((m, isErr) => {
     if (isErr) setErr(m)
@@ -84,6 +91,45 @@ export default function TeacherDashboard({
   useEffect(() => {
     if (isAuthenticated) load()
   }, [isAuthenticated, load])
+
+  useEffect(() => {
+    if (!tour.open) return
+    const step = tour.steps[tour.stepIndex]
+    if (step?.tab && step.tab !== tab) setTab(step.tab)
+    const tabKey = step?.tab
+    if (!tabKey || typeof document === 'undefined') return
+    const btn = document.querySelector(`[data-tour="st-tab-${tabKey}"]`)
+    btn?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })
+  }, [tour.open, tour.stepIndex, tour.steps, tab])
+
+  const startTourFn = tour.start
+  useEffect(() => {
+    if (loading || !isAuthenticated || !data) return undefined
+    if (tourAutoRef.current) return undefined
+    if (typeof window === 'undefined') return undefined
+    try {
+      if (window.localStorage.getItem(SCHOOL_TEACHER_TOUR_STORAGE_KEY)) return undefined
+    } catch {
+      return undefined
+    }
+    const t = window.setTimeout(() => {
+      if (tourAutoRef.current) return
+      tourAutoRef.current = true
+      setTab('info')
+      startTourFn(SCHOOL_TEACHER_TOUR)
+      try {
+        window.localStorage.setItem(SCHOOL_TEACHER_TOUR_STORAGE_KEY, '1')
+      } catch {
+        /* ignore */
+      }
+    }, 650)
+    return () => window.clearTimeout(t)
+  }, [loading, isAuthenticated, data, startTourFn])
+
+  const startTeacherTour = () => {
+    setTab('info')
+    window.setTimeout(() => startTourFn(SCHOOL_TEACHER_TOUR), 60)
+  }
 
   const openLesson = async (lessonId) => {
     const res = await schoolService.getLesson(lessonId)
@@ -282,7 +328,20 @@ export default function TeacherDashboard({
         {msg ? <div className={styles.msg}>{msg}</div> : null}
         {err ? <div className={styles.err}>{err}</div> : null}
 
-        <div className={styles.tabs} role="tablist" aria-label="بخش‌های معلم">
+        <div className={styles.smTourBar}>
+          <button
+            type="button"
+            className={styles.smTourBtn}
+            data-tour="st-tour-btn"
+            onClick={startTeacherTour}
+          >
+            <Sparkles size={14} />
+            راهنمای تور
+          </button>
+          <p className={styles.smTourHint}>آشنایی مرحله‌به‌مرحله با پنل معلم</p>
+        </div>
+
+        <div className={styles.tabs} role="tablist" aria-label="بخش‌های معلم" data-tour="st-tabs">
           {[
             ['info', 'اطلاعات پایه'],
             ['overview', 'نمای کلی'],
@@ -304,6 +363,7 @@ export default function TeacherDashboard({
               role="tab"
               aria-selected={tab === k}
               className={`${styles.tab} ${tab === k ? styles.tabOn : ''}`}
+              data-tour={`st-tab-${k}`}
               onClick={() => setTab(k)}
             >
               {l}
@@ -312,7 +372,7 @@ export default function TeacherDashboard({
         </div>
 
         {tab === 'info' ? (
-          <div className={styles.infoPanel}>
+          <div className={styles.infoPanel} data-tour="st-info">
             <section className={styles.infoIdentity} aria-label="پروفایل معلم">
               <div className={styles.infoAvatar} aria-hidden>
                 <UserRound size={22} />
@@ -367,7 +427,7 @@ export default function TeacherDashboard({
         ) : null}
 
         {tab === 'profile' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="st-profile">
             <TeacherProfilePanel
               mode="self"
               previewTeacherId={activeTeacherId || null}
@@ -377,7 +437,7 @@ export default function TeacherDashboard({
         ) : null}
 
         {tab === 'schedule' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="st-schedule">
             <MySchedulePanel
               role="teacher"
               params={activeTeacherId ? { teacher: activeTeacherId } : {}}
@@ -387,22 +447,26 @@ export default function TeacherDashboard({
         ) : null}
 
         {tab === 'bank' ? (
-          <QuestionBankPanel
-            tree={tree}
-            onNotify={notifyPanel}
-          />
+          <div data-tour="st-bank">
+            <QuestionBankPanel
+              tree={tree}
+              onNotify={notifyPanel}
+            />
+          </div>
         ) : null}
 
         {tab === 'exams' ? (
-          <ExamBuilderPanel
-            tree={tree}
-            students={data.students || []}
-            onNotify={notifyPanel}
-          />
+          <div data-tour="st-exams">
+            <ExamBuilderPanel
+              tree={tree}
+              students={data.students || []}
+              onNotify={notifyPanel}
+            />
+          </div>
         ) : null}
 
         {tab === 'overview' ? (
-          <div className={styles.teacherOverviewPage}>
+          <div className={styles.teacherOverviewPage} data-tour="st-overview">
             <TeacherOverviewCharts
               charts={data.charts || {}}
               overview={data.overview || {}}
@@ -416,14 +480,16 @@ export default function TeacherDashboard({
         ) : null}
 
         {tab === 'support' ? (
-          <TeacherSupportPanel
-            cases={data.support_cases || data.overview?.support_cases || []}
-            onNavigate={setTab}
-          />
+          <div data-tour="st-support">
+            <TeacherSupportPanel
+              cases={data.support_cases || data.overview?.support_cases || []}
+              onNavigate={setTab}
+            />
+          </div>
         ) : null}
 
         {tab === 'attendance' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="st-attendance">
             <AttendancePanel
               teacherId={activeTeacherId || null}
               subjects={data.subjects || []}
@@ -433,34 +499,36 @@ export default function TeacherDashboard({
         ) : null}
 
         {tab === 'curriculum' ? (
-          <CurriculumWorkspace
-            tree={tree}
-            teacherId={activeTeacherId}
-            selectedLesson={selectedLesson}
-            lessonForm={lessonForm}
-            exercises={exercises}
-            saving={saving}
-            onOpenLesson={openLesson}
-            onClearLesson={clearLesson}
-            onLessonFormChange={(patch) => setLessonForm((prev) => ({ ...prev, ...patch }))}
-            onSaveLesson={saveLesson}
-            onReload={load}
-            onNotify={notifyPanel}
-            onAddAttachment={addAttachment}
-            onAddExercise={addExercise}
-            onDeleteExercise={async (id) => {
-              await schoolService.deleteExercise(id)
-              if (selectedLesson) openLesson(selectedLesson.id)
-            }}
-            onDeleteAttachment={async (id) => {
-              await schoolService.deleteAttachment(id)
-              if (selectedLesson) openLesson(selectedLesson.id)
-            }}
-          />
+          <div data-tour="st-curriculum">
+            <CurriculumWorkspace
+              tree={tree}
+              teacherId={activeTeacherId}
+              selectedLesson={selectedLesson}
+              lessonForm={lessonForm}
+              exercises={exercises}
+              saving={saving}
+              onOpenLesson={openLesson}
+              onClearLesson={clearLesson}
+              onLessonFormChange={(patch) => setLessonForm((prev) => ({ ...prev, ...patch }))}
+              onSaveLesson={saveLesson}
+              onReload={load}
+              onNotify={notifyPanel}
+              onAddAttachment={addAttachment}
+              onAddExercise={addExercise}
+              onDeleteExercise={async (id) => {
+                await schoolService.deleteExercise(id)
+                if (selectedLesson) openLesson(selectedLesson.id)
+              }}
+              onDeleteAttachment={async (id) => {
+                await schoolService.deleteAttachment(id)
+                if (selectedLesson) openLesson(selectedLesson.id)
+              }}
+            />
+          </div>
         ) : null}
 
         {tab === 'reviews' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="st-reviews">
             <HomeworkReviewPanel
               submissions={data.pending_submissions || []}
               onDone={load}
@@ -470,22 +538,24 @@ export default function TeacherDashboard({
         ) : null}
 
         {tab === 'students' ? (
-          <StudentsPanel
-            students={data.students || []}
-            studentMobile={studentMobile}
-            studentName={studentName}
-            onMobileChange={setStudentMobile}
-            onNameChange={setStudentName}
-            onAdd={addStudent}
-            onReload={load}
-            busy={saving}
-            onNotify={notifyPanel}
-            teacherId={activeTeacherId || null}
-          />
+          <div data-tour="st-students">
+            <StudentsPanel
+              students={data.students || []}
+              studentMobile={studentMobile}
+              studentName={studentName}
+              onMobileChange={setStudentMobile}
+              onNameChange={setStudentName}
+              onAdd={addStudent}
+              onReload={load}
+              busy={saving}
+              onNotify={notifyPanel}
+              teacherId={activeTeacherId || null}
+            />
+          </div>
         ) : null}
 
         {tab === 'reportcard' ? (
-          <div className={styles.panel}>
+          <div className={styles.panel} data-tour="st-reportcard">
             <TeacherReportCardPanel
               teacherId={activeTeacherId || null}
               subjects={data.subjects || []}
@@ -495,12 +565,23 @@ export default function TeacherDashboard({
         ) : null}
 
         {tab === 'results' ? (
-          <ExamResultsPanel
-            teacherId={previewTeacherId || data?.profile?.id || null}
-            onNotify={notifyPanel}
-          />
+          <div data-tour="st-results">
+            <ExamResultsPanel
+              teacherId={previewTeacherId || data?.profile?.id || null}
+              onNotify={notifyPanel}
+            />
+          </div>
         ) : null}
       </div>
+
+      <GuidedTour
+        open={tour.open}
+        steps={tour.steps}
+        stepIndex={tour.stepIndex}
+        onStepChange={tour.setStepIndex}
+        onClose={tour.close}
+        theme="school"
+      />
     </div>
   )
 }

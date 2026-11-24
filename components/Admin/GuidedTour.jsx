@@ -25,7 +25,7 @@ export default function GuidedTour({
   theme = 'default',
 }) {
   const [rect, setRect] = useState(null)
-  const [tipPos, setTipPos] = useState({ top: 24, left: 24, tipW: 300 })
+  const [tipPos, setTipPos] = useState({ top: 24, left: 24, tipW: 300, mobile: false })
   const [mounted, setMounted] = useState(false)
 
   const step = steps[stepIndex] || null
@@ -68,43 +68,60 @@ export default function GuidedTour({
     }
     setRect(hole)
 
-    const tipW = Math.min(340, window.innerWidth - 24)
-    const tipH = 280
-    // ترجیح: سمت چپ هدف (در RTL نزدیک‌تر به متن)، وگرنه پایین/بالا
+    const vw = window.innerWidth
+    const vh = window.innerHeight
+    const mobile = vw < 720
+    const tipW = Math.min(mobile ? vw - 20 : 340, vw - 20)
+    const tipH = mobile ? Math.min(320, Math.floor(vh * 0.42)) : 280
     const spaceLeft = hole.left
-    const spaceRight = window.innerWidth - (hole.left + hole.width)
+    const spaceRight = vw - (hole.left + hole.width)
     let top = hole.top + 8
-    let left = 12
+    let left = 10
 
-    if (spaceLeft >= tipW + 20) {
+    if (mobile) {
+      // موبایل: کارت راهنما پایین صفحه تا با انگشت راحت باشد و هدف بالا بماند
+      left = Math.max(10, (vw - tipW) / 2)
+      const spaceBelow = vh - (hole.top + hole.height)
+      if (spaceBelow >= tipH + 16) {
+        top = Math.min(hole.top + hole.height + 12, vh - tipH - 12)
+      } else {
+        top = Math.max(10, vh - tipH - 12)
+      }
+    } else if (spaceLeft >= tipW + 20) {
       left = hole.left - tipW - 14
-      top = Math.min(hole.top, window.innerHeight - tipH - 12)
+      top = Math.min(hole.top, vh - tipH - 12)
     } else if (spaceRight >= tipW + 20) {
       left = hole.left + hole.width + 14
-      top = Math.min(hole.top, window.innerHeight - tipH - 12)
+      top = Math.min(hole.top, vh - tipH - 12)
     } else {
-      const spaceBelow = window.innerHeight - (hole.top + hole.height)
+      const spaceBelow = vh - (hole.top + hole.height)
       if (spaceBelow >= tipH + 12) {
         top = hole.top + hole.height + 12
       } else {
         top = Math.max(12, hole.top - tipH - 12)
       }
-      left = Math.min(
-        Math.max(12, hole.left),
-        window.innerWidth - tipW - 12,
-      )
+      left = Math.min(Math.max(12, hole.left), vw - tipW - 12)
     }
-    top = Math.max(12, Math.min(top, window.innerHeight - tipH - 12))
-    setTipPos({ top, left, tipW })
+    top = Math.max(10, Math.min(top, vh - tipH - 10))
+    left = Math.max(10, Math.min(left, vw - tipW - 10))
+    setTipPos({ top, left, tipW, mobile })
   }, [open, step, findTargetEl])
 
   useLayoutEffect(() => {
     if (!open || !step?.target) return
     const el = findTargetEl(step.target)
-    el?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
-    // بعد از اسکرول اندازه بگیر
-    const t = requestAnimationFrame(() => measure())
-    return () => cancelAnimationFrame(t)
+    el?.scrollIntoView({
+      block: window.innerWidth < 720 ? 'center' : 'nearest',
+      inline: 'nearest',
+      behavior: 'smooth',
+    })
+    // بعد از اسکرول / تعویض تب اندازه بگیر
+    const t1 = requestAnimationFrame(() => measure())
+    const t2 = window.setTimeout(measure, 280)
+    return () => {
+      cancelAnimationFrame(t1)
+      window.clearTimeout(t2)
+    }
   }, [open, step, stepIndex, measure, findTargetEl])
 
   useEffect(() => {
@@ -172,6 +189,8 @@ export default function GuidedTour({
         className={[
           styles.tip,
           theme === 'job' ? styles.tipJob : '',
+          theme === 'school' ? styles.tipSchool : '',
+          tipPos.mobile ? styles.tipMobile : '',
           tipClassName,
         ]
           .filter(Boolean)
