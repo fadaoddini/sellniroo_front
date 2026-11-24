@@ -27,6 +27,7 @@ import {
   Sparkles,
   Sprout,
   Store,
+  Upload,
   Warehouse,
   Dumbbell,
   Wrench,
@@ -678,6 +679,101 @@ function TemplateImportPanelInner() {
     }
   }
 
+  const exportLiveDesign = async () => {
+    const headers = getAuthHeaders()
+    if (!headers?.Authorization) {
+      setErr('برای دانلود چیدمان دوباره وارد شوید')
+      return
+    }
+    setBusyKey('design-export')
+    setErr('')
+    setMsg('')
+    try {
+      const res = await axios.get(Config.endpoints.news.topicPacks.designExport(), {
+        headers,
+      })
+      const data = res.data?.data || {}
+      const payload = data.payload || data
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: 'application/json;charset=utf-8',
+      })
+      const href = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')
+      a.href = href
+      a.download = `design-export-${stamp}.json`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(href)
+      const counts = data.counts || {}
+      setMsg(
+        res.data?.message ||
+          `چیدمان دانلود شد` +
+            (counts.home_widgets != null
+              ? ` — خانه ${counts.home_widgets} ویجت`
+              : ''),
+      )
+    } catch (e) {
+      setErr(
+        e.response?.data?.message ||
+          e.message ||
+          'دانلود چیدمان ناموفق بود',
+      )
+    } finally {
+      setBusyKey(null)
+    }
+  }
+
+  const importLiveDesign = async (file) => {
+    if (!file) return
+    const headers = getAuthHeaders()
+    if (!headers?.Authorization) {
+      setErr('برای ورود چیدمان دوباره وارد شوید')
+      return
+    }
+    const ok = window.confirm(
+      [
+        'چیدمان و طراحی این سایت با فایل انتخاب‌شده جایگزین شود؟',
+        'خانه، صفحات داخلی، رنگ‌ها، منو و ظاهر عوض می‌شوند.',
+        'معلمان، دانش‌آموزان، دروس و داده‌های مدرسه دست نمی‌خورند.',
+      ].join('\n\n'),
+    )
+    if (!ok) return
+
+    setBusyKey('design-import')
+    setErr('')
+    setMsg('')
+    try {
+      const text = await file.text()
+      let parsed
+      try {
+        parsed = JSON.parse(text)
+      } catch {
+        throw new Error('فایل JSON معتبر نیست')
+      }
+      const body =
+        parsed?.format === 'sellniroo_design_v1' || parsed?.site_settings
+          ? parsed
+          : parsed?.payload || parsed
+      const res = await axios.post(
+        Config.endpoints.news.topicPacks.designImport(),
+        body,
+        { headers },
+      )
+      setMsg(res.data?.message || 'چیدمان اعمال شد')
+      await load()
+    } catch (e) {
+      setErr(
+        e.response?.data?.message ||
+          e.message ||
+          'ورود چیدمان ناموفق بود',
+      )
+    } finally {
+      setBusyKey(null)
+    }
+  }
+
   const snapshotTemplate = async (tpl) => {
     const headers = getAuthHeaders()
     if (!headers?.Authorization) {
@@ -776,6 +872,51 @@ function TemplateImportPanelInner() {
         <div>
           <span className={styles.tplStatusLabel}>قالب انحصاری فعال</span>
           <strong>{activeTpl?.name || '—'}</strong>
+        </div>
+      </div>
+
+      <div className={styles.designSyncBar}>
+        <div className={styles.designSyncCopy}>
+          <strong>همگام‌سازی چیدمان با لوکال</strong>
+          <span>
+            از سرور دانلود کنید و در لوکال وارد کنید — فقط رنگ و چیدمان؛ داده مدرسه جابه‌جا نمی‌شود.
+          </span>
+        </div>
+        <div className={styles.designSyncActions}>
+          <button
+            type="button"
+            className={styles.tplBtnSnapshot}
+            disabled={!!busyKey}
+            onClick={exportLiveDesign}
+          >
+            {busyKey === 'design-export' ? (
+              <Loader2 size={14} className={styles.spin} />
+            ) : (
+              <Download size={14} />
+            )}
+            دانلود چیدمان زنده
+          </button>
+          <label
+            className={`${styles.tplBtnInstall} ${styles.designSyncUpload}${busyKey ? ` ${styles.designSyncUploadDisabled}` : ''}`}
+          >
+            {busyKey === 'design-import' ? (
+              <Loader2 size={14} className={styles.spin} />
+            ) : (
+              <Upload size={14} />
+            )}
+            ورود چیدمان از فایل
+            <input
+              type="file"
+              accept="application/json,.json"
+              hidden
+              disabled={!!busyKey}
+              onChange={(e) => {
+                const f = e.target.files?.[0]
+                e.target.value = ''
+                importLiveDesign(f)
+              }}
+            />
+          </label>
         </div>
       </div>
 

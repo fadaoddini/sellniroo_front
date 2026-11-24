@@ -1157,6 +1157,16 @@ news: {
       endpoint: 'topic-packs/snapshot/',
       noVersion: true,
     }),
+    designExport: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'topic-packs/design-export/',
+      noVersion: true,
+    }),
+    designImport: () => Config.getApiUrl({
+      segment: 'api',
+      endpoint: 'topic-packs/design-import/',
+      noVersion: true,
+    }),
     ownerSystems: () => Config.getApiUrl({
       segment: 'api',
       endpoint: 'topic-packs/owner-systems/',

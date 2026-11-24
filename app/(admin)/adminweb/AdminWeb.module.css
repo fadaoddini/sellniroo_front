@@ -5360,6 +5360,57 @@ a.extBtnGhost:focus-visible {
   color: inherit;
 }
 
+.designSyncBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(44, 72, 30, 0.14);
+  background: linear-gradient(120deg, rgba(244, 224, 184, 0.35), rgba(255, 255, 255, 0.95));
+}
+
+.designSyncCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  flex: 1 1 220px;
+}
+
+.designSyncCopy strong {
+  font-size: 0.82rem;
+  color: #2C481E;
+}
+
+.designSyncCopy span {
+  font-size: 0.72rem;
+  line-height: 1.55;
+  color: rgba(44, 72, 30, 0.72);
+}
+
+.designSyncActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.designSyncUpload {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+}
+
+.designSyncUploadDisabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
 .tplGrid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));

@@ -1071,7 +1071,7 @@ export const HIDDEN_MODULE_KEYS = new Set([
   'data_pack_agriculture',
   'data_pack_branding',
   'data_pack_corporate',
-  'school',
+  // school عمداً پنهان نیست — باید در ماژول‌ها دیده و مدیریت شود
 ])
 
 /**
