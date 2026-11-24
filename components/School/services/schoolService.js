@@ -45,7 +45,13 @@ const schoolService = {
       { headers: authHeaders(isFd) },
     ))
   },
-  deleteTeacher: (id) => wrap(() => axios.delete(Config.endpoints.school.teacher(id), { headers: authHeaders() })),
+  deleteTeacher: (id, { hard = false } = {}) =>
+    wrap(() =>
+      axios.delete(Config.endpoints.school.teacher(id), {
+        headers: authHeaders(),
+        params: hard ? { hard: 1 } : undefined,
+      }),
+    ),
   getMyTeacherProfile: (params = {}) => wrap(() => axios.get(
     Config.endpoints.school.teacherMe(params),
     { headers: authHeaders() },
@@ -229,6 +235,13 @@ const schoolService = {
     const isFd = typeof FormData !== 'undefined' && payload instanceof FormData
     return wrap(() => axios.patch(Config.endpoints.school.counselor(id), payload, { headers: authHeaders(isFd) }))
   },
+  deleteCounselor: (id, { hard = false } = {}) =>
+    wrap(() =>
+      axios.delete(Config.endpoints.school.counselor(id), {
+        headers: authHeaders(),
+        params: hard ? { hard: 1 } : undefined,
+      }),
+    ),
   getMyCounselorProfile: (params = {}) => wrap(() => axios.get(Config.endpoints.school.counselorMe(params), { headers: authHeaders() })),
   updateMyCounselorProfile: (payload, params = {}) => {
     const isFd = typeof FormData !== 'undefined' && payload instanceof FormData

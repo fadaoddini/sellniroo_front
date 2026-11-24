@@ -15220,6 +15220,69 @@ button.ttSlotEmpty.ttSlotClick:hover .ttEmptyMark {
   margin-top: auto;
 }
 
+.btnDangerOutline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 10px;
+  border: 1.5px solid rgba(239, 68, 68, 0.35);
+  background: rgba(254, 242, 242, 0.9);
+  color: #b91c1c;
+  font-size: 0.78rem;
+  font-family: var(--font-iran);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btnDangerOutline:hover {
+  background: #fee2e2;
+  border-color: rgba(239, 68, 68, 0.55);
+}
+
+.staffRowActions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.staffInactiveBadge,
+.staffActiveBadge {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: 0.4rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-family: var(--font-iran);
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.staffInactiveBadge {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.staffActiveBadge {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.staffRowInactive td {
+  opacity: 0.72;
+}
+
+.staffCardInactive {
+  opacity: 0.78;
+  border-style: dashed;
+}
+
 .cpManageForm {
   padding: 1rem;
   border-radius: 16px;

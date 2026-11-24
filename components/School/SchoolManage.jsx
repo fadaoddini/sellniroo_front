@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { LayoutDashboard, Plus, RefreshCw, GraduationCap, HeartHandshake, ExternalLink } from 'lucide-react'
+import { LayoutDashboard, Plus, RefreshCw, GraduationCap, HeartHandshake, ExternalLink, Pencil, Trash2 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import schoolService from '@/components/School/services/schoolService'
 import AdminAttendancePanel from '@/components/School/AdminAttendancePanel'
@@ -12,6 +12,7 @@ import AdminOverviewCharts from '@/components/School/AdminOverviewCharts'
 import ClassesPanel from '@/components/School/ClassesPanel'
 import TeacherProfilePanel from '@/components/School/TeacherProfilePanel'
 import CounselorProfilePanel from '@/components/School/CounselorProfilePanel'
+import StaffRemoveModal from '@/components/School/StaffRemoveModal'
 import styles from './School.module.css'
 
 const RANK_FA = {
@@ -32,9 +33,12 @@ export default function SchoolManage({ embedded = false } = {}) {
   const [teacherForm, setTeacherForm] = useState({ mobile: '', display_name: '', specialty: '' })
   const [counselorForm, setCounselorForm] = useState({ mobile: '', display_name: '', specialty: '' })
   const [counselors, setCounselors] = useState([])
+  const [teachers, setTeachers] = useState([])
   const [studentForm, setStudentForm] = useState({ mobile: '', display_name: '', grade: '', teacher_ids: [] })
   const [editTeacherId, setEditTeacherId] = useState(null)
   const [editCounselorId, setEditCounselorId] = useState(null)
+  const [removeTarget, setRemoveTarget] = useState(null) // { kind: 'teacher'|'counselor', id, name }
+  const [removeBusy, setRemoveBusy] = useState(false)
 
   const notifyPanel = useCallback((m, isErr) => {
     if (isErr) setErr(m)
@@ -50,10 +54,11 @@ export default function SchoolManage({ embedded = false } = {}) {
 
   const load = useCallback(async () => {
     setErr(null)
-    const [ov, st, cs] = await Promise.all([
+    const [ov, st, cs, ts] = await Promise.all([
       schoolService.overview(),
       schoolService.settings(),
-      schoolService.listCounselors(),
+      schoolService.listCounselors({ include_inactive: 1 }),
+      schoolService.listTeachers({ include_inactive: 1 }),
     ])
     if (!ov.success) {
       setErr(ov.error || 'دسترسی ندارید')
@@ -62,6 +67,7 @@ export default function SchoolManage({ embedded = false } = {}) {
     setData(ov.data)
     if (st.success) setSettings(st.data || {})
     if (cs.success) setCounselors(cs.data || [])
+    if (ts.success) setTeachers(ts.data || [])
   }, [])
 
   useEffect(() => {
@@ -101,6 +107,53 @@ export default function SchoolManage({ embedded = false } = {}) {
       setMsg('دانش‌آموز اضافه شد')
       load()
     } else setErr(res.error)
+  }
+
+  const activeTeachers = (teachers.length ? teachers : data?.teachers || []).filter((t) => t.is_active !== false)
+
+  const closeRemoveModal = useCallback(() => {
+    if (removeBusy) return
+    setRemoveTarget(null)
+  }, [removeBusy])
+
+  const runRemoveAction = async (mode) => {
+    if (!removeTarget) return
+    setRemoveBusy(true)
+    setErr(null)
+    const { kind, id } = removeTarget
+    let res
+    if (mode === 'deactivate') {
+      res = kind === 'teacher'
+        ? await schoolService.deleteTeacher(id, { hard: false })
+        : await schoolService.deleteCounselor(id, { hard: false })
+    } else if (mode === 'hard') {
+      res = kind === 'teacher'
+        ? await schoolService.deleteTeacher(id, { hard: true })
+        : await schoolService.deleteCounselor(id, { hard: true })
+    }
+    setRemoveBusy(false)
+    if (!res?.success) {
+      setErr(res?.error || 'عملیات ناموفق بود')
+      return
+    }
+    setMsg(res.message || (mode === 'hard' ? 'حذف شد' : 'غیرفعال شد'))
+    setRemoveTarget(null)
+    if (kind === 'teacher' && editTeacherId === id) setEditTeacherId(null)
+    if (kind === 'counselor' && editCounselorId === id) setEditCounselorId(null)
+    load()
+  }
+
+  const reactivateStaff = async (kind, id) => {
+    setErr(null)
+    const res = kind === 'teacher'
+      ? await schoolService.updateTeacher(id, { is_active: true })
+      : await schoolService.updateCounselor(id, { is_active: true })
+    if (!res.success) {
+      setErr(res.error || 'فعال‌سازی ناموفق بود')
+      return
+    }
+    setMsg(kind === 'teacher' ? 'معلم دوباره فعال شد' : 'مشاور دوباره فعال شد')
+    load()
   }
 
   const pageClass = embedded
@@ -261,7 +314,7 @@ export default function SchoolManage({ embedded = false } = {}) {
 
                 <div className={styles.cpManageGrid}>
                   {counselors.map((c) => (
-                    <article key={c.id} className={styles.cpManageCard}>
+                    <article key={c.id} className={`${styles.cpManageCard}${c.is_active === false ? ` ${styles.staffCardInactive}` : ''}`}>
                       <div className={styles.cpManageTop}>
                         <div className={styles.cpManageAvatar}>
                           {c.avatar_url ? (
@@ -272,16 +325,36 @@ export default function SchoolManage({ embedded = false } = {}) {
                           )}
                         </div>
                         <div>
-                          <p className={styles.cpManageName}>{c.display_name}</p>
+                          <p className={styles.cpManageName}>
+                            {c.display_name}
+                            {c.is_active === false ? <span className={styles.staffInactiveBadge}>غیرفعال</span> : null}
+                          </p>
                           <p className={styles.cpManageMeta}>{c.specialty || 'بدون تخصص'}</p>
                           <p className={styles.cpManageMeta} dir="ltr">{c.mobile}</p>
                         </div>
                       </div>
                       <div className={styles.cpManageActions}>
                         <button type="button" className={styles.btnAccent} onClick={() => setEditCounselorId(c.id)}>
-                          پروفایل
+                          <Pencil size={13} /> ویرایش
                         </button>
-                        {c.public_path ? (
+                        {c.is_active === false ? (
+                          <button type="button" className={styles.btnGhost} onClick={() => reactivateStaff('counselor', c.id)}>
+                            فعال‌سازی
+                          </button>
+                        ) : null}
+                        <button
+                          type="button"
+                          className={styles.btnDangerOutline}
+                          onClick={() => setRemoveTarget({
+                            kind: 'counselor',
+                            id: c.id,
+                            name: c.display_name || c.mobile || '',
+                            inactive: c.is_active === false,
+                          })}
+                        >
+                          <Trash2 size={13} /> حذف
+                        </button>
+                        {c.public_path && c.is_active !== false ? (
                           <Link href={c.public_path} className={styles.btnGhost} target="_blank">
                             صفحه عمومی
                           </Link>
@@ -324,19 +397,43 @@ export default function SchoolManage({ embedded = false } = {}) {
                 <button type="button" className={styles.btnAccent} style={{ marginTop: 10 }} onClick={addTeacher}><Plus size={14} /> افزودن</button>
                 <div className={styles.tableWrap} style={{ marginTop: 16 }}>
                   <table className={styles.table}>
-                    <thead><tr><th>نام</th><th>موبایل</th><th>تخصص</th><th>دانش‌آموز</th><th>دسته</th><th /></tr></thead>
+                    <thead><tr><th>نام</th><th>موبایل</th><th>تخصص</th><th>دانش‌آموز</th><th>دسته</th><th>وضعیت</th><th /></tr></thead>
                     <tbody>
-                      {(data?.teachers || []).map((t) => (
-                        <tr key={t.id}>
+                      {(teachers.length ? teachers : data?.teachers || []).map((t) => (
+                        <tr key={t.id} className={t.is_active === false ? styles.staffRowInactive : undefined}>
                           <td>{t.display_name}</td>
                           <td dir="ltr">{t.mobile}</td>
                           <td>{t.specialty || '—'}</td>
                           <td>{t.student_count}</td>
                           <td>{t.subject_count}</td>
                           <td>
-                            <button type="button" className={styles.btnGhost} onClick={() => setEditTeacherId(t.id)}>
-                              پروفایل
-                            </button>
+                            {t.is_active === false
+                              ? <span className={styles.staffInactiveBadge}>غیرفعال</span>
+                              : <span className={styles.staffActiveBadge}>فعال</span>}
+                          </td>
+                          <td>
+                            <div className={styles.staffRowActions}>
+                              <button type="button" className={styles.btnGhost} onClick={() => setEditTeacherId(t.id)}>
+                                <Pencil size={13} /> ویرایش
+                              </button>
+                              {t.is_active === false ? (
+                                <button type="button" className={styles.btnGhost} onClick={() => reactivateStaff('teacher', t.id)}>
+                                  فعال‌سازی
+                                </button>
+                              ) : null}
+                              <button
+                                type="button"
+                                className={styles.btnDangerOutline}
+                                onClick={() => setRemoveTarget({
+                                  kind: 'teacher',
+                                  id: t.id,
+                                  name: t.display_name || t.mobile || '',
+                                  inactive: t.is_active === false,
+                                })}
+                              >
+                                <Trash2 size={13} /> حذف
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -367,7 +464,7 @@ export default function SchoolManage({ embedded = false } = {}) {
                   }))}
                 >
                   <option value="">انتخاب</option>
-                  {(data?.teachers || []).map((t) => <option key={t.id} value={t.id}>{t.display_name}</option>)}
+                  {activeTeachers.map((t) => <option key={t.id} value={t.id}>{t.display_name}</option>)}
                 </select>
               </div>
             </div>
@@ -450,6 +547,18 @@ export default function SchoolManage({ embedded = false } = {}) {
           </div>
         ) : null}
       </div>
+
+      {removeTarget ? (
+        <StaffRemoveModal
+          roleLabel={removeTarget.kind === 'counselor' ? 'مشاور' : 'معلم'}
+          name={removeTarget.name}
+          alreadyInactive={!!removeTarget.inactive}
+          loading={removeBusy}
+          onCancel={closeRemoveModal}
+          onDeactivate={() => runRemoveAction('deactivate')}
+          onHardDelete={() => runRemoveAction('hard')}
+        />
+      ) : null}
     </div>
   )
 }
