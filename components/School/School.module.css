@@ -12719,6 +12719,26 @@ button.ttSlotEmpty.ttSlotClick:hover .ttEmptyMark {
   transition: border-color 0.12s ease, background 0.12s ease, transform 0.1s ease;
 }
 
+.ttSubjectChipText {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.05rem;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+.ttSubjectChipText strong {
+  font-weight: 700;
+}
+
+.ttSubjectChipText em {
+  font-style: normal;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--muted, #64748b);
+}
+
 .ttSubjectChip i {
   width: 8px;
   height: 8px;

@@ -32,6 +32,7 @@ export default function ClassesPanel({ teachers = [], students = [], onNotify })
     room: '',
     academic_year: '۱۴۰۴-۱۴۰۵',
     homeroom_teacher: '',
+    teacher_ids: [],
     capacity: 30,
     color: '#2d5a45',
   })
@@ -69,15 +70,30 @@ export default function ClassesPanel({ teachers = [], students = [], onNotify })
     load()
   }, [load])
 
+  const resolveClassTeacherIds = (cls) => {
+    const fromApi = Array.isArray(cls?.teacher_ids)
+      ? cls.teacher_ids
+      : Array.isArray(cls?.teachers_info)
+        ? cls.teachers_info.map((t) => t.id)
+        : []
+    const ids = fromApi.map((id) => Number(id)).filter(Boolean)
+    if (cls?.homeroom_teacher && !ids.includes(Number(cls.homeroom_teacher))) {
+      ids.unshift(Number(cls.homeroom_teacher))
+    }
+    return [...new Set(ids)]
+  }
+
   const openCreate = () => {
     setMode('create')
     setSelectedId(null)
+    const home = teachers[0]?.id || ''
     setForm({
       grade_label: 'اول دبستان',
       section: 'الف',
       room: '',
       academic_year: '۱۴۰۴-۱۴۰۵',
-      homeroom_teacher: teachers[0]?.id || '',
+      homeroom_teacher: home,
+      teacher_ids: home ? [Number(home)] : [],
       capacity: 30,
       color: '#2d5a45',
     })
@@ -92,9 +108,44 @@ export default function ClassesPanel({ teachers = [], students = [], onNotify })
       room: cls.room || '',
       academic_year: cls.academic_year || '',
       homeroom_teacher: cls.homeroom_teacher || '',
+      teacher_ids: resolveClassTeacherIds(cls),
       capacity: cls.capacity || 30,
       color: cls.color || '#2d5a45',
       title: cls.title || '',
+    })
+  }
+
+  const toggleAccessTeacher = (teacherId) => {
+    const id = Number(teacherId)
+    if (!id) return
+    setForm((p) => {
+      const current = (p.teacher_ids || []).map(Number)
+      const has = current.includes(id)
+      if (has && String(p.homeroom_teacher) === String(id)) {
+        // معلم راهنما را نمی‌شود از دسترسی حذف کرد
+        return p
+      }
+      return {
+        ...p,
+        teacher_ids: has
+          ? current.filter((x) => x !== id)
+          : [...current, id],
+      }
+    })
+  }
+
+  const setHomeroomTeacher = (teacherId) => {
+    setForm((p) => {
+      const nextHome = teacherId || ''
+      const ids = (p.teacher_ids || []).map(Number)
+      if (nextHome && !ids.includes(Number(nextHome))) {
+        ids.push(Number(nextHome))
+      }
+      return {
+        ...p,
+        homeroom_teacher: nextHome,
+        teacher_ids: [...new Set(ids)],
+      }
     })
   }
 
@@ -104,9 +155,15 @@ export default function ClassesPanel({ teachers = [], students = [], onNotify })
       return
     }
     setSaving(true)
+    let teacherIds = (form.teacher_ids || []).map(Number).filter(Boolean)
+    if (form.homeroom_teacher) {
+      const hid = Number(form.homeroom_teacher)
+      if (hid && !teacherIds.includes(hid)) teacherIds = [hid, ...teacherIds]
+    }
     const payload = {
       ...form,
       homeroom_teacher: form.homeroom_teacher ? Number(form.homeroom_teacher) : null,
+      teacher_ids: teacherIds,
       capacity: Number(form.capacity) || 30,
     }
     const res = mode === 'edit' && selectedId
@@ -175,15 +232,24 @@ export default function ClassesPanel({ teachers = [], students = [], onNotify })
     load()
   }
 
+  const selectedTeacherIds = useMemo(
+    () => (selected ? resolveClassTeacherIds(selected) : []),
+    [selected],
+  )
+
   const openCell = ({ weekday, period, slot }) => {
     if (period?.is_break) return
     setEditCell({ weekday, period })
     const kind = slot?.kind === 'holiday' ? 'holiday' : 'lesson'
+    const defaultTeacher = slot?.teacher
+      || selected?.homeroom_teacher
+      || selectedTeacherIds[0]
+      || ''
     setCellForm({
       kind,
       subject_title: slot?.subject_title || slot?.display_subject || (kind === 'holiday' ? 'تعطیل' : ''),
       subject: kind === 'holiday' ? '' : (slot?.subject || ''),
-      teacher: kind === 'holiday' ? '' : (slot?.teacher || ''),
+      teacher: kind === 'holiday' ? '' : defaultTeacher,
       room: kind === 'holiday' ? '' : (slot?.room || selected?.room || ''),
       color: slot?.color || slot?.display_color || (kind === 'holiday' ? '#94a3b8' : selected?.color || '#2d5a45'),
     })
@@ -236,7 +302,7 @@ export default function ClassesPanel({ teachers = [], students = [], onNotify })
       kind: 'lesson',
       subject_title: '',
       subject: '',
-      teacher: '',
+      teacher: selected?.homeroom_teacher || selectedTeacherIds[0] || '',
       room: selected?.room || '',
       color: selected?.color || '#2d5a45',
     })
@@ -430,11 +496,12 @@ export default function ClassesPanel({ teachers = [], students = [], onNotify })
 
             <div className={styles.clsFormSection}>
               <strong className={styles.clsFormLabel}>معلم راهنما</strong>
+              <p className={styles.ttModalHint}>مسئول اصلی کلاس — در برنامه و لیست کلاس نمایش داده می‌شود</p>
               <div className={styles.ttTeacherGrid}>
                 <button
                   type="button"
                   className={`${styles.ttTeacherCard} ${!form.homeroom_teacher ? styles.ttTeacherCardOn : ''}`}
-                  onClick={() => setForm((p) => ({ ...p, homeroom_teacher: '' }))}
+                  onClick={() => setHomeroomTeacher('')}
                 >
                   <span className={styles.ttTeacherAvatar}>—</span>
                   <span><strong>بدون راهنما</strong><em>اختیاری</em></span>
@@ -446,16 +513,53 @@ export default function ClassesPanel({ teachers = [], students = [], onNotify })
                       key={t.id}
                       type="button"
                       className={`${styles.ttTeacherCard} ${on ? styles.ttTeacherCardOn : ''}`}
-                      onClick={() => setForm((p) => ({ ...p, homeroom_teacher: t.id }))}
+                      onClick={() => setHomeroomTeacher(t.id)}
                     >
                       <span className={styles.ttTeacherAvatar}>{(t.display_name || '?').charAt(0)}</span>
                       <span>
                         <strong>{t.display_name}</strong>
                         <em>{t.specialty || 'معلم'}</em>
                       </span>
+                      {on ? <Check size={12} strokeWidth={2.4} className={styles.ttTeacherCheck} /> : null}
                     </button>
                   )
                 })}
+              </div>
+            </div>
+
+            <div className={styles.clsFormSection}>
+              <strong className={styles.clsFormLabel}>معلمان دارای دسترسی</strong>
+              <p className={styles.ttModalHint}>
+                چند معلم با تخصص‌های مختلف می‌توانند به این کلاس دسترسی داشته باشند؛
+                در برنامه فقط دروس همین معلمان نمایش داده می‌شود
+              </p>
+              <div className={styles.ttTeacherGrid}>
+                {teachers.map((t) => {
+                  const on = (form.teacher_ids || []).some((id) => String(id) === String(t.id))
+                  const isHome = String(form.homeroom_teacher) === String(t.id)
+                  return (
+                    <button
+                      key={`access-${t.id}`}
+                      type="button"
+                      className={`${styles.ttTeacherCard} ${on ? styles.ttTeacherCardOn : ''}`}
+                      onClick={() => toggleAccessTeacher(t.id)}
+                      title={isHome ? 'معلم راهنما همیشه دسترسی دارد' : ''}
+                    >
+                      <span className={styles.ttTeacherAvatar}>{(t.display_name || '?').charAt(0)}</span>
+                      <span>
+                        <strong>{t.display_name}</strong>
+                        <em>
+                          {t.specialty || 'معلم'}
+                          {isHome ? ' · راهنما' : ''}
+                        </em>
+                      </span>
+                      {on ? <Check size={12} strokeWidth={2.4} className={styles.ttTeacherCheck} /> : null}
+                    </button>
+                  )
+                })}
+                {!teachers.length ? (
+                  <p className={styles.ttModalHint}>ابتدا معلم ثبت کنید</p>
+                ) : null}
               </div>
             </div>
 
@@ -522,7 +626,10 @@ export default function ClassesPanel({ teachers = [], students = [], onNotify })
                 <strong>{selected.display_title || selected.title}</strong>
                 <p>
                   {selected.room ? `اتاق ${toFaDigits(selected.room)}` : 'بدون اتاق'}
-                  {selected.homeroom_teacher_name ? ` · ${selected.homeroom_teacher_name}` : ''}
+                  {selected.homeroom_teacher_name ? ` · راهنما: ${selected.homeroom_teacher_name}` : ''}
+                  {selectedTeacherIds.length
+                    ? ` · ${faNum(selectedTeacherIds.length)} معلم`
+                    : ''}
                   {' · '}ویرایش از ستون چپ
                 </p>
               </div>
@@ -556,6 +663,8 @@ export default function ClassesPanel({ teachers = [], students = [], onNotify })
               value={cellForm}
               teachers={teachers}
               subjects={subjects}
+              classTeacherIds={selectedTeacherIds}
+              classTeacherName={selected.homeroom_teacher_name || ''}
               onChange={setCellForm}
               onApply={applyCell}
               onClear={clearCell}
@@ -660,6 +769,19 @@ export default function ClassesPanel({ teachers = [], students = [], onNotify })
                         <UserRound size={12} strokeWidth={2} />
                         <span>معلم راهنما</span>
                         <strong>{c.homeroom_teacher_name || 'تعیین نشده'}</strong>
+                      </li>
+                      <li>
+                        <Users size={12} strokeWidth={2} />
+                        <span>معلمان کلاس</span>
+                        <strong>
+                          {faNum(
+                            Array.isArray(c.teacher_ids)
+                              ? c.teacher_ids.length
+                              : Array.isArray(c.teachers_info)
+                                ? c.teachers_info.length
+                                : (c.homeroom_teacher ? 1 : 0),
+                          )}
+                        </strong>
                       </li>
                       <li>
                         <Users size={12} strokeWidth={2} />

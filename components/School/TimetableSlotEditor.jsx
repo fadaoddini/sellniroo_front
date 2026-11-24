@@ -36,6 +36,9 @@ export default function TimetableSlotEditor({
   value = { kind: 'lesson', subject_title: '', subject: '', teacher: '', room: '', color: '#2d5a45' },
   teachers = [],
   subjects = [],
+  /** معلمان دارای دسترسی به این کلاس (و در صورت نیاز معلم راهنما) */
+  classTeacherIds = [],
+  classTeacherName = '',
   onChange,
   onApply,
   onClear,
@@ -55,11 +58,28 @@ export default function TimetableSlotEditor({
   const set = (patch) => onChange?.({ ...value, ...patch })
   const kind = value.kind === 'holiday' ? 'holiday' : 'lesson'
   const previewColor = kind === 'holiday' ? (value.color || '#94a3b8') : (value.color || '#2d5a45')
-  const selectedTeacher = teachers.find((t) => String(t.id) === String(value.teacher))
-  const catalog = (subjects || []).filter((s) => s.is_active !== false)
-  const teacherSubjects = value.teacher
-    ? catalog.filter((s) => String(s.teacher) === String(value.teacher))
-    : catalog
+  const scopedIds = [...new Set(
+    (Array.isArray(classTeacherIds) ? classTeacherIds : [])
+      .map((id) => String(id))
+      .filter(Boolean),
+  )]
+  const scopedSet = new Set(scopedIds)
+  const hasClassScope = scopedIds.length > 0
+  const effectiveTeacherId = value.teacher
+    ? String(value.teacher)
+    : (scopedIds.length === 1 ? scopedIds[0] : '')
+  const selectedTeacher = teachers.find((t) => String(t.id) === effectiveTeacherId)
+  const activeSubjects = (subjects || []).filter((s) => s.is_active !== false)
+  /* فقط دروس معلمان این کلاس — نه معلمان کلاس‌های دیگر */
+  const catalog = hasClassScope
+    ? activeSubjects.filter((s) => scopedSet.has(String(s.teacher)))
+    : value.teacher
+      ? activeSubjects.filter((s) => String(s.teacher) === String(value.teacher))
+      : activeSubjects
+  const teacherOptions = hasClassScope
+    ? (teachers || []).filter((t) => scopedSet.has(String(t.id)))
+    : teachers || []
+  const showTeacherOnChip = hasClassScope ? scopedIds.length > 1 : true
   const isEdit = !!(value.subject_title || value.teacher || value.subject || kind === 'holiday')
 
   const pickCatalogSubject = (s) => {
@@ -67,7 +87,7 @@ export default function TimetableSlotEditor({
       kind: 'lesson',
       subject: s.id,
       subject_title: s.title,
-      teacher: s.teacher,
+      teacher: s.teacher || effectiveTeacherId || value.teacher,
       color: s.color || value.color || '#2d5a45',
     })
   }
@@ -120,7 +140,7 @@ export default function TimetableSlotEditor({
         <span>
           {kind === 'holiday'
             ? 'بدون کلاس'
-            : `${selectedTeacher?.display_name || 'بدون معلم'}${value.room ? ` · ${toFaDigits(value.room)}` : ''}`}
+            : `${selectedTeacher?.display_name || classTeacherName || 'بدون معلم'}${value.room ? ` · ${toFaDigits(value.room)}` : ''}`}
         </span>
       </div>
 
@@ -160,13 +180,26 @@ export default function TimetableSlotEditor({
                 <BookOpen size={12} strokeWidth={2} />
                 <strong>درس اختصاص‌یافته</strong>
               </div>
+              {hasClassScope ? (
+                <p className={styles.ttModalHint}>
+                  فقط دروس معلمان این کلاس
+                  {scopedIds.length === 1
+                    ? ` (${classTeacherName || selectedTeacher?.display_name || 'معلم کلاس'})`
+                    : ` (${scopedIds.length} معلم)`}
+                </p>
+              ) : (
+                <p className={styles.ttModalHint}>
+                  برای فیلتر دروس، معلمان دارای دسترسی را در مشخصات کلاس تعیین کنید
+                </p>
+              )}
               {catalog.length ? (
                 <div className={styles.ttSubjectGrid}>
-                  {(value.teacher ? teacherSubjects : catalog).map((s) => {
+                  {catalog.map((s) => {
                     const on = String(value.subject) === String(s.id)
                       || (!value.subject && value.subject_title === s.title
-                        && String(value.teacher) === String(s.teacher))
-                    const teacherLabel = teachers.find((t) => String(t.id) === String(s.teacher))?.display_name
+                        && String(value.teacher || effectiveTeacherId) === String(s.teacher))
+                    const teacherLabel = s.teacher_name
+                      || teachers.find((t) => String(t.id) === String(s.teacher))?.display_name
                     return (
                       <button
                         key={s.id}
@@ -177,19 +210,23 @@ export default function TimetableSlotEditor({
                         title={teacherLabel || ''}
                       >
                         <BookOpen size={11} strokeWidth={2} />
-                        {s.title}
+                        <span className={styles.ttSubjectChipText}>
+                          <strong>{s.title}</strong>
+                          {teacherLabel && showTeacherOnChip ? (
+                            <em>{teacherLabel}</em>
+                          ) : null}
+                        </span>
                       </button>
                     )
                   })}
                 </div>
               ) : (
                 <p className={styles.ttModalHint}>
-                  ابتدا در «دروس معلمان» درس را به معلم اختصاص دهید
+                  {hasClassScope
+                    ? 'برای معلمان این کلاس هنوز درسی در «دروس معلمان» تعریف نشده است'
+                    : 'ابتدا در «دروس معلمان» درس را به معلم اختصاص دهید'}
                 </p>
               )}
-              {value.teacher && !teacherSubjects.length && catalog.length ? (
-                <p className={styles.ttModalHint}>این معلم هنوز درس اختصاصی ندارد</p>
-              ) : null}
             </section>
 
             <section className={styles.ttModalSection}>
@@ -198,18 +235,30 @@ export default function TimetableSlotEditor({
                 <strong>معلم</strong>
               </div>
               <div className={styles.ttTeacherStack}>
-                {teachers.map((t) => {
-                  const on = String(value.teacher) === String(t.id)
+                {teacherOptions.map((t) => {
+                  const on = String(value.teacher || effectiveTeacherId) === String(t.id)
                   return (
                     <button
                       key={t.id}
                       type="button"
                       className={`${styles.ttTeacherCard} ${on ? styles.ttTeacherCardOn : ''}`}
-                      onClick={() => set({
-                        teacher: on ? '' : t.id,
-                        subject: '',
-                        subject_title: on ? '' : value.subject_title,
-                      })}
+                      onClick={() => {
+                        if (hasClassScope) {
+                          set({
+                            teacher: t.id,
+                            subject: String(value.teacher) === String(t.id) ? value.subject : '',
+                            subject_title: String(value.teacher) === String(t.id)
+                              ? value.subject_title
+                              : '',
+                          })
+                          return
+                        }
+                        set({
+                          teacher: on ? '' : t.id,
+                          subject: '',
+                          subject_title: on ? '' : value.subject_title,
+                        })
+                      }}
                     >
                       <span className={styles.ttTeacherAvatar}>
                         {(t.display_name || '?').trim().charAt(0)}
@@ -222,11 +271,17 @@ export default function TimetableSlotEditor({
                     </button>
                   )
                 })}
-                {!teachers.length ? <p className={styles.ttModalHint}>معلمی ثبت نشده</p> : null}
+                {!teacherOptions.length ? (
+                  <p className={styles.ttModalHint}>
+                    {hasClassScope
+                      ? 'هیچ معلمی برای این کلاس انتخاب نشده'
+                      : 'معلمی ثبت نشده'}
+                  </p>
+                ) : null}
               </div>
             </section>
 
-            {!catalog.length ? (
+            {!activeSubjects.length && !hasClassScope ? (
               <section className={styles.ttModalSection}>
                 <div className={styles.ttModalSectionHead}>
                   <BookOpen size={12} strokeWidth={2} />
