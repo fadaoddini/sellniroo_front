@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Brain, FolderOpen, GraduationCap, Lightbulb, MessageSquareText,
   Plus, Save, Sparkles, Target, Users,
@@ -109,7 +109,13 @@ function AttemptExplainCard({ attempt, personName }) {
   )
 }
 
-export default function CounselingFilesPanel({ students = [], teachers = [], onNotify }) {
+export default function CounselingFilesPanel({
+  students = [],
+  teachers = [],
+  onNotify,
+  focusRequest = null,
+  onFocusHandled,
+}) {
   const [scope, setScope] = useState('students') // students | teachers
   const [files, setFiles] = useState([])
   const [selected, setSelected] = useState(null)
@@ -117,6 +123,8 @@ export default function CounselingFilesPanel({ students = [], teachers = [], onN
   const [note, setNote] = useState({ title: '', body: '', visibility: 'private' })
   const [newSubjectId, setNewSubjectId] = useState('')
   const [saving, setSaving] = useState(false)
+  const keepSelectionRef = useRef(false)
+  const pendingFocusRef = useRef(null)
 
   const isTeacher = scope === 'teachers'
 
@@ -129,25 +137,56 @@ export default function CounselingFilesPanel({ students = [], teachers = [], onN
   }, [isTeacher, onNotify])
 
   useEffect(() => {
-    setSelected(null)
-    setNewSubjectId('')
-    setNote({ title: '', body: '', visibility: 'private' })
-    setDetailTab('results')
+    if (!keepSelectionRef.current) {
+      setSelected(null)
+      setNewSubjectId('')
+      setNote({ title: '', body: '', visibility: 'private' })
+      setDetailTab('results')
+    }
+    keepSelectionRef.current = false
     load()
   }, [load])
 
-  const openFile = async (id) => {
-    const res = isTeacher
+  const openFile = useCallback(async (id, nextIsTeacher = isTeacher) => {
+    const res = nextIsTeacher
       ? await schoolService.getTeacherCounselingFile(id)
       : await schoolService.getCounselingFile(id)
     if (!res.success) {
       onNotify?.(res.error, true)
-      return
+      return false
     }
     setSelected(res.data)
     setNote({ title: '', body: '', visibility: 'private' })
-    setDetailTab(isTeacher ? 'summary' : 'results')
-  }
+    setDetailTab(nextIsTeacher ? 'summary' : 'results')
+    return true
+  }, [isTeacher, onNotify])
+
+  useEffect(() => {
+    if (!focusRequest?.fileId) return
+    const nextScope = focusRequest.scope === 'teachers' ? 'teachers' : 'students'
+    pendingFocusRef.current = {
+      fileId: focusRequest.fileId,
+      scope: nextScope,
+      nonce: focusRequest.nonce,
+    }
+    keepSelectionRef.current = true
+    if (scope !== nextScope) setScope(nextScope)
+  }, [focusRequest, scope])
+
+  useEffect(() => {
+    const pending = pendingFocusRef.current
+    if (!pending?.fileId) return undefined
+    if (pending.scope !== scope) return undefined
+    let cancelled = false
+    ;(async () => {
+      const ok = await openFile(pending.fileId, pending.scope === 'teachers')
+      if (cancelled) return
+      pendingFocusRef.current = null
+      if (ok) onFocusHandled?.()
+      else onFocusHandled?.()
+    })()
+    return () => { cancelled = true }
+  }, [scope, focusRequest, openFile, onFocusHandled])
 
   const createFile = async () => {
     if (!newSubjectId) {

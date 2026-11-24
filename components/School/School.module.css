@@ -1220,30 +1220,31 @@
 .quizOpt {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
   width: 100%;
-  padding: 0.8rem 0.95rem;
+  padding: 0.65rem 0.8rem;
   border: 1px solid var(--line);
-  border-radius: 14px;
-  margin-bottom: 0.55rem;
+  border-radius: 11px;
+  margin-bottom: 0.4rem;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--surface);
   font-family: inherit;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   color: var(--ink);
   text-align: start;
-  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 
 .quizOpt:hover {
-  border-color: rgba(232, 184, 0, 0.4);
-  transform: translateY(-1px);
+  border-color: var(--line-strong);
+  background: var(--surface-2);
 }
 
 .quizOptOn {
-  border-color: var(--accent);
-  background: rgba(232, 184, 0, 0.1);
-  box-shadow: 0 0 0 3px rgba(232, 184, 0, 0.1);
+  border-color: color-mix(in srgb, var(--accent) 65%, var(--line-strong));
+  background: var(--soft);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--ink);
 }
 
 .quizOpt img {
@@ -1256,24 +1257,24 @@
 
 .quizOptMark {
   flex-shrink: 0;
-  width: 1.85rem;
-  height: 1.85rem;
+  width: 1.65rem;
+  height: 1.65rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 9px;
+  border-radius: 8px;
   background: var(--surface-2);
   border: 1px solid var(--line);
   font-family: var(--font-edameh), var(--font-iran);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 800;
   color: var(--ink);
   line-height: 1;
 }
 
 .quizOptOn .quizOptMark {
-  background: rgba(232, 184, 0, 0.22);
-  border-color: rgba(232, 184, 0, 0.45);
+  background: color-mix(in srgb, var(--accent) 28%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
   color: var(--accent-deep);
 }
 
@@ -1281,22 +1282,23 @@
   flex: 1;
   min-width: 0;
   text-align: start;
-  line-height: 1.75;
+  line-height: 1.65;
   font-family: var(--font-iran);
+  color: inherit;
 }
 
 .quizProgress {
-  margin: 0 0 0.85rem;
-  font-size: 0.82rem;
+  margin: 0 0 0.65rem;
+  font-size: 0.76rem;
   color: var(--muted);
-  line-height: 1.7;
+  line-height: 1.55;
 }
 
 .quizQuestion {
-  margin: 0 0 1rem;
+  margin: 0 0 0.75rem;
   font-family: var(--font-edameh), var(--font-iran);
-  font-size: 1.15rem;
-  line-height: 1.85;
+  font-size: 1.02rem;
+  line-height: 1.7;
   color: var(--ink);
   text-align: start;
   word-break: break-word;
@@ -3847,8 +3849,10 @@
   flex-direction: column;
   gap: 0;
   background: #fff;
-  border-radius: 18px;
+  border-radius: 14px;
   overflow: hidden;
+  direction: rtl;
+  outline: none;
 }
 
 .vPlayerRoot .vPlayer {
@@ -3878,8 +3882,19 @@
 .vPlayerRoot:-webkit-full-screen .vPlayerDock,
 .vPlayerRootFs .vPlayerDock {
   flex-shrink: 0;
-  background: #12161d;
+  background: #0f1a15;
   border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.vPlayerRoot:fullscreen .vSpeedChipOn,
+.vPlayerRoot:-webkit-full-screen .vSpeedChipOn,
+.vPlayerRootFs .vSpeedChipOn,
+.vPlayerRoot:fullscreen .vActionPrimary,
+.vPlayerRoot:-webkit-full-screen .vActionPrimary,
+.vPlayerRootFs .vActionPrimary {
+  background: linear-gradient(135deg, #2b6a4d, #004733);
+  color: #fff;
+  border-color: transparent;
 }
 
 .vPlayerRoot:fullscreen .vPlayerTimeBox,
@@ -3920,47 +3935,90 @@
   color: #fff;
 }
 
+.vPlayerControlsOff .vPlayerCaption {
+  opacity: 0;
+}
+
+.vPlayerShade {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 42%;
+  background: linear-gradient(180deg, transparent 0%, rgba(8, 16, 12, 0.55) 100%);
+  pointer-events: none;
+  opacity: 0.85;
+  transition: opacity 0.25s ease;
+}
+
+.vPlayerControlsOff .vPlayerShade {
+  opacity: 0.25;
+}
+
 .vPlayerDock {
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
-  padding: 0.75rem 0.8rem 0.85rem;
-  background: linear-gradient(180deg, #fbfbfc 0%, #fff 100%);
-  border-top: 1px solid var(--line);
-  direction: ltr;
+  gap: 0.45rem;
+  padding: 0.55rem 0.7rem 0.7rem;
+  background: linear-gradient(180deg, #f7faf8 0%, #fff 100%);
+  border-top: 1px solid rgba(0, 71, 51, 0.1);
+  direction: rtl;
+  font-family: var(--font-iran), Tahoma, sans-serif;
 }
 
 .vPlayerDockTop {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.vPlayerDockSpacer {
+  flex: 1 1 auto;
+  min-width: 0.35rem;
+}
+
+.vPlayerDockBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
   flex-wrap: wrap;
 }
 
 .vDockPlay {
-  min-width: 5.5rem;
+  min-width: 4.8rem;
+}
+
+.vSkipLabel {
+  font-size: 0.62rem;
+  font-family: var(--font-iran-bold), var(--font-iran);
+  font-weight: 400;
+  line-height: 1;
 }
 
 .vPlayerTimeBox {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.28rem;
   min-width: 5.5rem;
   font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--ink);
+  font-weight: 400;
+  font-family: var(--font-iran-bold), var(--font-iran);
+  color: #004733;
   font-variant-numeric: tabular-nums;
 }
 
 .vPlayerTimeBox span {
-  color: var(--muted);
-  font-weight: 600;
+  color: #568d66;
+  font-weight: 400;
+  font-family: var(--font-iran);
+  font-size: 0.68rem;
 }
 
 .vPlayerTimeBox em {
   font-style: normal;
-  color: var(--muted);
-  font-weight: 600;
+  color: #568d66;
+  font-weight: 400;
 }
 
 .vPlayerSeekTrack {
@@ -3999,7 +4057,7 @@
 }
 
 .vPlayerSeekRail .vPlayerProg {
-  background: linear-gradient(90deg, var(--accent), #f0c93a);
+  background: linear-gradient(90deg, #2b6a4d, #004733);
 }
 
 .vPlayerSeekInput {
@@ -4032,9 +4090,9 @@
   height: 16px;
   margin-top: -4px;
   border-radius: 50%;
-  border: 2px solid var(--accent-deep);
+  border: 2px solid #004733;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 2px 8px rgba(0, 71, 51, 0.28);
 }
 
 .vPlayerSeekInput::-moz-range-track {
@@ -4047,76 +4105,91 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  border: 2px solid var(--accent-deep);
+  border: 2px solid #004733;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 2px 8px rgba(0, 71, 51, 0.28);
 }
 
 .vPlayerSpeedRow {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
   direction: rtl;
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .vPlayerSpeedLabel {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 400;
+  font-family: var(--font-iran-bold), var(--font-iran);
+  color: #568d66;
   flex-shrink: 0;
 }
 
 .vPlayerSpeedChips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.3rem;
+  gap: 0.25rem;
 }
 
 .vSpeedChip {
-  min-width: 2.6rem;
-  min-height: 1.9rem;
-  padding: 0.25rem 0.45rem;
+  min-width: 2.35rem;
+  min-height: 1.75rem;
+  padding: 0.2rem 0.4rem;
   border-radius: 8px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(0, 71, 51, 0.14);
   background: #fff;
-  color: var(--ink);
-  font-family: inherit;
-  font-size: 0.72rem;
-  font-weight: 800;
+  color: #004733;
+  font-family: var(--font-iran-bold), var(--font-iran);
+  font-size: 0.7rem;
+  font-weight: 400;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .vSpeedChip:hover {
-  border-color: rgba(232, 184, 0, 0.4);
-  background: rgba(232, 184, 0, 0.08);
+  border-color: rgba(43, 106, 77, 0.35);
+  background: rgba(43, 106, 77, 0.08);
 }
 
 .vSpeedChipOn {
   border-color: transparent;
-  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
-  color: #1a1508;
+  background: linear-gradient(135deg, #2b6a4d, #004733);
+  color: #fff;
 }
 
 .vPlayerRangeVisible {
-  width: 4.5rem;
-  accent-color: var(--accent);
+  width: 4.2rem;
+  accent-color: #2b6a4d;
   cursor: pointer;
 }
 
 .vPlayerDock .vPlayerActions {
   border-top: 0;
   padding: 0;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  grid-template-columns: none;
   direction: rtl;
+  flex: 0 0 auto;
 }
 
 .vPlayerDock .vPlayerBtn {
-  color: var(--ink);
-  background: var(--surface-2);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  min-width: 2.15rem;
+  min-height: 2.15rem;
+  padding: 0.3rem 0.4rem;
+  color: #004733;
+  background: #eef3f0;
+  border: 1px solid rgba(0, 71, 51, 0.12);
+  border-radius: 9px;
+  cursor: pointer;
 }
 
 .vPlayerActions {
@@ -4137,16 +4210,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
-  min-height: 2.45rem;
-  padding: 0.45rem 0.55rem;
+  gap: 0.3rem;
+  min-height: 2.2rem;
+  padding: 0.35rem 0.55rem;
   border-radius: 10px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(0, 71, 51, 0.14);
   background: #fff;
-  color: var(--ink);
-  font-family: inherit;
+  color: #004733;
+  font-family: var(--font-iran-bold), var(--font-iran);
   font-size: 0.74rem;
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1.3;
   text-decoration: none;
   cursor: pointer;
@@ -4156,28 +4229,29 @@
 .vActionBtn em {
   font-style: normal;
   font-size: 0.68rem;
-  color: var(--accent-deep);
+  color: #2b6a4d;
 }
 
 .vActionBtn:hover {
-  border-color: rgba(232, 184, 0, 0.4);
-  background: rgba(232, 184, 0, 0.08);
+  border-color: rgba(43, 106, 77, 0.35);
+  background: rgba(43, 106, 77, 0.08);
 }
 
 .vActionBtnOn {
-  border-color: rgba(232, 184, 0, 0.45);
-  background: rgba(232, 184, 0, 0.12);
+  border-color: rgba(43, 106, 77, 0.4);
+  background: rgba(43, 106, 77, 0.12);
 }
 
 .vActionPrimary {
-  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  background: linear-gradient(135deg, #2b6a4d, #004733);
   border-color: transparent;
-  color: #1a1508;
+  color: #fff;
 }
 
 .vActionPrimary:hover {
-  filter: brightness(1.04);
-  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  filter: brightness(1.05);
+  background: linear-gradient(135deg, #2b6a4d, #004733);
+  color: #fff;
 }
 
 .vActionMenuWrap {
@@ -4299,16 +4373,40 @@
   }
 
   .vPlayerDockTop {
-    gap: 0.35rem;
+    gap: 0.3rem;
+  }
+
+  .vPlayerDockBottom {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .vPlayerDock .vPlayerActions {
+    width: 100%;
+  }
+
+  .vPlayerDock .vPlayerActions .vActionBtn {
+    flex: 1;
   }
 
   .vPlayerRangeVisible {
-    width: 3.2rem;
+    width: 2.8rem;
   }
 
   .vSpeedChip {
-    min-width: 2.4rem;
-    font-size: 0.68rem;
+    min-width: 2.2rem;
+    font-size: 0.66rem;
+  }
+
+  .vDockPlay {
+    min-width: 4.2rem;
+  }
+
+  .vPlayerTimeBox {
+    order: 10;
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.1rem;
   }
 }
 
@@ -4331,8 +4429,8 @@
   width: 100%;
   padding-top: 56.25%;
   background:
-    radial-gradient(120% 80% at 50% 20%, rgba(232, 184, 0, 0.14), transparent 55%),
-    #12161f;
+    radial-gradient(120% 80% at 50% 20%, rgba(43, 106, 77, 0.2), transparent 55%),
+    #0f1a15;
   overflow: hidden;
 }
 
@@ -4350,8 +4448,8 @@
   width: 100%;
   aspect-ratio: 16 / 9;
   background:
-    radial-gradient(120% 80% at 50% 20%, rgba(232, 184, 0, 0.18), transparent 55%),
-    linear-gradient(160deg, #1a2030 0%, #0d1118 55%, #12161f 100%);
+    radial-gradient(120% 80% at 50% 20%, rgba(43, 106, 77, 0.22), transparent 55%),
+    linear-gradient(160deg, #12241c 0%, #0b1410 55%, #101a15 100%);
   color: #fff;
   user-select: none;
   overflow: hidden;
@@ -4390,7 +4488,7 @@
   height: 3.2rem;
   border-radius: 50%;
   border: 3px solid rgba(255, 255, 255, 0.18);
-  border-top-color: var(--accent);
+  border-top-color: #7dcea0;
   animation: vPlayerSpin 0.8s linear infinite;
 }
 
@@ -4423,16 +4521,19 @@
   inset-inline: 0.85rem;
   bottom: 0.75rem;
   z-index: 3;
-  font-family: var(--font-edameh), var(--font-iran);
+  font-family: var(--font-iran-extra), var(--font-iran);
   font-size: 0.8rem;
-  font-weight: 700;
-  line-height: 1.45;
-  color: rgba(255, 255, 255, 0.92);
+  font-weight: 400;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.94);
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.45);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   pointer-events: none;
+  direction: rtl;
+  text-align: right;
+  transition: opacity 0.25s ease;
 }
 
 .vPlayerBigPlay {
@@ -4440,17 +4541,17 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 4.25rem;
-  height: 4.25rem;
+  width: 4.35rem;
+  height: 4.35rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border: 0;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
-  color: #1a1508;
+  background: linear-gradient(145deg, #2b6a4d, #004733);
+  color: #fff;
   cursor: pointer;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 0 0 6px rgba(232, 184, 0, 0.18);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 0 0 6px rgba(43, 106, 77, 0.28);
   transition: transform 0.15s ease, filter 0.15s ease;
   z-index: 4;
 }
@@ -4983,28 +5084,27 @@
 
 .examGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
 }
 
 .examCard {
   display: flex;
   overflow: hidden;
   min-height: 100%;
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid var(--line);
   background: var(--surface);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .examCard:hover {
-  border-color: rgba(232, 184, 0, 0.38);
-  box-shadow: 0 8px 20px rgba(12, 16, 23, 0.06);
-  transform: translateY(-1px);
+  border-color: var(--line-strong);
+  box-shadow: 0 4px 14px rgba(12, 16, 23, 0.05);
 }
 
 .examCardAccent {
-  width: 4px;
+  width: 3px;
   flex-shrink: 0;
 }
 
@@ -5013,25 +5113,26 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
-  padding: 0.85rem 0.9rem;
+  gap: 0.32rem;
+  padding: 0.65rem 0.75rem 0.7rem;
 }
 
 .examCardTop {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.4rem;
+  gap: 0.35rem;
 }
 
 .examCardKind {
   display: inline-flex;
   align-items: center;
-  padding: 0.14rem 0.45rem;
+  padding: 0.1rem 0.4rem;
   border-radius: 999px;
-  background: rgba(232, 184, 0, 0.12);
+  background: var(--soft);
   color: var(--accent-deep);
-  font-size: 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  font-size: 0.62rem;
   font-weight: 700;
   line-height: 1.35;
 }
@@ -5039,12 +5140,12 @@
 .examCardWarn {
   display: inline-flex;
   align-items: center;
-  padding: 0.14rem 0.45rem;
+  padding: 0.1rem 0.4rem;
   border-radius: 999px;
-  background: rgba(200, 70, 70, 0.1);
-  color: #9a3030;
-  border: 1px solid rgba(200, 70, 70, 0.18);
-  font-size: 0.62rem;
+  background: rgba(185, 28, 28, 0.08);
+  color: #991b1b;
+  border: 1px solid rgba(185, 28, 28, 0.2);
+  font-size: 0.6rem;
   font-weight: 700;
   line-height: 1.35;
   white-space: nowrap;
@@ -5056,9 +5157,9 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   font-family: var(--font-edameh), var(--font-iran);
-  font-size: 0.92rem;
+  font-size: 0.84rem;
   font-weight: 800;
-  line-height: 1.55;
+  line-height: 1.45;
   letter-spacing: 0;
   color: var(--ink);
 }
@@ -5066,56 +5167,62 @@
 .examCardMeta {
   margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 600;
-  line-height: 1.6;
+  line-height: 1.5;
   color: var(--muted);
 }
 
 .examCardStats {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem 0.65rem;
-  margin-top: 0.1rem;
+  gap: 0.25rem 0.55rem;
+  margin-top: 0.05rem;
 }
 
 .examCardStats span {
   display: inline-flex;
   align-items: center;
-  gap: 0.28rem;
-  font-size: 0.7rem;
+  gap: 0.22rem;
+  font-size: 0.66rem;
   font-weight: 600;
   color: var(--muted);
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
 .examStartBtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
   width: 100%;
-  min-height: 2.35rem;
+  min-height: 2.1rem;
   margin-top: auto;
-  padding: 0.5rem 0.7rem;
+  padding: 0.4rem 0.65rem;
   border: 0;
-  border-radius: 10px;
+  border-radius: 9px;
   background: linear-gradient(135deg, var(--accent), var(--accent-deep));
-  color: #1a1508;
+  /* متن روشن روی دکمه رنگی — در هر پالت خوانا */
+  color: #ffffff;
   font-family: inherit;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 800;
   line-height: 1.3;
   cursor: pointer;
-  transition: filter 0.15s ease, transform 0.12s ease;
+  transition: filter 0.15s ease, box-shadow 0.15s ease;
 }
 
 .examStartBtn:hover {
-  filter: brightness(1.04);
-  transform: translateY(-1px);
+  filter: brightness(1.06);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-deep) 28%, transparent);
+}
+
+.examStartBtn svg {
+  color: inherit;
+  flex-shrink: 0;
 }
 
 @media (max-width: 900px) {
@@ -5127,16 +5234,16 @@
 @media (max-width: 640px) {
   .examGrid {
     grid-template-columns: 1fr;
-    gap: 0.65rem;
+    gap: 0.5rem;
   }
 
   .examCardInner {
-    padding: 0.8rem 0.85rem;
+    padding: 0.7rem 0.75rem;
   }
 
   .examStartBtn {
-    min-height: 2.6rem;
-    font-size: 0.8rem;
+    min-height: 2.35rem;
+    font-size: 0.78rem;
   }
 }
 
@@ -5172,12 +5279,12 @@
     'meta value'
     'track track';
   align-items: center;
-  gap: 0.35rem 0.75rem;
-  margin: 0 0 0.85rem;
-  padding: 0.7rem 0.85rem;
-  border-radius: 14px;
-  border: 1px solid rgba(232, 184, 0, 0.28);
-  background: rgba(232, 184, 0, 0.08);
+  gap: 0.28rem 0.65rem;
+  margin: 0 0 0.65rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 11px;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  background: var(--soft);
   color: var(--ink);
 }
 
@@ -5211,7 +5318,7 @@
   grid-area: value;
   justify-self: end;
   font-family: var(--font-edameh), var(--font-iran);
-  font-size: 1.35rem;
+  font-size: 1.15rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
@@ -5234,7 +5341,7 @@
 .examTimerFill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--accent), #d4a800);
+  background: linear-gradient(90deg, var(--accent), var(--accent-deep));
   transition: width 0.25s linear;
 }
 
@@ -5302,16 +5409,16 @@
 }
 
 .quizProgressBar {
-  height: 6px;
+  height: 5px;
   border-radius: 999px;
-  background: rgba(20, 32, 31, 0.08);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
   overflow: hidden;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.55rem;
 }
 
 .quizProgressFill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent), #d4a800);
+  background: linear-gradient(90deg, var(--accent), var(--accent-deep));
   border-radius: 999px;
   transition: width 0.35s ease;
 }
@@ -8627,20 +8734,38 @@
   color: var(--ink);
 }
 
-.quizNoBackWarn {
-  margin: 0 0 0.85rem;
-  padding: 0.7rem 0.85rem;
+.examStayWarn {
+  margin: 0 0 0.75rem;
+  padding: 0.7rem 0.8rem;
   border-radius: 12px;
-  border: 1px solid rgba(200, 70, 70, 0.3);
-  background: rgba(200, 70, 70, 0.08);
+  border: 1px solid rgba(180, 83, 9, 0.28);
+  background: linear-gradient(135deg, #fffbeb, #fef3c7 75%, #fff7ed);
   font-size: 0.78rem;
-  line-height: 1.7;
-  color: var(--ink);
+  line-height: 1.75;
+  color: #92400e;
+  font-family: var(--font-iran);
+}
+
+.examStayWarn strong {
+  color: #b45309;
+  font-family: var(--font-iran-bold), var(--font-iran);
+  font-weight: 400;
+}
+
+.quizNoBackWarn {
+  margin: 0 0 0.65rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid rgba(185, 28, 28, 0.22);
+  background: rgba(185, 28, 28, 0.07);
+  font-size: 0.74rem;
+  line-height: 1.6;
+  color: #7f1d1d;
   font-family: var(--font-iran);
 }
 
 .quizNoBackWarn strong {
-  color: #c84646;
+  color: #991b1b;
   font-family: var(--font-edameh), var(--font-iran);
 }
 
@@ -9764,7 +9889,7 @@
   width: 100vw;
   height: 100vh;
   height: 100dvh;
-  z-index: 10050;
+  z-index: 13000;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10533,6 +10658,78 @@
   border-color: rgba(16, 185, 129, 0.2);
 }
 
+.infoPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+  animation: fadeUp 0.35s ease both;
+}
+
+.infoIdentity {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.85rem 0.95rem;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.infoAvatar {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: linear-gradient(145deg, var(--accent), var(--accent-deep));
+  color: #fff;
+}
+
+.infoIdentityBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.infoName {
+  margin: 0;
+  font-family: var(--font-edameh), var(--font-iran);
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.infoMeta {
+  margin: 0.2rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.pageInProfile .infoIdentity {
+  border-color: rgba(0, 71, 51, 0.12);
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(0, 71, 51, 0.04);
+}
+
+.pageInProfile .infoAvatar {
+  background: linear-gradient(145deg, #2b6a4d, #004733);
+  color: #f5faf7;
+}
+
+.pageInProfile .infoName {
+  color: #004733;
+}
+
+.pageInProfile .infoMeta {
+  color: #3f6f52;
+}
+
 .studentPage .statLabel {
   letter-spacing: 0;
   text-transform: none;
@@ -10586,7 +10783,7 @@
 
 .studentPage .progressFill,
 .studentPage .quizProgressFill {
-  background: linear-gradient(90deg, #f59e0b, #fbbf24, #fde68a);
+  background: linear-gradient(90deg, var(--accent), var(--accent-deep));
   border-radius: 999px;
 }
 
@@ -15291,46 +15488,458 @@ button.ttSlotEmpty.ttSlotClick:hover .ttEmptyMark {
     linear-gradient(120deg, rgba(240, 249, 255, 0.9), rgba(255, 255, 255, 0.98));
 }
 
-/* ---------- Counseling quiz (سبک /quiz) ---------- */
+/* ---------- Counseling quiz exam player ---------- */
 
-.cqWrap {
+.cqExamShell {
   width: 100%;
-  min-height: 0 !important;
-  padding: 0.5rem 0 1rem !important;
-  background: transparent !important;
-}
-
-.cqEmbedded {
-  min-height: 0 !important;
-}
-
-.cqSessionTop {
-  width: min(720px, 100%);
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0.25rem 0 1.25rem;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 auto 0.75rem;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  direction: rtl;
+  box-sizing: border-box;
 }
 
-.cqSessionBadge {
+.cqExamEmbedded {
+  max-width: 100%;
+  padding-inline: 0;
+}
+
+/* —— صفحه اختصاصی تمرکز روی آزمون (روی پروفایل می‌نشیند) —— */
+.cqExamFocusRoot {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  display: flex;
+  flex-direction: column;
+  direction: rtl;
+  overscroll-behavior: none;
+}
+
+.cqExamFocusBackdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -10%, rgba(14, 165, 233, 0.18), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(0, 71, 51, 0.08), transparent 50%),
+    linear-gradient(180deg, #eef6f2 0%, #f4f7f9 42%, #eef2f6 100%);
+}
+
+.cqExamFocusStage {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding:
+    max(1rem, env(safe-area-inset-top, 0px))
+    max(0.85rem, env(safe-area-inset-left, 0px))
+    max(1.25rem, env(safe-area-inset-bottom, 0px))
+    max(0.85rem, env(safe-area-inset-right, 0px));
+  box-sizing: border-box;
+}
+
+.cqExamShellFocus {
+  width: min(680px, 100%);
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0.35rem 0 0.5rem;
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.cqExamShellFocus .cqExamPicker,
+.cqExamShellFocus .cqExamCard,
+.cqExamShellFocus .cqExamResult {
+  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.08);
+}
+
+.cqExamShellFocus .cqExamCard {
+  min-height: min(58vh, 520px);
+}
+
+.cqExamFocusPanel {
+  width: min(680px, 100%);
+  margin: 0 auto;
+  padding: 1.15rem 1.05rem 1.25rem !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  background: #fff !important;
+  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.08) !important;
+}
+
+.cqLessonFocusStage {
+  align-items: stretch;
+  padding-top: max(0.65rem, env(safe-area-inset-top, 0px));
+}
+
+.cqLessonFocusPanel {
+  width: min(920px, 100%);
+  margin: 0 auto;
+  padding: 0.7rem 0.7rem 1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 71, 51, 0.1);
+  background: #fff;
+  box-shadow: 0 12px 36px rgba(0, 71, 51, 0.07);
+  box-sizing: border-box;
+  gap: 0.65rem;
+  direction: rtl;
+}
+
+.cqLessonFocusPanel .lessonHeroCompact {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  background:
+    linear-gradient(135deg, #f3f8f5 0%, #fff 55%, #eef6f2 100%);
+  border: 1px solid rgba(0, 71, 51, 0.1);
+  color: #004733;
+  box-shadow: none;
+}
+
+.cqLessonFocusPanel .lessonHeroActions {
+  margin: 0;
+}
+
+.cqLessonFocusPanel .lessonBackBtn {
+  flex-shrink: 0;
+  border-color: rgba(0, 71, 51, 0.14);
+  background: #fff;
+  color: #004733;
+  font-family: var(--font-iran-bold), var(--font-iran);
+  font-weight: 400;
+}
+
+.cqLessonFocusPanel .lessonBackBtn:hover {
+  background: rgba(43, 106, 77, 0.1);
+}
+
+.cqLessonFocusPanel .lessonBackBtn svg {
+  /* در RTL فلش بازگشت به سمت راست می‌چرخد */
+  transform: scaleX(-1);
+}
+
+.cqLessonFocusPanel .lessonHeroTitle {
+  color: #004733;
+  font-size: clamp(0.98rem, 2.4vw, 1.15rem);
+  font-family: var(--font-iran-extra), var(--font-iran);
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+.cqLessonFocusPanel .lessonChapterChip {
+  color: #568d66;
+  background: rgba(0, 71, 51, 0.06);
+  border-color: rgba(0, 71, 51, 0.1);
+}
+
+.cqLessonFocusPanel .lessonHeroMeta {
+  margin-top: 0.35rem;
+  gap: 0.35rem 0.7rem;
+}
+
+.cqLessonFocusPanel .lessonHeroMeta span {
+  color: #568d66;
+  font-size: 0.7rem;
+  font-family: var(--font-iran);
+}
+
+.cqLessonFocusPanel .lessonBreadcrumb {
+  margin-bottom: 0.25rem;
+}
+
+.cqLessonFocusPanel .lessonMedia {
+  border-radius: 14px;
+  border-color: rgba(0, 71, 51, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 71, 51, 0.08);
+}
+
+.cqLessonFocusPanel .lessonStage {
+  gap: 0.65rem;
+}
+
+.cqLessonFocusPanel .lessonStageSplit {
+  grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.65fr);
+}
+
+.cqLessonFocusPanel .lessonBlock {
+  margin: 0;
+  padding: 0.75rem 0.8rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 71, 51, 0.1);
+  background: #f8fbf9;
+}
+
+.cqLessonFocusPanel .lessonBanner {
+  border-radius: 12px;
+  max-height: 180px;
+}
+
+.cqLessonFocusPanel .lessonBanner img {
+  max-height: 180px;
+}
+
+@media (max-width: 900px) {
+  .cqLessonFocusPanel .lessonStageSplit {
+    grid-template-columns: 1fr;
+  }
+
+  .cqLessonFocusPanel {
+    padding: 0.55rem 0.55rem 0.85rem;
+    border-radius: 14px;
+  }
+
+  .cqLessonFocusPanel .lessonHeroCompact {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.45rem;
+  }
+}
+
+.cqExamFocusRoot .hwModalBackdrop {
+  z-index: 12100;
+}
+
+@media (max-width: 560px) {
+  .cqExamFocusStage {
+    padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  }
+
+  .cqExamShellFocus .cqExamCard {
+    min-height: 0;
+  }
+}
+
+@media (min-width: 768px) {
+  .cqExamFocusStage {
+    padding-top: max(1.5rem, env(safe-area-inset-top, 0px));
+  }
+
+  .cqExamShellFocus {
+    justify-content: center;
+    padding-block: 1rem 1.5rem;
+  }
+}
+
+/* —— انتخاب آزمون —— */
+.cqExamPicker {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.1rem 1rem 1.15rem;
+  border-radius: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background:
+    radial-gradient(ellipse 90% 60% at 0% 0%, rgba(14, 165, 233, 0.1), transparent 50%),
+    linear-gradient(165deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+}
+
+.cqExamPickerHead {
+  text-align: center;
+}
+
+.cqExamPickerEyebrow {
+  display: inline-block;
+  margin: 0 0 0.35rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(3, 105, 161, 0.1);
+  color: #0369a1;
+  font-family: var(--font-iran-bold);
+  font-weight: 400;
+  font-size: 0.7rem;
+}
+
+.cqExamPickerTitle {
+  margin: 0;
+  font-family: var(--font-iran-extra);
+  font-weight: 400;
+  font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+.cqExamPickerDesc {
+  margin: 0.4rem 0 0;
+  font-family: var(--font-iran);
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: #64748b;
+}
+
+.cqTestGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 0.65rem;
+}
+
+.cqTestCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 118px;
+  padding: 0.85rem 0.65rem;
+  border-radius: 14px;
+  border: 1.5px solid rgba(15, 23, 42, 0.1);
+  background: #fff;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+}
+
+.cqTestCard:hover {
+  border-color: color-mix(in srgb, var(--cq-accent, #0369a1) 45%, #cbd5e1);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.cqTestCardOn {
+  border-color: var(--cq-accent, #0369a1);
+  background: color-mix(in srgb, var(--cq-accent, #0369a1) 8%, #fff);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cq-accent, #0369a1) 18%, transparent);
+  transform: translateY(-1px);
+}
+
+.cqTestCardKind {
+  font-family: var(--font-iran-bold);
+  font-weight: 400;
+  font-size: 0.68rem;
+  color: var(--cq-accent, #0369a1);
+}
+
+.cqTestCardTitle {
+  display: block;
+  font-family: var(--font-iran-extra);
+  font-weight: 400;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: #0f172a;
+}
+
+.cqTestCardMeta {
+  display: block;
+  font-family: var(--font-iran);
+  font-size: 0.65rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.cqExamPickerActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.15rem;
+}
+
+.cqNavBtnPrimaryWide {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.75rem;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.72rem 1rem;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0c4a6e, #0369a1);
+  color: #fff !important;
+  font-family: var(--font-iran-bold);
+  font-weight: 400;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(3, 105, 161, 0.28);
+}
+
+.cqNavBtnPrimaryWide:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.cqNavBtnPrimaryWide:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.cqNavBtnPrimaryWide * {
+  color: inherit;
+}
+
+.cqEmpty {
+  text-align: center;
+  color: #64748b;
+  font-family: var(--font-iran);
+  margin: 0.5rem 0;
+  font-size: 0.85rem;
+}
+
+/* —— هدر جلسه —— */
+.cqExamTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.65rem;
+}
+
+.cqExamTopMain {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.cqExamKind {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.65rem;
   border-radius: 999px;
   background: color-mix(in srgb, var(--cq-accent, #1d4ed8) 12%, #fff);
   color: var(--cq-accent, #1d4ed8);
   font-family: var(--font-iran-bold);
   font-weight: 400;
+  font-size: 0.7rem;
+}
+
+.cqExamTitles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.cqExamTitles strong {
+  font-family: var(--font-iran-extra);
+  font-weight: 400;
+  font-size: 1rem;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+.cqExamTitles span {
+  font-family: var(--font-iran);
   font-size: 0.75rem;
+  color: #64748b;
 }
 
 .cqAbort {
-  width: 36px;
-  height: 36px;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
   border: 0;
-  border-radius: 10px;
+  border-radius: 11px;
   display: grid;
   place-items: center;
   background: rgba(15, 23, 42, 0.06);
@@ -15338,15 +15947,142 @@ button.ttSlotEmpty.ttSlotClick:hover .ttEmptyMark {
   cursor: pointer;
 }
 
-.cqAbort:hover { background: #fee2e2; color: #b91c1c; }
+.cqAbort:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
 
-.cqQuestionText {
-  font-size: 1.12rem !important;
-  line-height: 1.8 !important;
+.cqExamProgress {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+.cqExamProgressFill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #0369a1, #0ea5e9);
+  transition: width 0.35s ease;
+}
+
+.cqExamTimer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #f8fafc;
+}
+
+.cqExamTimerMeta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.cqExamTimerMeta span {
+  font-family: var(--font-iran);
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+.cqExamTimerMeta strong {
+  font-family: var(--font-iran-extra);
+  font-weight: 400;
+  font-size: 1.15rem;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.cqExamTimerMeta em {
+  font-style: normal;
+  font-family: var(--font-iran);
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+.cqExamTimerTrack {
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+.cqExamTimerFill {
+  height: 100%;
+  border-radius: inherit;
+  background: #22c55e;
+  transition: width 1s linear, background 0.2s ease;
+}
+
+.cqExamTimerWarn {
+  border-color: rgba(245, 158, 11, 0.35);
+  background: #fffbeb;
+}
+
+.cqExamTimerWarn .cqExamTimerMeta strong {
+  color: #b45309;
+}
+
+.cqExamTimerWarn .cqExamTimerFill {
+  background: #f59e0b;
+}
+
+.cqExamTimerCritical {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: #fef2f2;
+  animation: cqExamPulse 0.9s ease-in-out infinite;
+}
+
+.cqExamTimerCritical .cqExamTimerMeta strong {
+  color: #dc2626;
+}
+
+.cqExamTimerCritical .cqExamTimerFill {
+  background: #ef4444;
+}
+
+@keyframes cqExamPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.01); }
+}
+
+.cqExamHintLine {
+  margin: 0;
+  font-family: var(--font-iran);
+  font-size: 0.72rem;
+  color: #94a3b8;
+  text-align: center;
+}
+
+/* —— کارت سوال —— */
+.cqExamCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.15rem 1.05rem 1.2rem;
+  border-radius: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #fff;
+  box-shadow: 0 10px 32px rgba(15, 23, 42, 0.06);
+}
+
+.cqExamQuestion {
+  margin: 0;
+  font-family: var(--font-iran-extra);
+  font-weight: 400;
+  font-size: clamp(1rem, 2.4vw, 1.18rem);
+  line-height: 1.85;
+  color: #0f172a;
+  text-align: right;
 }
 
 .cqQImage {
-  margin: 0.65rem 0 0.85rem;
+  margin: 0;
   border-radius: 14px;
   overflow: hidden;
   border: 1px solid rgba(15, 23, 42, 0.08);
@@ -15365,7 +16101,7 @@ button.ttSlotEmpty.ttSlotClick:hover .ttEmptyMark {
 }
 
 .cqHint {
-  margin: 0.55rem 0 0.85rem;
+  margin: 0;
   border-radius: 12px;
   border: 1px solid rgba(245, 158, 11, 0.28);
   background: linear-gradient(135deg, #fffbeb, #fef3c7 70%, #fff7ed);
@@ -15402,15 +16138,81 @@ button.ttSlotEmpty.ttSlotClick:hover .ttEmptyMark {
   color: #78350f;
 }
 
-.cqOptWithImg {
-  align-items: flex-start !important;
+.cqExamOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
 }
 
-.cqOptBody {
-  display: flex !important;
+.cqExamOpt {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  border-radius: 14px;
+  border: 1.5px solid rgba(15, 23, 42, 0.1);
+  background: #f8fafc;
+  text-align: right;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  font-family: var(--font-iran);
+  color: #0f172a;
+}
+
+.cqExamOpt:hover:not(:disabled) {
+  border-color: rgba(3, 105, 161, 0.35);
+  background: #f0f9ff;
+}
+
+.cqExamOpt:disabled {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.cqExamOptOn {
+  border-color: #0369a1;
+  background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
+  box-shadow: 0 0 0 3px rgba(3, 105, 161, 0.14);
+}
+
+.cqExamOptMark {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: #e2e8f0;
+  color: #334155;
+  font-family: var(--font-iran-bold);
+  font-weight: 400;
+  font-size: 0.78rem;
+}
+
+.cqExamOptOn .cqExamOptMark {
+  background: #0369a1;
+  color: #fff;
+}
+
+.cqExamOptBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.4rem;
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.cqExamOptCheck {
+  flex-shrink: 0;
+  color: #0369a1;
+}
+
+.cqOptWithImg {
+  align-items: flex-start;
 }
 
 .cqOptImg {
@@ -15419,61 +16221,189 @@ button.ttSlotEmpty.ttSlotClick:hover .ttEmptyMark {
   max-height: 96px;
   border-radius: 8px;
   object-fit: contain;
-  background: #f8fafc;
+  background: #fff;
 }
 
-.cqIntroBadge {
-  background: linear-gradient(135deg, #0c4a6e, #0369a1) !important;
+.cqExamFootNote {
+  margin: 0.15rem 0 0;
+  text-align: center;
+  font-family: var(--font-iran);
+  font-size: 0.75rem;
+  color: #94a3b8;
+  line-height: 1.5;
 }
 
-.cqTestGrid {
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
-}
-
-.cqTestCard {
-  min-height: 120px !important;
-  align-items: stretch !important;
+/* —— نتیجه —— */
+.cqExamResult {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 1.5rem 1.15rem 1.35rem;
+  border-radius: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(14, 165, 233, 0.12), transparent 55%),
+    #fff;
+  box-shadow: 0 10px 32px rgba(15, 23, 42, 0.06);
   text-align: center;
 }
 
-.cqTestCardTitle {
-  display: block;
-  margin-top: 0.35rem;
+.cqExamResultIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, #e0f2fe, #bae6fd);
+  color: #0369a1;
+}
+
+.cqExamResultTitle {
+  margin: 0.25rem 0 0;
   font-family: var(--font-iran-extra);
   font-weight: 400;
-  font-size: 0.78rem;
-  line-height: 1.4;
+  font-size: 1.2rem;
   color: #0f172a;
 }
 
-.cqTestCardMeta {
-  display: block;
-  margin-top: 0.25rem;
+.cqExamResultSub {
+  margin: 0;
   font-family: var(--font-iran);
-  font-size: 0.65rem;
+  font-size: 0.85rem;
   color: #64748b;
 }
 
-.cqEmpty {
-  text-align: center;
-  color: #64748b;
+.cqExamResultStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  width: 100%;
+  max-width: 320px;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.cqExamResultStats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.75rem;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.cqExamResultStats span {
   font-family: var(--font-iran);
-  margin: 1rem 0;
+  font-size: 0.7rem;
+  color: #64748b;
+}
+
+.cqExamResultStats strong {
+  font-family: var(--font-iran-extra);
+  font-weight: 400;
+  font-size: 1.05rem;
+  color: #0f172a;
 }
 
 .cqResultSummary {
   text-align: center;
   font-family: var(--font-iran);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   line-height: 1.7;
   color: #475569;
-  margin: 0 0 1.25rem;
+  margin: 0.35rem 0 0.5rem;
+  max-width: 36em;
 }
 
 .cqResultActions {
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 0.35rem;
+}
+
+@media (max-width: 560px) {
+  .cqExamShell {
+    gap: 0.6rem;
+    padding-bottom: 0.85rem;
+  }
+
+  .cqExamPicker {
+    padding: 0.95rem 0.85rem 1rem;
+    border-radius: 14px;
+  }
+
+  .cqTestGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .cqTestCard {
+    min-height: 108px;
+    padding: 0.7rem 0.45rem;
+  }
+
+  .cqExamCard {
+    padding: 0.95rem 0.8rem 1rem;
+    border-radius: 14px;
+    gap: 0.7rem;
+  }
+
+  .cqExamQuestion {
+    font-size: 0.98rem;
+    line-height: 1.75;
+  }
+
+  .cqExamOpt {
+    padding: 0.65rem 0.7rem;
+    border-radius: 12px;
+  }
+
+  .cqExamOptMark {
+    width: 1.85rem;
+    height: 1.85rem;
+    font-size: 0.72rem;
+  }
+
+  .cqExamOptBody {
+    font-size: 0.85rem;
+  }
+
+  .cqExamTitles strong {
+    font-size: 0.92rem;
+  }
+
+  .cqNavRow {
+    flex-wrap: wrap;
+  }
+
+  .cqNavMeta {
+    order: -1;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.15rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .cqExamShell {
+    padding-top: 0.5rem;
+  }
+
+  .cqExamCard {
+    padding: 1.35rem 1.35rem 1.4rem;
+  }
+
+  .cqExamOptions {
+    gap: 0.65rem;
+  }
+
+  .cqExamOpt {
+    padding: 0.85rem 1rem;
+  }
 }
 
 .cqPanelHome {
@@ -20306,4 +21236,994 @@ button.ttSlotEmpty.ttSlotClick:hover .ttEmptyMark {
 .pageInProfile .currSideHead,
 .pageInProfile .sideBlock {
   background: #f7faf8;
+}
+
+/* تب آزمون دانش‌آموز داخل پروفایل — فشرده + کنتراست پایدار */
+.pageInProfile .hwBar {
+  margin-bottom: 0.55rem;
+}
+
+.pageInProfile .hwBarTitle,
+.pageInProfile .hwSectionTitle,
+.pageInProfile .examCardTitle,
+.pageInProfile .quizQuestion,
+.pageInProfile .panelTitle {
+  color: #004733;
+}
+
+.pageInProfile .hwBarSub,
+.pageInProfile .hwSectionMeta,
+.pageInProfile .examCardMeta,
+.pageInProfile .examCardStats span,
+.pageInProfile .quizProgress,
+.pageInProfile .metaMuted {
+  color: #3f6f52;
+}
+
+.pageInProfile .hwSections {
+  gap: 0.85rem;
+}
+
+.pageInProfile .examGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.pageInProfile .examCard {
+  border-color: rgba(0, 71, 51, 0.12);
+  background: #ffffff;
+  box-shadow: none;
+}
+
+.pageInProfile .examCard:hover {
+  border-color: rgba(0, 71, 51, 0.28);
+  box-shadow: 0 4px 12px rgba(0, 71, 51, 0.06);
+}
+
+.pageInProfile .examCardKind {
+  background: rgba(43, 106, 77, 0.1);
+  border-color: rgba(0, 71, 51, 0.16);
+  color: #004733;
+}
+
+.pageInProfile .examCardWarn {
+  background: rgba(185, 28, 28, 0.08);
+  border-color: rgba(185, 28, 28, 0.2);
+  color: #991b1b;
+}
+
+.pageInProfile .examStartBtn {
+  background: linear-gradient(145deg, #2b6a4d, #004733);
+  color: #f5faf7;
+  box-shadow: 0 3px 10px rgba(0, 71, 51, 0.16);
+}
+
+.pageInProfile .examStartBtn:hover {
+  filter: brightness(1.06);
+  color: #ffffff;
+}
+
+.pageInProfile .examStartBtn * {
+  color: inherit;
+}
+
+.pageInProfile .cqExamPicker,
+.pageInProfile .cqExamCard,
+.pageInProfile .cqExamResult {
+  border-color: rgba(0, 71, 51, 0.12);
+  box-shadow: 0 8px 24px rgba(0, 71, 51, 0.06);
+}
+
+.pageInProfile .cqExamPickerTitle,
+.pageInProfile .cqExamTitles strong,
+.pageInProfile .cqExamQuestion,
+.pageInProfile .cqExamResultTitle,
+.pageInProfile .cqTestCardTitle,
+.pageInProfile .cqExamResultStats strong {
+  color: #004733;
+}
+
+.pageInProfile .cqExamPickerDesc,
+.pageInProfile .cqExamTitles span,
+.pageInProfile .cqTestCardMeta,
+.pageInProfile .cqExamHintLine,
+.pageInProfile .cqExamFootNote,
+.pageInProfile .cqExamResultSub,
+.pageInProfile .cqResultSummary {
+  color: #568d66;
+}
+
+.pageInProfile .cqExamProgress {
+  background: rgba(0, 71, 51, 0.1);
+}
+
+.pageInProfile .cqExamProgressFill {
+  background: linear-gradient(90deg, #004733, #2b6a4d);
+}
+
+.pageInProfile .cqExamOpt {
+  border-color: rgba(0, 71, 51, 0.14);
+  background: #fff;
+  color: #004733;
+}
+
+.pageInProfile .cqExamOpt:hover:not(:disabled) {
+  border-color: rgba(43, 106, 77, 0.4);
+  background: #f3f8f5;
+}
+
+.pageInProfile .cqExamOptOn {
+  border-color: #2b6a4d;
+  background: linear-gradient(135deg, #e8f2ec, #f3f8f5);
+  box-shadow: 0 0 0 3px rgba(43, 106, 77, 0.14);
+}
+
+.pageInProfile .cqExamOptMark {
+  background: rgba(0, 71, 51, 0.1);
+  color: #004733;
+}
+
+.pageInProfile .cqExamOptOn .cqExamOptMark {
+  background: #2b6a4d;
+  color: #fff;
+}
+
+.pageInProfile .cqExamOptCheck {
+  color: #2b6a4d;
+}
+
+.pageInProfile .cqNavBtnPrimaryWide {
+  background: linear-gradient(135deg, #004733, #2b6a4d);
+  color: #fff !important;
+  box-shadow: 0 4px 14px rgba(0, 71, 51, 0.22);
+}
+
+.pageInProfile .cqNavPrimary {
+  background: #004733;
+  border-color: #004733;
+  color: #fff;
+}
+
+.pageInProfile .cqTestCardOn {
+  border-color: #2b6a4d;
+  background: rgba(43, 106, 77, 0.08);
+  box-shadow: 0 0 0 3px rgba(43, 106, 77, 0.14);
+}
+
+.pageInProfile .quizOpt {
+  background: #ffffff;
+  border-color: rgba(0, 71, 51, 0.14);
+  color: #004733;
+}
+
+.pageInProfile .quizOpt:hover {
+  background: #eef3f0;
+  border-color: rgba(0, 71, 51, 0.24);
+}
+
+.pageInProfile .quizOptOn {
+  background: rgba(43, 106, 77, 0.12);
+  border-color: rgba(0, 71, 51, 0.35);
+  color: #004733;
+  box-shadow: 0 0 0 2px rgba(43, 106, 77, 0.12);
+}
+
+.pageInProfile .quizOptMark {
+  background: #eef3f0;
+  border-color: rgba(0, 71, 51, 0.16);
+  color: #004733;
+}
+
+.pageInProfile .quizOptOn .quizOptMark {
+  background: rgba(43, 106, 77, 0.2);
+  border-color: rgba(0, 71, 51, 0.3);
+  color: #004733;
+}
+
+.pageInProfile .quizOptText {
+  color: inherit;
+}
+
+.pageInProfile .quizProgressBar {
+  background: rgba(0, 71, 51, 0.1);
+}
+
+.pageInProfile .quizProgressFill,
+.pageInProfile .examTimerFill {
+  background: linear-gradient(90deg, #2b6a4d, #004733);
+}
+
+.pageInProfile .examTimerBar {
+  border-color: rgba(0, 71, 51, 0.16);
+  background: rgba(43, 106, 77, 0.08);
+  color: #004733;
+}
+
+.pageInProfile .examTimerMeta {
+  color: #3f6f52;
+}
+
+.pageInProfile .examTimerValue {
+  color: #004733;
+}
+
+.pageInProfile .examTimerBarWarn {
+  border-color: rgba(180, 83, 9, 0.3);
+  background: rgba(251, 191, 36, 0.12);
+}
+
+.pageInProfile .examTimerBarWarn .examTimerFill {
+  background: linear-gradient(90deg, #c47a2e, #e0a04a);
+}
+
+.pageInProfile .examTimerBarCritical {
+  border-color: rgba(185, 28, 28, 0.28);
+  background: rgba(185, 28, 28, 0.08);
+}
+
+.pageInProfile .examTimerBarCritical .examTimerValue {
+  color: #b91c1c;
+}
+
+.pageInProfile .examTimerAlert {
+  border-color: rgba(180, 83, 9, 0.28);
+  background: rgba(251, 191, 36, 0.12);
+  color: #004733;
+}
+
+.pageInProfile .examTimerAlert strong {
+  color: #9a5a18;
+}
+
+.pageInProfile .examTimerAlertCritical {
+  border-color: rgba(185, 28, 28, 0.28);
+  background: rgba(185, 28, 28, 0.08);
+}
+
+.pageInProfile .examTimerAlertCritical strong {
+  color: #b91c1c;
+}
+
+.pageInProfile .examStayWarn {
+  border-color: rgba(180, 83, 9, 0.28);
+  background: linear-gradient(135deg, #fffbeb, #fef3c7 75%, #fff7ed);
+  color: #92400e;
+}
+
+.pageInProfile .examStayWarn strong {
+  color: #b45309;
+}
+
+.pageInProfile .quizNoBackWarn {
+  color: #7f1d1d;
+}
+
+.pageInProfile .quizNoBackWarn strong {
+  color: #991b1b;
+}
+
+.pageInProfile .examAwayBanner {
+  border-color: rgba(0, 71, 51, 0.18);
+  background: rgba(43, 106, 77, 0.08);
+  color: #004733;
+}
+
+.pageInProfile .hwEmpty strong {
+  color: #004733;
+}
+
+.pageInProfile .hwEmpty p {
+  color: #3f6f52;
+}
+
+@media (max-width: 640px) {
+  .pageInProfile .examGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* —— Counselor ops desk —— */
+.cop {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  direction: rtl;
+}
+
+.copHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.85rem 0.95rem;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 71, 51, 0.12);
+  background:
+    radial-gradient(ellipse 80% 70% at 100% 0%, rgba(43, 106, 77, 0.1), transparent 55%),
+    linear-gradient(145deg, #f3f8f5, #fff 60%);
+}
+
+.copEyebrow {
+  margin: 0;
+  font-family: var(--font-iran-bold);
+  font-weight: 400;
+  font-size: 0.72rem;
+  color: #2b6a4d;
+}
+
+.copTitle {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-iran-extra);
+  font-weight: 400;
+  font-size: 1.15rem;
+  color: #004733;
+}
+
+.copDesc {
+  margin: 0.3rem 0 0;
+  font-family: var(--font-iran);
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: #568d66;
+}
+
+.copHeadActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.copKpiGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.copKpi {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  padding: 0.75rem 0.8rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 71, 51, 0.12);
+  background: #fff;
+  text-align: right;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.copKpi:hover {
+  border-color: rgba(43, 106, 77, 0.35);
+  box-shadow: 0 6px 18px rgba(0, 71, 51, 0.06);
+}
+
+.copKpiWarn {
+  background: linear-gradient(145deg, #fff7ed, #fff);
+  border-color: rgba(180, 83, 9, 0.28);
+}
+
+.copKpiIcon {
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: rgba(43, 106, 77, 0.1);
+  color: #004733;
+}
+
+.copKpiWarn .copKpiIcon {
+  background: rgba(180, 83, 9, 0.12);
+  color: #b45309;
+}
+
+.copKpiLabel {
+  font-family: var(--font-iran);
+  font-size: 0.7rem;
+  color: #568d66;
+}
+
+.copKpiValue {
+  font-family: var(--font-iran-extra);
+  font-weight: 400;
+  font-size: 1.25rem;
+  color: #004733;
+}
+
+.copKpiGo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-style: normal;
+  font-family: var(--font-iran);
+  font-size: 0.65rem;
+  color: #2b6a4d;
+}
+
+.copQuick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.copQuickBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 71, 51, 0.14);
+  background: #eef3f0;
+  color: #004733;
+  font-family: var(--font-iran-bold);
+  font-weight: 400;
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+
+.copQuickBtn:hover {
+  background: #e2ebe6;
+}
+
+.copGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.copCard {
+  padding: 0.75rem 0.8rem 0.85rem;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 71, 51, 0.1);
+  background: #fff;
+  min-width: 0;
+}
+
+.copCardWide {
+  grid-column: 1 / -1;
+}
+
+.copCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+}
+
+.copCardHead h3 {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-iran-extra);
+  font-weight: 400;
+  font-size: 0.88rem;
+  color: #004733;
+}
+
+.copList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.copListBtn {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.35rem 0.55rem;
+  padding: 0.5rem 0.55rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 71, 51, 0.08);
+  background: #f8fbf9;
+  text-align: right;
+  cursor: pointer;
+}
+
+.copListBtn strong {
+  font-family: var(--font-iran-bold);
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: #004733;
+}
+
+.copListBtn em {
+  grid-column: 2;
+  font-style: normal;
+  font-family: var(--font-iran);
+  font-size: 0.68rem;
+  color: #568d66;
+}
+
+.copRisk {
+  grid-row: 1 / span 2;
+  padding: 0.15rem 0.4rem;
+  border-radius: 999px;
+  font-family: var(--font-iran-bold);
+  font-weight: 400;
+  font-size: 0.62rem;
+  background: #eef3f0;
+  color: #2b6a4d;
+}
+
+.copRisk_high {
+  background: rgba(185, 28, 28, 0.1);
+  color: #b91c1c;
+}
+
+.copRisk_medium {
+  background: rgba(180, 83, 9, 0.12);
+  color: #b45309;
+}
+
+.copAttempt {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.15rem 0.5rem;
+  padding: 0.5rem 0.55rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 71, 51, 0.08);
+  background: #f8fbf9;
+}
+
+.copAttemptKind {
+  grid-row: 1 / span 2;
+  align-self: center;
+  padding: 0.15rem 0.4rem;
+  border-radius: 999px;
+  font-family: var(--font-iran-bold);
+  font-weight: 400;
+  font-size: 0.62rem;
+  background: color-mix(in srgb, var(--cop-kind, #64748b) 14%, #fff);
+  color: var(--cop-kind, #64748b);
+}
+
+.copAttempt strong {
+  font-family: var(--font-iran-bold);
+  font-weight: 400;
+  font-size: 0.78rem;
+  color: #004733;
+}
+
+.copAttempt em {
+  font-style: normal;
+  font-family: var(--font-iran);
+  font-size: 0.68rem;
+  color: #568d66;
+}
+
+.copAttemptScore {
+  grid-row: 1 / span 2;
+  align-self: center;
+  font-family: var(--font-iran-extra);
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+
+.copAttempt small {
+  grid-column: 2;
+  font-family: var(--font-iran);
+  font-size: 0.62rem;
+  color: #94a3b8;
+}
+
+.copChartBox,
+.copChartBoxTall {
+  height: 180px;
+  position: relative;
+}
+
+.copChartBoxTall {
+  height: 220px;
+}
+
+.copEmpty {
+  margin: 0.5rem 0;
+  font-family: var(--font-iran);
+  font-size: 0.8rem;
+  color: #568d66;
+  text-align: center;
+}
+
+.copInfoActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+}
+
+.infoPanel .stats button.stat {
+  width: 100%;
+  text-align: right;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+/* attempts */
+.cap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.capHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.capHead h2 {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-iran-extra);
+  font-weight: 400;
+  font-size: 1.05rem;
+  color: #004733;
+}
+
+.capHead p {
+  margin: 0.3rem 0 0;
+  font-family: var(--font-iran);
+  font-size: 0.78rem;
+  color: #568d66;
+  line-height: 1.6;
+}
+
+.capToolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.capSearch {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 71, 51, 0.14);
+  background: #fff;
+  color: #568d66;
+}
+
+.capSearch input {
+  flex: 1;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-iran);
+  font-size: 0.82rem;
+  color: #004733;
+}
+
+.capFilters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  color: #568d66;
+}
+
+.capFilterBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 71, 51, 0.12);
+  background: #fff;
+  color: #004733;
+  font-family: var(--font-iran-bold);
+  font-weight: 400;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.capFilterBtn em {
+  font-style: normal;
+  color: #568d66;
+  font-family: var(--font-iran);
+}
+
+.capFilterOn {
+  background: #004733;
+  border-color: #004733;
+  color: #fff;
+}
+
+.capFilterOn em {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.capTableWrap {
+  overflow: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 71, 51, 0.1);
+  background: #fff;
+}
+
+.capTable {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+.capTable th,
+.capTable td {
+  padding: 0.55rem 0.65rem;
+  text-align: right;
+  border-bottom: 1px solid rgba(0, 71, 51, 0.08);
+  font-family: var(--font-iran);
+  font-size: 0.78rem;
+  color: #004733;
+  vertical-align: middle;
+}
+
+.capTable th {
+  font-family: var(--font-iran-bold);
+  font-weight: 400;
+  font-size: 0.7rem;
+  color: #568d66;
+  background: #f3f8f5;
+  position: sticky;
+  top: 0;
+}
+
+.capKind {
+  display: inline-flex;
+  padding: 0.12rem 0.4rem;
+  border-radius: 999px;
+  font-family: var(--font-iran-bold);
+  font-weight: 400;
+  font-size: 0.65rem;
+  background: color-mix(in srgb, var(--cap-kind, #64748b) 14%, #fff);
+  color: var(--cap-kind, #64748b);
+}
+
+.capScoreSub {
+  display: block;
+  font-size: 0.62rem;
+  color: #94a3b8;
+}
+
+.capOpenBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 71, 51, 0.14);
+  background: #eef3f0;
+  color: #004733;
+  font-family: var(--font-iran-bold);
+  font-weight: 400;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.capEmpty,
+.capEmptyBox {
+  text-align: center;
+  color: #568d66;
+  font-family: var(--font-iran);
+}
+
+.capEmptyBox {
+  padding: 2rem 1rem;
+  border-radius: 14px;
+  border: 1px dashed rgba(0, 71, 51, 0.18);
+  background: #f8fbf9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.capEmptyBox strong {
+  font-family: var(--font-iran-extra);
+  font-weight: 400;
+  color: #004733;
+}
+
+/* people directory */
+.cpp {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cppHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.cppHead h2 {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-iran-extra);
+  font-weight: 400;
+  font-size: 1.05rem;
+  color: #004733;
+}
+
+.cppHead p {
+  margin: 0.3rem 0 0;
+  font-family: var(--font-iran);
+  font-size: 0.78rem;
+  color: #568d66;
+}
+
+.cppScope {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.cppScopeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 71, 51, 0.14);
+  background: #fff;
+  color: #004733;
+  font-family: var(--font-iran-bold);
+  font-weight: 400;
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+
+.cppScopeBtn em {
+  font-style: normal;
+  font-family: var(--font-iran);
+  color: #568d66;
+}
+
+.cppScopeOn {
+  background: #004733;
+  border-color: #004733;
+  color: #fff;
+}
+
+.cppScopeOn em {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.cppSearch {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 71, 51, 0.14);
+  background: #fff;
+  color: #568d66;
+}
+
+.cppSearch input {
+  flex: 1;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-iran);
+  font-size: 0.84rem;
+  color: #004733;
+}
+
+.cppList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: min(62vh, 560px);
+  overflow: auto;
+}
+
+.cppRow {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 71, 51, 0.1);
+  background: #fff;
+}
+
+.cppAvatar {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: rgba(43, 106, 77, 0.12);
+  color: #004733;
+  font-family: var(--font-iran-extra);
+  font-weight: 400;
+  flex-shrink: 0;
+}
+
+.cppBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.cppBody strong {
+  font-family: var(--font-iran-bold);
+  font-weight: 400;
+  font-size: 0.86rem;
+  color: #004733;
+}
+
+.cppBody em {
+  font-style: normal;
+  font-family: var(--font-iran);
+  font-size: 0.7rem;
+  color: #568d66;
+}
+
+.cppEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 2rem 1rem;
+  color: #568d66;
+  font-family: var(--font-iran);
+}
+
+.cppEmpty strong {
+  font-family: var(--font-iran-extra);
+  font-weight: 400;
+  color: #004733;
+}
+
+@media (max-width: 900px) {
+  .copKpiGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .copGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .copCardWide {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .copKpiGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .copListBtn {
+    grid-template-columns: auto 1fr;
+  }
+
+  .copListBtn em {
+    grid-column: 2;
+  }
 }

@@ -1,15 +1,17 @@
 'use client'
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   BookOpen, RefreshCw, CheckSquare, Play, ClipboardList,
   Sparkles, ChevronLeft, Timer, ImagePlus, CircleCheck,
   GraduationCap, Home, ArrowUpLeft, X, Paperclip, ExternalLink,
-  Trophy,
+  Trophy, UserRound,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import Config from '@/config/config'
 import schoolService from '@/components/School/services/schoolService'
 import DropZone from '@/components/School/DropZone'
 import StudentCharts from '@/components/School/StudentCharts'
@@ -36,6 +38,9 @@ const OPT_FA = {
   a: 'الف', b: 'ب', c: 'ج', d: 'د',
   A: 'الف', B: 'ب', C: 'ج', D: 'د',
 }
+
+const EXAM_STAY_RULE =
+  'لطفاً تا پایان آزمون در این صفحه بمانید. در صورت خروج از صفحه یا انصراف، آزمون پایان‌یافته محسوب می‌شود و نمره بر اساس پاسخ‌های ثبت‌شده تا همان لحظه لحاظ خواهد شد.'
 
 function faNum(n) {
   if (n == null || Number.isNaN(Number(n))) return '—'
@@ -129,6 +134,8 @@ export default function StudentDashboard({
   const [answers, setAnswers] = useState({})
   const [qIndex, setQIndex] = useState(0)
   const [confirmNext, setConfirmNext] = useState(null) // 'next' | 'submit' | null
+  const [examStartPrompt, setExamStartPrompt] = useState(null) // { kind: 'exam'|'quiz', id }
+  const [examAbortPrompt, setExamAbortPrompt] = useState(false)
   const [hwProofEx, setHwProofEx] = useState(null)
   const [hwConfirmEx, setHwConfirmEx] = useState(null)
   const [hwBusy, setHwBusy] = useState(false)
@@ -148,6 +155,7 @@ export default function StudentDashboard({
   const [examSubmitting, setExamSubmitting] = useState(false)
   const answersRef = useRef({})
   const quizSessionRef = useRef(null)
+  const studentScopeParamsRef = useRef({})
   const examWarnedHalfRef = useRef(false)
   const examWarnedTwoMinRef = useRef(false)
   const examAutoSubmittedRef = useRef(false)
@@ -184,6 +192,13 @@ export default function StudentDashboard({
     if (isAuthenticated) load()
   }, [isAuthenticated, load])
 
+  const closeLessonFocus = () => {
+    setLesson(null)
+    setExercises([])
+    setQuizzes([])
+    setTab('lessons')
+  }
+
   const openLesson = async (id) => {
     const res = await schoolService.getLesson(id)
     if (!res.success) return setErr(res.error)
@@ -194,7 +209,7 @@ export default function StudentDashboard({
     ])
     if (ex.success) setExercises(ex.data || [])
     if (qz.success) setQuizzes(qz.data || [])
-    setTab('lesson')
+    setTab('lessons')
   }
 
   const submitExercise = async (exerciseId, file) => {
@@ -232,10 +247,29 @@ export default function StudentDashboard({
     examTimerStartedAtRef.current = 0
   }
 
+  const requestStartExam = (kind, id) => {
+    if (id == null || id === '') {
+      return setErr('شناسه آزمون نامعتبر است')
+    }
+    setExamStartPrompt({ kind, id })
+  }
+
+  const confirmStartExam = async () => {
+    const prompt = examStartPrompt
+    setExamStartPrompt(null)
+    if (!prompt?.id) return
+    if (prompt.kind === 'exam') await startExamPaper(prompt.id)
+    else await startQuiz(prompt.id)
+  }
+
   const studentScopeParams = useMemo(
     () => (previewStudentId ? { student: previewStudentId } : {}),
     [previewStudentId],
   )
+
+  useEffect(() => {
+    studentScopeParamsRef.current = studentScopeParams
+  }, [studentScopeParams])
 
   const notifyPanel = useCallback((m, isErr) => {
     if (isErr) setErr(m)
@@ -302,7 +336,68 @@ export default function StudentDashboard({
     setMsg(null)
   }
 
-  const submitQuiz = useCallback(async ({ timedOut = false } = {}) => {
+  const buildExamSubmitPayload = useCallback((session, currentAnswers) => {
+    const startedMs = session.started_at ? new Date(session.started_at).getTime() : null
+    const durationSeconds = Number.isFinite(startedMs)
+      ? Math.max(0, Math.round((Date.now() - startedMs) / 1000))
+      : undefined
+    const scope = studentScopeParamsRef.current || {}
+    if (session.mode === 'exam') {
+      return {
+        mode: 'exam',
+        payload: {
+          paper_id: session.paper?.id || session.quiz?.id,
+          answers: Object.entries(currentAnswers).map(([question_id, answer]) => ({
+            question_id,
+            answer,
+          })),
+          duration_seconds: durationSeconds,
+          ...scope,
+        },
+      }
+    }
+    return {
+      mode: 'legacy',
+      payload: {
+        quiz_id: session.quiz.id,
+        answers: Object.entries(currentAnswers).map(([question_id, answer]) => ({
+          question_id: Number(question_id),
+          answer,
+        })),
+        duration_seconds: durationSeconds,
+        ...scope,
+      },
+    }
+  }, [])
+
+  const flushExamOnLeave = useCallback(() => {
+    const session = quizSessionRef.current
+    if (!session || examAutoSubmittedRef.current || examSubmittingRef.current) return
+    examAutoSubmittedRef.current = true
+    examSubmittingRef.current = true
+    const built = buildExamSubmitPayload(session, answersRef.current || {})
+    const url = built.mode === 'exam'
+      ? Config.endpoints.school.examSubmit()
+      : Config.endpoints.school.quizSubmit()
+    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null
+    try {
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(built.payload),
+        keepalive: true,
+        credentials: 'same-origin',
+      })
+    } catch (_) {
+      /* unload — best effort */
+    }
+  }, [buildExamSubmitPayload])
+
+  const submitQuiz = useCallback(async ({ timedOut = false, abandoned = false } = {}) => {
     const session = quizSessionRef.current
     if (!session || examAutoSubmittedRef.current || examSubmittingRef.current) return
     // همیشه قفل کن تا ارسال دستی و auto-submit همزمان نشوند
@@ -310,49 +405,29 @@ export default function StudentDashboard({
     examSubmittingRef.current = true
     setExamSubmitting(true)
     setConfirmNext(null)
+    setExamAbortPrompt(false)
     setErr(null)
 
-    const currentAnswers = answersRef.current || {}
-    const startedMs = session.started_at ? new Date(session.started_at).getTime() : null
-    const durationSeconds = Number.isFinite(startedMs)
-      ? Math.max(0, Math.round((Date.now() - startedMs) / 1000))
-      : undefined
-
-    let res
-    if (session.mode === 'exam') {
-      const payload = {
-        paper_id: session.paper?.id || session.quiz?.id,
-        answers: Object.entries(currentAnswers).map(([question_id, answer]) => ({
-          question_id,
-          answer,
-        })),
-        duration_seconds: durationSeconds,
-        ...studentScopeParams,
-      }
-      res = await schoolService.submitExamPaper(payload)
-    } else {
-      const payload = {
-        quiz_id: session.quiz.id,
-        answers: Object.entries(currentAnswers).map(([question_id, answer]) => ({
-          question_id: Number(question_id),
-          answer,
-        })),
-        duration_seconds: durationSeconds,
-        ...studentScopeParams,
-      }
-      res = await schoolService.submitQuiz(payload)
-    }
+    const built = buildExamSubmitPayload(session, answersRef.current || {})
+    const res = built.mode === 'exam'
+      ? await schoolService.submitExamPaper(built.payload)
+      : await schoolService.submitQuiz(built.payload)
 
     examSubmittingRef.current = false
     setExamSubmitting(false)
     if (res.success) {
+      const pct = faNum(res.data.percentage)
       setMsg(
         timedOut
-          ? `زمان آزمون تمام شد · نتیجه: ${faNum(res.data.percentage)}٪`
-          : `نتیجه آزمون: ${faNum(res.data.percentage)}٪`,
+          ? `زمان آزمون تمام شد · نتیجه: ${pct}٪`
+          : abandoned
+            ? `آزمون با انصراف پایان یافت · نمره تا همین‌جا: ${pct}٪`
+            : `نتیجه آزمون: ${pct}٪`,
       )
       quizSessionRef.current = null
       setQuizSession(null)
+      setAnswers({})
+      setQIndex(0)
       resetExamTimerState()
       setTab('results')
       load()
@@ -361,11 +436,13 @@ export default function StudentDashboard({
       examAutoSubmittedRef.current = false
       if (timedOut) {
         setErr((res.error || 'ثبت خودکار ناموفق بود') + ' — دوباره «ثبت آزمون» را بزنید')
+      } else if (abandoned) {
+        setErr((res.error || 'ثبت انصراف ناموفق بود') + ' — دوباره تلاش کنید')
       } else {
         setErr(res.error || 'ثبت آزمون ناموفق بود')
       }
     }
-  }, [load, studentScopeParams])
+  }, [buildExamSubmitPayload, load])
 
   useEffect(() => {
     answersRef.current = answers
@@ -374,6 +451,37 @@ export default function StudentDashboard({
   useEffect(() => {
     quizSessionRef.current = quizSession
   }, [quizSession])
+
+  useEffect(() => {
+    if (!quizSession && !lesson) return undefined
+    const prevOverflow = document.body.style.overflow
+    const prevTouch = document.body.style.touchAction
+    document.body.style.overflow = 'hidden'
+    document.body.style.touchAction = 'none'
+    return () => {
+      document.body.style.overflow = prevOverflow
+      document.body.style.touchAction = prevTouch
+    }
+  }, [quizSession, lesson])
+
+  useEffect(() => {
+    if (!quizSession) return undefined
+    const onBeforeUnload = (e) => {
+      e.preventDefault()
+      e.returnValue = EXAM_STAY_RULE
+      return EXAM_STAY_RULE
+    }
+    const onPageHide = (e) => {
+      if (e.persisted) return
+      flushExamOnLeave()
+    }
+    window.addEventListener('beforeunload', onBeforeUnload)
+    window.addEventListener('pagehide', onPageHide)
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload)
+      window.removeEventListener('pagehide', onPageHide)
+    }
+  }, [quizSession, flushExamOnLeave])
 
   useEffect(() => {
     // تایمر و auto-submit حتی خارج از تب آزمون ادامه دارد (هم‌خوان با بنر «زمان واقعی»)
@@ -479,6 +587,7 @@ export default function StudentDashboard({
   const tabs = useMemo(() => {
     const quizBadge = (pendingExams.length || pendingQuizzes.length) || null
     const list = [
+      ['info', 'اطلاعات پایه', null],
       ['home', 'خانه', null],
       ['schedule', 'برنامه', null],
       ['lessons', 'دروس', null],
@@ -491,9 +600,8 @@ export default function StudentDashboard({
       ['results', 'نتایج', null],
       ['tips', 'پیشنهادها', null],
     ]
-    if (lesson) list.push(['lesson', 'درس جاری', null])
     return list
-  }, [pendingHw.length, pendingExams.length, pendingQuizzes.length, lesson])
+  }, [pendingHw.length, pendingExams.length, pendingQuizzes.length])
 
   const pageClass = embedded
     ? `${styles.page} ${styles.studentPage} ${styles.pageInProfile}`
@@ -534,7 +642,290 @@ export default function StudentDashboard({
     else if (action === 'next') setQIndex((i) => i + 1)
   }
 
+  const requestAbortExam = () => {
+    if (examSubmitting) return
+    setExamAbortPrompt(true)
+  }
+
+  const confirmAbortExam = () => {
+    setExamAbortPrompt(false)
+    submitQuiz({ abandoned: true })
+  }
+
+  const examFocusLayer = quizSession && currentQ ? (
+    <div
+      className={[
+        styles.cqExamFocusRoot,
+        styles.studentPage,
+        embedded ? styles.pageInProfile : '',
+      ].filter(Boolean).join(' ')}
+      role="dialog"
+      aria-modal="true"
+      aria-label={quizSession.quiz?.title || 'آزمون'}
+    >
+      <div className={styles.cqExamFocusBackdrop} aria-hidden />
+      <div className={styles.cqExamFocusStage}>
+        <div className={`${styles.panel} ${styles.cqExamFocusPanel}`}>
+          <div className={styles.panelHead}>
+            <h2 className={styles.panelTitle}>{quizSession.quiz?.title}</h2>
+            <button
+              type="button"
+              className={styles.btnGhost}
+              disabled={examSubmitting}
+              onClick={requestAbortExam}
+            >
+              انصراف
+            </button>
+          </div>
+
+          <div className={styles.examStayWarn} role="status">
+            <strong>هشدار:</strong>
+            {' '}
+            {EXAM_STAY_RULE}
+          </div>
+
+          {examTimeLeft != null && quizSession.ends_at ? (
+            <div
+              className={`${styles.examTimerBar} ${
+                examTimeLeft <= 120
+                  ? styles.examTimerBarCritical
+                  : examTimeLeft <= Math.floor((quizSession.total_seconds || 0) / 2)
+                    ? styles.examTimerBarWarn
+                    : ''
+              }`}
+              role="timer"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              <div className={styles.examTimerMeta}>
+                <Timer size={16} aria-hidden />
+                <span>زمان باقی‌مانده</span>
+              </div>
+              <strong className={styles.examTimerValue}>
+                {formatCountdown(examTimeLeft)}
+              </strong>
+              <div className={styles.examTimerTrack} aria-hidden>
+                <div
+                  className={styles.examTimerFill}
+                  style={{
+                    width: `${Math.max(
+                      0,
+                      Math.min(
+                        100,
+                        (examTimeLeft / Math.max(1, quizSession.total_seconds || 1)) * 100,
+                      ),
+                    )}%`,
+                  }}
+                />
+              </div>
+            </div>
+          ) : null}
+
+          {examTimerAlert === 'half' ? (
+            <div className={styles.examTimerAlert} role="alert">
+              <div>
+                <strong>هشدار زمان</strong>
+                <p>دانش‌آموز عزیز، نیمی از زمان آزمون گذشته است.</p>
+              </div>
+              <button
+                type="button"
+                className={styles.examTimerAlertClose}
+                aria-label="بستن"
+                onClick={() => setExamTimerAlert(null)}
+              >
+                <X size={16} />
+              </button>
+            </div>
+          ) : null}
+
+          {examTimerAlert === 'twoMin' ? (
+            <div className={`${styles.examTimerAlert} ${styles.examTimerAlertCritical}`} role="alert">
+              <div>
+                <strong>هشدار زمان</strong>
+                <p>دانش‌آموز عزیز، فقط دو دقیقه زمان باقی مانده است.</p>
+              </div>
+              <button
+                type="button"
+                className={styles.examTimerAlertClose}
+                aria-label="بستن"
+                onClick={() => setExamTimerAlert(null)}
+              >
+                <X size={16} />
+              </button>
+            </div>
+          ) : null}
+
+          {examTimerAlert === 'ended' || examSubmitting ? (
+            <div className={`${styles.examTimerAlert} ${styles.examTimerAlertCritical}`} role="status">
+              <div>
+                <strong>پایان زمان</strong>
+                <p>زمان آزمون تمام شد. در حال ثبت پاسخ‌ها…</p>
+              </div>
+            </div>
+          ) : null}
+
+          {quizSession.mode === 'exam' && !allowBack ? (
+            <div className={styles.quizNoBackWarn} role="alert">
+              <strong>توجه:</strong>
+              {' '}
+              در این آزمون امکان برگشت به سوال قبلی وجود ندارد.
+              بعد از تأیید رفتن به سوال بعد، دیگر نمی‌توانید به این سوال برگردید.
+            </div>
+          ) : null}
+
+          <div className={styles.quizProgressBar}>
+            <div
+              className={styles.quizProgressFill}
+              style={{ width: `${((qIndex + 1) / Math.max(1, quizQs.length)) * 100}%` }}
+            />
+          </div>
+          <p className={styles.quizProgress}>
+            سوال {faNum(qIndex + 1)} از {faNum(quizQs.length)}
+            {currentQ.difficulty ? ` · ${DIFF_FA[currentQ.difficulty] || currentQ.difficulty}` : ''}
+          </p>
+          {currentQ.question_image_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={currentQ.question_image_url} alt="" className={styles.cover} />
+          ) : null}
+          {currentQ.question_text ? (
+            <p className={styles.quizQuestion}>{currentQ.question_text}</p>
+          ) : null}
+          {(currentQ.hint_text || currentQ.hint_image_url) ? (
+            <details className={styles.quizHint}>
+              <summary>راهنمای سوال</summary>
+              {currentQ.hint_text ? <p>{currentQ.hint_text}</p> : null}
+              {currentQ.hint_image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={currentQ.hint_image_url} alt="" className={styles.cover} />
+              ) : null}
+            </details>
+          ) : null}
+          {(currentQ.options || []).map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              disabled={examSubmitting}
+              className={`${styles.quizOpt} ${answers[currentQ.id] === opt.id ? styles.quizOptOn : ''}`}
+              onClick={() => setAnswers((p) => ({ ...p, [currentQ.id]: opt.id }))}
+            >
+              <span className={styles.quizOptMark}>{optLetter(opt.id)}</span>
+              {opt.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={opt.image} alt="" />
+              ) : null}
+              <span className={styles.quizOptText}>
+                {opt.text || (opt.image ? 'گزینه تصویری' : '—')}
+              </span>
+            </button>
+          ))}
+          <div className={styles.rowActions} style={{ marginTop: 12 }}>
+            {allowBack ? (
+              <button
+                type="button"
+                className={styles.btnGhost}
+                disabled={qIndex === 0 || examSubmitting}
+                onClick={() => setQIndex((i) => i - 1)}
+              >
+                قبلی
+              </button>
+            ) : (
+              <span className={styles.metaMuted}>برگشت غیرفعال است</span>
+            )}
+            {isLastQuestion ? (
+              <button
+                type="button"
+                className={styles.btnAccent}
+                disabled={!answers[currentQ.id] || examSubmitting}
+                onClick={requestNextStep}
+              >
+                {examSubmitting ? 'در حال ثبت…' : 'ثبت آزمون'}
+              </button>
+            ) : (
+              <button
+                type="button"
+                className={styles.btn}
+                disabled={!answers[currentQ.id] || examSubmitting}
+                onClick={requestNextStep}
+              >
+                بعدی
+              </button>
+            )}
+          </div>
+
+          {confirmNext ? (
+            <div
+              className={styles.hwModalBackdrop}
+              role="presentation"
+              onClick={() => setConfirmNext(null)}
+            >
+              <div
+                className={styles.quizConfirmModal}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="quiz-confirm-title"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3 id="quiz-confirm-title">آیا مطمئن هستید؟</h3>
+                <p>
+                  {confirmNext === 'submit'
+                    ? 'با ثبت آزمون، پاسخ این سوال نهایی می‌شود و امکان برگشت به سوالات قبلی وجود ندارد.'
+                    : 'برای رفتن به سوال بعد مطمئن هستید؟ برگشت به این سوال غیرممکن است.'}
+                </p>
+                <div className={styles.formActions}>
+                  <button type="button" className={styles.btnAccent} onClick={confirmNextStep}>
+                    {confirmNext === 'submit' ? 'بله، ثبت آزمون' : 'بله، سوال بعد'}
+                  </button>
+                  <button type="button" className={styles.btnGhost} onClick={() => setConfirmNext(null)}>
+                    بستن
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {examAbortPrompt ? (
+            <div
+              className={styles.hwModalBackdrop}
+              role="presentation"
+              onClick={() => !examSubmitting && setExamAbortPrompt(false)}
+            >
+              <div
+                className={styles.quizConfirmModal}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="exam-abort-title"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3 id="exam-abort-title">پایان آزمون با انصراف؟</h3>
+                <p>{EXAM_STAY_RULE}</p>
+                <div className={styles.formActions}>
+                  <button
+                    type="button"
+                    className={styles.btnAccent}
+                    disabled={examSubmitting}
+                    onClick={confirmAbortExam}
+                  >
+                    {examSubmitting ? 'در حال ثبت…' : 'پایان آزمون و ثبت پاسخ‌ها'}
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.btnGhost}
+                    disabled={examSubmitting}
+                    onClick={() => setExamAbortPrompt(false)}
+                  >
+                    ادامه آزمون
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  ) : null
+
   return (
+    <>
     <div className={pageClass} dir="rtl" lang="fa">
       <div className={styles.wrap}>
         {!embedded ? (
@@ -601,50 +992,6 @@ export default function StudentDashboard({
         {msg ? <div className={styles.msg}>{msg}</div> : null}
         {err ? <div className={styles.err}>{err}</div> : null}
 
-        <div className={styles.stats}>
-          <div className={styles.stat}>
-            <p className={styles.statLabel}>امتیاز</p>
-            <p className={styles.statValue}>{faNum(profile.activity_points || 0)}</p>
-          </div>
-          <div className={`${styles.stat} ${styles.statOk}`}>
-            <p className={styles.statLabel}>معدل</p>
-            <p className={styles.statValue}>{faNum(data.average_percent || 0)}٪</p>
-          </div>
-          <div className={styles.stat}>
-            <p className={styles.statLabel}>تکالیف باز</p>
-            <p className={styles.statValue}>{faNum(pendingHw.length)}</p>
-          </div>
-          <div className={styles.stat}>
-            <p className={styles.statLabel}>آزمون باز</p>
-            <p className={styles.statValue}>{faNum(pendingExams.length + pendingQuizzes.length)}</p>
-          </div>
-          <div className={styles.stat}>
-            <p className={styles.statLabel}>حضور</p>
-            <p className={styles.statValue}>{faNum(data.attendance?.attendance_rate ?? data.charts?.attendance?.attendance_rate ?? 0)}٪</p>
-          </div>
-        </div>
-
-        <div className={styles.rankCard}>
-          <div className={styles.rankRow}>
-            <div>
-              <strong>رتبه {RANK_FA[rank.current] || rank.current}</strong>
-              <span className={styles.rankMeta}>
-                پیشرفت تا رتبه بعدی
-              </span>
-            </div>
-          </div>
-          {rank.next ? (
-            <p className={styles.rankHint}>
-              تا {RANK_FA[rank.next]} به {faNum(rank.points_needed)} امتیاز دیگر نیاز دارید.
-            </p>
-          ) : (
-            <p className={styles.rankHint}>شما در بالاترین رتبه هستید.</p>
-          )}
-          <div className={styles.progress}>
-            <div className={styles.progressFill} style={{ width: `${rank.progress_percent || 0}%` }} />
-          </div>
-        </div>
-
         <div className={styles.tabs}>
           {tabs.map(([k, l, badge]) => (
             <button
@@ -659,15 +1006,75 @@ export default function StudentDashboard({
           ))}
         </div>
 
-        {quizSession && tab !== 'quiz' ? (
-          <div className={styles.examAwayBanner} role="status">
-            <Timer size={14} />
-            <span>
-              آزمون «{quizSession.quiz?.title || 'در حال اجرا'}» هنوز تمام نشده — زمان واقعی ادامه دارد.
-            </span>
-            <button type="button" className={styles.btnAccent} onClick={() => setTab('quiz')}>
-              بازگشت به آزمون
-            </button>
+        {tab === 'info' ? (
+          <div className={styles.infoPanel}>
+            <section className={styles.infoIdentity} aria-label="پروفایل دانش‌آموز">
+              <div className={styles.infoAvatar} aria-hidden>
+                <UserRound size={22} />
+              </div>
+              <div className={styles.infoIdentityBody}>
+                <h2 className={styles.infoName}>{profile.display_name || 'دانش‌آموز'}</h2>
+                <p className={styles.infoMeta}>
+                  {profile.grade ? `پایه ${faNum(profile.grade)}` : 'بدون پایه'}
+                  {' · '}
+                  رتبه {RANK_FA[rank.current] || rank.current || '—'}
+                  {data.is_admin_preview ? ' · پیش‌نمایش مدیر' : ''}
+                </p>
+              </div>
+              <button
+                type="button"
+                className={styles.btnGhost}
+                onClick={load}
+                aria-label="بروزرسانی"
+              >
+                <RefreshCw size={14} />
+                بروزرسانی
+              </button>
+            </section>
+
+            <div className={styles.stats}>
+              <div className={styles.stat}>
+                <p className={styles.statLabel}>امتیاز</p>
+                <p className={styles.statValue}>{faNum(profile.activity_points || 0)}</p>
+              </div>
+              <div className={`${styles.stat} ${styles.statOk}`}>
+                <p className={styles.statLabel}>معدل</p>
+                <p className={styles.statValue}>{faNum(data.average_percent || 0)}٪</p>
+              </div>
+              <div className={styles.stat}>
+                <p className={styles.statLabel}>تکالیف باز</p>
+                <p className={styles.statValue}>{faNum(pendingHw.length)}</p>
+              </div>
+              <div className={styles.stat}>
+                <p className={styles.statLabel}>آزمون باز</p>
+                <p className={styles.statValue}>{faNum(pendingExams.length + pendingQuizzes.length)}</p>
+              </div>
+              <div className={styles.stat}>
+                <p className={styles.statLabel}>حضور</p>
+                <p className={styles.statValue}>{faNum(data.attendance?.attendance_rate ?? data.charts?.attendance?.attendance_rate ?? 0)}٪</p>
+              </div>
+            </div>
+
+            <div className={styles.rankCard}>
+              <div className={styles.rankRow}>
+                <div>
+                  <strong>رتبه {RANK_FA[rank.current] || rank.current}</strong>
+                  <span className={styles.rankMeta}>
+                    پیشرفت تا رتبه بعدی
+                  </span>
+                </div>
+              </div>
+              {rank.next ? (
+                <p className={styles.rankHint}>
+                  تا {RANK_FA[rank.next]} به {faNum(rank.points_needed)} امتیاز دیگر نیاز دارید.
+                </p>
+              ) : (
+                <p className={styles.rankHint}>شما در بالاترین رتبه هستید.</p>
+              )}
+              <div className={styles.progress}>
+                <div className={styles.progressFill} style={{ width: `${rank.progress_percent || 0}%` }} />
+              </div>
+            </div>
           </div>
         ) : null}
 
@@ -683,7 +1090,7 @@ export default function StudentDashboard({
                     key={p.id}
                     type="button"
                     className={styles.quickCard}
-                    onClick={() => startExamPaper(p.id)}
+                    onClick={() => requestStartExam('exam', p.id)}
                   >
                     <span className={styles.quickIcon}><Play size={16} /></span>
                     <span>
@@ -701,7 +1108,7 @@ export default function StudentDashboard({
                     key={`q-${q.id}`}
                     type="button"
                     className={styles.quickCard}
-                    onClick={() => startQuiz(q.id)}
+                    onClick={() => requestStartExam('quiz', q.id)}
                   >
                     <span className={styles.quickIcon}><Play size={16} /></span>
                     <span>
@@ -1033,327 +1440,106 @@ export default function StudentDashboard({
         ) : null}
 
         {tab === 'quiz' ? (
-          <div>
-            {quizSession && currentQ ? (
-              <div className={styles.panel}>
-                <div className={styles.panelHead}>
-                  <h2 className={styles.panelTitle}>{quizSession.quiz?.title}</h2>
-                  <button
-                    type="button"
-                    className={styles.btnGhost}
-                    disabled={examSubmitting}
-                    onClick={() => {
-                      quizSessionRef.current = null
-                      examAutoSubmittedRef.current = true
-                      setQuizSession(null)
-                      setAnswers({})
-                      setQIndex(0)
-                      setConfirmNext(null)
-                      resetExamTimerState()
-                    }}
-                  >
-                    انصراف
-                  </button>
-                </div>
-
-                {examTimeLeft != null && quizSession.ends_at ? (
-                  <div
-                    className={`${styles.examTimerBar} ${
-                      examTimeLeft <= 120
-                        ? styles.examTimerBarCritical
-                        : examTimeLeft <= Math.floor((quizSession.total_seconds || 0) / 2)
-                          ? styles.examTimerBarWarn
-                          : ''
-                    }`}
-                    role="timer"
-                    aria-live="polite"
-                    aria-atomic="true"
-                  >
-                    <div className={styles.examTimerMeta}>
-                      <Timer size={16} aria-hidden />
-                      <span>زمان باقی‌مانده</span>
-                    </div>
-                    <strong className={styles.examTimerValue}>
-                      {formatCountdown(examTimeLeft)}
-                    </strong>
-                    <div className={styles.examTimerTrack} aria-hidden>
-                      <div
-                        className={styles.examTimerFill}
-                        style={{
-                          width: `${Math.max(
-                            0,
-                            Math.min(
-                              100,
-                              (examTimeLeft / Math.max(1, quizSession.total_seconds || 1)) * 100,
-                            ),
-                          )}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                ) : null}
-
-                {examTimerAlert === 'half' ? (
-                  <div className={styles.examTimerAlert} role="alert">
-                    <div>
-                      <strong>هشدار زمان</strong>
-                      <p>دانش‌آموز عزیز، نیمی از زمان آزمون گذشته است.</p>
-                    </div>
-                    <button
-                      type="button"
-                      className={styles.examTimerAlertClose}
-                      aria-label="بستن"
-                      onClick={() => setExamTimerAlert(null)}
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ) : null}
-
-                {examTimerAlert === 'twoMin' ? (
-                  <div className={`${styles.examTimerAlert} ${styles.examTimerAlertCritical}`} role="alert">
-                    <div>
-                      <strong>هشدار زمان</strong>
-                      <p>دانش‌آموز عزیز، فقط دو دقیقه زمان باقی مانده است.</p>
-                    </div>
-                    <button
-                      type="button"
-                      className={styles.examTimerAlertClose}
-                      aria-label="بستن"
-                      onClick={() => setExamTimerAlert(null)}
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ) : null}
-
-                {examTimerAlert === 'ended' || examSubmitting ? (
-                  <div className={`${styles.examTimerAlert} ${styles.examTimerAlertCritical}`} role="status">
-                    <div>
-                      <strong>پایان زمان</strong>
-                      <p>زمان آزمون تمام شد. در حال ثبت پاسخ‌ها…</p>
-                    </div>
-                  </div>
-                ) : null}
-
-                {quizSession.mode === 'exam' && !allowBack ? (
-                  <div className={styles.quizNoBackWarn} role="alert">
-                    <strong>توجه:</strong>
-                    {' '}
-                    در این آزمون امکان برگشت به سوال قبلی وجود ندارد.
-                    بعد از تأیید رفتن به سوال بعد، دیگر نمی‌توانید به این سوال برگردید.
-                  </div>
-                ) : null}
-
-                <div className={styles.quizProgressBar}>
-                  <div
-                    className={styles.quizProgressFill}
-                    style={{ width: `${((qIndex + 1) / Math.max(1, quizQs.length)) * 100}%` }}
-                  />
-                </div>
-                <p className={styles.quizProgress}>
-                  سوال {faNum(qIndex + 1)} از {faNum(quizQs.length)}
-                  {currentQ.difficulty ? ` · ${DIFF_FA[currentQ.difficulty] || currentQ.difficulty}` : ''}
+          <div className={styles.hwPanel}>
+            <div className={styles.hwBar}>
+              <div>
+                <h2 className={styles.hwBarTitle}>آزمون‌ها</h2>
+                <p className={styles.hwBarSub}>
+                  {pendingExams.length + pendingQuizzes.length
+                    ? `${faNum(pendingExams.length + pendingQuizzes.length)} آزمون در ${faNum(quizBySubject.length)} بخش`
+                    : 'آزمون بازی ندارید'}
                 </p>
-                {currentQ.question_image_url ? (
-                  <img src={currentQ.question_image_url} alt="" className={styles.cover} />
-                ) : null}
-                {currentQ.question_text ? (
-                  <p className={styles.quizQuestion}>{currentQ.question_text}</p>
-                ) : null}
-                {(currentQ.hint_text || currentQ.hint_image_url) ? (
-                  <details className={styles.quizHint}>
-                    <summary>راهنمای سوال</summary>
-                    {currentQ.hint_text ? <p>{currentQ.hint_text}</p> : null}
-                    {currentQ.hint_image_url ? (
-                      <img src={currentQ.hint_image_url} alt="" className={styles.cover} />
-                    ) : null}
-                  </details>
-                ) : null}
-                {(currentQ.options || []).map((opt) => (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    disabled={examSubmitting}
-                    className={`${styles.quizOpt} ${answers[currentQ.id] === opt.id ? styles.quizOptOn : ''}`}
-                    onClick={() => setAnswers((p) => ({ ...p, [currentQ.id]: opt.id }))}
-                  >
-                    <span className={styles.quizOptMark}>{optLetter(opt.id)}</span>
-                    {opt.image ? <img src={opt.image} alt="" /> : null}
-                    <span className={styles.quizOptText}>
-                      {opt.text || (opt.image ? 'گزینه تصویری' : '—')}
-                    </span>
-                  </button>
-                ))}
-                <div className={styles.rowActions} style={{ marginTop: 12 }}>
-                  {allowBack ? (
-                    <button
-                      type="button"
-                      className={styles.btnGhost}
-                      disabled={qIndex === 0 || examSubmitting}
-                      onClick={() => setQIndex((i) => i - 1)}
-                    >
-                      قبلی
-                    </button>
-                  ) : (
-                    <span className={styles.metaMuted}>برگشت غیرفعال است</span>
-                  )}
-                  {isLastQuestion ? (
-                    <button
-                      type="button"
-                      className={styles.btnAccent}
-                      disabled={!answers[currentQ.id] || examSubmitting}
-                      onClick={requestNextStep}
-                    >
-                      {examSubmitting ? 'در حال ثبت…' : 'ثبت آزمون'}
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className={styles.btn}
-                      disabled={!answers[currentQ.id] || examSubmitting}
-                      onClick={requestNextStep}
-                    >
-                      بعدی
-                    </button>
-                  )}
-                </div>
+              </div>
+            </div>
 
-                {confirmNext ? (
-                  <div
-                    className={styles.hwModalBackdrop}
-                    role="presentation"
-                    onClick={() => setConfirmNext(null)}
-                  >
-                    <div
-                      className={styles.quizConfirmModal}
-                      role="dialog"
-                      aria-modal="true"
-                      aria-labelledby="quiz-confirm-title"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <h3 id="quiz-confirm-title">آیا مطمئن هستید؟</h3>
-                      <p>
-                        {confirmNext === 'submit'
-                          ? 'با ثبت آزمون، پاسخ این سوال نهایی می‌شود و امکان برگشت به سوالات قبلی وجود ندارد.'
-                          : 'برای رفتن به سوال بعد مطمئن هستید؟ برگشت به این سوال غیرممکن است.'}
-                      </p>
-                      <div className={styles.formActions}>
-                        <button type="button" className={styles.btnAccent} onClick={confirmNextStep}>
-                          {confirmNext === 'submit' ? 'بله، ثبت آزمون' : 'بله، سوال بعد'}
-                        </button>
-                        <button type="button" className={styles.btnGhost} onClick={() => setConfirmNext(null)}>
-                          انصراف
-                        </button>
+            {quizBySubject.length ? (
+              <div className={styles.hwSections}>
+                {quizBySubject.map((section) => (
+                  <section key={section.id} className={styles.hwSection}>
+                    <header className={styles.hwSectionHead}>
+                      <span
+                        className={styles.hwSectionDot}
+                        style={{ background: section.color }}
+                        aria-hidden
+                      />
+                      <div className={styles.hwSectionTitles}>
+                        <h3 className={styles.hwSectionTitle}>{section.title}</h3>
+                        <p className={styles.hwSectionMeta}>
+                          {faNum(section.items.length)} آزمون
+                          {section.id === 'comprehensive' ? ' · چندبخشی' : ''}
+                        </p>
                       </div>
+                    </header>
+                    <div className={styles.examGrid}>
+                      {section.items.map((item) => {
+                        const isExam = item.kind === 'exam'
+                        const title = isExam ? item.exam_title : item.title
+                        const meta = isExam
+                          ? ((item.subject_titles || []).length > 1
+                            ? (item.subject_titles || []).join(' · ')
+                            : null)
+                          : (item.lesson_title || null)
+                        const qCount = isExam
+                          ? item.total_questions
+                          : (item.question_count || 0)
+                        const noBack = isExam && item.allow_back === false
+
+                        return (
+                          <article key={`${item.kind}-${item.id}`} className={styles.examCard}>
+                            <div
+                              className={styles.examCardAccent}
+                              style={{ background: section.color }}
+                              aria-hidden
+                            />
+                            <div className={styles.examCardInner}>
+                              <div className={styles.examCardTop}>
+                                <span className={styles.examCardKind}>
+                                  {isExam ? 'آزمون' : 'کوییز'}
+                                </span>
+                                {noBack ? (
+                                  <span className={styles.examCardWarn}>بدون برگشت</span>
+                                ) : null}
+                              </div>
+                              <strong className={styles.examCardTitle}>{title}</strong>
+                              {meta ? (
+                                <p className={styles.examCardMeta}>{meta}</p>
+                              ) : null}
+                              <div className={styles.examCardStats}>
+                                <span>
+                                  <ClipboardList size={12} />
+                                  {faNum(qCount)} سوال
+                                </span>
+                                {isExam && item.time_per_question ? (
+                                  <span>
+                                    <Timer size={12} />
+                                    {faNum(item.time_per_question)} ث
+                                  </span>
+                                ) : null}
+                              </div>
+                              <button
+                                type="button"
+                                className={styles.examStartBtn}
+                                onClick={() => requestStartExam(
+                                  isExam ? 'exam' : 'quiz',
+                                  item.id,
+                                )}
+                              >
+                                <Play size={14} />
+                                شروع
+                              </button>
+                            </div>
+                          </article>
+                        )
+                      })}
                     </div>
-                  </div>
-                ) : null}
+                  </section>
+                ))}
               </div>
             ) : (
-              <div className={styles.hwPanel}>
-                <div className={styles.hwBar}>
-                  <div>
-                    <h2 className={styles.hwBarTitle}>آزمون‌ها</h2>
-                    <p className={styles.hwBarSub}>
-                      {pendingExams.length + pendingQuizzes.length
-                        ? `${faNum(pendingExams.length + pendingQuizzes.length)} آزمون در ${faNum(quizBySubject.length)} بخش`
-                        : 'آزمون بازی ندارید'}
-                    </p>
-                  </div>
-                </div>
-
-                {quizBySubject.length ? (
-                  <div className={styles.hwSections}>
-                    {quizBySubject.map((section) => (
-                      <section key={section.id} className={styles.hwSection}>
-                        <header className={styles.hwSectionHead}>
-                          <span
-                            className={styles.hwSectionDot}
-                            style={{ background: section.color }}
-                            aria-hidden
-                          />
-                          <div className={styles.hwSectionTitles}>
-                            <h3 className={styles.hwSectionTitle}>{section.title}</h3>
-                            <p className={styles.hwSectionMeta}>
-                              {faNum(section.items.length)} آزمون
-                              {section.id === 'comprehensive' ? ' · چندبخشی' : ''}
-                            </p>
-                          </div>
-                        </header>
-                        <div className={styles.examGrid}>
-                          {section.items.map((item) => {
-                            const isExam = item.kind === 'exam'
-                            const title = isExam ? item.exam_title : item.title
-                            const meta = isExam
-                              ? ((item.subject_titles || []).length > 1
-                                ? (item.subject_titles || []).join(' · ')
-                                : null)
-                              : (item.lesson_title || null)
-                            const qCount = isExam
-                              ? item.total_questions
-                              : (item.question_count || 0)
-                            const noBack = isExam && item.allow_back === false
-
-                            return (
-                              <article key={`${item.kind}-${item.id}`} className={styles.examCard}>
-                                <div
-                                  className={styles.examCardAccent}
-                                  style={{ background: section.color }}
-                                  aria-hidden
-                                />
-                                <div className={styles.examCardInner}>
-                                  <div className={styles.examCardTop}>
-                                    <span className={styles.examCardKind}>
-                                      {isExam ? 'آزمون' : 'کوییز'}
-                                    </span>
-                                    {noBack ? (
-                                      <span className={styles.examCardWarn}>بدون برگشت</span>
-                                    ) : null}
-                                  </div>
-                                  <strong className={styles.examCardTitle}>{title}</strong>
-                                  {meta ? (
-                                    <p className={styles.examCardMeta}>{meta}</p>
-                                  ) : null}
-                                  <div className={styles.examCardStats}>
-                                    <span>
-                                      <ClipboardList size={12} />
-                                      {faNum(qCount)} سوال
-                                    </span>
-                                    {isExam && item.time_per_question ? (
-                                      <span>
-                                        <Timer size={12} />
-                                        {faNum(item.time_per_question)} ث
-                                      </span>
-                                    ) : null}
-                                  </div>
-                                  <button
-                                    type="button"
-                                    className={styles.examStartBtn}
-                                    onClick={() => (
-                                      isExam
-                                        ? startExamPaper(item.id)
-                                        : startQuiz(item.id)
-                                    )}
-                                  >
-                                    <Play size={14} />
-                                    شروع
-                                  </button>
-                                </div>
-                              </article>
-                            )
-                          })}
-                        </div>
-                      </section>
-                    ))}
-                  </div>
-                ) : (
-                  <div className={styles.hwEmpty}>
-                    <span className={styles.hwEmptyIcon}><CircleCheck size={26} /></span>
-                    <strong>آزمون بازی باقی نمانده</strong>
-                    <p>همه آزمون‌ها را داده‌اید.</p>
-                  </div>
-                )}
+              <div className={styles.hwEmpty}>
+                <span className={styles.hwEmptyIcon}><CircleCheck size={26} /></span>
+                <strong>آزمون بازی باقی نمانده</strong>
+                <p>همه آزمون‌ها را داده‌اید.</p>
               </div>
             )}
           </div>
@@ -1436,7 +1622,7 @@ export default function StudentDashboard({
           </div>
         ) : null}
 
-        {tab === 'lesson' && lesson ? (() => {
+        {lesson ? (() => {
           const subjectColor = tree.find((s) => s.id === lesson.subject_id)?.color || '#e8b800'
           const hasFileVideo = Boolean(lesson.video_file_url)
           const aparatSrc = !hasFileVideo ? aparatEmbedSrc(lesson.video_url) : null
@@ -1446,27 +1632,37 @@ export default function StudentDashboard({
             (ex) => !ex.my_submission?.is_done || ex.my_submission?.status === 'rejected',
           )
 
-          return (
-            <div className={styles.lessonView}>
-              <header className={styles.lessonHero}>
+          const layer = (
+            <div
+              className={[
+                styles.cqExamFocusRoot,
+                styles.studentPage,
+                embedded ? styles.pageInProfile : '',
+              ].filter(Boolean).join(' ')}
+              role="dialog"
+              aria-modal="true"
+              aria-label={lesson.title || 'درس'}
+            >
+              <div className={styles.cqExamFocusBackdrop} aria-hidden />
+              <div className={`${styles.cqExamFocusStage} ${styles.cqLessonFocusStage}`}>
+            <div className={`${styles.lessonView} ${styles.cqLessonFocusPanel}`} dir="rtl" lang="fa">
+              <header className={`${styles.lessonHero} ${styles.lessonHeroCompact}`}>
+                <button
+                  type="button"
+                  className={styles.lessonBackBtn}
+                  onClick={closeLessonFocus}
+                >
+                  <ChevronLeft size={14} />
+                  دروس
+                </button>
                 <div className={styles.lessonHeroMain}>
-                  <div className={styles.lessonHeroActions}>
-                    <button
-                      type="button"
-                      className={styles.lessonBackBtn}
-                      onClick={() => setTab('lessons')}
-                    >
-                      <ChevronLeft size={14} />
-                      بازگشت به دروس
-                    </button>
-                  </div>
                   <div className={styles.lessonBreadcrumb}>
                     <span
                       className={styles.lessonSubjectChip}
                       style={{
                         color: subjectColor,
-                        background: `${subjectColor}22`,
-                        borderColor: `${subjectColor}44`,
+                        background: `${subjectColor}18`,
+                        borderColor: `${subjectColor}33`,
                       }}
                     >
                       {lesson.subject_title || 'بخش'}
@@ -1478,13 +1674,13 @@ export default function StudentDashboard({
                   <h2 className={styles.lessonHeroTitle}>{lesson.title}</h2>
                   <div className={styles.lessonHeroMeta}>
                     {lesson.estimated_minutes ? (
-                      <span><Timer size={13} /> {faNum(lesson.estimated_minutes)} دقیقه</span>
+                      <span><Timer size={12} /> {faNum(lesson.estimated_minutes)} دقیقه</span>
                     ) : null}
                     {exercises.length ? (
-                      <span><ClipboardList size={13} /> {faNum(exercises.length)} تمرین</span>
+                      <span><ClipboardList size={12} /> {faNum(exercises.length)} تمرین</span>
                     ) : null}
                     {quizzes.length ? (
-                      <span><Play size={13} /> {faNum(quizzes.length)} آزمون</span>
+                      <span><Play size={12} /> {faNum(quizzes.length)} آزمون</span>
                     ) : null}
                   </div>
                 </div>
@@ -1706,7 +1902,7 @@ export default function StudentDashboard({
                               <button
                                 type="button"
                                 className={styles.examStartBtn}
-                                onClick={() => startQuiz(q.id)}
+                                onClick={() => requestStartExam('quiz', q.id)}
                               >
                                 <Play size={14} />
                                 شروع
@@ -1720,7 +1916,13 @@ export default function StudentDashboard({
                 </section>
               ) : null}
             </div>
+              </div>
+            </div>
           )
+
+          return typeof document !== 'undefined'
+            ? createPortal(layer, document.body)
+            : layer
         })() : null}
 
         {hwProofEx ? (
@@ -1830,7 +2032,46 @@ export default function StudentDashboard({
             </div>
           </div>
         ) : null}
+
+        {examStartPrompt ? (
+          <div
+            className={styles.hwModalBackdrop}
+            role="presentation"
+            onClick={() => setExamStartPrompt(null)}
+          >
+            <div
+              className={styles.quizConfirmModal}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="exam-start-title"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 id="exam-start-title">شرایط شروع آزمون</h3>
+              <p>{EXAM_STAY_RULE}</p>
+              <div className={styles.formActions}>
+                <button
+                  type="button"
+                  className={styles.btnAccent}
+                  onClick={confirmStartExam}
+                >
+                  متوجه شدم، شروع آزمون
+                </button>
+                <button
+                  type="button"
+                  className={styles.btnGhost}
+                  onClick={() => setExamStartPrompt(null)}
+                >
+                  بعداً
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
+    {examFocusLayer && typeof document !== 'undefined'
+      ? createPortal(examFocusLayer, document.body)
+      : null}
+    </>
   )
 }

@@ -654,6 +654,7 @@ export default function SchoolProfileHub() {
           user={user}
           variant="school"
           showShortcuts={false}
+          chromeOnly={activeTab !== 'account'}
           roleChip={<RoleBadge role={role} me={me} />}
           actionsExtra={
             canPreviewTeacher && activeTab === 'teacher' ? (

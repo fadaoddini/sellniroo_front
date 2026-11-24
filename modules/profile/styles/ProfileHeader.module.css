@@ -120,6 +120,34 @@
   width: 100%;
 }
 
+.headerChromeOnly {
+  padding-top: 0.55rem;
+  padding-bottom: 0.55rem;
+}
+
+.headerChromeOnly .body {
+  gap: 0.45rem;
+  padding-top: 0.15rem;
+  padding-bottom: 0.15rem;
+}
+
+.headerChromeOnly .accentBar {
+  display: none;
+}
+
+.headerChromeOnly .headerFooter {
+  margin-top: 0;
+}
+
+.chromeOnlyActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  width: 100%;
+}
+
 .avatarBtn {
   position: relative;
   z-index: 1;

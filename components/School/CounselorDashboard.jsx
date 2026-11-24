@@ -4,28 +4,51 @@ import React, { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
-  Brain, FolderOpen, HeartHandshake, Home, ArrowUpLeft, RefreshCw,
+  ClipboardList, HeartHandshake, Home, ArrowUpLeft,
+  RefreshCw, UserRound, AlertTriangle, Users,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import schoolService from '@/components/School/services/schoolService'
 import CounselorProfilePanel from '@/components/School/CounselorProfilePanel'
 import CounselingTestsPanel from '@/components/School/CounselingTestsPanel'
 import CounselingFilesPanel from '@/components/School/CounselingFilesPanel'
+import CounselorOverviewPanel from '@/components/School/CounselorOverviewPanel'
+import CounselorFollowUpPanel from '@/components/School/CounselorFollowUpPanel'
+import CounselingAttemptsPanel from '@/components/School/CounselingAttemptsPanel'
+import CounselorPeoplePanel from '@/components/School/CounselorPeoplePanel'
 import styles from './School.module.css'
+
+function faNum(n) {
+  if (n == null || Number.isNaN(Number(n))) return '—'
+  return Number(n).toLocaleString('fa-IR')
+}
+
+const TABS = [
+  ['info', 'اطلاعات پایه', null],
+  ['overview', 'نمای کلی', null],
+  ['followup', 'پیگیری', 'high_risk'],
+  ['people', 'افراد', null],
+  ['tests', 'آزمون‌ها', null],
+  ['files', 'پرونده‌ها', null],
+  ['attempts', 'نتایج', null],
+  ['profile', 'معرفی مشاور', null],
+]
 
 export default function CounselorDashboard({
   embedded = false,
   previewCounselorId: previewCounselorIdProp,
   onPreviewCounselorIdChange,
+  initialTab = 'overview',
 } = {}) {
   const router = useRouter()
   const { isAuthenticated, loading } = useAuth()
-  const [tab, setTab] = useState('overview')
+  const [tab, setTab] = useState(initialTab || 'overview')
   const [data, setData] = useState(null)
   const [students, setStudents] = useState([])
   const [teachers, setTeachers] = useState([])
   const [msg, setMsg] = useState(null)
   const [err, setErr] = useState(null)
+  const [fileFocus, setFileFocus] = useState(null)
   const [previewIdLocal, setPreviewIdLocal] = useState('')
   const previewControlled = previewCounselorIdProp !== undefined
   const previewId = previewControlled
@@ -52,6 +75,10 @@ export default function CounselorDashboard({
     }
   }, [loading, isAuthenticated, router])
 
+  useEffect(() => {
+    if (initialTab) setTab(initialTab)
+  }, [initialTab])
+
   const load = useCallback(async () => {
     setErr(null)
     const params = previewId ? { counselor: previewId } : {}
@@ -76,6 +103,33 @@ export default function CounselorDashboard({
     if (isAuthenticated) load()
   }, [isAuthenticated, load])
 
+  const openFile = useCallback((scope, fileId) => {
+    if (!fileId) return
+    setFileFocus({
+      scope: scope === 'teachers' ? 'teachers' : 'students',
+      fileId,
+      nonce: Date.now(),
+    })
+    setTab('files')
+  }, [])
+
+  const openStudentAttemptFile = useCallback(async (attempt) => {
+    if (attempt?.counseling_file_id) {
+      openFile('students', attempt.counseling_file_id)
+      return
+    }
+    if (!attempt?.student_id) {
+      notify('شناسه پرونده این نتیجه مشخص نیست', true)
+      return
+    }
+    const res = await schoolService.getCounselingFileByStudent(attempt.student_id)
+    if (!res.success) {
+      notify(res.error || 'پرونده دانش‌آموز یافت نشد', true)
+      return
+    }
+    openFile('students', res.data?.id)
+  }, [notify, openFile])
+
   const pageClass = embedded
     ? `${styles.page} ${styles.pageInProfile}`
     : styles.page
@@ -83,7 +137,7 @@ export default function CounselorDashboard({
   if (loading || !isAuthenticated) return null
   if (!data) {
     return (
-      <div className={pageClass} dir="rtl">
+      <div className={pageClass} dir="rtl" lang="fa">
         <div className={styles.wrap}>
           {err ? <div className={styles.err}>{err}</div> : <p className={styles.empty}>در حال بارگذاری…</p>}
         </div>
@@ -91,8 +145,10 @@ export default function CounselorDashboard({
     )
   }
 
+  const highRisk = Number(data.stats?.high_risk) || 0
+
   return (
-    <div className={pageClass} dir="rtl">
+    <div className={pageClass} dir="rtl" lang="fa">
       <div className={styles.wrap}>
         {!embedded ? (
           <header className={styles.hero}>
@@ -100,13 +156,13 @@ export default function CounselorDashboard({
             <div className={styles.heroBrand}>
               <span className={styles.badge}>
                 <HeartHandshake size={12} />
-                School counselor
+                پنل مشاور
               </span>
               <h1 className={styles.brand}>
                 school<span className={styles.brandAccent}>counsel</span>
               </h1>
               <p className={styles.tagline}>
-                معرفی مشاور، آزمون‌های IQ/EQ و پرونده اختصاصی دانش‌آموزان و معلمان
+                میز کار مشاور: پیگیری ریسک، آزمون‌های هوش/شخصیت و پرونده دانش‌آموز و معلم
               </p>
               <nav className={styles.heroNav}>
                 <Link href="/profile"><Home size={12} /> پروفایل مدرسه</Link>
@@ -145,54 +201,113 @@ export default function CounselorDashboard({
         {msg ? <div className={styles.msg}>{msg}</div> : null}
         {err ? <div className={styles.err}>{err}</div> : null}
 
-        <div className={styles.stats}>
-          <div className={styles.stat}><p className={styles.statLabel}>پرونده دانش‌آموز</p><p className={styles.statValue}>{data.stats?.student_files ?? 0}</p></div>
-          <div className={styles.stat}><p className={styles.statLabel}>پرونده معلم</p><p className={styles.statValue}>{data.stats?.teacher_files ?? 0}</p></div>
-          <div className={styles.stat}><p className={styles.statLabel}>آزمون‌ها</p><p className={styles.statValue}>{data.stats?.tests ?? 0}</p></div>
-          <div className={`${styles.stat} ${styles.statOk}`}><p className={styles.statLabel}>پیگیری بالا</p><p className={styles.statValue}>{data.stats?.high_risk ?? 0}</p></div>
+        <div className={styles.tabs}>
+          {TABS.map(([k, l, badgeKey]) => {
+            const badge = badgeKey === 'high_risk' && highRisk > 0 ? highRisk : null
+            return (
+              <button
+                key={k}
+                type="button"
+                className={`${styles.tab} ${tab === k ? styles.tabOn : ''}`}
+                onClick={() => setTab(k)}
+              >
+                {l}
+                {badge ? <span className={styles.tabBadge}>{faNum(badge)}</span> : null}
+              </button>
+            )
+          })}
         </div>
 
-        <div className={styles.tabs}>
-          {[
-            ['overview', 'نمای کلی'],
-            ['profile', 'معرفی مشاور'],
-            ['tests', 'آزمون IQ / EQ'],
-            ['files', 'پرونده‌ها'],
-          ].map(([k, l]) => (
-            <button key={k} type="button" className={`${styles.tab} ${tab === k ? styles.tabOn : ''}`} onClick={() => setTab(k)}>{l}</button>
-          ))}
-        </div>
+        {tab === 'info' ? (
+          <div className={styles.infoPanel}>
+            <section className={styles.infoIdentity} aria-label="پروفایل مشاور">
+              <div className={styles.infoAvatar} aria-hidden>
+                <UserRound size={22} />
+              </div>
+              <div className={styles.infoIdentityBody}>
+                <h2 className={styles.infoName}>
+                  {data.profile?.display_name || 'مشاور'}
+                </h2>
+                <p className={styles.infoMeta}>
+                  {data.profile?.specialty || 'مشاوره مدرسه'}
+                </p>
+              </div>
+              <button
+                type="button"
+                className={styles.btnGhost}
+                onClick={load}
+                aria-label="بروزرسانی"
+              >
+                <RefreshCw size={14} />
+                بروزرسانی
+              </button>
+            </section>
+
+            <div className={styles.stats}>
+              <button type="button" className={styles.stat} onClick={() => setTab('files')}>
+                <p className={styles.statLabel}>پرونده دانش‌آموز</p>
+                <p className={styles.statValue}>{faNum(data.stats?.student_files ?? 0)}</p>
+              </button>
+              <button type="button" className={styles.stat} onClick={() => setTab('files')}>
+                <p className={styles.statLabel}>پرونده معلم</p>
+                <p className={styles.statValue}>{faNum(data.stats?.teacher_files ?? 0)}</p>
+              </button>
+              <button type="button" className={styles.stat} onClick={() => setTab('tests')}>
+                <p className={styles.statLabel}>آزمون‌ها</p>
+                <p className={styles.statValue}>{faNum(data.stats?.tests ?? 0)}</p>
+              </button>
+              <button
+                type="button"
+                className={`${styles.stat} ${styles.statOk}`}
+                onClick={() => setTab('followup')}
+              >
+                <p className={styles.statLabel}>پیگیری بالا</p>
+                <p className={styles.statValue}>{faNum(data.stats?.high_risk ?? 0)}</p>
+              </button>
+            </div>
+
+            <div className={styles.copInfoActions}>
+              <button type="button" className={styles.btnAccent} onClick={() => setTab('overview')}>
+                <HeartHandshake size={14} /> میز کار مشاور
+              </button>
+              <button type="button" className={styles.btnGhost} onClick={() => setTab('followup')}>
+                <AlertTriangle size={14} /> صف پیگیری
+              </button>
+              <button type="button" className={styles.btnGhost} onClick={() => setTab('people')}>
+                <Users size={14} /> فهرست افراد
+              </button>
+              <button type="button" className={styles.btnGhost} onClick={() => setTab('attempts')}>
+                <ClipboardList size={14} /> نتایج
+              </button>
+            </div>
+          </div>
+        ) : null}
 
         {tab === 'overview' ? (
-          <div className={styles.grid2}>
-            <div className={styles.panel}>
-              <h2 className={styles.panelTitle}><FolderOpen size={16} /> پرونده‌های اخیر دانش‌آموز</h2>
-              {(data.recent_files || []).map((f) => (
-                <div key={`s-${f.id}`} className={styles.tip}>
-                  <strong>{f.student_name}</strong>
-                  <div>{f.risk_label || f.risk_level}</div>
-                </div>
-              ))}
-              {!(data.recent_files || []).length ? <p className={styles.empty}>پرونده دانش‌آموزی نیست</p> : null}
-              <h2 className={styles.panelTitle} style={{ marginTop: 16 }}><FolderOpen size={16} /> پرونده‌های اخیر معلم</h2>
-              {(data.recent_teacher_files || []).map((f) => (
-                <div key={`t-${f.id}`} className={styles.tip}>
-                  <strong>{f.teacher_name}</strong>
-                  <div>{f.risk_label || f.risk_level}{f.teacher_specialty ? ` · ${f.teacher_specialty}` : ''}</div>
-                </div>
-              ))}
-              {!(data.recent_teacher_files || []).length ? <p className={styles.empty}>پرونده معلمی نیست</p> : null}
-            </div>
-            <div className={styles.panel}>
-              <h2 className={styles.panelTitle}><Brain size={16} /> نتایج اخیر</h2>
-              {(data.recent_attempts || []).map((a) => (
-                <div key={a.id} className={styles.tip}>
-                  <strong>{a.student_name}</strong>
-                  <div>{a.test_title} · {a.result_label} ({a.score}/{a.max_score})</div>
-                </div>
-              ))}
-              {!(data.recent_attempts || []).length ? <p className={styles.empty}>نتیجه‌ای نیست</p> : null}
-            </div>
+          <CounselorOverviewPanel
+            data={data}
+            onNavigate={setTab}
+            onOpenFile={openFile}
+          />
+        ) : null}
+
+        {tab === 'followup' ? (
+          <div className={styles.panel}>
+            <CounselorFollowUpPanel
+              onNotify={notify}
+              onOpenFile={openFile}
+            />
+          </div>
+        ) : null}
+
+        {tab === 'people' ? (
+          <div className={styles.panel}>
+            <CounselorPeoplePanel
+              students={students}
+              teachers={teachers}
+              onNotify={notify}
+              onOpenFile={openFile}
+            />
           </div>
         ) : null}
 
@@ -214,7 +329,22 @@ export default function CounselorDashboard({
 
         {tab === 'files' ? (
           <div className={styles.panel}>
-            <CounselingFilesPanel students={students} teachers={teachers} onNotify={notify} />
+            <CounselingFilesPanel
+              students={students}
+              teachers={teachers}
+              onNotify={notify}
+              focusRequest={fileFocus}
+              onFocusHandled={() => setFileFocus(null)}
+            />
+          </div>
+        ) : null}
+
+        {tab === 'attempts' ? (
+          <div className={styles.panel}>
+            <CounselingAttemptsPanel
+              onNotify={notify}
+              onOpenStudentFile={openStudentAttemptFile}
+            />
           </div>
         ) : null}
       </div>

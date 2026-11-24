@@ -1,14 +1,16 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Play, Pause, Volume2, VolumeX, Maximize, Minimize,
   PictureInPicture2, Download, Share2, Link2, Check,
+  RotateCcw, RotateCw,
 } from 'lucide-react'
 import styles from './School.module.css'
 
 const SPEEDS = [0.75, 1, 1.25, 1.5, 1.75, 2]
 const FA_DIGITS = '۰۱۲۳۴۵۶۷۸۹'
+const SKIP_SEC = 10
 
 function toFaDigits(str) {
   return String(str).replace(/\d/g, (d) => FA_DIGITS[d])
@@ -105,7 +107,12 @@ export function LessonShareBar({ title }) {
   }
 
   return (
-    <div ref={rootRef} className={`${styles.vPlayerActions} ${styles.vPlayerActionsCompact}`}>
+    <div
+      ref={rootRef}
+      className={`${styles.vPlayerActions} ${styles.vPlayerActionsCompact}`}
+      dir="rtl"
+      lang="fa"
+    >
       <div className={styles.vActionMenuWrap}>
         <button
           type="button"
@@ -168,6 +175,8 @@ export default function LessonVideoPlayer({
   const [pageUrl, setPageUrl] = useState('')
   const [ready, setReady] = useState(false)
   const [failed, setFailed] = useState(false)
+  const [controlsOn, setControlsOn] = useState(true)
+  const hideTimerRef = useRef(null)
 
   useEffect(() => {
     setPipOk(typeof document !== 'undefined' && !!document.pictureInPictureEnabled)
@@ -209,12 +218,73 @@ export default function LessonVideoPlayer({
     return () => document.removeEventListener('pointerdown', onDoc)
   }, [])
 
-  const togglePlay = () => {
+  const bumpControls = useCallback(() => {
+    setControlsOn(true)
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
+    hideTimerRef.current = setTimeout(() => {
+      if (videoRef.current && !videoRef.current.paused) setControlsOn(false)
+    }, 2800)
+  }, [])
+
+  useEffect(() => () => {
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
+  }, [])
+
+  const togglePlay = useCallback(() => {
     const v = videoRef.current
     if (!v) return
     if (v.paused) v.play().catch(() => {})
     else v.pause()
-  }
+    bumpControls()
+  }, [bumpControls])
+
+  const seekTo = useCallback((time) => {
+    const v = videoRef.current
+    if (!v) return
+    const max = Number.isFinite(v.duration) && v.duration > 0 ? v.duration : duration
+    if (!max || !Number.isFinite(max)) return
+    const next = Math.max(0, Math.min(max, time))
+    try {
+      v.currentTime = next
+    } catch {
+      /* ignore */
+    }
+    setCurrent(next)
+  }, [duration])
+
+  const skipBy = useCallback((delta) => {
+    const v = videoRef.current
+    if (!v) return
+    seekTo((v.currentTime || 0) + delta)
+    bumpControls()
+  }, [seekTo, bumpControls])
+
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) return undefined
+    const onKey = (e) => {
+      const tag = e.target?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+      if (e.code === 'Space' || e.key === 'k' || e.key === 'K') {
+        e.preventDefault()
+        togglePlay()
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault()
+        skipBy(SKIP_SEC)
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        skipBy(-SKIP_SEC)
+      } else if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault()
+        const v = videoRef.current
+        if (!v) return
+        v.muted = !v.muted
+        setMuted(v.muted)
+      }
+    }
+    root.addEventListener('keydown', onKey)
+    return () => root.removeEventListener('keydown', onKey)
+  }, [togglePlay, skipBy])
 
   const onTime = () => {
     const v = videoRef.current
@@ -229,23 +299,10 @@ export default function LessonVideoPlayer({
     }
   }
 
-  const seekTo = (time) => {
-    const v = videoRef.current
-    if (!v) return
-    const max = Number.isFinite(v.duration) && v.duration > 0 ? v.duration : duration
-    if (!max || !Number.isFinite(max)) return
-    const next = Math.max(0, Math.min(max, time))
-    try {
-      v.currentTime = next
-    } catch {
-      /* ignore */
-    }
-    setCurrent(next)
-  }
-
   const onSeekInput = (e) => {
     seekingRef.current = true
     seekTo(Number(e.target.value))
+    bumpControls()
   }
 
   const onSeekCommit = (e) => {
@@ -258,6 +315,7 @@ export default function LessonVideoPlayer({
     if (!v) return
     v.muted = !v.muted
     setMuted(v.muted)
+    bumpControls()
   }
 
   const changeVolume = (val) => {
@@ -338,7 +396,13 @@ export default function LessonVideoPlayer({
   return (
     <div
       ref={rootRef}
-      className={`${styles.vPlayerRoot} ${fs ? styles.vPlayerRootFs : ''}`}
+      className={`${styles.vPlayerRoot} ${fs ? styles.vPlayerRootFs : ''} ${controlsOn || !playing ? styles.vPlayerControlsOn : styles.vPlayerControlsOff}`}
+      dir="rtl"
+      lang="fa"
+      tabIndex={0}
+      onMouseMove={bumpControls}
+      onTouchStart={bumpControls}
+      onFocus={bumpControls}
     >
       <div className={styles.vPlayer}>
         {!ready && !failed ? (
@@ -361,8 +425,14 @@ export default function LessonVideoPlayer({
           playsInline
           preload="auto"
           onClick={togglePlay}
-          onPlay={() => setPlaying(true)}
-          onPause={() => setPlaying(false)}
+          onPlay={() => {
+            setPlaying(true)
+            bumpControls()
+          }}
+          onPause={() => {
+            setPlaying(false)
+            setControlsOn(true)
+          }}
           onTimeUpdate={onTime}
           onLoadedMetadata={(e) => {
             const v = e.currentTarget
@@ -395,6 +465,7 @@ export default function LessonVideoPlayer({
         />
 
         <div className={styles.vPlayerFrame} aria-hidden />
+        <div className={styles.vPlayerShade} aria-hidden />
 
         {!playing && !failed ? (
           <button
@@ -403,7 +474,7 @@ export default function LessonVideoPlayer({
             onClick={togglePlay}
             aria-label="پخش"
           >
-            <Play size={28} fill="currentColor" />
+            <Play size={30} fill="currentColor" />
           </button>
         ) : null}
 
@@ -413,6 +484,28 @@ export default function LessonVideoPlayer({
       </div>
 
       <div className={styles.vPlayerDock}>
+        <div className={styles.vPlayerSeekTrack} dir="ltr">
+          <div className={styles.vPlayerSeekRail} aria-hidden>
+            <div className={styles.vPlayerBuf} style={{ width: `${bufPct}%` }} />
+            <div className={styles.vPlayerProg} style={{ width: `${progress}%` }} />
+          </div>
+          <input
+            type="range"
+            className={styles.vPlayerSeekInput}
+            min={0}
+            max={safeDuration || 1}
+            step={0.05}
+            value={Math.min(current, safeDuration || 0)}
+            disabled={!safeDuration}
+            aria-label="نوار پیشرفت ویدیو"
+            onChange={onSeekInput}
+            onMouseUp={onSeekCommit}
+            onTouchEnd={onSeekCommit}
+            onKeyUp={onSeekCommit}
+            onBlur={onSeekCommit}
+          />
+        </div>
+
         <div className={styles.vPlayerDockTop}>
           <button
             type="button"
@@ -423,11 +516,35 @@ export default function LessonVideoPlayer({
             {playing ? 'توقف' : 'پخش'}
           </button>
 
-          <div className={styles.vPlayerTimeBox}>
+          <button
+            type="button"
+            className={styles.vPlayerBtn}
+            onClick={() => skipBy(-SKIP_SEC)}
+            aria-label={`عقب‌گرد ${toFaDigits(SKIP_SEC)} ثانیه`}
+            title={`${toFaDigits(SKIP_SEC)} ثانیه قبل`}
+          >
+            <RotateCcw size={16} />
+            <span className={styles.vSkipLabel}>{toFaDigits(SKIP_SEC)}</span>
+          </button>
+
+          <button
+            type="button"
+            className={styles.vPlayerBtn}
+            onClick={() => skipBy(SKIP_SEC)}
+            aria-label={`جلو ${toFaDigits(SKIP_SEC)} ثانیه`}
+            title={`${toFaDigits(SKIP_SEC)} ثانیه بعد`}
+          >
+            <RotateCw size={16} />
+            <span className={styles.vSkipLabel}>{toFaDigits(SKIP_SEC)}</span>
+          </button>
+
+          <div className={styles.vPlayerTimeBox} aria-live="off">
             <strong>{formatTime(current)}</strong>
-            <span>/</span>
+            <span>از</span>
             <em>{formatTime(safeDuration)}</em>
           </div>
+
+          <div className={styles.vPlayerDockSpacer} aria-hidden />
 
           <div className={styles.vPlayerVol}>
             <button
@@ -446,6 +563,7 @@ export default function LessonVideoPlayer({
               value={muted ? 0 : volume}
               className={styles.vPlayerRangeVisible}
               aria-label="بلندی صدا"
+              dir="ltr"
               onChange={(e) => changeVolume(Number(e.target.value))}
             />
           </div>
@@ -472,87 +590,67 @@ export default function LessonVideoPlayer({
           </button>
         </div>
 
-        <div className={styles.vPlayerSeekTrack}>
-          <div className={styles.vPlayerSeekRail} aria-hidden>
-            <div className={styles.vPlayerBuf} style={{ width: `${bufPct}%` }} />
-            <div className={styles.vPlayerProg} style={{ width: `${progress}%` }} />
-          </div>
-          <input
-            type="range"
-            className={styles.vPlayerSeekInput}
-            min={0}
-            max={safeDuration || 1}
-            step={0.05}
-            value={Math.min(current, safeDuration || 0)}
-            disabled={!safeDuration}
-            aria-label="نوار پیمایش ویدیو"
-            onChange={onSeekInput}
-            onMouseUp={onSeekCommit}
-            onTouchEnd={onSeekCommit}
-            onKeyUp={onSeekCommit}
-            onBlur={onSeekCommit}
-          />
-        </div>
-
-        <div className={styles.vPlayerSpeedRow}>
-          <span className={styles.vPlayerSpeedLabel}>سرعت پخش</span>
-          <div className={styles.vPlayerSpeedChips} role="radiogroup" aria-label="سرعت ویدیو">
-            {SPEEDS.map((s) => (
-              <button
-                key={s}
-                type="button"
-                role="radio"
-                aria-checked={speed === s}
-                className={`${styles.vSpeedChip} ${speed === s ? styles.vSpeedChipOn : ''}`}
-                onClick={() => setSpeed(s)}
-              >
-                {speedLabel(s)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className={styles.vPlayerActions}>
-          {allowDownload ? (
-            <button type="button" className={styles.vActionBtn} onClick={downloadVideo}>
-              <Download size={16} />
-              دانلود
-            </button>
-          ) : null}
-
-          <div className={styles.vActionMenuWrap}>
-            <button
-              type="button"
-              className={`${styles.vActionBtn} ${shareOpen ? styles.vActionBtnOn : ''}`}
-              onClick={() => setShareOpen((o) => !o)}
-              aria-expanded={shareOpen}
-            >
-              <Share2 size={16} />
-              اشتراک
-            </button>
-            {shareOpen ? (
-              <div className={`${styles.vActionMenu} ${styles.vShareMenu}`} role="menu">
-                <p className={styles.vShareLabel}>اشتراک در شبکه‌ها</p>
-                <div className={styles.vShareGrid}>
-                  {socials.map((s) => (
-                    <a
-                      key={s.id}
-                      href={s.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={`${styles.vShareItem} ${s.className || ''}`}
-                      role="menuitem"
-                    >
-                      {s.label}
-                    </a>
-                  ))}
-                </div>
-                <button type="button" className={styles.vShareCopy} onClick={copyLink}>
-                  {copied ? <Check size={14} /> : <Link2 size={14} />}
-                  {copied ? 'لینک کپی شد' : 'کپی لینک صفحه'}
+        <div className={styles.vPlayerDockBottom}>
+          <div className={styles.vPlayerSpeedRow}>
+            <span className={styles.vPlayerSpeedLabel}>سرعت</span>
+            <div className={styles.vPlayerSpeedChips} role="radiogroup" aria-label="سرعت پخش">
+              {SPEEDS.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  role="radio"
+                  aria-checked={speed === s}
+                  className={`${styles.vSpeedChip} ${speed === s ? styles.vSpeedChipOn : ''}`}
+                  onClick={() => setSpeed(s)}
+                >
+                  {speedLabel(s)}
                 </button>
-              </div>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.vPlayerActions}>
+            {allowDownload ? (
+              <button type="button" className={styles.vActionBtn} onClick={downloadVideo}>
+                <Download size={16} />
+                دانلود
+              </button>
             ) : null}
+
+            <div className={styles.vActionMenuWrap}>
+              <button
+                type="button"
+                className={`${styles.vActionBtn} ${shareOpen ? styles.vActionBtnOn : ''}`}
+                onClick={() => setShareOpen((o) => !o)}
+                aria-expanded={shareOpen}
+              >
+                <Share2 size={16} />
+                اشتراک
+              </button>
+              {shareOpen ? (
+                <div className={`${styles.vActionMenu} ${styles.vShareMenu}`} role="menu">
+                  <p className={styles.vShareLabel}>اشتراک در شبکه‌ها</p>
+                  <div className={styles.vShareGrid}>
+                    {socials.map((s) => (
+                      <a
+                        key={s.id}
+                        href={s.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={`${styles.vShareItem} ${s.className || ''}`}
+                        role="menuitem"
+                      >
+                        {s.label}
+                      </a>
+                    ))}
+                  </div>
+                  <button type="button" className={styles.vShareCopy} onClick={copyLink}>
+                    {copied ? <Check size={14} /> : <Link2 size={14} />}
+                    {copied ? 'لینک کپی شد' : 'کپی لینک صفحه'}
+                  </button>
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { LayoutDashboard, Plus, RefreshCw, GraduationCap, HeartHandshake, ExternalLink, Pencil, Trash2 } from 'lucide-react'
+import { LayoutDashboard, Plus, RefreshCw, GraduationCap, HeartHandshake, ExternalLink, Pencil, Trash2, UserRound } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import schoolService from '@/components/School/services/schoolService'
 import AdminAttendancePanel from '@/components/School/AdminAttendancePanel'
@@ -208,20 +208,9 @@ export default function SchoolManage({ embedded = false } = {}) {
         {msg ? <div className={styles.msg}>{msg}</div> : null}
         {err ? <div className={styles.err}>{err}</div> : null}
 
-        {tab !== 'overview' ? (
-          <div className={styles.stats}>
-            <div className={styles.stat}><p className={styles.statLabel}>معلمان</p><p className={styles.statValue}>{stats.teachers || 0}</p></div>
-            <div className={styles.stat}><p className={styles.statLabel}>دانش‌آموزان</p><p className={styles.statValue}>{stats.students || 0}</p></div>
-            <div className={styles.stat}><p className={styles.statLabel}>کلاس‌ها</p><p className={styles.statValue}>{stats.classes || 0}</p></div>
-            <div className={styles.stat}><p className={styles.statLabel}>دروس</p><p className={styles.statValue}>{stats.lessons || 0}</p></div>
-            <div className={styles.stat}><p className={styles.statLabel}>معدل کلی</p><p className={styles.statValue}>{stats.avg_percent || 0}٪</p></div>
-            <div className={styles.stat}><p className={styles.statLabel}>تکلیف در انتظار</p><p className={styles.statValue}>{stats.homework_pending_review || 0}</p></div>
-            <div className={styles.stat}><p className={styles.statLabel}>حضور امروز</p><p className={styles.statValue}>{stats.attendance_rate_today || 0}٪</p></div>
-          </div>
-        ) : null}
-
         <div className={styles.tabs}>
           {[
+            ['info', 'اطلاعات پایه'],
             ['overview', 'نمای کلی'],
             ['classes', 'کلاس‌ها و برنامه'],
             ['subjects', 'دروس معلمان'],
@@ -235,6 +224,60 @@ export default function SchoolManage({ embedded = false } = {}) {
             <button key={k} type="button" className={`${styles.tab} ${tab === k ? styles.tabOn : ''}`} onClick={() => setTab(k)}>{l}</button>
           ))}
         </div>
+
+        {tab === 'info' ? (
+          <div className={styles.infoPanel}>
+            <section className={styles.infoIdentity} aria-label="مدیریت مدرسه">
+              <div className={styles.infoAvatar} aria-hidden>
+                <UserRound size={22} />
+              </div>
+              <div className={styles.infoIdentityBody}>
+                <h2 className={styles.infoName}>مدیریت مدرسه</h2>
+                <p className={styles.infoMeta}>رصد کلی، تنظیمات و آمار پایه</p>
+              </div>
+              <button
+                type="button"
+                className={styles.btnGhost}
+                onClick={load}
+                aria-label="بروزرسانی"
+              >
+                <RefreshCw size={14} />
+                بروزرسانی
+              </button>
+            </section>
+
+            <div className={styles.stats}>
+              <div className={styles.stat}>
+                <p className={styles.statLabel}>معلمان</p>
+                <p className={styles.statValue}>{stats.teachers || 0}</p>
+              </div>
+              <div className={styles.stat}>
+                <p className={styles.statLabel}>دانش‌آموزان</p>
+                <p className={styles.statValue}>{stats.students || 0}</p>
+              </div>
+              <div className={styles.stat}>
+                <p className={styles.statLabel}>کلاس‌ها</p>
+                <p className={styles.statValue}>{stats.classes || 0}</p>
+              </div>
+              <div className={styles.stat}>
+                <p className={styles.statLabel}>دروس</p>
+                <p className={styles.statValue}>{stats.lessons || 0}</p>
+              </div>
+              <div className={styles.stat}>
+                <p className={styles.statLabel}>معدل کلی</p>
+                <p className={styles.statValue}>{stats.avg_percent || 0}٪</p>
+              </div>
+              <div className={styles.stat}>
+                <p className={styles.statLabel}>تکلیف در انتظار</p>
+                <p className={styles.statValue}>{stats.homework_pending_review || 0}</p>
+              </div>
+              <div className={styles.stat}>
+                <p className={styles.statLabel}>حضور امروز</p>
+                <p className={styles.statValue}>{stats.attendance_rate_today || 0}٪</p>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         {tab === 'classes' ? (
           <div className={styles.panel}>

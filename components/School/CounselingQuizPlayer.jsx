@@ -6,7 +6,6 @@ import {
   Lightbulb, ChevronRight, ChevronLeft, Check,
 } from 'lucide-react'
 import schoolService from '@/components/School/services/schoolService'
-import quizStyles from '@/components/Quiz/Quiz.module.css'
 import styles from './School.module.css'
 
 const LETTERS = ['الف', 'ب', 'ج', 'د', 'ه', 'و', 'ز', 'ح', 'ط', 'ی']
@@ -38,7 +37,13 @@ export default function CounselingQuizPlayer({
   onFinished,
   onCancel,
   embedded = true,
+  focusMode = false,
 }) {
+  const shellClass = [
+    styles.cqExamShell,
+    embedded ? styles.cqExamEmbedded : '',
+    focusMode ? styles.cqExamShellFocus : '',
+  ].filter(Boolean).join(' ')
   const [selectedId, setSelectedId] = useState(null)
   const [starting, setStarting] = useState(false)
   const [session, setSession] = useState(null)
@@ -238,63 +243,39 @@ export default function CounselingQuizPlayer({
   const formatTime = (seconds) =>
     Math.max(0, Math.floor(Number(seconds) || 0)).toString().padStart(2, '0')
 
-  const getCardClasses = () => {
-    let classes = quizStyles.cardQuestion
-    if (timed && timerStatus === 'warning') classes += ` ${quizStyles.warning}`
-    if (timed && timerStatus === 'danger') classes += ` ${quizStyles.danger}`
-    if (timed && timerStatus === 'heartbeat') classes += ` ${quizStyles.heartbeat}`
-    return classes
-  }
-
-  const getTimerClass = () => {
-    if (timerStatus === 'heartbeat' || timerStatus === 'danger') return quizStyles.timerDanger
-    if (timerStatus === 'warning') return quizStyles.timerWarning
-    return ''
-  }
-
-  const getTimerTextClass = () => {
-    if (timerStatus === 'heartbeat' || timerStatus === 'danger') return quizStyles.timerTextRed
-    if (timerStatus === 'warning') return quizStyles.timerTextOrange
-    return quizStyles.timerTextGreen
-  }
-
   if (result) {
     const pct = result.max_score
       ? Math.round((Number(result.score) / Number(result.max_score)) * 100)
       : 0
     return (
-      <div className={`${quizStyles.container} ${styles.cqWrap} ${embedded ? styles.cqEmbedded : ''}`}>
-        <div className={quizStyles.card}>
-          <div className={quizStyles.resultHeader}>
-            <div className={quizStyles.resultEmoji}><Trophy size={40} /></div>
-            <h2 className={quizStyles.resultTitle}>{result.result_label || 'نتیجه آزمون'}</h2>
-            <p className={quizStyles.resultSubtitle}>{test?.title}</p>
+      <div className={shellClass}>
+        <div className={styles.cqExamResult}>
+          <div className={styles.cqExamResultIcon} aria-hidden>
+            <Trophy size={28} />
           </div>
-          <div className={quizStyles.resultGrid}>
-            <div className={quizStyles.details}>
-              <div className={quizStyles.detailItem}>
-                <span className={quizStyles.detailLabel}>نمره</span>
-                <span className={quizStyles.detailValue}>{result.score} / {result.max_score}</span>
-              </div>
-              <div className={quizStyles.detailItem}>
-                <span className={quizStyles.detailLabel}>درصد</span>
-                <span className={`${quizStyles.detailValue} ${quizStyles.detailValueGreen}`}>{pct}٪</span>
-              </div>
-              <div className={quizStyles.detailItem}>
-                <span className={quizStyles.detailLabel}>نتیجه</span>
-                <span className={quizStyles.detailValue}>{result.result_label}</span>
-              </div>
+          <h2 className={styles.cqExamResultTitle}>
+            {result.result_label || 'نتیجه آزمون'}
+          </h2>
+          <p className={styles.cqExamResultSub}>{test?.title}</p>
+          <div className={styles.cqExamResultStats}>
+            <div>
+              <span>نمره</span>
+              <strong>{result.score} / {result.max_score}</strong>
+            </div>
+            <div>
+              <span>درصد</span>
+              <strong>{pct}٪</strong>
             </div>
           </div>
           {result.result_summary ? (
             <p className={styles.cqResultSummary}>{result.result_summary}</p>
           ) : null}
           <div className={styles.cqResultActions}>
-            <button type="button" className={quizStyles.buttonPrimary} onClick={resetToList}>
+            <button type="button" className={styles.cqNavBtnPrimaryWide} onClick={resetToList}>
               <RefreshCw size={16} /> آزمون‌های دیگر
             </button>
             {onCancel ? (
-              <button type="button" className={quizStyles.buttonSecondary} onClick={onCancel}>
+              <button type="button" className={styles.cqNavBtn} onClick={onCancel}>
                 بستن
               </button>
             ) : null}
@@ -308,173 +289,181 @@ export default function CounselingQuizPlayer({
     const q = questions[qIndex]
     const opts = Array.isArray(q?.options) ? q.options : []
     const answeredCount = Object.keys(answers).filter((k) => answers[k] !== '' && answers[k] != null).length
+    const timerTone =
+      timerStatus === 'heartbeat' || timerStatus === 'danger'
+        ? styles.cqExamTimerCritical
+        : timerStatus === 'warning'
+          ? styles.cqExamTimerWarn
+          : ''
 
     return (
-      <div className={`${quizStyles.container} ${styles.cqWrap} ${embedded ? styles.cqEmbedded : ''}`}>
-        <div className={styles.cqSessionTop}>
-          <span className={styles.cqSessionBadge} style={{ '--cq-accent': kind.color }}>
-            <KindIcon size={14} />
-            {test?.kind_label || kind.label}
-          </span>
-          <button type="button" className={styles.cqAbort} onClick={resetToList} title="انصراف">
-            <X size={16} />
-          </button>
-        </div>
-
-        <div className={getCardClasses()} style={timed ? { '--progress': `${timeProgressPct}%` } : undefined}>
-          <div className={quizStyles.questionContent}>
-            <div className={quizStyles.questionHeader}>
-              <span className={quizStyles.questionCounter}>
+      <div className={shellClass}>
+        <header className={styles.cqExamTop}>
+          <div className={styles.cqExamTopMain}>
+            <span
+              className={styles.cqExamKind}
+              style={{ '--cq-accent': kind.color }}
+            >
+              <KindIcon size={14} />
+              {test?.kind_label || kind.label}
+            </span>
+            <div className={styles.cqExamTitles}>
+              <strong>{test?.title || 'آزمون مشاوره'}</strong>
+              <span>
                 سوال {qIndex + 1} از {questions.length}
                 {test?.bank_size && test.bank_size > questions.length
-                  ? ` (از بانک ${test.bank_size})`
+                  ? ` · بانک ${test.bank_size}`
                   : ''}
-              </span>
-              {timed ? (
-                <div className={`${quizStyles.timer} ${getTimerClass()}`}>
-                  <span
-                    className={quizStyles.timerRing}
-                    style={{ '--progress': `${timeProgressPct}%` }}
-                    aria-hidden
-                  >
-                    <span className={quizStyles.timerRingInner}>
-                      <span className={`${quizStyles.timerText} ${getTimerTextClass()}`}>
-                        {formatTime(timeLeft)}
-                      </span>
-                    </span>
-                  </span>
-                  <span className={quizStyles.timerTotal}>از {formatTime(timePerQ)}</span>
-                </div>
-              ) : (
-                <span className={styles.cqNoTimer}>بدون محدودیت زمان سوال</span>
-              )}
-            </div>
-
-            {timed ? (
-              <div className={quizStyles.timeTrack} aria-hidden>
-                <div
-                  className={`${quizStyles.timeFill} ${
-                    timerStatus === 'warning'
-                      ? quizStyles.timeFillWarn
-                      : timerStatus === 'danger' || timerStatus === 'heartbeat'
-                        ? quizStyles.timeFillDanger
-                        : quizStyles.timeFillOk
-                  }`}
-                  style={{ width: `${timeProgressPct}%` }}
-                />
-              </div>
-            ) : null}
-
-            <div className={quizStyles.progressBar}>
-              <div className={quizStyles.progressFill} style={{ width: `${questionProgressPct}%` }} />
-            </div>
-
-            <div className={quizStyles.category}>{test?.title}</div>
-            {q?.text ? (
-              <h2 className={`${quizStyles.questionText} ${styles.cqQuestionText}`}>{q.text}</h2>
-            ) : null}
-            {q?.image_url ? (
-              <div className={styles.cqQImage}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={q.image_url} alt="" />
-              </div>
-            ) : null}
-
-            {q?.hint ? (
-              <details className={styles.cqHint}>
-                <summary>
-                  <Lightbulb size={14} />
-                  راهنمای این سوال
-                </summary>
-                <p>{q.hint}</p>
-              </details>
-            ) : null}
-
-            <div className={quizStyles.options}>
-              {opts.map((o, index) => {
-                const active = String(selectedKey) === String(o.key)
-                return (
-                  <button
-                    key={`${q.id}-${o.key}`}
-                    type="button"
-                    disabled={locking && !allowBack}
-                    className={`${quizStyles.optionButton} ${active ? quizStyles.optionButtonSelected : ''} ${o.image ? styles.cqOptWithImg : ''}`}
-                    onClick={() => pickOption(o.key)}
-                  >
-                    <span className={quizStyles.optionLetter}>{LETTERS[index] || o.key}</span>
-                    <span className={`${quizStyles.optionText} ${styles.cqOptBody}`}>
-                      {o.image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={o.image} alt="" className={styles.cqOptImg} />
-                      ) : null}
-                      {o.text ? <span>{o.text}</span> : null}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-
-            {allowBack ? (
-              <div className={styles.cqNavRow}>
-                <button
-                  type="button"
-                  className={styles.cqNavBtn}
-                  disabled={qIndex <= 0 || locking}
-                  onClick={goPrev}
-                >
-                  <ChevronRight size={16} /> قبلی
-                </button>
-                <span className={styles.cqNavMeta}>{answeredCount}/{questions.length} پاسخ</span>
-                {qIndex >= questions.length - 1 ? (
-                  <button
-                    type="button"
-                    className={`${styles.cqNavBtn} ${styles.cqNavPrimary}`}
-                    disabled={locking || submitting}
-                    onClick={() => finish(answersRef.current)}
-                  >
-                    <Check size={16} /> پایان
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    className={`${styles.cqNavBtn} ${styles.cqNavPrimary}`}
-                    disabled={locking}
-                    onClick={confirmNext}
-                  >
-                    بعدی <ChevronLeft size={16} />
-                  </button>
-                )}
-              </div>
-            ) : null}
-
-            <div className={quizStyles.questionFooter}>
-              <span>{test?.kind_label || kind.label}</span>
-              <span>
-                {timed
-                  ? `زمان: ${formatTime(timeLeft)} از ${formatTime(timePerQ)}`
-                  : allowBack
-                    ? 'می‌توانید بین سوالات جابه‌جا شوید'
-                    : 'پس از انتخاب، سوال بعدی می‌آید'}
               </span>
             </div>
           </div>
+          <button
+            type="button"
+            className={styles.cqAbort}
+            onClick={resetToList}
+            title="انصراف"
+            aria-label="انصراف از آزمون"
+          >
+            <X size={16} />
+          </button>
+        </header>
+
+        <div className={styles.cqExamProgress} aria-hidden>
+          <div
+            className={styles.cqExamProgressFill}
+            style={{ width: `${questionProgressPct}%` }}
+          />
         </div>
+
+        {timed ? (
+          <div
+            className={`${styles.cqExamTimer} ${timerTone}`}
+            role="timer"
+            aria-live="polite"
+          >
+            <div className={styles.cqExamTimerMeta}>
+              <span>زمان این سوال</span>
+              <strong>{formatTime(timeLeft)}</strong>
+              <em>از {formatTime(timePerQ)}</em>
+            </div>
+            <div className={styles.cqExamTimerTrack}>
+              <div
+                className={styles.cqExamTimerFill}
+                style={{ width: `${timeProgressPct}%` }}
+              />
+            </div>
+          </div>
+        ) : (
+          <p className={styles.cqExamHintLine}>بدون محدودیت زمان برای هر سوال</p>
+        )}
+
+        <article className={styles.cqExamCard}>
+          {q?.text ? (
+            <h2 className={styles.cqExamQuestion}>{q.text}</h2>
+          ) : null}
+          {q?.image_url ? (
+            <div className={styles.cqQImage}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={q.image_url} alt="" />
+            </div>
+          ) : null}
+
+          {q?.hint ? (
+            <details className={styles.cqHint}>
+              <summary>
+                <Lightbulb size={14} />
+                راهنمای این سوال
+              </summary>
+              <p>{q.hint}</p>
+            </details>
+          ) : null}
+
+          <div className={styles.cqExamOptions} role="listbox" aria-label="گزینه‌ها">
+            {opts.map((o, index) => {
+              const active = String(selectedKey) === String(o.key)
+              return (
+                <button
+                  key={`${q.id}-${o.key}`}
+                  type="button"
+                  role="option"
+                  aria-selected={active}
+                  disabled={locking && !allowBack}
+                  className={`${styles.cqExamOpt} ${active ? styles.cqExamOptOn : ''} ${o.image ? styles.cqOptWithImg : ''}`}
+                  onClick={() => pickOption(o.key)}
+                >
+                  <span className={styles.cqExamOptMark}>
+                    {LETTERS[index] || o.key}
+                  </span>
+                  <span className={styles.cqExamOptBody}>
+                    {o.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={o.image} alt="" className={styles.cqOptImg} />
+                    ) : null}
+                    {o.text ? <span>{o.text}</span> : null}
+                  </span>
+                  {active ? <Check size={16} className={styles.cqExamOptCheck} /> : null}
+                </button>
+              )
+            })}
+          </div>
+
+          {allowBack ? (
+            <div className={styles.cqNavRow}>
+              <button
+                type="button"
+                className={styles.cqNavBtn}
+                disabled={qIndex <= 0 || locking}
+                onClick={goPrev}
+              >
+                <ChevronRight size={16} /> قبلی
+              </button>
+              <span className={styles.cqNavMeta}>
+                {answeredCount}/{questions.length} پاسخ
+              </span>
+              {qIndex >= questions.length - 1 ? (
+                <button
+                  type="button"
+                  className={`${styles.cqNavBtn} ${styles.cqNavPrimary}`}
+                  disabled={locking || submitting}
+                  onClick={() => finish(answersRef.current)}
+                >
+                  <Check size={16} /> پایان
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className={`${styles.cqNavBtn} ${styles.cqNavPrimary}`}
+                  disabled={locking}
+                  onClick={confirmNext}
+                >
+                  بعدی <ChevronLeft size={16} />
+                </button>
+              )}
+            </div>
+          ) : (
+            <p className={styles.cqExamFootNote}>
+              {locking
+                ? 'در حال رفتن به سوال بعد…'
+                : 'با انتخاب گزینه، به سوال بعد می‌روید'}
+            </p>
+          )}
+        </article>
       </div>
     )
   }
 
   return (
-    <div className={`${quizStyles.container} ${styles.cqWrap} ${embedded ? styles.cqEmbedded : ''}`}>
-      <div className={`${quizStyles.card} ${quizStyles.cardWide}`}>
-        <div className={quizStyles.header}>
-          <div className={`${quizStyles.badge} ${styles.cqIntroBadge}`}>مشاوره مدرسه</div>
-          <h1 className={quizStyles.title}>آزمون‌های هوش و مشاوره</h1>
-          <p className={quizStyles.subtitle}>
-            سوالات از بانک به‌صورت تصادفی برای شما انتخاب می‌شود
+    <div className={shellClass}>
+      <div className={styles.cqExamPicker}>
+        <header className={styles.cqExamPickerHead}>
+          <span className={styles.cqExamPickerEyebrow}>مشاوره مدرسه</span>
+          <h2 className={styles.cqExamPickerTitle}>آزمون‌های هوش و مشاوره</h2>
+          <p className={styles.cqExamPickerDesc}>
+            یک آزمون را انتخاب کنید؛ سوالات از بانک به‌صورت تصادفی می‌آید.
           </p>
-        </div>
+        </header>
 
-        <div className={`${quizStyles.specialtyGrid} ${styles.cqTestGrid}`}>
+        <div className={styles.cqTestGrid}>
           {tests.map((t) => {
             const meta = KIND_META[t.kind] || KIND_META.custom
             const Icon = meta.icon
@@ -485,13 +474,13 @@ export default function CounselingQuizPlayer({
               <button
                 key={t.id}
                 type="button"
-                className={`${quizStyles.specialtyButton} ${styles.cqTestCard} ${active ? quizStyles.specialtyButtonActive : ''}`}
-                style={active ? { borderColor: meta.color } : undefined}
+                className={`${styles.cqTestCard} ${active ? styles.cqTestCardOn : ''}`}
+                style={{ '--cq-accent': meta.color }}
                 onClick={() => setSelectedId(t.id)}
                 aria-pressed={active}
               >
-                <Icon size={26} className={quizStyles.specialtyIcon} style={{ color: meta.color }} />
-                <span className={quizStyles.specialtyName}>{t.kind_label || meta.label}</span>
+                <Icon size={22} style={{ color: meta.color }} />
+                <span className={styles.cqTestCardKind}>{t.kind_label || meta.label}</span>
                 <span className={styles.cqTestCardTitle}>{t.title}</span>
                 <span className={styles.cqTestCardMeta}>
                   {per > 0 ? `${per} از ${bank}` : `${bank} سوال`}
@@ -507,14 +496,21 @@ export default function CounselingQuizPlayer({
           <p className={styles.cqEmpty}>آزمون فعالی تعریف نشده است.</p>
         ) : null}
 
-        <button
-          type="button"
-          className={quizStyles.buttonPrimary}
-          disabled={starting || !selectedId}
-          onClick={start}
-        >
-          {starting ? 'در حال شروع…' : 'شروع آزمون'}
-        </button>
+        <div className={styles.cqExamPickerActions}>
+          <button
+            type="button"
+            className={styles.cqNavBtnPrimaryWide}
+            disabled={starting || !selectedId}
+            onClick={start}
+          >
+            {starting ? 'در حال شروع…' : 'شروع آزمون'}
+          </button>
+          {onCancel ? (
+            <button type="button" className={styles.cqNavBtn} onClick={onCancel}>
+              بازگشت
+            </button>
+          ) : null}
+        </div>
       </div>
     </div>
   )

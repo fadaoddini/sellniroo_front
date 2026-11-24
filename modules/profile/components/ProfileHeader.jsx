@@ -170,6 +170,8 @@ const ProfileHeader = memo(function ProfileHeader({
   roleChip = null,
   footer = null,
   actionsExtra = null,
+  /** فقط نوار تب/اکشن — بدون کارت پروفایل شلوغ */
+  chromeOnly = false,
 }) {
   const isBasic = variant === "basic";
   const meta = VARIANT_META[variant] || VARIANT_META.job;
@@ -368,6 +370,21 @@ const ProfileHeader = memo(function ProfileHeader({
   const ringCircumference = 2 * Math.PI * ringRadius;
   const ringOffset =
     ringCircumference * (1 - Math.min(100, Math.max(0, completeness.percent)) / 100);
+
+  if (chromeOnly) {
+    return (
+      <header
+        className={`${styles.header} ${headerTone} ${styles.headerChromeOnly}`}
+      >
+        <div className={styles.body}>
+          {actionsExtra ? (
+            <div className={styles.chromeOnlyActions}>{actionsExtra}</div>
+          ) : null}
+          {footer ? <div className={styles.headerFooter}>{footer}</div> : null}
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className={`${styles.header} ${headerTone}`}>

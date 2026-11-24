@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { RefreshCw } from 'lucide-react'
+import { RefreshCw, UserRound } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import schoolService from '@/components/School/services/schoolService'
 import QuestionBankPanel from '@/components/School/QuestionBankPanel'
@@ -282,37 +282,9 @@ export default function TeacherDashboard({
         {msg ? <div className={styles.msg}>{msg}</div> : null}
         {err ? <div className={styles.err}>{err}</div> : null}
 
-        {tab !== 'overview' ? (
-          <div className={styles.stats}>
-            <div className={styles.stat}>
-              <p className={styles.statLabel}>دانش‌آموزان</p>
-              <p className={styles.statValue}>{data.stats?.students ?? 0}</p>
-            </div>
-            <div className={styles.stat}>
-              <p className={styles.statLabel}>دروس</p>
-              <p className={styles.statValue}>{data.stats?.lessons ?? 0}</p>
-            </div>
-            <div className={styles.stat}>
-              <p className={styles.statLabel}>بانک سوال</p>
-              <p className={styles.statValue}>{data.stats?.bank_questions ?? 0}</p>
-            </div>
-            <div className={styles.stat}>
-              <p className={styles.statLabel}>آزمون‌ها</p>
-              <p className={styles.statValue}>{data.stats?.exams ?? 0}</p>
-            </div>
-            <div className={`${styles.stat} ${styles.statOk}`}>
-              <p className={styles.statLabel}>میانگین</p>
-              <p className={styles.statValue}>{data.stats?.avg_percent ?? 0}٪</p>
-            </div>
-            <div className={styles.stat}>
-              <p className={styles.statLabel}>حضور ۳۰روز</p>
-              <p className={styles.statValue}>{data.stats?.attendance_rate_30d ?? 0}٪</p>
-            </div>
-          </div>
-        ) : null}
-
         <div className={styles.tabs} role="tablist" aria-label="بخش‌های معلم">
           {[
+            ['info', 'اطلاعات پایه'],
             ['overview', 'نمای کلی'],
             ['support', 'نیاز به حمایت'],
             ['profile', 'پروفایل معلم'],
@@ -338,6 +310,61 @@ export default function TeacherDashboard({
             </button>
           ))}
         </div>
+
+        {tab === 'info' ? (
+          <div className={styles.infoPanel}>
+            <section className={styles.infoIdentity} aria-label="پروفایل معلم">
+              <div className={styles.infoAvatar} aria-hidden>
+                <UserRound size={22} />
+              </div>
+              <div className={styles.infoIdentityBody}>
+                <h2 className={styles.infoName}>
+                  {data.profile?.display_name || 'معلم'}
+                </h2>
+                <p className={styles.infoMeta}>
+                  {data.profile?.specialty || 'بدون تخصص'}
+                  {data.is_admin_preview ? ' · پیش‌نمایش مدیر' : ''}
+                </p>
+              </div>
+              <button
+                type="button"
+                className={styles.btnGhost}
+                onClick={load}
+                aria-label="بروزرسانی"
+              >
+                <RefreshCw size={14} />
+                بروزرسانی
+              </button>
+            </section>
+
+            <div className={styles.stats}>
+              <div className={styles.stat}>
+                <p className={styles.statLabel}>دانش‌آموزان</p>
+                <p className={styles.statValue}>{data.stats?.students ?? 0}</p>
+              </div>
+              <div className={styles.stat}>
+                <p className={styles.statLabel}>دروس</p>
+                <p className={styles.statValue}>{data.stats?.lessons ?? 0}</p>
+              </div>
+              <div className={styles.stat}>
+                <p className={styles.statLabel}>بانک سوال</p>
+                <p className={styles.statValue}>{data.stats?.bank_questions ?? 0}</p>
+              </div>
+              <div className={styles.stat}>
+                <p className={styles.statLabel}>آزمون‌ها</p>
+                <p className={styles.statValue}>{data.stats?.exams ?? 0}</p>
+              </div>
+              <div className={`${styles.stat} ${styles.statOk}`}>
+                <p className={styles.statLabel}>میانگین</p>
+                <p className={styles.statValue}>{data.stats?.avg_percent ?? 0}٪</p>
+              </div>
+              <div className={styles.stat}>
+                <p className={styles.statLabel}>حضور ۳۰روز</p>
+                <p className={styles.statValue}>{data.stats?.attendance_rate_30d ?? 0}٪</p>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         {tab === 'profile' ? (
           <div className={styles.panel}>

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import {
   BarChart3, Brain, Compass, FolderOpen, Lightbulb, MessageSquareText,
   NotebookPen, Sparkles, Target, UserRound,
@@ -106,6 +107,18 @@ export default function StudentCounselingPanel({ studentId, onNotify }) {
 
   useEffect(() => { load() }, [load])
 
+  useEffect(() => {
+    if (!quizMode) return undefined
+    const prevOverflow = document.body.style.overflow
+    const prevTouch = document.body.style.touchAction
+    document.body.style.overflow = 'hidden'
+    document.body.style.touchAction = 'none'
+    return () => {
+      document.body.style.overflow = prevOverflow
+      document.body.style.touchAction = prevTouch
+    }
+  }, [quizMode])
+
   const attempts = useMemo(() => file?.attempts || [], [file])
   const notes = useMemo(() => file?.notes || [], [file])
   const insights = useMemo(() => buildCounselingInsights(attempts), [attempts])
@@ -185,18 +198,34 @@ export default function StudentCounselingPanel({ studentId, onNotify }) {
   }, [stats])
 
   if (quizMode) {
-    return (
-      <CounselingQuizPlayer
-        tests={tests}
-        embedded
-        onNotify={onNotify}
-        onFinished={() => load()}
-        onCancel={() => {
-          setQuizMode(false)
-          load()
-        }}
-      />
+    const closeExam = () => {
+      setQuizMode(false)
+      load()
+    }
+    const examLayer = (
+      <div
+        className={styles.cqExamFocusRoot}
+        role="dialog"
+        aria-modal="true"
+        aria-label="آزمون مشاوره"
+      >
+        <div className={styles.cqExamFocusBackdrop} aria-hidden />
+        <div className={styles.cqExamFocusStage}>
+          <CounselingQuizPlayer
+            tests={tests}
+            embedded={false}
+            focusMode
+            onNotify={onNotify}
+            onFinished={() => load()}
+            onCancel={closeExam}
+          />
+        </div>
+      </div>
     )
+    if (typeof document !== 'undefined') {
+      return createPortal(examLayer, document.body)
+    }
+    return examLayer
   }
 
   const fileTabs = [
